@@ -1,0 +1,240 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-dropdown);
+  background: rgba(250, 248, 243, 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--ink-10);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.nav.dark {
+  background: rgba(14, 13, 11, 0.95);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Dark theme support via data-theme */
+:global([data-theme="dark"]) .nav {
+  background: rgba(18, 17, 16, 0.92);
+  border-bottom-color: var(--ink-10);
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 40px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--ink);
+  text-decoration: none;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.logo em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.dark .logo {
+  color: var(--parchment);
+}
+
+.logoMark {
+  color: var(--gold);
+  font-size: 16px;
+}
+
+.links {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.link {
+  padding: 6px 14px;
+  font-size: 14px;
+  color: var(--ink-40);
+  border-radius: var(--radius);
+  transition: all 0.15s;
+  font-weight: 400;
+}
+
+.link:hover {
+  color: var(--ink);
+  background: var(--ink-05);
+}
+
+.link.active {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.dark .link {
+  color: rgba(250, 248, 243, 0.5);
+}
+
+.dark .link:hover {
+  color: var(--parchment);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dark .link.active {
+  color: var(--parchment);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+/* ── Theme Toggle ─────────────────────────────────── */
+.themeToggle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--ink-05);
+  border: 1px solid var(--ink-10);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s var(--ease);
+  color: var(--ink-40);
+  flex-shrink: 0;
+}
+
+.themeToggle:hover {
+  background: var(--ink-10);
+  color: var(--gold);
+  border-color: var(--gold);
+  transform: rotate(15deg);
+}
+
+.themeToggleIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s var(--ease);
+}
+
+.themeToggle:hover .themeToggleIcon {
+  transform: scale(1.1);
+}
+
+/* ── Avatar ───────────────────────────────────────── */
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--parchment);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s;
+  font-family: var(--font-display);
+}
+
+.avatar:hover {
+  opacity: 0.8;
+}
+
+:global([data-theme="dark"]) .avatar {
+  background: var(--gold);
+  color: var(--parchment);
+}
+
+/* ── Dropdown ─────────────────────────────────────── */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--white);
+  border: 1px solid var(--ink-10);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  min-width: 200px;
+  overflow: hidden;
+  animation: slideDown 0.15s var(--ease);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownUser {
+  padding: 14px 16px;
+}
+
+.dropdownName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+
+.dropdownEmail {
+  font-size: 12px;
+  color: var(--ink-40);
+  font-family: var(--font-mono);
+}
+
+.dropdownDivider {
+  height: 1px;
+  background: var(--ink-10);
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: var(--ink-70);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.1s;
+  text-decoration: none;
+}
+
+.dropdownItem:hover {
+  background: var(--ink-05);
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .inner {
+    padding: 0 20px;
+  }
+
+  .links {
+    display: none;
+  }
+}

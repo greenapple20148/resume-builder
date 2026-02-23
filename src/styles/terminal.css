@@ -1,0 +1,279 @@
+.terminal-theme-wrapper {
+    background: #0a0e14;
+    color: #c9d1d9;
+    font-family: 'Fira Code', 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+    text-align: left;
+}
+
+/* Scanline overlay */
+.terminal-theme-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(0, 0, 0, 0.03) 4px);
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* CRT glow */
+.terminal-theme-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+    pointer-events: none;
+    z-index: 99;
+}
+
+.terminal-container {
+    padding: 10px;
+}
+
+/* Window chrome */
+.terminal-window {
+    background: #0f1419;
+    border: 1px solid #1b2733;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(126, 231, 135, 0.04), 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.terminal-titlebar {
+    background: linear-gradient(180deg, #1c2128 0%, #161b22 100%);
+    border-bottom: 1px solid #1b2733;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+}
+
+.terminal-titlebar-btn {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+}
+
+.terminal-titlebar-btn.close {
+    background: #f85149;
+}
+
+.terminal-titlebar-btn.min {
+    background: #e3b341;
+}
+
+.terminal-titlebar-btn.max {
+    background: #7ee787;
+}
+
+.terminal-titlebar-text {
+    flex: 1;
+    text-align: center;
+    color: #8b949e;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+}
+
+.terminal-body {
+    padding: 16px 20px 24px;
+}
+
+/* Prompt styling */
+.terminal-prompt-prefix {
+    color: #7ee787;
+    font-weight: 600;
+}
+
+.terminal-prompt-dir {
+    color: #79c0ff;
+    font-weight: 500;
+}
+
+.terminal-prompt-symbol {
+    color: #e3b341;
+    font-weight: 700;
+}
+
+.terminal-command {
+    color: #f0f6fc;
+    font-weight: 500;
+}
+
+.terminal-flag {
+    color: #f778ba;
+}
+
+.terminal-comment {
+    color: #8b949e;
+    font-style: italic;
+}
+
+.terminal-string {
+    color: #7ee787;
+}
+
+.terminal-section {
+    margin: 16px 0;
+    padding: 12px 0;
+    border-top: 1px dashed #1b2733;
+}
+
+.terminal-section:first-of-type {
+    border-top: none;
+    margin-top: 8px;
+}
+
+.terminal-section-cmd {
+    color: #e3b341;
+    font-weight: 600;
+    font-size: 11px;
+    margin-bottom: 10px;
+}
+
+.terminal-ascii-box {
+    background: rgba(126, 231, 135, 0.04);
+    border: 1px solid rgba(46, 160, 67, 0.4);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin: 8px 0;
+}
+
+.terminal-name {
+    color: #7ee787;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.terminal-title {
+    color: #79c0ff;
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.terminal-table-row {
+    display: flex;
+    gap: 12px;
+    padding: 2px 0;
+    font-size: 10px;
+}
+
+.terminal-table-key {
+    color: #f778ba;
+    min-width: 80px;
+}
+
+.terminal-table-val {
+    color: #c9d1d9;
+}
+
+.terminal-skill-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 3px 0;
+    font-size: 10px;
+}
+
+.terminal-skill-label {
+    color: #c9d1d9;
+    min-width: 100px;
+}
+
+.terminal-skill-track {
+    flex: 1;
+    height: 6px;
+    background: #1b2733;
+    border-radius: 2px;
+}
+
+.terminal-skill-fill {
+    height: 100%;
+    background: #7ee787;
+    border-radius: 2px;
+}
+
+.terminal-exp-entry {
+    margin: 10px 0;
+    padding-left: 12px;
+    border-left: 2px solid #1b2733;
+    font-size: 10px;
+}
+
+.terminal-exp-role {
+    color: #f0f6fc;
+    font-weight: 600;
+}
+
+.terminal-exp-co {
+    color: #79c0ff;
+}
+
+.terminal-exp-date {
+    color: #8b949e;
+    font-size: 9px;
+}
+
+.terminal-exp-desc {
+    color: #c9d1d9;
+    margin-top: 4px;
+    padding-left: 2px;
+}
+
+.terminal-exp-desc span::before {
+    content: '▸ ';
+    color: #7ee787;
+}
+
+.terminal-edu-entry {
+    margin: 6px 0;
+    padding-left: 12px;
+    border-left: 2px solid #1b2733;
+    font-size: 10px;
+}
+
+.terminal-edu-degree {
+    color: #f0f6fc;
+    font-weight: 600;
+}
+
+.terminal-edu-school {
+    color: #bc8cff;
+}
+
+.terminal-footer-line {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px dashed #1b2733;
+    font-size: 9px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.terminal-cursor-blink {
+    display: inline-block;
+    width: 6px;
+    height: 12px;
+    background: #7ee787;
+    animation: terminalBlink 1s step-end infinite;
+    vertical-align: text-bottom;
+    margin-left: 4px;
+}
+
+@keyframes terminalBlink {
+    50% {
+        opacity: 0;
+    }
+}

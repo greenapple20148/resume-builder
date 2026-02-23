@@ -1,0 +1,232 @@
+/* Healthcare Resume Styles */
+.health-theme-wrapper {
+    background: #f4f7fa;
+    color: #1e293b;
+    font-family: 'Source Sans 3', -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.health-hero {
+    background: linear-gradient(135deg, #0f2b4c 0%, #1a3d6b 60%, #2c5282 100%);
+    padding: 24px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.health-ekg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    opacity: 0.06;
+}
+
+.health-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.health-title {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.health-badges {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.health-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.health-badge-teal {
+    background: rgba(13, 148, 136, 0.25);
+    color: #5eead4;
+}
+
+.health-badge-coral {
+    background: rgba(239, 100, 97, 0.2);
+    color: #fca5a5;
+}
+
+.health-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.health-vitals {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 16px;
+}
+
+.health-vital-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    position: relative;
+}
+
+.health-vital-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 8px 8px 0 0;
+}
+
+.health-vital-1::before {
+    background: #0d9488;
+}
+
+.health-vital-2::before {
+    background: #3b82f6;
+}
+
+.health-vital-3::before {
+    background: #ef6461;
+}
+
+.health-vital-4::before {
+    background: #d97706;
+}
+
+.health-vital-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: #0f2b4c;
+}
+
+.health-vital-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.health-section {
+    padding: 0 16px 16px;
+}
+
+.health-section-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.health-section-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    color: #0f2b4c;
+}
+
+.health-section-line {
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.health-summary {
+    background: #fff;
+    border-left: 4px solid #0d9488;
+    padding: 14px;
+    font-size: 12px;
+    color: #475569;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.health-exp-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+}
+
+.health-exp-role {
+    font-family: 'DM Serif Display', serif;
+    font-size: 14px;
+    color: #0f2b4c;
+}
+
+.health-exp-co {
+    font-size: 12px;
+    font-weight: 600;
+    color: #0d9488;
+}
+
+.health-exp-date {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+.health-exp-desc {
+    font-size: 11px;
+    color: #475569;
+    margin-top: 8px;
+}
+
+.health-skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.health-skill-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.health-skill-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: #0d9488;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.health-skill-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.health-skill-pill {
+    font-size: 10px;
+    padding: 2px 8px;
+    background: rgba(13, 148, 136, 0.06);
+    color: #0d9488;
+    border-radius: 12px;
+}

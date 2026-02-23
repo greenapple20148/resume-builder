@@ -1,0 +1,198 @@
+/* Sophisticated Resume Styles */
+.sophisticated-theme-wrapper {
+    background: #f2f2f2;
+    color: #1a1a1a;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.sophisticated-hero {
+    background: #0a0a0a;
+    color: #ffffff;
+    padding: 70px 60px 60px;
+    position: relative;
+    border-top: 3px solid #b8953e;
+}
+
+/* Subtle diagonal texture to break up the flat black */
+.sophisticated-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(45deg,
+            transparent,
+            transparent 40px,
+            rgba(255, 255, 255, 0.008) 40px,
+            rgba(255, 255, 255, 0.008) 41px);
+    pointer-events: none;
+}
+
+.sophisticated-hero-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.sophisticated-name {
+    font-family: 'Cormorant', serif;
+    font-size: 48px;
+    font-weight: 300;
+    letter-spacing: 4px;
+    line-height: 1.2;
+    color: #ffffff;
+}
+
+.sophisticated-name strong {
+    font-weight: 600;
+}
+
+.sophisticated-title {
+    font-size: 11px;
+    font-weight: 300;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: #b8b8b8;
+    margin-top: 14px;
+}
+
+.sophisticated-contact-box {
+    text-align: right;
+    font-size: 11px;
+    font-weight: 300;
+    color: #b8b8b8;
+    line-height: 2;
+    letter-spacing: 0.5px;
+    border-right: 1px solid rgba(184, 149, 62, 0.3);
+    padding-right: 20px;
+}
+
+.sophisticated-contact-label {
+    color: #b8953e;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 9px;
+    margin-top: 8px;
+}
+
+.sophisticated-body {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    background: #ffffff;
+}
+
+.sophisticated-main {
+    padding: 30px 40px;
+    border-right: 1px solid #e8e8e8;
+}
+
+.sophisticated-side {
+    padding: 30px 25px;
+    background: #fafafa;
+}
+
+.sophisticated-section-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #b8953e;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sophisticated-section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(184, 149, 62, 0.2), transparent);
+}
+
+.sophisticated-summary {
+    font-family: 'Cormorant', serif;
+    font-size: 19px;
+    font-weight: 400;
+    font-style: italic;
+    color: #4a4a4a;
+    line-height: 1.75;
+    border-left: 2px solid #b8953e;
+    padding-left: 24px;
+    margin-left: 4px;
+    margin-bottom: 40px;
+}
+
+.sophisticated-exp-item {
+    margin-bottom: 25px;
+}
+
+.sophisticated-exp-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 15px;
+    color: #0a0a0a;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+}
+
+.sophisticated-exp-org {
+    font-family: 'Cormorant', serif;
+    font-size: 16px;
+    font-weight: 500;
+    font-style: italic;
+    color: #6e6e6e;
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+}
+
+.sophisticated-bullets {
+    list-style: none;
+    font-size: 13.5px;
+    color: #4a4a4a;
+    font-weight: 300;
+}
+
+.sophisticated-bullets li {
+    position: relative;
+    padding-left: 14px;
+    margin-bottom: 4px;
+}
+
+.sophisticated-bullets li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 5px;
+    height: 1px;
+    background: #b8953e;
+}
+
+.sophisticated-skill-row {
+    margin-bottom: 12px;
+}
+
+.sophisticated-skill-name {
+    font-size: 11px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.sophisticated-skill-bar {
+    height: 2px;
+    background: #e8e8e8;
+}
+
+.sophisticated-skill-fill {
+    height: 100%;
+    background: #b8953e;
+}

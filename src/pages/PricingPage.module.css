@@ -1,0 +1,365 @@
+.page {
+  min-height: 100vh;
+}
+
+.hero {
+  text-align: center;
+  padding: 80px 40px 60px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  margin-bottom: 16px;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.hero p {
+  font-size: 17px;
+  color: var(--ink-40);
+  margin-bottom: 32px;
+}
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-20);
+}
+
+.toggleActive {
+  color: var(--ink);
+}
+
+.toggleSwitch {
+  width: 48px;
+  height: 26px;
+  background: var(--ink);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 2px;
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s var(--ease);
+}
+
+/* ── PLANS ────────────────────────────────────────── */
+.plans {
+  display: flex;
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 40px 80px;
+  align-items: flex-start;
+}
+
+.plan {
+  flex: 1;
+  background: var(--white);
+  border: 1.5px solid var(--ink-10);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  position: relative;
+  transition: all 0.2s var(--ease);
+}
+
+.plan:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.planPopular {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold), var(--shadow-lg);
+  transform: translateY(-8px);
+}
+
+.planPopular:hover {
+  transform: translateY(-10px);
+}
+
+.planCurrent {
+  border-color: var(--sky);
+}
+
+.popularBadge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 4px 16px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.currentBadge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--sky);
+  color: white;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.planHeader {
+  margin-bottom: 4px;
+}
+
+.planName {
+  font-size: 15px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  color: var(--ink-40);
+  margin-bottom: 12px;
+}
+
+.planPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.priceCurrency {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--ink-40);
+}
+
+.priceNum {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.pricePer {
+  font-size: 14px;
+  color: var(--ink-40);
+  margin-left: 4px;
+}
+
+.priceNote {
+  font-size: 12px;
+  color: var(--ink-20);
+  font-family: var(--font-mono);
+  margin-bottom: 8px;
+}
+
+.planDivider {
+  height: 1px;
+  background: var(--ink-10);
+  margin: 20px 0;
+}
+
+.features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-bottom: 28px;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink-70);
+}
+
+.featureOff {
+  color: var(--ink-20);
+}
+
+.featureCheck {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: var(--emerald);
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.featureOff .featureCheck {
+  background: var(--ink-05);
+  color: var(--ink-20);
+}
+
+.planBtn {
+  width: 100%;
+  padding: 13px;
+}
+
+/* ── ENTERPRISE ────────────────────────────────────── */
+.enterprise {
+  max-width: 900px;
+  margin: 0 auto 80px;
+  padding: 32px 40px;
+  background: var(--ink-05);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.enterprise h3 {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.enterprise p {
+  font-size: 14px;
+  color: var(--ink-40);
+}
+
+/* ── FAQ ───────────────────────────────────────────── */
+.faq {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 40px 80px;
+}
+
+.sectionHeader {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.sectionHeader h2 em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.faqGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.faqItem {
+  padding: 24px;
+  background: var(--white);
+  border: 1px solid var(--ink-10);
+  border-radius: var(--radius-lg);
+}
+
+.faqItem h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.faqItem p {
+  font-size: 14px;
+  color: var(--ink-40);
+  line-height: 1.6;
+}
+
+/* ── BOTTOM CTA ────────────────────────────────────── */
+.bottomCta {
+  text-align: center;
+  padding: 60px 40px;
+  background: var(--ink-05);
+}
+
+.bottomCta p {
+  font-size: 16px;
+  color: var(--ink-40);
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .plans {
+    flex-direction: column;
+    padding: 0 20px 60px;
+  }
+
+  .planPopular {
+    transform: none;
+  }
+
+  .faqGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .enterprise {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* ── Dark Theme Overrides ───────────────────────────── */
+:global([data-theme="dark"]) .plan {
+  background: var(--white);
+  border-color: var(--ink-10);
+}
+
+:global([data-theme="dark"]) .planPopular {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold), var(--shadow-lg);
+}
+
+:global([data-theme="dark"]) .toggleSwitch {
+  background: var(--gold);
+}
+
+:global([data-theme="dark"]) .featureCheck {
+  background: rgba(76, 175, 122, 0.15);
+}
+
+:global([data-theme="dark"]) .featureOff .featureCheck {
+  background: var(--ink-05);
+  color: var(--ink-20);
+}
+
+:global([data-theme="dark"]) .enterprise {
+  background: var(--ink-05);
+}
+
+:global([data-theme="dark"]) .faqItem {
+  background: var(--white);
+  border-color: var(--ink-10);
+}
+
+:global([data-theme="dark"]) .bottomCta {
+  background: var(--ink-05);
+}
+
+:global([data-theme="dark"]) .planDivider {
+  background: var(--ink-10);
+}

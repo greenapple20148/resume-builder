@@ -1,0 +1,248 @@
+/* SciFi Resume Styles */
+.scifi-theme-wrapper {
+    background: #05080f;
+    color: #c0d0e8;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14.5px;
+    line-height: 1.7;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    text-align: left;
+    position: relative;
+}
+
+.scifi-theme-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(0, 195, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 195, 255, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+}
+
+.scifi-sys-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 16px;
+    background: rgba(0, 195, 255, 0.03);
+    border-bottom: 1px solid rgba(0, 195, 255, 0.1);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: #5a6f8f;
+}
+
+.scifi-header {
+    margin: 16px;
+    background: #0c1228;
+    border: 1px solid #141d3a;
+    padding: 24px;
+    border-radius: 4px;
+    position: relative;
+}
+
+.scifi-header::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid #00c3ff;
+    border-left: 2px solid #00c3ff;
+    opacity: 0.5;
+}
+
+.scifi-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #00c3ff 0%, #f0f4ff 50%, #ff2daa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    position: relative;
+    white-space: nowrap;
+    display: block;
+    line-height: 1.2;
+}
+
+.scifi-name[data-name]::after {
+    content: attr(data-name);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff2daa 0%, #f0f4ff 50%, #00c3ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    clip-path: inset(0 0 100% 0);
+    animation: scifi-glitch 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes scifi-glitch {
+
+    0%,
+    92%,
+    100% {
+        clip-path: inset(0 0 100% 0);
+    }
+
+    93% {
+        clip-path: inset(20% 0 60% 0);
+        transform: translateX(-3px);
+    }
+
+    94% {
+        clip-path: inset(50% 0 20% 0);
+        transform: translateX(3px);
+    }
+
+    95% {
+        clip-path: inset(10% 0 70% 0);
+        transform: translateX(-2px);
+    }
+
+    96% {
+        clip-path: inset(0 0 100% 0);
+    }
+}
+
+.scifi-designation {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    color: #00c3ff;
+    background: rgba(0, 195, 255, 0.1);
+    padding: 2px 10px;
+    border: 1px solid rgba(0, 195, 255, 0.2);
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.scifi-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+}
+
+.scifi-section {
+    padding: 0 16px 16px;
+}
+
+.scifi-section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.scifi-section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #00c3ff;
+}
+
+.scifi-section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, #00c3ff, transparent);
+    opacity: 0.2;
+}
+
+.scifi-brief {
+    background: #0c1228;
+    border-left: 3px solid #00c3ff;
+    padding: 14px;
+    font-size: 13px;
+}
+
+.scifi-exp-card {
+    background: #0c1228;
+    border: 1px solid #141d3a;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 4px;
+    position: relative;
+}
+
+.scifi-exp-card:hover {
+    border-color: rgba(255, 45, 170, 0.3);
+}
+
+.scifi-exp-role {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    color: #f0f4ff;
+}
+
+.scifi-exp-co {
+    color: #ff2daa;
+    font-size: 13px;
+}
+
+.scifi-exp-date {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: #5a6f8f;
+    background: rgba(255, 45, 170, 0.05);
+    padding: 1px 8px;
+}
+
+.scifi-skills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.scifi-skill-module {
+    background: #0c1228;
+    border: 1px solid #141d3a;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.scifi-skill-cat {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    color: #ffd700;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.scifi-skill-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0;
+}
+
+.scifi-skill-name {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    min-width: 70px;
+}
+
+.scifi-skill-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.scifi-skill-fill {
+    height: 100%;
+    background: #00c3ff;
+}
