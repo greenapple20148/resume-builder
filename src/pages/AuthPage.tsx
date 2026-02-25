@@ -30,15 +30,28 @@ export default function AuthPage() {
     }
   }, [mode])
 
+  // Password strength checks
+  const pwChecks = {
+    length: form.password.length >= 8,
+    upper: /[A-Z]/.test(form.password),
+    lower: /[a-z]/.test(form.password),
+    digit: /[0-9]/.test(form.password),
+    symbol: /[^A-Za-z0-9]/.test(form.password),
+  }
+  const pwStrength = Object.values(pwChecks).filter(Boolean).length
+  const pwValid = pwStrength === 5
+
   const validate = () => {
     const errs: Record<string, string> = {}
     if (mode === 'signup' && !form.fullName.trim()) errs.fullName = 'Name is required'
     if (mode !== 'reset-password' && !form.email.includes('@')) errs.email = 'Valid email required'
-    if (mode === 'signin' && form.password.length < 6) errs.password = 'Password must be 6+ characters'
-    if (mode === 'signup' && form.password.length < 6) errs.password = 'Password must be 6+ characters'
+    if (mode === 'signin' && form.password.length < 8) errs.password = 'Password must be 8+ characters'
+    if (mode === 'signup') {
+      if (!pwValid) errs.password = 'Password does not meet all requirements'
+    }
     if (mode === 'forgot-password' && !form.email.includes('@')) errs.email = 'Valid email required'
     if (mode === 'reset-password') {
-      if (form.password.length < 6) errs.password = 'Password must be 6+ characters'
+      if (!pwValid) errs.password = 'Password does not meet all requirements'
       if (form.password !== form.confirmPassword) errs.confirmPassword = 'Passwords do not match'
     }
     setErrors(errs)
@@ -51,7 +64,13 @@ export default function AuthPage() {
     setLoading(true)
     try {
       if (mode === 'signup') {
-        await signUp(form.email, form.password, form.fullName)
+        const result = await signUp(form.email, form.password, form.fullName)
+        // Supabase returns user with empty identities if email is already taken
+        if (result?.user && result.user.identities?.length === 0) {
+          setErrors({ email: 'This email is already registered' })
+          toast.error('An account with this email already exists. Try signing in instead.')
+          return
+        }
         navigate('/confirm-email')
       } else if (mode === 'signin') {
         await signIn(form.email, form.password)
@@ -67,7 +86,17 @@ export default function AuthPage() {
         setMode('signin')
       }
     } catch (err: any) {
-      toast.error(err.message || 'Something went wrong. Try again.')
+      const msg = err.message || ''
+      if (msg.includes('sending confirmation email')) {
+        // Email service issue — account was likely created, just email failed
+        toast.info('Account created but confirmation email could not be sent. Check your Supabase SMTP settings or disable email confirmation.')
+        navigate('/confirm-email')
+      } else if (msg.includes('already registered') || msg.includes('already been registered')) {
+        setErrors({ email: 'This email is already registered' })
+        toast.error('An account with this email already exists. Try signing in.')
+      } else {
+        toast.error(msg || 'Something went wrong. Try again.')
+      }
     } finally {
       setLoading(false)
     }
@@ -250,12 +279,50 @@ export default function AuthPage() {
                   <input
                     type="password"
                     className={`form-input ${errors.password ? 'error' : ''}`}
-                    placeholder="6+ characters"
+                    placeholder="8+ characters"
                     value={form.password}
                     onChange={set('password')}
                     autoFocus={mode === 'reset-password'}
                   />
                   {errors.password && <span className="form-error">⚠ {errors.password}</span>}
+
+                  {/* Password strength meter — signup & reset only */}
+                  {(mode === 'signup' || mode === 'reset-password') && form.password.length > 0 && (
+                    <div className={styles.pwStrength}>
+                      <div className={styles.pwBars}>
+                        {[1, 2, 3, 4, 5].map(i => (
+                          <div
+                            key={i}
+                            className={styles.pwBar}
+                            style={{
+                              background: pwStrength >= i
+                                ? pwStrength <= 2 ? '#ef4444' : pwStrength <= 3 ? '#f59e0b' : '#22c55e'
+                                : 'var(--ink-10)'
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <span className={styles.pwLabel}>
+                        {pwStrength <= 2 ? 'Weak' : pwStrength <= 3 ? 'Fair' : pwStrength <= 4 ? 'Strong' : 'Excellent'}
+                      </span>
+                    </div>
+                  )}
+
+                  {(mode === 'signup' || mode === 'reset-password') && form.password.length > 0 && (
+                    <div className={styles.pwChecklist}>
+                      {[
+                        { ok: pwChecks.length, label: 'Min 8 characters' },
+                        { ok: pwChecks.upper, label: 'Uppercase letter (A-Z)' },
+                        { ok: pwChecks.lower, label: 'Lowercase letter (a-z)' },
+                        { ok: pwChecks.digit, label: 'Number (0-9)' },
+                        { ok: pwChecks.symbol, label: 'Symbol (!@#$…)' },
+                      ].map((r, i) => (
+                        <div key={i} className={`${styles.pwCheck} ${r.ok ? styles.pwCheckOk : ''}`}>
+                          <span>{r.ok ? '✓' : '○'}</span> {r.label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

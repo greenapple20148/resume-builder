@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { toast } from '../components/Toast'
 import { useStore } from '../lib/store'
-import { PLANS, openCustomerPortal } from '../lib/stripe'
+import { PLANS, openCustomerPortal, verifySubscription } from '../lib/stripe'
 import styles from './DashboardPage.module.css'
 import { Resume } from '../types'
 
@@ -147,6 +147,17 @@ export default function DashboardPage() {
     }
   }, [fetchResumes, searchParams])
 
+  // Sync plan from Stripe on mount
+  const { user, fetchProfile } = useStore()
+  useEffect(() => {
+    if (user) {
+      verifySubscription()
+        .then(() => fetchProfile(user.id))
+        .catch(() => { })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id])
+
   const handleCreate = async (initialData: any = null) => {
     try {
       const dataToPass = initialData?.nativeEvent ? null : initialData;
@@ -227,6 +238,16 @@ export default function DashboardPage() {
             <Link to="/pricing" className={styles.sidebarItem}>
               <span>$</span> Billing
             </Link>
+            {profile?.plan === 'premium' && (
+              <>
+                <Link to="/tools/linkedin" className={styles.sidebarItem}>
+                  <span>🔗</span> LinkedIn Toolkit
+                </Link>
+                <Link to="/tools/interview" className={styles.sidebarItem}>
+                  <span>🎤</span> Interview Toolkit
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Plan card */}

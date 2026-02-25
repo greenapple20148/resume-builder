@@ -182,19 +182,48 @@
   margin: 20px 0;
 }
 
+.planTagline {
+  font-size: 12.5px;
+  color: var(--ink-30);
+  margin-top: 12px;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.featureGroupsWrap {
+  margin-bottom: 24px;
+}
+
+.featureGroup {
+  margin-bottom: 14px;
+}
+
+.featureGroup:last-child {
+  margin-bottom: 0;
+}
+
+.featureGroupLabel {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-30);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
 .features {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 11px;
-  margin-bottom: 28px;
+  gap: 8px;
 }
 
 .feature {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--ink-70);
 }
 
@@ -321,6 +350,226 @@
     flex-direction: column;
     text-align: center;
   }
+
+  .currentPlanCard {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .currentPlanActions {
+    flex-direction: column;
+  }
+
+  .currentPlanFeaturesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .upgradePlans {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Manage Plan View (logged-in) ──────────────────── */
+.manageContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 40px 80px;
+}
+
+.manageHero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.manageHero h1 {
+  margin-bottom: 10px;
+}
+
+.manageHero h1 em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.manageHero p {
+  font-size: 16px;
+  color: var(--ink-40);
+}
+
+.manageHero strong {
+  color: var(--ink);
+}
+
+/* Current Plan Card */
+.currentPlanCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px 32px;
+  background: var(--white);
+  border: 1.5px solid var(--gold-pale);
+  border-radius: var(--radius-xl);
+  margin-bottom: 28px;
+}
+
+.currentPlanBadge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.currentPlanStatus {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--emerald);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.currentPlanPrice {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.currentPlanPriceAlt {
+  font-size: 14px;
+  color: var(--ink-30);
+  font-weight: 400;
+}
+
+.currentPlanTagline {
+  font-size: 13px;
+  color: var(--ink-40);
+  font-style: italic;
+}
+
+.currentPlanActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cancelBtn {
+  background: transparent;
+  border: 1px solid var(--ink-10);
+  color: var(--ink-40);
+  font-size: 13px;
+  padding: 8px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.cancelBtn:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* Current Plan Features */
+.currentPlanFeatures {
+  margin-bottom: 40px;
+}
+
+.currentPlanFeaturesTitle {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-40);
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.currentPlanFeaturesGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.currentFeatureGroup {
+  padding: 20px;
+  background: var(--white);
+  border: 1px solid var(--ink-10);
+  border-radius: var(--radius-lg);
+}
+
+/* Available Plans / Upgrade */
+.availablePlans {
+  margin-bottom: 40px;
+}
+
+.availablePlansTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.availablePlansSubtitle {
+  font-size: 15px;
+  color: var(--ink-40);
+  margin-bottom: 24px;
+}
+
+.upgradePlans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.upgradePlanCard {
+  background: var(--white);
+  border: 1.5px solid var(--ink-10);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  position: relative;
+  transition: all 0.2s var(--ease);
+}
+
+.upgradePlanCard:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.upgradePlanPopular {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold), var(--shadow);
+}
+
+.upgradePlanHeader h3 {
+  font-size: 15px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-40);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.upgradePlanPrice {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+/* Downgrade Section */
+.downgradeSection {
+  text-align: center;
+  padding: 28px;
+  background: var(--ink-05);
+  border-radius: var(--radius-xl);
+  margin-bottom: 40px;
+}
+
+.downgradeSection p {
+  font-size: 14px;
+  color: var(--ink-40);
+  margin-bottom: 16px;
 }
 
 /* ── Dark Theme Overrides ───────────────────────────── */
@@ -362,4 +611,23 @@
 
 :global([data-theme="dark"]) .planDivider {
   background: var(--ink-10);
+}
+
+:global([data-theme="dark"]) .currentPlanCard {
+  background: var(--white);
+  border-color: var(--gold-pale);
+}
+
+:global([data-theme="dark"]) .currentFeatureGroup {
+  background: var(--white);
+  border-color: var(--ink-10);
+}
+
+:global([data-theme="dark"]) .upgradePlanCard {
+  background: var(--white);
+  border-color: var(--ink-10);
+}
+
+:global([data-theme="dark"]) .downgradeSection {
+  background: var(--ink-05);
 }

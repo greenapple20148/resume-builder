@@ -1,0 +1,295 @@
+.page {
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ── Confetti ──────────────────────────────────────── */
+.confettiContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.confettiPiece {
+    position: absolute;
+    top: -20px;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+    opacity: 0;
+}
+
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);
+    }
+}
+
+/* ── Container ─────────────────────────────────────── */
+.container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s var(--ease);
+}
+
+.containerVisible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── Success Icon ──────────────────────────────────── */
+.successIcon {
+    margin-bottom: 24px;
+}
+
+.successCircle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--emerald), #34d399);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    animation: scaleIn 0.5s var(--ease) 0.3s both;
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+    }
+
+    60% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ── Title ─────────────────────────────────────────── */
+.title {
+    font-size: 36px;
+    margin-bottom: 12px;
+    animation: fadeUp 0.5s var(--ease) 0.5s both;
+}
+
+.title em {
+    font-style: italic;
+    color: var(--gold);
+}
+
+.subtitle {
+    font-size: 17px;
+    color: var(--ink-40);
+    margin-bottom: 36px;
+    line-height: 1.6;
+    animation: fadeUp 0.5s var(--ease) 0.6s both;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Plan Summary ──────────────────────────────────── */
+.planSummary {
+    background: var(--white);
+    border: 1.5px solid var(--gold-pale);
+    border-radius: var(--radius-xl);
+    padding: 24px 28px;
+    margin-bottom: 36px;
+    text-align: left;
+    animation: fadeUp 0.5s var(--ease) 0.7s both;
+}
+
+.planSummaryHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--ink-10);
+}
+
+.planSummaryPrice {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    font-family: var(--font-display);
+}
+
+.planSummaryFeatures {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.planSummaryFeature {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink-70);
+}
+
+.checkMark {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #dcfce7;
+    color: var(--emerald);
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* ── Quick Start ───────────────────────────────────── */
+.quickStart {
+    margin-bottom: 40px;
+    animation: fadeUp 0.5s var(--ease) 0.8s both;
+}
+
+.quickStart h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.actionGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.actionCard {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    background: var(--white);
+    border: 1px solid var(--ink-10);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: var(--ink);
+    transition: all 0.2s var(--ease);
+}
+
+.actionCard:hover {
+    border-color: var(--gold-pale);
+    box-shadow: var(--shadow);
+    transform: translateX(4px);
+}
+
+.actionIcon {
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.actionContent {
+    flex: 1;
+    text-align: left;
+}
+
+.actionContent strong {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.actionContent p {
+    font-size: 13px;
+    color: var(--ink-40);
+    margin: 0;
+}
+
+.actionArrow {
+    font-size: 18px;
+    color: var(--ink-20);
+    transition: color 0.15s, transform 0.15s;
+    flex-shrink: 0;
+}
+
+.actionCard:hover .actionArrow {
+    color: var(--gold);
+    transform: translateX(4px);
+}
+
+/* ── Dashboard CTA ─────────────────────────────────── */
+.dashboardCta {
+    animation: fadeUp 0.5s var(--ease) 0.9s both;
+}
+
+.ctaCaveat {
+    font-size: 13px;
+    color: var(--ink-30);
+    margin-top: 16px;
+}
+
+.ctaCaveat a {
+    color: var(--gold);
+    text-decoration: none;
+}
+
+.ctaCaveat a:hover {
+    text-decoration: underline;
+}
+
+/* ── Responsive ────────────────────────────────────── */
+@media (max-width: 640px) {
+    .container {
+        padding: 20px 20px 60px;
+    }
+
+    .title {
+        font-size: 28px;
+    }
+
+    .planSummaryFeatures {
+        grid-template-columns: 1fr;
+    }
+
+    .actionCard {
+        padding: 14px 16px;
+    }
+}
+
+/* ── Dark Theme ────────────────────────────────────── */
+:global([data-theme="dark"]) .planSummary {
+    background: var(--white);
+    border-color: var(--gold-pale);
+}
+
+:global([data-theme="dark"]) .actionCard {
+    background: var(--white);
+    border-color: var(--ink-10);
+}
+
+:global([data-theme="dark"]) .checkMark {
+    background: rgba(76, 175, 122, 0.15);
+}

@@ -22,6 +22,9 @@ import EditorPage from './pages/EditorPage'
 import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
 import PricingPage from './pages/PricingPage'
+import LinkedInToolkitPage from './pages/LinkedInToolkitPage'
+import InterviewToolkitPage from './pages/InterviewToolkitPage'
+import WelcomePage from './pages/WelcomePage'
 import NotFoundPage from './pages/NotFoundPage'
 
 // Components
@@ -91,6 +94,9 @@ export default function App() {
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/editor/new" element={<ProtectedRoute><EditorPage /></ProtectedRoute>} />
         <Route path="/editor/:id" element={<ProtectedRoute><EditorPage /></ProtectedRoute>} />
+        <Route path="/tools/linkedin" element={<ProtectedRoute><LinkedInToolkitPage /></ProtectedRoute>} />
+        <Route path="/tools/interview" element={<ProtectedRoute><InterviewToolkitPage /></ProtectedRoute>} />
+        <Route path="/welcome" element={<ProtectedRoute><WelcomePage /></ProtectedRoute>} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Analytics />

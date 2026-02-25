@@ -575,22 +575,46 @@ export default function EditorPage() {
 
   return (
     <div className={styles.editor}>
-      {/* Simplify UI for migration check */}
       <div className={styles.toolbar}>
         <div className={styles.toolbarLeft}>
-          <Link to="/dashboard">← Back</Link>
-          <span className={styles.titleBtn} onClick={() => setEditingTitle(true)}>{title}</span>
+          <Link to="/dashboard" className="btn btn-ghost btn-sm">← Back</Link>
+          <div className={styles.toolbarDivider} />
+          {editingTitle ? (
+            <input
+              autoFocus
+              className={`form-input ${styles.titleInput}`}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onBlur={handleTitleSave}
+              onKeyDown={(e) => e.key === 'Enter' && handleTitleSave()}
+            />
+          ) : (
+            <span className={styles.titleBtn} onClick={() => setEditingTitle(true)}>{title}</span>
+          )}
+          <div className={styles.saveStatus}>
+            {saveStatus === 'saving' && <><div className="spinner" style={{ width: 12, height: 12 }} /> Saving…</>}
+            {saveStatus === 'saved' && '✓ Saved'}
+            {saveStatus === 'error' && '⚠ Error'}
+          </div>
         </div>
         <div className={styles.toolbarRight}>
-          <button onClick={handleDownload} disabled={downloading}>PDF</button>
-          <button onClick={handleDocxDownload}>DOCX</button>
+          <button className="btn btn-outline btn-sm" onClick={handleDownload} disabled={downloading}>
+            {downloading ? 'Generating…' : '📄 PDF'}
+          </button>
+          <button className="btn btn-outline btn-sm" onClick={handleDocxDownload}>📝 DOCX</button>
         </div>
       </div>
 
       <div className={styles.layout}>
         <div className={styles.sectionNav}>
+          <div className={styles.navTitle}>Sections</div>
           {SECTIONS.map((sec) => (
-            <button key={sec.id} onClick={() => setActiveSection(sec.id as SectionId)} className={activeSection === sec.id ? styles.navActive : ''}>
+            <button
+              key={sec.id}
+              onClick={() => setActiveSection(sec.id as SectionId)}
+              className={`${styles.navItem} ${activeSection === sec.id ? styles.navActive : ''}`}
+            >
+              <span className={styles.navIcon}>{sec.icon}</span>
               {sec.label}
             </button>
           ))}

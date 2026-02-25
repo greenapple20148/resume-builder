@@ -102,6 +102,16 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                   <Link to="/profile" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
                     Profile
                   </Link>
+                  {profile?.plan === 'premium' && (
+                    <>
+                      <Link to="/tools/linkedin" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                        🔗 LinkedIn Toolkit
+                      </Link>
+                      <Link to="/tools/interview" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                        🎤 Interview Toolkit
+                      </Link>
+                    </>
+                  )}
                   <Link to="/pricing" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
                     Billing & Plans
                   </Link>

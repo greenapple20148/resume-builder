@@ -15,7 +15,7 @@ CREATE TABLE profiles (
   email TEXT NOT NULL,
   full_name TEXT,
   avatar_url TEXT,
-  plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'team')),
+  plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'team', 'premium')),
   stripe_customer_id TEXT UNIQUE,
   stripe_subscription_id TEXT,
   subscription_status TEXT DEFAULT 'inactive',
@@ -173,6 +173,7 @@ BEGIN
     WHEN user_plan = 'free' THEN resume_count < 3
     WHEN user_plan = 'pro' THEN resume_count < 25
     WHEN user_plan = 'team' THEN TRUE
+    WHEN user_plan = 'premium' THEN TRUE
     ELSE FALSE
   END;
 END;
