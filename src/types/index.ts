@@ -2,7 +2,7 @@ export interface Profile {
     id: string
     full_name?: string
     email?: string
-    plan: 'free' | 'pro' | 'team'
+    plan: 'free' | 'pro' | 'premium'
     stripe_customer_id?: string
     stripe_subscription_id?: string
     subscription_status?: string

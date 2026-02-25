@@ -196,7 +196,7 @@ export default function ProfilePage() {
                         </div>
                         <div className={styles.profileName}>{profile?.full_name || 'User'}</div>
                         <div className={styles.profileEmail}>{user?.email}</div>
-                        <span className={`badge ${profile?.plan === 'pro' || profile?.plan === 'team' ? 'badge-gold' : 'badge-dark'}`} style={{ marginTop: 8 }}>
+                        <span className={`badge ${profile?.plan === 'pro' || profile?.plan === 'premium' ? 'badge-gold' : 'badge-dark'}`} style={{ marginTop: 8 }}>
                             {profile?.plan?.toUpperCase() || 'FREE'}
                         </span>
                     </div>

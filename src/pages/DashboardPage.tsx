@@ -232,7 +232,7 @@ export default function DashboardPage() {
           {/* Plan card */}
           <div className={styles.planCard}>
             <div className={styles.planCardBadge}>
-              <span className={`badge ${profile?.plan === 'pro' || profile?.plan === 'team' ? 'badge-gold' : 'badge-dark'}`}>
+              <span className={`badge ${profile?.plan === 'pro' || profile?.plan === 'premium' ? 'badge-gold' : 'badge-dark'}`}>
                 {profile?.plan?.toUpperCase() || 'FREE'}
               </span>
             </div>

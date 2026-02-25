@@ -90,7 +90,7 @@ export default function PricingPage() {
           </button>
           <span className={annual ? styles.toggleActive : ''}>
             Annual
-            <span className="badge badge-green" style={{ marginLeft: 8 }}>Save 27%</span>
+            <span className="badge badge-green" style={{ marginLeft: 8 }}>Save 56%</span>
           </span>
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function PricingPage() {
       <div className={styles.plans}>
         {Object.values(PLANS).map((plan: any) => {
           const isCurrent = profile?.plan === plan.id
-          const price = annual ? Math.round(plan.priceAnnual / 12) : plan.priceMonthly
+          const price = annual ? parseFloat((plan.priceAnnual / 12).toFixed(2)) : plan.priceMonthly
           const isLoading = loading === plan.id
 
           return (
