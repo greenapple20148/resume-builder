@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Victoria Okafor</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0f1a;
+    --surface: #141828;
+    --border: #252d45;
+    --gold: #c9a84c;
+    --gold-light: #e8c96e;
+    --text: #e8e4d8;
+    --muted: #8891ab;
+    --dim: #4a5268;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    body { background: #0c0f1a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .page { box-shadow: none; margin: 0; }
+    @page { margin: 0.4in; size: letter; }
+  }
+
+  body {
+    background: #050710;
+    font-family: 'Outfit', sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 40px auto;
+    background: var(--bg);
+    box-shadow: 0 0 80px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
+    overflow: hidden;
+  }
+
+  /* Gold top bar */
+  .top-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  }
+
+  /* Header */
+  header {
+    padding: 48px 56px 40px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 32px;
+  }
+
+  .name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 52px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -0.5px;
+  }
+
+  .name span {
+    color: var(--gold);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .role {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+
+  .contact-block {
+    text-align: right;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 2;
+  }
+
+  .contact-block a { color: var(--gold); text-decoration: none; }
+
+  /* Body */
+  .body {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+  }
+
+  /* Main */
+  .main {
+    padding: 44px 56px;
+    border-right: 1px solid var(--border);
+  }
+
+  .section { margin-bottom: 40px; }
+
+  .section-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .summary {
+    font-size: 14px;
+    line-height: 1.85;
+    color: #b0b8cc;
+    font-weight: 300;
+  }
+
+  .entry { margin-bottom: 28px; }
+
+  .entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+  }
+
+  .entry-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .entry-date {
+    font-size: 11px;
+    color: var(--dim);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2px 9px;
+    border-radius: 2px;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+
+  .entry-company {
+    font-size: 12.5px;
+    color: var(--gold);
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .entry ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .entry ul li {
+    font-size: 13px;
+    color: #8891ab;
+    line-height: 1.7;
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 5px;
+  }
+
+  .entry ul li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 7px;
+    top: 6px;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    padding: 44px 32px;
+    background: var(--surface);
+  }
+
+  .sidebar .section { margin-bottom: 32px; }
+
+  .sidebar .section-title::after { display: none; }
+
+  .skill-item {
+    font-size: 12.5px;
+    color: #8891ab;
+    line-height: 1.8;
+    padding-left: 12px;
+    position: relative;
+    margin-bottom: 3px;
+  }
+
+  .skill-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 4px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .edu-item { margin-bottom: 18px; }
+  .edu-item h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .edu-item p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+
+  .cert-item {
+    font-size: 12.5px;
+    color: #8891ab;
+    line-height: 1.7;
+    margin-bottom: 6px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-weight: 300;
+  }
+
+  /* Gold ornament */
+  .ornament {
+    text-align: center;
+    color: var(--gold);
+    font-size: 16px;
+    letter-spacing: 8px;
+    opacity: 0.4;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top-bar"></div>
+
+  <header>
+    <div>
+      <div class="name">Victoria <span>Okafor</span></div>
+      <div class="role">Investment Banking Associate</div>
+    </div>
+    <div class="contact-block">
+      New York, NY<br>
+      (212) 556-0234<br>
+      <a href="#">v.okafor@finance.com</a><br>
+      <a href="#">linkedin.com/in/vokafor</a>
+    </div>
+  </header>
+
+  <div class="body">
+    <div class="main">
+      <div class="section">
+        <div class="section-title">Profile</div>
+        <p class="summary">
+          Finance professional with 7 years in M&A advisory and capital markets. Expertise in
+          complex financial modeling, cross-border deal execution, and client management across
+          technology and healthcare sectors. Closed $4.2B in transaction value over career.
+        </p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Experience</div>
+
+        <div class="entry">
+          <div class="entry-header">
+            <div class="entry-title">Associate, M&A Advisory</div>
+            <div class="entry-date">2021 — Present</div>
+          </div>
+          <div class="entry-company">Goldman Sachs · New York</div>
+          <ul>
+            <li>Executed 8 M&A transactions totaling $2.1B in deal value across SaaS and healthcare verticals</li>
+            <li>Built LBO and DCF models for 14 buy-side and sell-side mandates with senior banker oversight</li>
+            <li>Led due diligence workstreams coordinating 40+ advisor teams across 3 jurisdictions</li>
+            <li>Ranked top 10% in analyst class; promoted to Associate 12 months ahead of cycle</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="entry-header">
+            <div class="entry-title">Analyst, Technology Investment Banking</div>
+            <div class="entry-date">2019 — 2021</div>
+          </div>
+          <div class="entry-company">JPMorgan Chase · New York</div>
+          <ul>
+            <li>Supported 6 tech sector transactions including 3 IPOs raising $800M+</li>
+            <li>Developed 3-statement models and management presentations for C-suite roadshows</li>
+            <li>Maintained deal pipeline tracking $6B+ in live mandates across coverage universe</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="entry-header">
+            <div class="entry-title">Summer Analyst</div>
+            <div class="entry-date">Summer 2018</div>
+          </div>
+          <div class="entry-company">Morgan Stanley · New York</div>
+          <ul>
+            <li>Prepared pitch books and industry analyses for 4 live healthcare M&A mandates</li>
+            <li>Received return offer with top performance rating in summer class</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="section">
+        <div class="section-title">Education</div>
+        <div class="edu-item">
+          <h4>B.S. Economics, Finance</h4>
+          <p>The Wharton School<br>University of Pennsylvania<br>GPA: 3.92 · 2019</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Skills</div>
+        <div class="skill-item">Financial Modeling (LBO, DCF)</div>
+        <div class="skill-item">M&A Transaction Advisory</div>
+        <div class="skill-item">Capital Markets</div>
+        <div class="skill-item">Valuation Analysis</div>
+        <div class="skill-item">Excel / VBA Automation</div>
+        <div class="skill-item">Bloomberg Terminal</div>
+        <div class="skill-item">FactSet / Capital IQ</div>
+        <div class="skill-item">PowerPoint / Pitch Decks</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Certifications</div>
+        <div class="cert-item">Series 79 — Investment Banking</div>
+        <div class="cert-item">Series 63 — Securities Agent</div>
+        <div class="cert-item">CFA Level II Candidate</div>
+      </div>
+
+      <div class="ornament">◆ · ◆ · ◆</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

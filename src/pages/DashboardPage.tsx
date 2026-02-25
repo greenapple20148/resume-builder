@@ -238,13 +238,21 @@ export default function DashboardPage() {
             <Link to="/pricing" className={styles.sidebarItem}>
               <span>$</span> Billing
             </Link>
-            {profile?.plan === 'premium' && (
+            {(profile?.plan === 'pro' || profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
+              <Link to="/tools/cover-letter" className={styles.sidebarItem}>
+                <span>✉️</span> Cover Letters
+              </Link>
+            )}
+            {(profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
               <>
                 <Link to="/tools/linkedin" className={styles.sidebarItem}>
                   <span>🔗</span> LinkedIn Toolkit
                 </Link>
                 <Link to="/tools/interview" className={styles.sidebarItem}>
                   <span>🎤</span> Interview Toolkit
+                </Link>
+                <Link to="/tools/mock-interview" className={styles.sidebarItem}>
+                  <span>🤖</span> AI Mock Interview
                 </Link>
               </>
             )}
@@ -253,8 +261,8 @@ export default function DashboardPage() {
           {/* Plan card */}
           <div className={styles.planCard}>
             <div className={styles.planCardBadge}>
-              <span className={`badge ${profile?.plan === 'pro' || profile?.plan === 'premium' ? 'badge-gold' : 'badge-dark'}`}>
-                {profile?.plan?.toUpperCase() || 'FREE'}
+              <span className={`badge ${profile?.plan !== 'free' ? 'badge-gold' : 'badge-dark'}`}>
+                {profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
               </span>
             </div>
             <div className={styles.planCardProgress}>

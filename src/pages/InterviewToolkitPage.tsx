@@ -555,7 +555,7 @@ interface StarStory {
 
 export default function InterviewToolkitPage() {
     const { user, profile, fetchProfile } = useStore()
-    const isPremium = profile?.plan === 'premium'
+    const isPremium = profile?.plan === 'premium' || profile?.plan === 'career_plus'
 
     // Sync plan from Stripe on mount
     useEffect(() => {

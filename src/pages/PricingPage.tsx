@@ -2,19 +2,19 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { toast } from '../components/Toast'
-import { PLANS, createCheckoutSession, openCustomerPortal } from '../lib/stripe'
+import { PLANS, ADD_ONS, createCheckoutSession, openCustomerPortal } from '../lib/stripe'
 import { useStore } from '../lib/store'
 import styles from './PricingPage.module.css'
 
 export default function PricingPage() {
-  const [annual, setAnnual] = useState(false)
+  const [annual, setAnnual] = useState(true)
   const [loading, setLoading] = useState<string | null>(null)
   const { user, profile } = useStore()
   const navigate = useNavigate()
 
   const currentPlanId = profile?.plan || 'free'
   const currentPlan = (PLANS as any)[currentPlanId] || PLANS.free
-  const planOrder = ['free', 'pro', 'premium']
+  const planOrder = ['free', 'pro', 'premium', 'career_plus']
   const currentIndex = planOrder.indexOf(currentPlanId)
 
   const handleUpgrade = async (plan: string) => {
@@ -83,7 +83,9 @@ export default function PricingPage() {
   const FAQ = [
     { q: 'Can I cancel anytime?', a: 'Yes. Cancel anytime from your billing portal. You keep access until the end of your billing period. No surprise renewals — we send a reminder email before each renewal.' },
     { q: 'Is there a free trial?', a: 'The Free plan is forever free — build your resume and see how it looks. Pro includes a 7-day free trial so you can try all features (templates, DOCX, cover letters) before being charged.' },
-    { q: 'What\'s the difference between Pro and Premium?', a: 'Pro has everything you need to build and download great resumes. Premium adds career-outcome tools: JD matching, AI rewrite suggestions, ATS simulation, LinkedIn toolkit, and interview prep.' },
+    { q: 'What\'s the difference between the plans?', a: 'Pro is for building great resumes. Premium adds AI mock interviews (3/mo), JD matching, and LinkedIn tools. Career+ gives 20 mock sessions/month, all interview modes, STAR coaching, and priority support.' },
+    { q: 'What are AI Mock Interviews?', a: 'AI-powered practice interviews that ask role-specific questions, evaluate your answers in real-time, and give you detailed feedback on clarity, confidence, keyword usage, and STAR structure.' },
+    { q: 'What are One-Time Add-Ons?', a: 'Boost your job search without a subscription change. Buy a Mock Interview Pack (3 sessions), get a Human Resume Review, a LinkedIn Profile Overhaul, or 24-hour Express Pro access.' },
     { q: 'What payment methods do you accept?', a: 'All major credit and debit cards (Visa, Mastercard, Amex), Apple Pay, and Google Pay via Stripe.' },
     { q: 'Do you offer refunds?', a: 'We offer a full refund within 7 days of purchase if you\'re not satisfied. No questions asked. Contact support@resumebuildin.io.' },
   ]
@@ -378,6 +380,32 @@ export default function PricingPage() {
             </div>
           )
         })}
+      </div>
+
+      {/* Add-Ons */}
+      <div className={styles.enterprise}>
+        <div style={{ width: '100%' }}>
+          <div className={styles.sectionHeader} style={{ marginBottom: 24 }}>
+            <h2>One-time <em>add-ons</em></h2>
+            <p style={{ marginTop: 6, color: 'var(--ink-40)', fontSize: 14 }}>Boost your job search without changing your plan.</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+            {ADD_ONS.map(addon => (
+              <div key={addon.id} style={{
+                background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '20px 18px',
+                display: 'flex', flexDirection: 'column' as const, gap: 8
+              }}>
+                <div style={{ fontSize: 28 }}>{addon.icon}</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)' }}>{addon.name}</div>
+                <div style={{ fontSize: 12, color: 'var(--ink-40)', lineHeight: 1.5, flex: 1 }}>{addon.description}</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--gold)' }}>${addon.price}</div>
+                <button className="btn btn-outline" style={{ fontSize: 12, padding: '6px 14px', marginTop: 4 }}>
+                  Buy Now
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Enterprise CTA */}

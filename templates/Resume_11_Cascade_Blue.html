@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Daniel Park</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f2a4a;
+    --blue: #1a6fb5;
+    --sky: #e8f2fb;
+    --text: #1e2d3d;
+    --muted: #6b8299;
+    --line: #d0dde8;
+    --white: #ffffff;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; }
+    @page { margin: 0.4in; size: letter; }
+  }
+
+  body {
+    background: #dce8f2;
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 40px auto;
+    background: var(--white);
+    box-shadow: 0 8px 48px rgba(15,42,74,0.14);
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 1100px;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: var(--navy);
+    color: #d0dde8;
+    padding: 44px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .sidebar-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--white);
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+  }
+
+  .sidebar-name em {
+    font-style: italic;
+    color: #7fc4f7;
+  }
+
+  .sidebar-role {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: #7fc4f7;
+    font-weight: 500;
+    margin-top: 8px;
+  }
+
+  .sidebar-divider {
+    height: 1px;
+    background: rgba(255,255,255,0.12);
+  }
+
+  .sidebar-section-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: #7fc4f7;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12.5px;
+    color: #c0d4e4;
+    margin-bottom: 9px;
+    line-height: 1.4;
+  }
+
+  .contact-icon {
+    width: 16px;
+    height: 16px;
+    fill: #7fc4f7;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .skill-item {
+    margin-bottom: 10px;
+  }
+
+  .skill-name {
+    font-size: 12.5px;
+    color: #c0d4e4;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .skill-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .skill-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7fc4f7, #1a6fb5);
+    border-radius: 2px;
+  }
+
+  .sidebar-edu-item { margin-bottom: 16px; }
+  .sidebar-edu-item h4 {
+    font-size: 13px;
+    color: var(--white);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .sidebar-edu-item p {
+    font-size: 12px;
+    color: #7fc4f7;
+    margin-top: 3px;
+  }
+
+  .lang-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: #c0d4e4;
+    margin-bottom: 7px;
+  }
+  .lang-level { color: #7fc4f7; font-size: 11px; font-weight: 500; }
+
+  /* Main content */
+  .main {
+    padding: 44px 40px;
+  }
+
+  /* Cascade accent bar */
+  .cascade {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 36px;
+  }
+  .cascade-bar {
+    height: 4px;
+    border-radius: 2px;
+  }
+  .cascade-bar:nth-child(1) { background: var(--blue); width: 60px; }
+  .cascade-bar:nth-child(2) { background: #5ca8e0; width: 40px; }
+  .cascade-bar:nth-child(3) { background: #a8d4f0; width: 24px; }
+
+  .section { margin-bottom: 34px; }
+
+  .section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--blue);
+    font-weight: 700;
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--sky);
+  }
+
+  .summary-text {
+    font-size: 14px;
+    color: #3d5166;
+    line-height: 1.8;
+    font-weight: 400;
+  }
+
+  .entry { margin-bottom: 24px; }
+
+  .entry-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 3px;
+  }
+
+  .entry-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: 'DM Serif Display', serif;
+  }
+
+  .entry-date {
+    font-size: 11.5px;
+    color: var(--muted);
+    background: var(--sky);
+    padding: 2px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .entry-company {
+    font-size: 13px;
+    color: var(--blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .entry ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .entry ul li {
+    font-size: 13px;
+    color: #4a6070;
+    line-height: 1.6;
+    padding-left: 14px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+
+  .entry ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--blue);
+    opacity: 0.6;
+  }
+
+  .project-card {
+    background: var(--sky);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-left: 3px solid var(--blue);
+  }
+
+  .project-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+
+  .project-desc {
+    font-size: 12.5px;
+    color: #4a6070;
+    line-height: 1.6;
+  }
+
+  .project-tech {
+    font-size: 11px;
+    color: var(--blue);
+    font-weight: 500;
+    margin-top: 6px;
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="sidebar">
+    <div>
+      <div class="sidebar-name">Daniel<br><em>Park</em></div>
+      <div class="sidebar-role">Full-Stack Engineer</div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div>
+      <div class="sidebar-section-title">Contact</div>
+      <div class="contact-item">
+        <svg class="contact-icon" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+        daniel.park@email.com
+      </div>
+      <div class="contact-item">
+        <svg class="contact-icon" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+        (415) 228-9401
+      </div>
+      <div class="contact-item">
+        <svg class="contact-icon" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+        San Francisco, CA
+      </div>
+      <div class="contact-item">
+        <svg class="contact-icon" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"/></svg>
+        github.com/dpark-dev
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div>
+      <div class="sidebar-section-title">Skills</div>
+      <div class="skill-item">
+        <div class="skill-name">React / Next.js</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:92%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Node.js / Express</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">TypeScript</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:90%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">PostgreSQL</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:80%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">AWS / Docker</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:75%"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">GraphQL</div>
+        <div class="skill-bar"><div class="skill-fill" style="width:78%"></div></div>
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div>
+      <div class="sidebar-section-title">Education</div>
+      <div class="sidebar-edu-item">
+        <h4>B.S. Computer Science</h4>
+        <p>UC San Diego<br>2019</p>
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div>
+      <div class="sidebar-section-title">Languages</div>
+      <div class="lang-row"><span>English</span><span class="lang-level">Native</span></div>
+      <div class="lang-row"><span>Korean</span><span class="lang-level">Fluent</span></div>
+      <div class="lang-row"><span>Japanese</span><span class="lang-level">Conversational</span></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="cascade">
+      <div class="cascade-bar"></div>
+      <div class="cascade-bar"></div>
+      <div class="cascade-bar"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Professional Summary</div>
+      <p class="summary-text">
+        Full-stack engineer with 6+ years building high-performance web applications and APIs.
+        Passionate about developer experience, clean architecture, and shipping products that scale.
+        Contributor to open-source tooling and mentor for junior engineers.
+      </p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Work Experience</div>
+
+      <div class="entry">
+        <div class="entry-top">
+          <div class="entry-title">Senior Software Engineer</div>
+          <div class="entry-date">2022 — Present</div>
+        </div>
+        <div class="entry-company">Vercel · San Francisco, CA</div>
+        <ul>
+          <li>Led frontend platform team delivering Next.js edge-rendering infrastructure used by 500K+ developers</li>
+          <li>Reduced cold-start times by 62% through worker-thread pooling and lazy module loading</li>
+          <li>Designed and shipped analytics dashboard serving real-time traffic data at 50K req/s</li>
+          <li>Mentored 3 junior engineers and established team coding standards</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-top">
+          <div class="entry-title">Software Engineer</div>
+          <div class="entry-date">2020 — 2022</div>
+        </div>
+        <div class="entry-company">Linear · Remote</div>
+        <ul>
+          <li>Built real-time collaborative features using CRDTs and WebSocket synchronization</li>
+          <li>Optimized Postgres query patterns reducing dashboard load time from 4.2s to 340ms</li>
+          <li>Shipped keyboard-first command palette adopted as core product feature</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-top">
+          <div class="entry-title">Junior Developer</div>
+          <div class="entry-date">2019 — 2020</div>
+        </div>
+        <div class="entry-company">Stripe · San Francisco, CA</div>
+        <ul>
+          <li>Implemented payment flow UI components used in 2,000+ merchant integrations</li>
+          <li>Wrote integration tests raising coverage from 58% to 89%</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Featured Projects</div>
+
+      <div class="project-card">
+        <div class="project-name">OpenSync — Real-time Collaboration SDK</div>
+        <div class="project-desc">Open-source TypeScript SDK for building collaborative apps with conflict-free data sync. 2.4K GitHub stars.</div>
+        <div class="project-tech">TypeScript · WebSockets · CRDT · 2.4K ★</div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-name">EdgeConfig — Feature Flag Platform</div>
+        <div class="project-desc">Distributed feature flag system with sub-millisecond evaluation via edge workers. Deployed at 3 companies.</div>
+        <div class="project-tech">Cloudflare Workers · Redis · React Dashboard</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

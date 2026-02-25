@@ -1,164 +1,244 @@
-import * as pdfjsLib from 'pdfjs-dist'
-import { ResumeData } from '../types'
+// src/lib/ai.ts — Client-side AI mock interview helpers
+import { supabase } from './supabase'
 
-// Vite native way to import a web worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.mjs',
-    import.meta.url
-).toString()
-
-export async function extractTextFromPDF(file: File): Promise<string> {
-    const arrayBuffer = await file.arrayBuffer()
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise
-    let fullText = ''
-    for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i)
-        const content = await page.getTextContent()
-        const strings = content.items.map((item: any) => item.str)
-        fullText += strings.join(' ') + '\n'
-    }
-    return fullText
+export interface InterviewEvaluation {
+    score: number
+    clarity_score: number
+    confidence_score: number
+    keyword_relevance: number
+    star_detected: boolean
+    star_breakdown: { situation: number; task: number; action: number; result: number } | null
+    strengths: string[]
+    improvements: string[]
+    keywords_found: string[]
+    keywords_missing: string[]
+    improved_answer: string
+    sample_answer: string
+    // Technical extras
+    technical_accuracy?: number
+    depth?: number
+    // Salary extras
+    tactics_used?: string[]
+    next_move?: string
 }
 
-export async function extractTextFromDocx(file: File): Promise<string> {
-    try {
-        const { extractRawText } = await import('mammoth')
-        const buffer = await file.arrayBuffer()
-        const result = await extractRawText({ arrayBuffer: buffer })
-        return result.value || ''
-    } catch (err) {
-        console.error("Docx Extraction Failed:", err)
-        throw new Error("Could not read DOCX document.")
-    }
+export interface InterviewQuestion {
+    question: string
+    answer: string
+    evaluation: InterviewEvaluation | null
 }
 
-export async function enhanceTextWithAI(text: string): Promise<string> {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-    if (!apiKey) {
-        console.warn("VITE_GEMINI_API_KEY missing - using local mock for AI")
-        return text + " [AI Enhanced: added action verbs and quantified impact where missing.]"
-    }
+export interface InterviewSummary {
+    overall_score: number
+    clarity_avg: number
+    confidence_avg: number
+    keyword_relevance_avg: number
+    star_usage_rate: string
+    verdict: string
+    top_strengths: string[]
+    areas_to_improve: string[]
+    recommendation: string
+    final_offer?: string
+}
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            contents: [{
-                parts: [{ text: `Improve the following text for a professional resume to be more impactful, using action verbs and strong phrasing. Return only the revised text, no commentary:\n\n${text}` }]
-            }]
-        })
+export interface InterviewConfig {
+    type: string
+    role: string
+    difficulty: 'easy' | 'medium' | 'hard'
+    questionCount: number
+}
+
+export interface PracticeHistoryEntry {
+    id: string
+    interview_type: string
+    role: string
+    difficulty: string
+    question_count: number
+    overall_score: number
+    clarity_avg: number
+    confidence_avg: number
+    keyword_relevance_avg: number
+    star_usage_rate: string
+    verdict: string
+    created_at: string
+}
+
+async function callMockInterview(body: Record<string, any>): Promise<any> {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) throw new Error('Not authenticated')
+
+    const { data, error } = await supabase.functions.invoke('ai-mock-interview', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body,
     })
 
-    const data = await response.json()
-    if (data.error) throw new Error(data.error.message || 'AI request failed')
-    return data.candidates[0].content.parts[0].text.trim()
+    if (error) throw error
+    if (data?.error) throw new Error(data.error)
+    return data
 }
 
-export async function parseResumeWithAI(pdfText: string): Promise<ResumeData> {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-    if (!apiKey) {
-        console.warn("VITE_GEMINI_API_KEY missing - returning dummy parsed structure")
+export async function generateQuestion(
+    config: InterviewConfig,
+    history: InterviewQuestion[],
+    questionIndex: number,
+): Promise<string> {
+    const data = await callMockInterview({
+        action: 'generate_question',
+        interviewType: config.type,
+        role: config.role,
+        difficulty: config.difficulty,
+        history,
+        questionIndex,
+        totalQuestions: config.questionCount,
+    })
+    return data?.result || ''
+}
+
+export async function evaluateAnswer(
+    config: InterviewConfig,
+    question: string,
+    answer: string,
+): Promise<InterviewEvaluation> {
+    const data = await callMockInterview({
+        action: 'evaluate_answer',
+        interviewType: config.type,
+        role: config.role,
+        difficulty: config.difficulty,
+        question,
+        answer,
+    })
+
+    const result = data?.result || ''
+    const cleaned = result.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    try {
+        const parsed = JSON.parse(cleaned)
         return {
-            personal: { fullName: "Imported Name", jobTitle: "Imported Role", email: "imported@email.com", phone: "555-1234", location: "Remote", website: "", summary: "", photo: "" },
-            summary: "Imported Summary: " + pdfText.substring(0, 100),
-            experience: [{ id: Date.now(), title: "Imported Job", company: "Company", location: "Remote", startDate: "2020", endDate: "2024", current: false, description: "Imported description" }],
-            education: [],
-            skills: ["Imported Skill"],
-            languages: [],
-            certifications: [],
-            projects: []
+            score: parsed.score ?? 5,
+            clarity_score: parsed.clarity_score ?? parsed.score ?? 5,
+            confidence_score: parsed.confidence_score ?? 5,
+            keyword_relevance: parsed.keyword_relevance ?? 5,
+            star_detected: parsed.star_detected ?? false,
+            star_breakdown: parsed.star_breakdown ?? null,
+            strengths: parsed.strengths ?? [],
+            improvements: parsed.improvements ?? [],
+            keywords_found: parsed.keywords_found ?? [],
+            keywords_missing: parsed.keywords_missing ?? [],
+            improved_answer: parsed.improved_answer ?? '',
+            sample_answer: parsed.sample_answer ?? '',
+            technical_accuracy: parsed.technical_accuracy,
+            depth: parsed.depth,
+            tactics_used: parsed.tactics_used,
+            next_move: parsed.next_move,
+        }
+    } catch {
+        console.error('Failed to parse evaluation:', result)
+        return {
+            score: 5, clarity_score: 5, confidence_score: 5, keyword_relevance: 5,
+            star_detected: false, star_breakdown: null,
+            strengths: ['Answer received'], improvements: ['Could not parse AI feedback'],
+            keywords_found: [], keywords_missing: [],
+            improved_answer: '', sample_answer: '',
         }
     }
-
-    const prompt = `
-Extract the following resume text into a JSON object matching this schema exactly.
-If information is missing, use empty strings. Make sure experience dates are parsed concisely.
-Return ONLY valid JSON.
-
-{
-  "personal": { "fullName": "", "jobTitle": "", "email": "", "phone": "", "location": "", "website": "" },
-  "summary": "",
-  "experience": [{ "id": 1, "title": "", "company": "", "location": "", "startDate": "", "endDate": "", "current": boolean, "description": "bullet points or text" }],
-  "education": [{ "id": 1, "degree": "", "school": "", "location": "", "startDate": "", "endDate": "", "gpa": "", "notes": "" }],
-  "skills": ["skill1", "skill2"]
 }
 
-Text to extract:
-${pdfText}`
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { responseMimeType: "application/json" }
-        })
+export async function generateSummary(
+    config: InterviewConfig,
+    history: InterviewQuestion[],
+): Promise<InterviewSummary> {
+    const data = await callMockInterview({
+        action: 'generate_summary',
+        interviewType: config.type,
+        role: config.role,
+        difficulty: config.difficulty,
+        history,
     })
 
-    const data = await response.json()
-    if (data.error) throw new Error(data.error.message || 'AI request failed')
-
-    let result = data.candidates[0].content.parts[0].text.trim()
-    if (result.startsWith("```json")) {
-        result = result.replace(/^```json/g, "").replace(/```$/g, "")
-    }
-    return JSON.parse(result) as ResumeData
-}
-
-export async function importFromLinkedInProfile(url: string): Promise<ResumeData> {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-    const fallbackData: ResumeData = {
-        personal: { fullName: "John Doe", jobTitle: "Software Engineer", email: "john@example.com", phone: "555-0123", location: "Remote", website: url, summary: "", photo: "" },
-        summary: "Passionate engineer with experience building scalable applications.",
-        experience: [{ id: Date.now(), title: "Developer", company: "TechCo", location: "Remote", startDate: "2020", endDate: "2023", current: false, description: "• Built things." }],
-        education: [{ id: Date.now() - 1, degree: "B.S. CS", school: "University", location: "", startDate: "2016", endDate: "2020", gpa: "", notes: "" }],
-        skills: ["React", "JavaScript"],
-        languages: [],
-        certifications: [],
-        projects: []
-    }
-
-    if (!apiKey) {
-        console.warn("VITE_GEMINI_API_KEY missing - using static fallback for LinkedIn import")
-        return new Promise(r => setTimeout(() => r(fallbackData), 1500))
-    }
-
+    const result = data?.result || ''
+    const cleaned = result.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
     try {
-        const prompt = `
-Generate a highly realistic and detailed fake resume based on the following LinkedIn URL: ${url}.
-Infer the person's name from the URL slug. Make the job title, summary, email, experience, education, and skills realistic and matching the inferred name.
-Return ONLY valid JSON matching this schema exactly.
-
-{
-  "personal": { "fullName": "", "jobTitle": "", "email": "", "phone": "", "location": "", "website": "${url}" },
-  "summary": "",
-  "experience": [{ "id": 1, "title": "", "company": "", "location": "", "startDate": "", "endDate": "", "current": boolean, "description": "bullet points or text" }],
-  "education": [{ "id": 1, "degree": "", "school": "", "location": "", "startDate": "", "endDate": "", "gpa": "", "notes": "" }],
-  "skills": ["skill1", "skill2"]
-}`
-
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { responseMimeType: "application/json" }
-            })
-        })
-
-        const data = await response.json()
-        if (data.error) throw new Error(data.error.message || 'AI request failed')
-
-        let result = data.candidates[0].content.parts[0].text.trim()
-        if (result.startsWith("```json")) {
-            result = result.replace(/^```json/g, "").replace(/```$/g, "")
+        const parsed = JSON.parse(cleaned)
+        return {
+            overall_score: parsed.overall_score ?? 5,
+            clarity_avg: parsed.clarity_avg ?? 5,
+            confidence_avg: parsed.confidence_avg ?? 5,
+            keyword_relevance_avg: parsed.keyword_relevance_avg ?? 5,
+            star_usage_rate: parsed.star_usage_rate ?? 'N/A',
+            verdict: parsed.verdict ?? 'Interview completed',
+            top_strengths: parsed.top_strengths ?? [],
+            areas_to_improve: parsed.areas_to_improve ?? [],
+            recommendation: parsed.recommendation ?? '',
+            final_offer: parsed.final_offer,
         }
-        return JSON.parse(result) as ResumeData
-    } catch (err) {
-        console.error("AI LinkedIn mock failed:", err)
-        return fallbackData
+    } catch {
+        console.error('Failed to parse summary:', result)
+        return {
+            overall_score: 5, clarity_avg: 5, confidence_avg: 5, keyword_relevance_avg: 5,
+            star_usage_rate: 'N/A',
+            verdict: 'Interview completed',
+            top_strengths: ['Completed all questions'],
+            areas_to_improve: ['Review feedback for each question'],
+            recommendation: 'Keep practicing to improve your interview skills.',
+        }
     }
 }
+
+export async function getPracticeHistory(): Promise<PracticeHistoryEntry[]> {
+    const data = await callMockInterview({ action: 'get_history' })
+    return data?.history || []
+}
+
+export const INTERVIEW_TYPES = {
+    general: {
+        id: 'general',
+        name: 'Role Interview',
+        icon: '🎯',
+        description: 'Full mock interview tailored to your target role',
+        defaultQuestions: 8,
+    },
+    system_design: {
+        id: 'system_design',
+        name: 'System Design',
+        icon: '🏗️',
+        description: 'Architecture challenges & scalability deep-dives',
+        defaultQuestions: 5,
+    },
+    behavioral: {
+        id: 'behavioral',
+        name: 'Behavioral Mastery',
+        icon: '🧠',
+        description: 'STAR method behavioral questions with detailed scoring',
+        defaultQuestions: 6,
+    },
+    salary: {
+        id: 'salary',
+        name: 'Salary Negotiation',
+        icon: '💰',
+        description: 'Interactive negotiation roleplay with an HR rep',
+        defaultQuestions: 6,
+    },
+    technical: {
+        id: 'technical',
+        name: 'Technical Coding',
+        icon: '💻',
+        description: 'Explain algorithms, code, and technical decisions',
+        defaultQuestions: 5,
+    },
+}
+
+export const MOCK_ROLES = [
+    'Software Engineer',
+    'Engineering Manager',
+    'Product Manager',
+    'UX Designer',
+    'Data Scientist',
+    'DevOps Engineer',
+    'Financial Analyst',
+    'Marketing Manager',
+    'Sales Executive',
+    'Business Analyst',
+    'Project Manager',
+    'HR Manager',
+    'Operations Manager',
+    'Management Consultant',
+]

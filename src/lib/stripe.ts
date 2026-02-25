@@ -50,44 +50,42 @@ export const PLANS: Record<string, Plan> = {
     cta: 'Start Building Free',
     features: [
       { text: 'Full resume editor', included: true },
-      { text: '2 basic templates', included: true },
-      { text: 'Basic sections (Experience, Education, Skills)', included: true },
-      { text: 'Basic spellcheck', included: true },
-      { text: 'PDF download (watermarked)', included: true },
+      { text: '1 basic template', included: true },
       { text: 'Save 1 resume', included: true },
-      { text: 'All 15 templates', included: false },
+      { text: 'PDF download (watermarked)', included: true },
+      { text: '1 mock interview sample (preview)', included: true },
+      { text: 'ATS score preview (no details)', included: true },
+      { text: 'All templates (100+)', included: false },
       { text: 'DOCX export', included: false },
       { text: 'Cover letter builder', included: false },
-      { text: 'ATS check', included: false },
+      { text: 'Full ATS feedback', included: false },
     ],
     featureGroups: [
       {
         label: 'Builder', features: [
           { text: 'Full resume editor', included: true },
-          { text: '2 basic templates', included: true },
-          { text: 'Basic sections (Experience, Education, Skills)', included: true },
-          { text: 'Basic spellcheck', included: true },
+          { text: '1 basic template', included: true },
+          { text: 'Save 1 resume', included: true },
         ]
       },
       {
         label: 'Export', features: [
           { text: 'PDF download (watermarked)', included: true },
-          { text: 'Save 1 resume', included: true },
           { text: 'Clean PDF (no watermark)', included: false },
           { text: 'DOCX export', included: false },
         ]
       },
       {
         label: 'Tools', features: [
+          { text: '1 mock interview sample (preview only)', included: true },
+          { text: 'ATS score preview (score only, no details)', included: true },
           { text: 'Cover letter builder', included: false },
-          { text: 'ATS check', included: false },
-          { text: 'AI rewrite suggestions', included: false },
-          { text: 'JD match analysis', included: false },
+          { text: 'Full ATS feedback', included: false },
         ]
       },
     ],
     resumeLimit: 1,
-    themeLimit: 2,
+    themeLimit: 1,
     watermark: true,
   },
   pro: {
@@ -98,29 +96,25 @@ export const PLANS: Record<string, Plan> = {
     priceAnnual: 79,
     stripePriceIdMonthly: import.meta.env.VITE_STRIPE_PRO_MONTHLY_PRICE_ID,
     stripePriceIdAnnual: import.meta.env.VITE_STRIPE_PRO_ANNUAL_PRICE_ID,
-    tagline: 'Everything job seekers need. Unlimited downloads + DOCX included.',
+    tagline: 'Everything job seekers need. Unlimited downloads + DOCX.',
     cta: 'Start 7-Day Free Trial',
     features: [
-      { text: 'All 15 templates', included: true },
-      { text: 'Unlimited PDF downloads (no watermark)', included: true },
-      { text: 'DOCX export', included: true },
-      { text: 'Up to 5 resume versions', included: true },
+      { text: 'All resume templates (100+)', included: true },
+      { text: 'Unlimited PDF + DOCX downloads', included: true },
       { text: 'Cover letter builder', included: true },
-      { text: 'Section guidance + examples per role', included: true },
-      { text: 'Basic ATS check', included: true },
-      { text: 'Auto-format (spacing, alignment, bullets)', included: true },
-      { text: 'Resume version history (last 10 saves)', included: true },
+      { text: 'Basic ATS scan (format + keyword coverage)', included: true },
+      { text: '5 saved resume versions', included: true },
       { text: 'Email support', included: true },
+      { text: 'AI mock interviews', included: false },
       { text: 'JD match analysis', included: false },
       { text: 'AI rewrite suggestions', included: false },
-      { text: 'LinkedIn & interview toolkit', included: false },
+      { text: 'LinkedIn toolkit', included: false },
     ],
     featureGroups: [
       {
         label: 'Builder', features: [
-          { text: 'All 15 templates', included: true },
-          { text: 'Up to 5 resume versions', included: true },
-          { text: 'Section guidance + examples per role', included: true },
+          { text: 'All resume templates (100+)', included: true },
+          { text: '5 saved resume versions', included: true },
           { text: 'Auto-format (spacing, alignment, bullets)', included: true },
           { text: 'Resume version history (last 10 saves)', included: true },
         ]
@@ -134,7 +128,7 @@ export const PLANS: Record<string, Plan> = {
       },
       {
         label: 'ATS & Optimization', features: [
-          { text: 'Formatting issue detection', included: true },
+          { text: 'Format issue detection', included: true },
           { text: 'Keyword coverage check', included: true },
           { text: 'Readability score', included: true },
         ]
@@ -146,7 +140,7 @@ export const PLANS: Record<string, Plan> = {
       },
     ],
     resumeLimit: 5,
-    themeLimit: 15,
+    themeLimit: Infinity,
     watermark: false,
     popular: true,
     trialDays: 7,
@@ -159,37 +153,40 @@ export const PLANS: Record<string, Plan> = {
     priceAnnual: 119,
     stripePriceIdMonthly: import.meta.env.VITE_STRIPE_TEAM_MONTHLY_PRICE_ID,
     stripePriceIdAnnual: import.meta.env.VITE_STRIPE_TEAM_ANNUAL_PRICE_ID,
-    tagline: 'JD match + ATS parse preview + LinkedIn tools.',
+    tagline: 'AI-powered tools for serious job seekers.',
     cta: 'Go Premium',
     features: [
       { text: 'Everything in Pro', included: true },
-      { text: 'All templates (current + future)', included: true },
-      { text: 'JD match — keyword gaps & suggestions', included: true },
-      { text: 'AI rewrite suggestions', included: true },
-      { text: 'ATS simulation preview', included: true },
-      { text: 'LinkedIn toolkit', included: true },
+      { text: '3 AI mock interviews/month', included: true },
+      { text: 'JD match — paste JD → missing keywords', included: true },
+      { text: 'AI bullet rewrite suggestions', included: true },
+      { text: 'LinkedIn summary generator', included: true },
+      { text: 'Advanced ATS feedback (section-level)', included: true },
+      { text: '10 saved resume versions', included: true },
       { text: 'Interview toolkit', included: true },
       { text: 'Priority support', included: true },
     ],
     featureGroups: [
       { label: 'Everything in Pro, plus:', features: [] },
       {
-        label: 'JD Match', features: [
-          { text: 'Paste job description → see missing keywords', included: true },
+        label: 'AI Mock Interview', features: [
+          { text: '3 AI-powered mock sessions/month', included: true },
+          { text: 'Role-specific questions', included: true },
+          { text: 'Real-time answer scoring', included: true },
+          { text: 'Clarity + confidence metrics', included: true },
+        ]
+      },
+      {
+        label: 'JD Match & AI Rewrite', features: [
+          { text: 'Paste job description → missing keywords', included: true },
           { text: 'Skill gap analysis', included: true },
-          { text: 'Tailored suggestions per role', included: true },
+          { text: 'AI bullet rewrite suggestions', included: true },
         ]
       },
       {
-        label: 'AI Rewrite', features: [
-          { text: 'Stronger bullet points (impact + metrics)', included: true },
-          { text: 'Summary rewrite in 3 tones', included: true },
-        ]
-      },
-      {
-        label: 'ATS Simulation', features: [
-          { text: 'See how ATS parses your resume sections', included: true },
-          { text: 'Section-by-section parse preview', included: true },
+        label: 'Advanced ATS', features: [
+          { text: 'Section-level improvement suggestions', included: true },
+          { text: 'ATS simulation preview', included: true },
         ]
       },
       {
@@ -201,7 +198,7 @@ export const PLANS: Record<string, Plan> = {
       },
       {
         label: 'Interview Toolkit', features: [
-          { text: '20 common questions by role', included: true },
+          { text: '14 roles with 280+ questions', included: true },
           { text: 'STAR story builder', included: true },
         ]
       },
@@ -211,11 +208,115 @@ export const PLANS: Record<string, Plan> = {
         ]
       },
     ],
+    resumeLimit: 10,
+    themeLimit: Infinity,
+    watermark: false,
+  },
+  career_plus: {
+    id: 'career_plus',
+    name: 'Career+',
+    price: 34.99,
+    priceMonthly: 34.99,
+    priceAnnual: 149,
+    stripePriceIdMonthly: import.meta.env.VITE_STRIPE_CAREER_PLUS_MONTHLY_PRICE_ID,
+    stripePriceIdAnnual: import.meta.env.VITE_STRIPE_CAREER_PLUS_ANNUAL_PRICE_ID,
+    tagline: 'Full AI coaching suite for active job hunters.',
+    cta: 'Go Career+',
+    features: [
+      { text: 'Everything in Premium', included: true },
+      { text: '20 AI mock interviews/month', included: true },
+      { text: 'JD-based interview simulation', included: true },
+      { text: 'Behavioral + technical modes', included: true },
+      { text: 'STAR answer coaching', included: true },
+      { text: 'Interview scoring dashboard', included: true },
+      { text: 'Resume score tracking over time', included: true },
+      { text: 'Unlimited resume versions', included: true },
+      { text: 'Priority support + early access', included: true },
+    ],
+    featureGroups: [
+      { label: 'Everything in Premium, plus:', features: [] },
+      {
+        label: 'AI Mock Interviews (20/month)', features: [
+          { text: '20 sessions per month', included: true },
+          { text: 'All 5 interview modes', included: true },
+          { text: 'System Design deep-dive', included: true },
+          { text: 'Behavioral mastery pack', included: true },
+          { text: 'Salary negotiation simulator', included: true },
+          { text: 'Technical coding evaluation', included: true },
+        ]
+      },
+      {
+        label: 'AI Coaching', features: [
+          { text: 'STAR answer coaching', included: true },
+          { text: 'Detailed clarity + confidence scoring', included: true },
+          { text: 'Keyword relevance analysis', included: true },
+          { text: 'Improved answer suggestions', included: true },
+        ]
+      },
+      {
+        label: 'Career Intelligence', features: [
+          { text: 'Interview scoring dashboard', included: true },
+          { text: 'Resume score tracking over time', included: true },
+          { text: 'JD-based interview simulation', included: true },
+        ]
+      },
+      {
+        label: 'Support', features: [
+          { text: 'Priority support', included: true },
+          { text: 'Early access to new tools', included: true },
+        ]
+      },
+    ],
     resumeLimit: Infinity,
     themeLimit: Infinity,
     watermark: false,
   },
 }
+
+// ── One-Time Add-Ons (Profit Boosters) ──────────────────
+export interface AddOn {
+  id: string
+  name: string
+  price: number
+  description: string
+  icon: string
+  stripePriceId?: string
+}
+
+export const ADD_ONS: AddOn[] = [
+  {
+    id: 'mock_pack_3',
+    name: '3 Interview Mock Pack',
+    price: 12.99,
+    description: '3 AI-powered mock interview sessions. Use anytime, never expires.',
+    icon: '🎤',
+    stripePriceId: import.meta.env.VITE_STRIPE_MOCK_PACK_PRICE_ID,
+  },
+  {
+    id: 'human_review',
+    name: 'Resume Human Review',
+    price: 49,
+    description: 'Expert human review with personalized feedback within 48 hours.',
+    icon: '👁️',
+    stripePriceId: import.meta.env.VITE_STRIPE_HUMAN_REVIEW_PRICE_ID,
+  },
+  {
+    id: 'linkedin_overhaul',
+    name: 'LinkedIn Profile Overhaul',
+    price: 99,
+    description: 'Complete LinkedIn profile rewrite by a career branding expert.',
+    icon: '🔗',
+    stripePriceId: import.meta.env.VITE_STRIPE_LINKEDIN_OVERHAUL_PRICE_ID,
+  },
+  {
+    id: 'express_unlock',
+    name: 'Express 24h Unlock',
+    price: 9.99,
+    description: '24-hour full Pro access. Download unlimited resumes, no watermark.',
+    icon: '⚡',
+    stripePriceId: import.meta.env.VITE_STRIPE_EXPRESS_UNLOCK_PRICE_ID,
+  },
+]
 
 export async function createCheckoutSession(priceId: string, plan: string) {
   const { data: { session } } = await supabase.auth.getSession()

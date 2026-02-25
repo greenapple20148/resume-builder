@@ -15,12 +15,14 @@ CREATE TABLE profiles (
   email TEXT NOT NULL,
   full_name TEXT,
   avatar_url TEXT,
-  plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'team', 'premium')),
+  plan TEXT NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'team', 'premium', 'career_plus')),
   stripe_customer_id TEXT UNIQUE,
   stripe_subscription_id TEXT,
   subscription_status TEXT DEFAULT 'inactive',
   subscription_period_end TIMESTAMPTZ,
   resume_downloads INTEGER DEFAULT 0,
+  mock_sessions_used INTEGER DEFAULT 0,
+  mock_sessions_purchased INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -93,6 +95,29 @@ CREATE TABLE stripe_events (
 );
 
 -- ============================================================
+-- COVER LETTERS TABLE
+-- ============================================================
+CREATE TABLE cover_letters (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL DEFAULT 'Untitled Cover Letter',
+  company_name TEXT NOT NULL DEFAULT '',
+  job_title TEXT NOT NULL DEFAULT '',
+  recipient_name TEXT NOT NULL DEFAULT '',
+  body TEXT NOT NULL DEFAULT '',
+  tone TEXT NOT NULL DEFAULT 'professional' CHECK (tone IN ('professional', 'conversational', 'enthusiastic')),
+  resume_id UUID REFERENCES resumes(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX cover_letters_user_id_idx ON cover_letters(user_id);
+
+CREATE TRIGGER cover_letters_updated_at
+  BEFORE UPDATE ON cover_letters
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- ============================================================
 -- ROW LEVEL SECURITY
 -- ============================================================
 
@@ -127,6 +152,25 @@ CREATE POLICY "Users can update own resumes"
 
 CREATE POLICY "Users can delete own resumes"
   ON resumes FOR DELETE
+  USING (auth.uid() = user_id);
+
+-- Cover Letters: users can CRUD their own
+ALTER TABLE cover_letters ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own cover letters"
+  ON cover_letters FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own cover letters"
+  ON cover_letters FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own cover letters"
+  ON cover_letters FOR UPDATE
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own cover letters"
+  ON cover_letters FOR DELETE
   USING (auth.uid() = user_id);
 
 -- ============================================================
@@ -170,10 +214,11 @@ BEGIN
   SELECT COUNT(*) INTO resume_count FROM resumes WHERE user_id = user_uuid;
 
   RETURN CASE
-    WHEN user_plan = 'free' THEN resume_count < 3
-    WHEN user_plan = 'pro' THEN resume_count < 25
+    WHEN user_plan = 'free' THEN resume_count < 1
+    WHEN user_plan = 'pro' THEN resume_count < 5
     WHEN user_plan = 'team' THEN TRUE
-    WHEN user_plan = 'premium' THEN TRUE
+    WHEN user_plan = 'premium' THEN resume_count < 10
+    WHEN user_plan = 'career_plus' THEN TRUE
     ELSE FALSE
   END;
 END;

@@ -57,7 +57,7 @@ function rewriteExperienceForLinkedIn(title: string, company: string, bullets: s
 
 export default function LinkedInToolkitPage() {
     const { user, profile, fetchProfile } = useStore()
-    const isPremium = profile?.plan === 'premium'
+    const isPremium = profile?.plan === 'premium' || profile?.plan === 'career_plus'
 
     // Sync plan from Stripe on mount
     useEffect(() => {

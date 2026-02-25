@@ -81,17 +81,23 @@ Deno.serve(async (req: Request) => {
             Deno.env.get("VITE_STRIPE_TEAM_ANNUAL_PRICE_ID"),
         ].filter(Boolean);
 
+        // Career+ price IDs from env
+        const careerPlusPriceIds = [
+            Deno.env.get("VITE_STRIPE_CAREER_PLUS_MONTHLY_PRICE_ID"),
+            Deno.env.get("VITE_STRIPE_CAREER_PLUS_ANNUAL_PRICE_ID"),
+        ].filter(Boolean);
+
         // Determine plan for each subscription — prefer metadata, then check price ID
         const determinePlan = (sub: any): string => {
             if (sub.metadata?.plan) return sub.metadata.plan;
-            // Check if any item's price matches premium price IDs
             const priceIds = sub.items?.data?.map((item: any) => item.price?.id) || [];
+            if (priceIds.some((id: string) => careerPlusPriceIds.includes(id))) return "career_plus";
             if (priceIds.some((id: string) => premiumPriceIds.includes(id))) return "premium";
             return "pro";
         };
 
-        // Pick the highest-tier subscription (premium > pro)
-        const tierOrder: Record<string, number> = { free: 0, pro: 1, premium: 2 };
+        // Pick the highest-tier subscription (career_plus > premium > pro)
+        const tierOrder: Record<string, number> = { free: 0, pro: 1, premium: 2, career_plus: 3 };
         let bestPlan = "pro";
         let bestSub = allSubs[0];
         for (const sub of allSubs) {

@@ -102,13 +102,21 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                   <Link to="/profile" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
                     Profile
                   </Link>
-                  {profile?.plan === 'premium' && (
+                  {(profile?.plan === 'pro' || profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
+                    <Link to="/tools/cover-letter" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                      ✉️ Cover Letters
+                    </Link>
+                  )}
+                  {(profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
                     <>
                       <Link to="/tools/linkedin" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
                         🔗 LinkedIn Toolkit
                       </Link>
                       <Link to="/tools/interview" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
                         🎤 Interview Toolkit
+                      </Link>
+                      <Link to="/tools/mock-interview" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                        🤖 AI Mock Interview
                       </Link>
                     </>
                   )}

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { supabase } from './supabase'
-import { Profile, Resume, SaveStatus } from '../types'
+import { Profile, Resume, CoverLetter, SaveStatus } from '../types'
 
 interface StoreState {
   user: any | null
@@ -10,6 +10,8 @@ interface StoreState {
   currentResume: Resume | null
   resumesLoading: boolean
   saveStatus: SaveStatus
+  coverLetters: CoverLetter[]
+  coverLettersLoading: boolean
   setUser: (user: any) => void
   setProfile: (profile: Profile | null) => void
   setAuthLoading: (loading: boolean) => void
@@ -29,6 +31,10 @@ interface StoreState {
   updateResume: (id: string, updates: Partial<Resume>) => Promise<void>
   deleteResume: (id: string) => Promise<void>
   duplicateResume: (resume: Resume) => Promise<Resume>
+  fetchCoverLetters: () => Promise<CoverLetter[] | undefined>
+  createCoverLetter: (data: Partial<CoverLetter>) => Promise<CoverLetter>
+  updateCoverLetter: (id: string, updates: Partial<CoverLetter>) => Promise<void>
+  deleteCoverLetter: (id: string) => Promise<void>
 }
 
 export const useStore = create<StoreState>((set, get) => ({
@@ -41,6 +47,10 @@ export const useStore = create<StoreState>((set, get) => ({
   resumes: [],
   currentResume: null,
   resumesLoading: false,
+
+  // Cover Letters
+  coverLetters: [],
+  coverLettersLoading: false,
 
   // UI
   saveStatus: 'saved',
@@ -274,5 +284,65 @@ export const useStore = create<StoreState>((set, get) => ({
     const duplicated = data as Resume
     set((state) => ({ resumes: [duplicated, ...state.resumes] }))
     return duplicated
+  },
+  // ── Cover Letters ────────────────────────────
+  fetchCoverLetters: async () => {
+    const { user } = get()
+    if (!user) return
+    set({ coverLettersLoading: true })
+    const { data, error } = await supabase
+      .from('cover_letters')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+    if (!error) set({ coverLetters: (data as CoverLetter[]) || [] })
+    set({ coverLettersLoading: false })
+    return data as CoverLetter[]
+  },
+
+  createCoverLetter: async (data) => {
+    const { user } = get()
+    if (!user) throw new Error('Not authenticated')
+    const { data: newCL, error } = await supabase
+      .from('cover_letters')
+      .insert({
+        user_id: user.id,
+        title: data.title || `Cover Letter — ${data.company_name || 'Untitled'}`,
+        company_name: data.company_name || '',
+        job_title: data.job_title || '',
+        recipient_name: data.recipient_name || '',
+        body: data.body || '',
+        tone: data.tone || 'professional',
+        resume_id: data.resume_id || null,
+      })
+      .select()
+      .single()
+    if (error) throw error
+    const cl = newCL as CoverLetter
+    set((state) => ({ coverLetters: [cl, ...state.coverLetters] }))
+    return cl
+  },
+
+  updateCoverLetter: async (id, updates) => {
+    set({ saveStatus: 'saving' })
+    set((state) => ({
+      coverLetters: state.coverLetters.map((cl) =>
+        cl.id === id ? { ...cl, ...updates } : cl
+      ),
+    }))
+    const { error } = await supabase
+      .from('cover_letters')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+    set({ saveStatus: error ? 'error' : 'saved' })
+    if (error) throw error
+  },
+
+  deleteCoverLetter: async (id) => {
+    const { error } = await supabase.from('cover_letters').delete().eq('id', id)
+    if (error) throw error
+    set((state) => ({
+      coverLetters: state.coverLetters.filter((cl) => cl.id !== id),
+    }))
   },
 }))
