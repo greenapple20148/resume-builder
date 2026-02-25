@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PhD Academic CV — Eleanor Whitfield</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --midnight:  #0f1923;
+  --navy:      #1b2d42;
+  --cream:     #faf7f2;
+  --warm:      #f2ede4;
+  --gold:      #b8924a;
+  --gold-lt:   #d4aa6a;
+  --rule:      rgba(184,146,74,0.28);
+  --muted:     #6b7280;
+  --ink:       #1a1a2e;
+}
+
+html { font-size: 10px; }
+
+body {
+  background: #ddd9d0;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 40px 20px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Page ───────────────────────────────────── */
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  background: var(--cream);
+  box-shadow: 0 12px 80px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--midnight) 0%, var(--navy) 35%, var(--gold) 65%, var(--gold-lt) 100%);
+}
+
+/* ── Header ─────────────────────────────────── */
+.hd {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  padding: 40px 52px 28px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.hd-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.hd-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  line-height: 1.0;
+  color: var(--midnight);
+  margin-bottom: 7px;
+}
+
+.hd-name em { font-style: italic; }
+
+.hd-cred {
+  font-family: 'DM Mono', monospace;
+  font-size: 7.5px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.hd-affil {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14.5px;
+  font-style: italic;
+  color: var(--navy);
+  line-height: 1.55;
+}
+
+.hd-affil strong {
+  font-style: normal;
+  font-weight: 500;
+}
+
+.hd-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 4px;
+  padding-bottom: 2px;
+}
+
+.hd-contact-item {
+  font-family: 'DM Mono', monospace;
+  font-size: 7.5px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+/* Gold ornament */
+.orn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 52px;
+  margin: 16px 0 0;
+}
+.orn-line { flex: 1; height: 1px; background: var(--rule); }
+.orn-gem  { width: 5px; height: 5px; background: var(--gold); transform: rotate(45deg); opacity: 0.55; }
+
+/* ── Body grid ──────────────────────────────── */
+.body {
+  display: grid;
+  grid-template-columns: 1fr 228px;
+}
+
+.main    { padding: 26px 34px 36px 52px; border-right: 1px solid var(--rule); }
+.sidebar { padding: 26px 26px 36px; background: var(--warm); }
+
+/* ── Section header ─────────────────────────── */
+.sec-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 7.5px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sec-title::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+/* ── Dissertation block ─────────────────────── */
+.diss {
+  background: var(--midnight);
+  color: var(--cream);
+  padding: 18px 22px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.diss::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: linear-gradient(180deg, var(--gold), var(--gold-lt));
+}
+.diss-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(212,170,106,0.75);
+  margin-bottom: 8px;
+}
+.diss-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15.5px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.42;
+  color: #f0ece3;
+  margin-bottom: 9px;
+}
+.diss-desc {
+  font-size: 8.5px;
+  line-height: 1.72;
+  color: rgba(240,236,227,0.6);
+}
+
+/* ── Entry ──────────────────────────────────── */
+.section { margin-bottom: 24px; }
+
+.entry {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 16px;
+  margin-bottom: 15px;
+  align-items: start;
+}
+.e-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--midnight);
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+.e-title em { font-weight: 300; font-style: italic; }
+.e-org  { font-size: 8.5px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+.e-sub  { font-size: 8px; color: var(--muted); margin-bottom: 4px; }
+.e-desc { font-size: 8.5px; color: #444; line-height: 1.7; }
+.e-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 7.5px;
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  text-align: right;
+  padding-top: 2px;
+}
+
+/* ── Publications ───────────────────────────── */
+.pub {
+  padding-left: 14px;
+  position: relative;
+  margin-bottom: 12px;
+}
+.pub::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px;
+  width: 4px; height: 4px;
+  border: 1px solid var(--gold);
+  transform: rotate(45deg);
+}
+.pub-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--midnight);
+  line-height: 1.4;
+  margin-bottom: 2px;
+}
+.pub-meta { font-size: 7.5px; color: var(--muted); line-height: 1.6; }
+.pub-meta .journal { font-weight: 600; color: var(--navy); }
+.pub-status {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 6.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border: 1px solid var(--rule);
+  color: var(--gold);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* ── Sidebar ────────────────────────────────── */
+.sb-sec { margin-bottom: 20px; }
+.sb-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Tags */
+.tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+.tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  padding: 2px 8px;
+  border: 1px solid rgba(184,146,74,0.22);
+  color: var(--gold);
+  letter-spacing: 0.06em;
+}
+
+/* Awards */
+.award {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: flex-start;
+}
+.award-gem {
+  width: 5px; height: 5px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+  margin-top: 4px;
+  opacity: 0.65;
+}
+.award-text { font-size: 8px; color: #444; line-height: 1.55; }
+.award-text strong { color: var(--midnight); font-weight: 600; display: block; font-size: 8.5px; margin-bottom: 1px; }
+
+/* Sidebar list items */
+.sb-item { margin-bottom: 9px; }
+.sb-item-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--midnight);
+  line-height: 1.3;
+  margin-bottom: 1px;
+}
+.sb-item-sub { font-size: 7.5px; color: var(--muted); line-height: 1.5; }
+
+/* Skills */
+.skill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 7px;
+}
+.skill-name { font-size: 8px; color: #444; }
+.skill-dots { display: flex; gap: 3px; }
+.d-on  { width: 6px; height: 6px; border-radius: 50%; background: var(--navy); }
+.d-off { width: 6px; height: 6px; border-radius: 50%; background: rgba(27,45,66,0.14); }
+.skill-level {
+  font-family: 'DM Mono', monospace;
+  font-size: 6.5px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Footer */
+.footer {
+  padding: 13px 52px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-note {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: rgba(107,114,128,0.55);
+  letter-spacing: 0.1em;
+}
+
+@media print {
+  body { background: none; padding: 0; }
+  .page { box-shadow: none; }
+}
+
+@media (max-width: 800px) {
+  html { font-size: 8.5px; }
+  .page { width: 100%; min-height: auto; }
+  .hd { grid-template-columns: 1fr; }
+  .hd-contact { align-items: flex-start; margin-top: 12px; }
+  .body { grid-template-columns: 1fr; }
+  .main { border-right: none; padding: 24px 28px; }
+  .sidebar { padding: 24px 28px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="hd">
+    <div>
+      <div class="hd-label">Department of Brain & Cognitive Sciences · PhD Candidate</div>
+      <h1 class="hd-name">Eleanor <em>Whitfield</em></h1>
+      <div class="hd-cred">B.Sc. (Hons) · M.Sc. · PhD Candidate (ABD) · Expected 2026</div>
+      <div class="hd-affil">
+        <strong>Massachusetts Institute of Technology</strong><br>
+        Brain & Cognitive Sciences Program<br>
+        Advisor: Prof. Daniel J. Hartman
+      </div>
+    </div>
+    <div class="hd-contact">
+      <div class="hd-contact-item">e.whitfield@mit.edu</div>
+      <div class="hd-contact-item">+1 (617) 555-0142</div>
+      <div class="hd-contact-item">Cambridge, MA 02139</div>
+      <div class="hd-contact-item">orcid.org / 0000-0002-1234-5678</div>
+      <div class="hd-contact-item">scholar.whitfield.mit.edu</div>
+    </div>
+  </header>
+
+  <div class="orn"><div class="orn-line"></div><div class="orn-gem"></div><div class="orn-line"></div></div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- Dissertation -->
+      <div class="diss">
+        <div class="diss-label">Doctoral Dissertation — Expected May 2026</div>
+        <div class="diss-title">"Predictive Coding and Temporal Precision: How the Brain Constructs Time from Noisy Sensory Signals"</div>
+        <div class="diss-desc">Investigates the neural mechanisms underlying temporal perception using fMRI, EEG, and computational modelling. Proposes a unified hierarchical Bayesian framework reconciling conflicting accounts of interval timing in prefrontal and cerebellar circuits. Three first-author papers completed; one under review at <em>PLOS Computational Biology</em>.</div>
+      </div>
+
+      <!-- Education -->
+      <div class="section">
+        <div class="sec-title">Education</div>
+
+        <div class="entry">
+          <div>
+            <div class="e-title">Doctor of Philosophy — <em>Brain & Cognitive Sciences</em></div>
+            <div class="e-org">Massachusetts Institute of Technology, Cambridge MA</div>
+            <div class="e-sub">Thesis Committee: D. Hartman (chair), L. Chen, R. Patel (Oxford)</div>
+            <div class="e-desc">NSF Graduate Research Fellow. Qualifying exams passed with distinction. Recipient of MIT School of Science Fellowship (2021–22).</div>
+          </div>
+          <div class="e-date">2021 — present</div>
+        </div>
+
+        <div class="entry">
+          <div>
+            <div class="e-title">Master of Science — <em>Cognitive Neuroscience</em></div>
+            <div class="e-org">University College London, London UK</div>
+            <div class="e-sub">Thesis: "Bayesian Priors in Auditory Temporal Estimation" · Awarded Distinction</div>
+          </div>
+          <div class="e-date">2019 — 2020</div>
+        </div>
+
+        <div class="entry">
+          <div>
+            <div class="e-title">Bachelor of Science — <em>Psychology with Neuroscience</em></div>
+            <div class="e-org">University of Edinburgh, Edinburgh UK</div>
+            <div class="e-sub">First Class Honours · Dean's List (all four years) · Best Undergraduate Thesis Prize</div>
+          </div>
+          <div class="e-date">2015 — 2019</div>
+        </div>
+      </div>
+
+      <!-- Research Experience -->
+      <div class="section">
+        <div class="sec-title">Research Experience</div>
+
+        <div class="entry">
+          <div>
+            <div class="e-title">Graduate Research Assistant</div>
+            <div class="e-org">Hartman Computational Cognition Lab · MIT</div>
+            <div class="e-sub">PI: Prof. Daniel J. Hartman</div>
+            <div class="e-desc">Designing and executing behavioural and neuroimaging studies of temporal perception. Developed novel fMRI paradigm to dissociate prospective and retrospective timing. Built lab's Python/R neuroimaging analysis pipeline. Mentoring four undergraduate research assistants.</div>
+          </div>
+          <div class="e-date">2021 — present</div>
+        </div>
+
+        <div class="entry">
+          <div>
+            <div class="e-title">Visiting Researcher</div>
+            <div class="e-org">Department of Experimental Psychology · University of Oxford</div>
+            <div class="e-sub">Host: Prof. Rachel Patel · Funded by MIT SHASS International Travel Grant</div>
+            <div class="e-desc">Collaborated on cross-modal timing experiments using TMS-EEG co-registration. Co-authored two manuscripts from the collaboration, one published in <em>Journal of Neuroscience</em>.</div>
+          </div>
+          <div class="e-date">Summer 2023</div>
+        </div>
+
+        <div class="entry">
+          <div>
+            <div class="e-title">Research Assistant</div>
+            <div class="e-org">Language & Brain Lab · UCL</div>
+            <div class="e-sub">PI: Prof. Sophie Laurent</div>
+            <div class="e-desc">Supported MEG data collection for study on prosodic rhythm and temporal prediction. Preprocessed 40+ participant datasets using SPM12 and MNE-Python.</div>
+          </div>
+          <div class="e-date">2019 — 2020</div>
+        </div>
+      </div>
+
+      <!-- Publications -->
+      <div class="section">
+        <div class="sec-title">Selected Publications</div>
+
+        <div class="pub">
+          <div class="pub-title">"Hierarchical Temporal Prediction Errors in Human Auditory Cortex"</div>
+          <div class="pub-meta"><span class="journal">Nature Neuroscience</span>, 27(4), 2024 · Whitfield, E., Chen, L., & Hartman, D.J. <span class="pub-status">Published</span></div>
+        </div>
+
+        <div class="pub">
+          <div class="pub-title">"Cerebellar-Prefrontal Dynamics During Interval Timing: A Dynamic Causal Modelling Analysis"</div>
+          <div class="pub-meta"><span class="journal">Journal of Neuroscience</span>, 43(12), 2023 · Whitfield, E., Patel, R., & Hartman, D.J. <span class="pub-status">Published</span></div>
+        </div>
+
+        <div class="pub">
+          <div class="pub-title">"Bayesian Observer Models Fail to Capture Individual Differences in Temporal Sensitivity"</div>
+          <div class="pub-meta"><span class="journal">PLOS Computational Biology</span>, 2024 · Whitfield, E., Okafor, T., & Hartman, D.J. <span class="pub-status">In Review</span></div>
+        </div>
+
+        <div class="pub">
+          <div class="pub-title">"Prior Expectations Modulate Temporal Rate Perception Across Sensory Modalities"</div>
+          <div class="pub-meta"><span class="journal">Cognition</span>, 224, 2022 · Whitfield, E. & Laurent, S. <span class="pub-status">Published</span></div>
+        </div>
+      </div>
+
+      <!-- Teaching -->
+      <div class="section">
+        <div class="sec-title">Teaching & Mentorship</div>
+
+        <div class="entry">
+          <div>
+            <div class="e-title">Teaching Assistant — <em>Computational Neuroscience (9.40)</em></div>
+            <div class="e-org">MIT · Dept. of Brain & Cognitive Sciences</div>
+            <div class="e-desc">Led weekly recitation sections (30 students). Developed new problem sets on dynamical systems modelling. Student evaluation: 4.9 / 5.0.</div>
+          </div>
+          <div class="e-date">Spring 2023</div>
+        </div>
+
+        <div class="entry">
+          <div>
+            <div class="e-title">Guest Lecturer — <em>Perception & Cognition (9.35)</em></div>
+            <div class="e-org">MIT · Three 90-minute lectures on temporal perception and Bayesian brain theory</div>
+          </div>
+          <div class="e-date">2022, 2024</div>
+        </div>
+
+        <div class="entry">
+          <div>
+            <div class="e-title">Undergraduate Thesis Co-Supervisor</div>
+            <div class="e-org">MIT · Two senior thesis projects; both students graduated with honours</div>
+          </div>
+          <div class="e-date">2023 — present</div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="sb-sec">
+        <div class="sb-title">Research Interests</div>
+        <div class="tags">
+          <span class="tag">Temporal Perception</span>
+          <span class="tag">Predictive Coding</span>
+          <span class="tag">Bayesian Brain</span>
+          <span class="tag">fMRI / EEG</span>
+          <span class="tag">Computational Models</span>
+          <span class="tag">Interval Timing</span>
+          <span class="tag">Cerebellum</span>
+          <span class="tag">Multisensory</span>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-title">Honours & Funding</div>
+        <div class="award">
+          <div class="award-gem"></div>
+          <div class="award-text"><strong>NSF Graduate Research Fellowship</strong>$138,000 · 2021 – 2024</div>
+        </div>
+        <div class="award">
+          <div class="award-gem"></div>
+          <div class="award-text"><strong>CNS Young Investigator Award</strong>Cognitive Neuroscience Society · SF 2024</div>
+        </div>
+        <div class="award">
+          <div class="award-gem"></div>
+          <div class="award-text"><strong>MIT School of Science Fellowship</strong>2021 – 2022</div>
+        </div>
+        <div class="award">
+          <div class="award-gem"></div>
+          <div class="award-text"><strong>UCL Dean's Prize · Best MSc Thesis</strong>2020</div>
+        </div>
+        <div class="award">
+          <div class="award-gem"></div>
+          <div class="award-text"><strong>BPS Undergraduate Prize</strong>2019</div>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-title">Conferences</div>
+        <div class="sb-item">
+          <div class="sb-item-title">Society for Neuroscience (SfN)</div>
+          <div class="sb-item-sub">Oral presentation · Chicago · 2024</div>
+        </div>
+        <div class="sb-item">
+          <div class="sb-item-title">Cognitive Neuroscience Society</div>
+          <div class="sb-item-sub">Poster + travel award · SF · 2024</div>
+        </div>
+        <div class="sb-item">
+          <div class="sb-item-title">Vision Sciences Society</div>
+          <div class="sb-item-sub">Poster · St. Pete Beach · 2023</div>
+        </div>
+        <div class="sb-item">
+          <div class="sb-item-title">European Conf. on Visual Perception</div>
+          <div class="sb-item-sub">Talk · Leuven, Belgium · 2022</div>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-title">Technical Skills</div>
+        <div class="skill-row">
+          <span class="skill-name">Python (MNE, nilearn, Stan)</span>
+          <div class="skill-dots"><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div></div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">R / Bayesian modelling</span>
+          <div class="skill-dots"><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div><div class="d-off"></div></div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">MATLAB / SPM12</span>
+          <div class="skill-dots"><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div><div class="d-off"></div></div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">fMRI (3T & 7T Siemens)</span>
+          <div class="skill-dots"><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div><div class="d-off"></div></div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">EEG / TMS-EEG</span>
+          <div class="skill-dots"><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div><div class="d-off"></div><div class="d-off"></div></div>
+        </div>
+        <div class="skill-row">
+          <span class="skill-name">Git / Docker / HPC</span>
+          <div class="skill-dots"><div class="d-on"></div><div class="d-on"></div><div class="d-on"></div><div class="d-off"></div><div class="d-off"></div></div>
+        </div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-title">Languages</div>
+        <div class="skill-row"><span class="skill-name">English</span><span class="skill-level">Native</span></div>
+        <div class="skill-row"><span class="skill-name">French</span><span class="skill-level">Fluent</span></div>
+        <div class="skill-row"><span class="skill-name">German</span><span class="skill-level">Intermediate</span></div>
+        <div class="skill-row"><span class="skill-name">Mandarin</span><span class="skill-level">Basic</span></div>
+      </div>
+
+      <div class="sb-sec">
+        <div class="sb-title">Service & Outreach</div>
+        <div class="sb-item">
+          <div class="sb-item-title">Peer Reviewer</div>
+          <div class="sb-item-sub">Nature Neuroscience, J. Neurosci., Cognition, NeuroImage · 28 reviews, 2022–present</div>
+        </div>
+        <div class="sb-item">
+          <div class="sb-item-title">Graduate Women in Science</div>
+          <div class="sb-item-sub">Chapter co-president, MIT · 2022 – 2023</div>
+        </div>
+        <div class="sb-item">
+          <div class="sb-item-title">Brain Awareness Week</div>
+          <div class="sb-item-sub">Public lecturer & lab tour coordinator · 2022 – 2024</div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-note">Curriculum Vitae · Eleanor Whitfield · Updated February 2026</div>
+    <div class="footer-note">Full list: scholar.whitfield.mit.edu</div>
+  </footer>
+
+</div>
+</body>
+</html>

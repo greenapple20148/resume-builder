@@ -204,6 +204,69 @@
   text-decoration: underline;
 }
 
+/* ── Forgot password link ──────────────────────────── */
+.forgotRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -8px;
+}
+
+.forgotLink {
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.15s;
+}
+
+.forgotLink:hover {
+  opacity: 0.8;
+}
+
+/* ── Reset sent card ───────────────────────────────── */
+.resetSentCard {
+  text-align: center;
+  padding: 32px 20px;
+  background: var(--white);
+  border: 1px solid var(--ink-10);
+  border-radius: var(--radius-lg);
+  margin-top: 20px;
+}
+
+.resetSentIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.resetSentCard h4 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+
+.resetSentCard p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-40);
+  margin-bottom: 4px;
+}
+
+.resetSentCard p strong {
+  color: var(--ink);
+}
+
+.resetSentHint {
+  font-size: 12px !important;
+  color: var(--ink-20) !important;
+  margin-top: 12px !important;
+}
+
 @media (max-width: 768px) {
   .page {
     flex-direction: column;

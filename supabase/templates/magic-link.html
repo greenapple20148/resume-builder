@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+    xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Magic Link — ResumeBuildIn</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Fraunces:ital,wght@0,400;0,600;1,400&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f0ede6;
+            font-family: 'DM Sans', 'Segoe UI', Tahoma, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .email-wrapper {
+            width: 100%;
+            background-color: #f0ede6;
+            padding: 40px 20px;
+        }
+
+        .email-container {
+            max-width: 560px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(14, 13, 11, 0.07), 0 1px 4px rgba(14, 13, 11, 0.04);
+        }
+
+        /* Header */
+        .email-header {
+            background: linear-gradient(135deg, #0e0d0b 0%, #1a1916 50%, #2a2820 100%);
+            padding: 40px 40px 36px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .email-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(201, 146, 60, 0.08) 0%, transparent 50%);
+        }
+
+        .logo {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 22px;
+            color: #faf8f3;
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo em {
+            font-style: italic;
+            color: #c9923c;
+        }
+
+        .logo-icon {
+            color: #c9923c;
+            margin-right: 4px;
+        }
+
+        .header-badge {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 6px 16px;
+            background: rgba(37, 99, 235, 0.15);
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            border-radius: 100px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #93bbfc;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Body */
+        .email-body {
+            padding: 40px 40px 32px;
+        }
+
+        .greeting {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 26px;
+            color: #0e0d0b;
+            line-height: 1.2;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .greeting em {
+            font-style: italic;
+            color: #2563eb;
+        }
+
+        .body-text {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            line-height: 1.65;
+            color: #3a3830;
+            margin-top: 16px;
+        }
+
+        .body-text.muted {
+            color: #7a7870;
+            font-size: 13px;
+        }
+
+        /* Magic link visual */
+        .magic-visual {
+            margin: 28px 0;
+            padding: 32px 24px;
+            background: linear-gradient(135deg, #f8f7f4 0%, #f0ede6 100%);
+            border: 1px solid #d8d6ce;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .magic-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .magic-title {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 18px;
+            color: #0e0d0b;
+            margin-bottom: 6px;
+        }
+
+        .magic-subtitle {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: #7a7870;
+        }
+
+        /* CTA Button */
+        .cta-wrapper {
+            text-align: center;
+            margin: 32px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: #ffffff !important;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3), 0 2px 4px rgba(37, 99, 235, 0.15);
+            letter-spacing: 0.02em;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #d8d6ce, transparent);
+            margin: 24px 0;
+        }
+
+        /* Security notice */
+        .security-notice {
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .security-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .security-text {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            color: #92400e;
+            line-height: 1.5;
+        }
+
+        /* Link fallback */
+        .link-fallback {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f0ede6;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            color: #7a7870;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+
+        .link-fallback a {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .email-footer {
+            padding: 24px 40px 32px;
+            text-align: center;
+            border-top: 1px solid #f0ede6;
+        }
+
+        .footer-logo {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 15px;
+            color: #bab8b0;
+            margin-bottom: 8px;
+        }
+
+        .footer-logo em {
+            font-style: italic;
+        }
+
+        .footer-text {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            color: #bab8b0;
+            line-height: 1.6;
+        }
+
+        .footer-links {
+            margin-top: 12px;
+        }
+
+        .footer-links a {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 12px;
+            color: #7a7870;
+            text-decoration: none;
+            margin: 0 8px;
+        }
+
+        /* Responsive */
+        @media only screen and (max-width: 600px) {
+            .email-wrapper {
+                padding: 16px 12px;
+            }
+
+            .email-header {
+                padding: 32px 24px 28px;
+            }
+
+            .email-body {
+                padding: 28px 24px 24px;
+            }
+
+            .email-footer {
+                padding: 20px 24px 28px;
+            }
+
+            .greeting {
+                font-size: 22px;
+            }
+
+            .cta-button {
+                padding: 13px 32px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-wrapper">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+                <td align="center">
+                    <div class="email-container">
+
+                        <!-- HEADER -->
+                        <div class="email-header">
+                            <div class="logo">
+                                <span class="logo-icon">◈</span> Resume<em>BuildIn</em>
+                            </div>
+                            <div class="header-badge">✦ Magic Link</div>
+                        </div>
+
+                        <!-- BODY -->
+                        <div class="email-body">
+                            <div class="greeting">
+                                Your <em>magic link</em><br>is ready
+                            </div>
+
+                            <p class="body-text">
+                                Click the button below to sign in instantly — no password needed. This link is a
+                                one-time use and will expire in 1 hour.
+                            </p>
+
+                            <div class="magic-visual">
+                                <span class="magic-icon">🪄</span>
+                                <div class="magic-title">One-Click Sign In</div>
+                                <div class="magic-subtitle">Secure, passwordless authentication</div>
+                            </div>
+
+                            <div class="cta-wrapper">
+                                <a href="{{ .ConfirmationURL }}" class="cta-button" target="_blank">
+                                    Sign In to ResumeBuildIn →
+                                </a>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <!-- Security Notice -->
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+                                style="margin-top: 4px;">
+                                <tr>
+                                    <td
+                                        style="padding: 16px 20px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;">
+                                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <td style="font-size: 18px; vertical-align: top; padding-right: 12px;">
+                                                    🔒</td>
+                                                <td
+                                                    style="font-family: 'DM Sans', sans-serif; font-size: 13px; color: #92400e; line-height: 1.5;">
+                                                    <strong>Security tip:</strong> This magic link can only be used once
+                                                    and expires in 1 hour. Never share this link with anyone.
+                                                    ResumeBuildIn will never ask you for your password by email.
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div class="link-fallback">
+                                <strong>Button not working?</strong> Copy and paste this link into your browser:<br>
+                                <a href="{{ .ConfirmationURL }}">{{ .ConfirmationURL }}</a>
+                            </div>
+                        </div>
+
+                        <!-- FOOTER -->
+                        <div class="email-footer">
+                            <div class="footer-logo">◈ Resume<em>BuildIn</em></div>
+                            <div class="footer-text">
+                                Beautiful resumes that get you hired.<br>
+                                If you didn't request this link, you can safely ignore this email.
+                            </div>
+                            <div class="footer-links">
+                                <a href="{{ .SiteURL }}">Home</a>
+                                <a href="{{ .SiteURL }}/themes">Themes</a>
+                                <a href="{{ .SiteURL }}/pricing">Pricing</a>
+                            </div>
+                            <div class="footer-text" style="margin-top: 16px; color: #d8d6ce;">
+                                © 2026 ResumeBuildIn. All rights reserved.
+                            </div>
+                        </div>
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

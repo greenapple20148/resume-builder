@@ -1,0 +1,277 @@
+.page {
+    min-height: 100vh;
+    background: var(--parchment);
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 60px);
+    padding: 40px 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.card {
+    width: 100%;
+    max-width: 520px;
+    background: var(--white);
+    border: 1px solid var(--ink-10);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    padding: 48px 40px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.5s var(--ease) both;
+}
+
+.cardAccent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--emerald));
+}
+
+/* ── Animated icon ───────────────────────────────── */
+.iconWrapper {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 28px;
+}
+
+.iconRing {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold-pale), #dcfce7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.iconInner {
+    font-size: 40px;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+.sparkle1,
+.sparkle2,
+.sparkle3 {
+    position: absolute;
+    color: var(--gold);
+    font-size: 12px;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+.sparkle1 {
+    top: 4px;
+    right: 4px;
+    animation-delay: 0s;
+}
+
+.sparkle2 {
+    bottom: 8px;
+    left: 0;
+    animation-delay: 0.6s;
+}
+
+.sparkle3 {
+    top: 12px;
+    left: 8px;
+    animation-delay: 1.2s;
+}
+
+@keyframes sparkle {
+
+    0%,
+    100% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ── Typography ──────────────────────────────────── */
+.title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 4vw, 36px);
+    font-weight: 300;
+    color: var(--ink);
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+}
+
+.title em {
+    font-style: italic;
+    color: var(--gold);
+}
+
+.subtitle {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink-40);
+    max-width: 400px;
+    margin: 0 auto 32px;
+}
+
+/* ── Steps ───────────────────────────────────────── */
+.steps {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    max-width: 340px;
+    margin: 0 auto;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    text-align: left;
+}
+
+.stepNum {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stepText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 4px;
+}
+
+.stepText strong {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.stepText span {
+    font-size: 13px;
+    color: var(--ink-40);
+}
+
+.stepConnector {
+    width: 2px;
+    height: 20px;
+    background: var(--ink-10);
+    margin-left: 15px;
+}
+
+/* ── Divider ─────────────────────────────────────── */
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--ink-10), transparent);
+    margin: 28px 0;
+}
+
+/* ── Help section ────────────────────────────────── */
+.helpSection {
+    padding-top: 4px;
+}
+
+.helpText {
+    font-size: 13px;
+    color: var(--ink-20);
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+.helpActions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* ── Background decoration ───────────────────────── */
+.bgDecor1,
+.bgDecor2 {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.bgDecor1 {
+    width: 400px;
+    height: 400px;
+    bottom: -150px;
+    right: -100px;
+    background: radial-gradient(circle, rgba(201, 146, 60, 0.06), transparent 70%);
+}
+
+.bgDecor2 {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    left: -80px;
+    background: radial-gradient(circle, rgba(45, 106, 79, 0.05), transparent 70%);
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 600px) {
+    .card {
+        padding: 36px 24px 28px;
+    }
+
+    .helpActions {
+        flex-direction: column;
+    }
+}
+
+/* ── Dark Theme ──────────────────────────────────── */
+:global([data-theme="dark"]) .card {
+    background: var(--white);
+    border-color: var(--ink-10);
+}
+
+:global([data-theme="dark"]) .stepNum {
+    background: var(--gold);
+    color: var(--parchment);
+}

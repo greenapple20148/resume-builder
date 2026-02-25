@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Kai Nakamura</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Franklin:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f5f0;
+    --yellow: #e8d44d;
+    --gray: #888;
+    --border: #2a2a2a;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; border: none; }
+    @page { margin: 0.3in; size: letter; }
+  }
+
+  body {
+    background: #1a1a1a;
+    font-family: 'Libre Franklin', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 870px;
+    margin: 40px auto;
+    background: var(--black);
+    color: var(--white);
+    border: 3px solid var(--yellow);
+    position: relative;
+  }
+
+  /* Yellow corner block */
+  .corner-block {
+    position: absolute;
+    top: -3px; right: -3px;
+    width: 120px; height: 120px;
+    background: var(--yellow);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    z-index: 2;
+  }
+
+  /* ─── Header ─── */
+  header {
+    padding: 52px 52px 40px;
+    border-bottom: 3px solid var(--border);
+    position: relative;
+  }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    line-height: 0.85;
+    letter-spacing: 2px;
+    color: var(--white);
+  }
+  header h1 .highlight {
+    color: var(--yellow);
+  }
+
+  .role-bar {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 4px;
+    padding: 6px 20px;
+    margin-top: 14px;
+  }
+
+  .contact-row {
+    margin-top: 20px;
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--gray);
+    font-weight: 300;
+  }
+  .contact-row span::before {
+    content: '//';
+    margin-right: 6px;
+    color: var(--yellow);
+    font-weight: 600;
+  }
+
+  /* ─── Section ─── */
+  .section {
+    padding: 36px 52px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section:last-child { border-bottom: none; }
+
+  .section-head {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 6px;
+    color: var(--yellow);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-head::after {
+    content: '';
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+  }
+
+  /* Summary */
+  .summary {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: rgba(245,245,240,0.75);
+    max-width: 640px;
+    border-left: 4px solid var(--yellow);
+    padding-left: 20px;
+  }
+
+  /* Experience */
+  .exp-entry { margin-bottom: 30px; }
+  .exp-entry:last-child { margin-bottom: 0; }
+
+  .exp-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .exp-top h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: var(--white);
+  }
+
+  .exp-top .dates {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--black);
+    background: var(--yellow);
+    padding: 3px 12px;
+    letter-spacing: 1px;
+  }
+
+  .exp-org {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray);
+    margin-bottom: 10px;
+  }
+
+  .exp-entry ul { list-style: none; }
+  .exp-entry li {
+    font-size: 13.5px;
+    font-weight: 300;
+    color: rgba(245,245,240,0.7);
+    line-height: 1.65;
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 5px;
+  }
+  .exp-entry li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--yellow);
+    font-weight: 600;
+  }
+
+  /* Skills */
+  .skills-raw {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .skill-cell {
+    border: 1px solid var(--border);
+    padding: 16px 18px;
+    transition: background 0.2s;
+  }
+  .skill-cell:hover {
+    background: rgba(232,212,77,0.06);
+  }
+  .skill-cell .name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+  .skill-cell .level {
+    display: flex;
+    gap: 3px;
+  }
+  .skill-cell .level .block {
+    width: 16px; height: 4px;
+    background: var(--border);
+  }
+  .skill-cell .level .block.filled {
+    background: var(--yellow);
+  }
+
+  /* Education */
+  .edu-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .edu-item {
+    border-left: 4px solid var(--border);
+    padding-left: 18px;
+  }
+  .edu-item h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--white);
+  }
+  .edu-item p {
+    font-size: 13px;
+    color: var(--gray);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+  .edu-item .year {
+    font-weight: 600;
+    color: var(--yellow);
+  }
+
+  /* Footer */
+  .footer-strip {
+    background: var(--yellow);
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 6px;
+    text-align: center;
+    padding: 10px 20px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="corner-block"></div>
+
+  <header>
+    <h1>KAI<br><span class="highlight">NAKAMURA</span></h1>
+    <div class="role-bar">CREATIVE TECHNOLOGIST</div>
+    <div class="contact-row">
+      <span>Los Angeles, CA</span>
+      <span>(555) 739-0214</span>
+      <span>kai@nakamura.dev</span>
+      <span>nakamura.dev</span>
+    </div>
+  </header>
+
+  <div class="section">
+    <div class="section-head">ABOUT</div>
+    <p class="summary">
+      Creative technologist and full-stack developer blending art, code, and emerging tech to build
+      immersive digital experiences. 8 years crafting interactive installations, WebGL experiments,
+      and creative tools for brands like Nike, Spotify, and the Museum of Modern Art. Obsessed with
+      pushing the boundaries of what the browser can do.
+    </p>
+  </div>
+
+  <div class="section">
+    <div class="section-head">EXPERIENCE</div>
+
+    <div class="exp-entry">
+      <div class="exp-top">
+        <h3>LEAD CREATIVE TECHNOLOGIST</h3>
+        <span class="dates">2022 — PRESENT</span>
+      </div>
+      <div class="exp-org">Active Theory · Los Angeles, CA</div>
+      <ul>
+        <li>Directed technical development of award-winning interactive experiences for Nike and Google</li>
+        <li>Built real-time 3D product configurator with Three.js serving 4M+ sessions monthly</li>
+        <li>Won 3 Awwwards Site of the Year nominations and 1 FWA Grand Prix</li>
+        <li>Mentored team of 6 developers on WebGL, shaders, and creative coding techniques</li>
+      </ul>
+    </div>
+
+    <div class="exp-entry">
+      <div class="exp-top">
+        <h3>SENIOR DEVELOPER</h3>
+        <span class="dates">2019 — 2022</span>
+      </div>
+      <div class="exp-org">Resn · Amsterdam, NL</div>
+      <ul>
+        <li>Developed immersive WebGL experiences for Spotify Wrapped reaching 120M+ users</li>
+        <li>Created generative art system for Adidas campaign generating 1M+ unique NFT artworks</li>
+        <li>Optimized rendering pipeline achieving 60fps on mobile for complex 3D scenes</li>
+      </ul>
+    </div>
+
+    <div class="exp-entry">
+      <div class="exp-top">
+        <h3>CREATIVE DEVELOPER</h3>
+        <span class="dates">2017 — 2019</span>
+      </div>
+      <div class="exp-org">Jam3 · Toronto, CA</div>
+      <ul>
+        <li>Built interactive installation for MoMA exhibition visited by 200K+ people</li>
+        <li>Developed AR experiences using WebXR for Facebook's Spark AR platform</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">SKILLS</div>
+    <div class="skills-raw">
+      <div class="skill-cell">
+        <div class="name">Three.js / WebGL</div>
+        <div class="level"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div></div>
+      </div>
+      <div class="skill-cell">
+        <div class="name">GLSL Shaders</div>
+        <div class="level"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div></div>
+      </div>
+      <div class="skill-cell">
+        <div class="name">TypeScript</div>
+        <div class="level"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block"></div></div>
+      </div>
+      <div class="skill-cell">
+        <div class="name">React / Next.js</div>
+        <div class="level"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block"></div></div>
+      </div>
+      <div class="skill-cell">
+        <div class="name">Creative Coding</div>
+        <div class="level"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div></div>
+      </div>
+      <div class="skill-cell">
+        <div class="name">WebXR / AR</div>
+        <div class="level"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block"></div></div>
+      </div>
+      <div class="skill-cell">
+        <div class="name">Motion Design</div>
+        <div class="level"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block"></div><div class="block"></div></div>
+      </div>
+      <div class="skill-cell">
+        <div class="name">Blender / C4D</div>
+        <div class="level"><div class="block filled"></div><div class="block filled"></div><div class="block filled"></div><div class="block"></div><div class="block"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">EDUCATION</div>
+    <div class="edu-row">
+      <div class="edu-item">
+        <h4>MFA DESIGN & TECHNOLOGY</h4>
+        <p>Parsons School of Design<br><span class="year">2017</span></p>
+      </div>
+      <div class="edu-item">
+        <h4>B.S. COMPUTER SCIENCE</h4>
+        <p>University of British Columbia<br><span class="year">2015</span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-strip">PORTFOLIO → NAKAMURA.DEV</div>
+</div>
+</body>
+</html>

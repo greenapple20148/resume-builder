@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Isabelle Fontaine</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c5a55a;
+    --gold-light: #f5edda;
+    --gold-dim: rgba(197,165,90,0.1);
+    --dark: #1a2a22;
+    --dark-mid: #243830;
+    --emerald: #2d6a4f;
+    --cream: #fdfaf4;
+    --text: #2c3e36;
+    --text-light: #6b7d74;
+    --border: #d4cbb8;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; }
+    @page { margin: 0; size: letter; }
+  }
+
+  body {
+    background: #d5d0c4;
+    font-family: 'Raleway', sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 870px;
+    margin: 40px auto;
+    background: var(--cream);
+    box-shadow: 0 4px 40px rgba(0,0,0,0.1);
+    border: 1px solid var(--border);
+    position: relative;
+  }
+
+  /* ─── Deco border frame ─── */
+  .deco-frame {
+    position: absolute;
+    inset: 8px;
+    border: 1px solid var(--gold);
+    pointer-events: none;
+    z-index: 1;
+  }
+  /* Corner ornaments */
+  .deco-frame::before, .deco-frame::after {
+    content: '◆';
+    position: absolute;
+    font-size: 10px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .deco-frame::before { top: -6px; left: 50%; transform: translateX(-50%); }
+  .deco-frame::after { bottom: -6px; left: 50%; transform: translateX(-50%); }
+
+  /* ─── Header ─── */
+  .header-deco {
+    background: var(--dark);
+    padding: 52px 56px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Deco lines */
+  .header-deco::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--gold) 0px, var(--gold) 40px,
+      transparent 40px, transparent 48px
+    );
+  }
+  .header-deco::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold);
+  }
+
+  .header-deco h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  .header-deco .divider-line {
+    width: 80px;
+    height: 1px;
+    background: var(--gold);
+    margin: 14px auto;
+    position: relative;
+  }
+  .header-deco .divider-line::before {
+    content: '◆';
+    position: absolute;
+    top: -7px; left: 50%;
+    transform: translateX(-50%);
+    color: var(--gold);
+    font-size: 8px;
+    background: var(--dark);
+    padding: 0 8px;
+  }
+
+  .header-deco .role {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    font-weight: 400;
+  }
+
+  .header-deco .contact-line {
+    margin-top: 18px;
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1px;
+    font-weight: 300;
+  }
+  .header-deco .contact-line .sep {
+    color: var(--gold);
+    margin: 0 10px;
+    opacity: 0.4;
+  }
+
+  /* ─── Body ─── */
+  .body-wrap {
+    padding: 44px 56px 52px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .section-head {
+    text-align: center;
+    margin-bottom: 22px;
+    margin-top: 40px;
+    position: relative;
+  }
+  .section-head:first-child { margin-top: 0; }
+
+  .section-head h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--emerald);
+    display: inline-block;
+    padding: 0 20px;
+    background: var(--cream);
+    position: relative;
+    z-index: 1;
+  }
+  .section-head::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Summary */
+  .summary-deco {
+    text-align: center;
+    max-width: 620px;
+    margin: 0 auto;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.85;
+    color: var(--text-light);
+  }
+
+  /* Experience */
+  .exp-entry {
+    margin-bottom: 28px;
+    padding: 22px 28px;
+    background: var(--gold-dim);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+  }
+  .exp-entry:last-child { margin-bottom: 0; }
+
+  .exp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 2px;
+  }
+
+  .exp-header h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark);
+    letter-spacing: 1px;
+  }
+
+  .exp-header .dates {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+
+  .exp-org {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--emerald);
+    margin-bottom: 10px;
+  }
+
+  .exp-entry ul { list-style: none; }
+  .exp-entry li {
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--text-light);
+    line-height: 1.65;
+    padding-left: 20px;
+    position: relative;
+    margin-bottom: 4px;
+  }
+  .exp-entry li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 7px;
+    top: 5px;
+  }
+
+  /* Three column grid */
+  .three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .col-block h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--emerald);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .col-block p, .col-block li {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  .col-block ul {
+    list-style: none;
+  }
+  .col-block ul li {
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(197,165,90,0.15);
+  }
+  .col-block ul li:last-child { border: none; }
+
+  .edu-mini { margin-bottom: 14px; }
+  .edu-mini h5 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 1px;
+  }
+  .edu-mini p {
+    font-size: 12.5px;
+    color: var(--text-light);
+  }
+  .edu-mini .yr {
+    font-weight: 600;
+    color: var(--gold);
+  }
+
+  /* Footer */
+  .footer-deco {
+    background: var(--dark);
+    text-align: center;
+    padding: 14px 20px;
+    position: relative;
+  }
+  .footer-deco::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold);
+  }
+  .footer-deco p {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="deco-frame"></div>
+
+  <div class="header-deco">
+    <h1>Isabelle Fontaine</h1>
+    <div class="divider-line"></div>
+    <div class="role">Investment Banking · Managing Director</div>
+    <div class="contact-line">
+      New York, NY <span class="sep">◆</span>
+      (555) 704-8312 <span class="sep">◆</span>
+      i.fontaine@email.com <span class="sep">◆</span>
+      linkedin.com/in/ifontaine
+    </div>
+  </div>
+
+  <div class="body-wrap">
+    <div class="section-head"><h2>Profile</h2></div>
+    <p class="summary-deco">
+      Managing Director with 16 years in investment banking specializing in cross-border M&A,
+      capital markets, and financial restructuring. Led advisory on $28B+ in completed transactions
+      across technology, healthcare, and industrials. Known for building deep client relationships
+      and delivering creative deal structures in complex situations.
+    </p>
+
+    <div class="section-head"><h2>Experience</h2></div>
+
+    <div class="exp-entry">
+      <div class="exp-header">
+        <h3>Managing Director, M&A</h3>
+        <span class="dates">2020 — Present</span>
+      </div>
+      <div class="exp-org">Goldman Sachs · New York, NY</div>
+      <ul>
+        <li>Lead cross-border M&A advisory practice for technology sector with $12B+ in active mandates</li>
+        <li>Advised on $8.4B acquisition of European SaaS platform — largest tech deal of 2023</li>
+        <li>Manage team of 28 bankers across New York, London, and Hong Kong offices</li>
+        <li>Grew client revenue 45% by developing strategic relationships with PE sponsors</li>
+      </ul>
+    </div>
+
+    <div class="exp-entry">
+      <div class="exp-header">
+        <h3>Executive Director</h3>
+        <span class="dates">2016 — 2020</span>
+      </div>
+      <div class="exp-org">Morgan Stanley · New York, NY</div>
+      <ul>
+        <li>Executed 20+ M&A and capital markets transactions totaling $15B in enterprise value</li>
+        <li>Structured $3.2B leveraged buyout for industrial conglomerate with complex carve-out</li>
+        <li>Named to internal "High Potential Leaders" program — top 2% of VP/ED cohort</li>
+      </ul>
+    </div>
+
+    <div class="exp-entry">
+      <div class="exp-header">
+        <h3>Vice President</h3>
+        <span class="dates">2012 — 2016</span>
+      </div>
+      <div class="exp-org">Lazard · Paris / New York</div>
+      <ul>
+        <li>Advised European corporates on US market entry and transatlantic M&A transactions</li>
+        <li>Led financial restructuring advisory for €2.1B distressed media conglomerate</li>
+      </ul>
+    </div>
+
+    <div class="section-head"><h2>Credentials</h2></div>
+
+    <div class="three-col">
+      <div class="col-block">
+        <h4>Education</h4>
+        <div class="edu-mini">
+          <h5>MBA, Finance</h5>
+          <p>INSEAD<br><span class="yr">2012</span></p>
+        </div>
+        <div class="edu-mini">
+          <h5>M.S. Financial Engineering</h5>
+          <p>Sciences Po Paris<br><span class="yr">2009</span></p>
+        </div>
+      </div>
+
+      <div class="col-block">
+        <h4>Expertise</h4>
+        <ul>
+          <li>Cross-Border M&A</li>
+          <li>Capital Markets</li>
+          <li>Financial Restructuring</li>
+          <li>LBO Structuring</li>
+          <li>Fairness Opinions</li>
+          <li>Client Origination</li>
+        </ul>
+      </div>
+
+      <div class="col-block">
+        <h4>Recognition</h4>
+        <ul>
+          <li>Dealogic Top 10 Tech M&A Advisor 2023</li>
+          <li>Financial Times "Rising Star in Banking"</li>
+          <li>Women in Finance Award 2022</li>
+          <li>CFA Charterholder</li>
+          <li>Series 7, 63, 79</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-deco">
+    <p>References and transaction list available upon request</p>
+  </div>
+</div>
+</body>
+</html>

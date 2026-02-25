@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Curriculum Vitae — Eleanor Whitmore</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Special+Elite&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f5eed6;
+    --parchment-dark: #e8dfc4;
+    --parchment-edge: #d4c9a8;
+    --sepia: #5c4a32;
+    --sepia-light: #7a6548;
+    --sepia-mid: #8b7355;
+    --sepia-faint: #b3a07c;
+    --sepia-ghost: #c9b896;
+    --ink: #2c1e10;
+    --ink-mid: #4a3828;
+    --ink-soft: #6e5a44;
+    --ink-faint: #9c8a72;
+    --red-ink: #8b2500;
+    --red-faint: rgba(139, 37, 0, 0.08);
+    --blue-ink: #1a3a5c;
+    --gold: #b8860b;
+    --gold-light: #d4a843;
+    --rule: #c4b48e;
+    --rule-dark: #a69474;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #d4c9a8;
+    color: var(--ink);
+    font-family: 'EB Garamond', 'Georgia', serif;
+    font-size: 16px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* Outer aged frame */
+  .outer-frame {
+    max-width: 820px;
+    margin: 24px auto;
+    padding: 8px;
+    background: var(--parchment-edge);
+    border-radius: 4px;
+    box-shadow:
+      0 0 0 1px var(--rule),
+      0 8px 40px rgba(44, 30, 16, 0.3),
+      inset 0 0 20px rgba(44, 30, 16, 0.05);
+  }
+
+  .document {
+    background: var(--parchment);
+    padding: 48px 52px 56px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+  }
+
+  /* Paper texture & aging */
+  .document::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Coffee stain */
+  .document::after {
+    content: '';
+    position: absolute;
+    top: 60px;
+    right: -20px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(139, 115, 85, 0.04) 30%, rgba(139, 115, 85, 0.02) 60%, transparent 70%);
+    border: 1px solid rgba(139, 115, 85, 0.03);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .document > * { position: relative; z-index: 1; }
+
+  /* ═══════ ORNAMENTAL BORDER ═══════ */
+  .ornament-border {
+    border: 2px solid var(--sepia-faint);
+    padding: 6px;
+    margin-bottom: 32px;
+  }
+
+  .ornament-border-inner {
+    border: 1px solid var(--rule);
+    padding: 32px 28px 28px;
+    text-align: center;
+    position: relative;
+  }
+
+  /* Corner ornaments */
+  .ornament-border-inner::before,
+  .ornament-border-inner::after {
+    font-family: 'EB Garamond', serif;
+    font-size: 28px;
+    color: var(--sepia-faint);
+    position: absolute;
+    line-height: 1;
+  }
+
+  .ornament-border-inner::before {
+    content: '❧';
+    top: -2px;
+    left: 12px;
+  }
+
+  .ornament-border-inner::after {
+    content: '❧';
+    bottom: -2px;
+    right: 12px;
+    transform: rotate(180deg);
+  }
+
+  /* ═══════ HEADER ═══════ */
+  .cv-label {
+    font-family: 'Playfair Display SC', serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--sepia-mid);
+    margin-bottom: 8px;
+  }
+
+  .name-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 46px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: 2px;
+    line-height: 1.05;
+  }
+
+  .name-ornament {
+    font-size: 20px;
+    color: var(--sepia-faint);
+    margin: 6px 0 8px;
+    letter-spacing: 8px;
+  }
+
+  .title-line {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--sepia);
+    letter-spacing: 1px;
+  }
+
+  /* Decorative rule */
+  .fancy-rule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 12px 0;
+    color: var(--sepia-faint);
+  }
+
+  .fancy-rule .line {
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rule-dark), transparent);
+  }
+
+  .fancy-rule .diamond {
+    font-size: 8px;
+    color: var(--sepia-mid);
+  }
+
+  /* Contact in old-style */
+  .contact-block {
+    font-family: 'EB Garamond', serif;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  .contact-block a {
+    color: var(--blue-ink);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--blue-ink);
+  }
+
+  .contact-block a:hover {
+    color: var(--red-ink);
+    border-bottom-color: var(--red-ink);
+  }
+
+  .contact-sep {
+    color: var(--sepia-ghost);
+    margin: 0 6px;
+  }
+
+  /* ═══════ SECTIONS ═══════ */
+  .section {
+    margin-top: 28px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display SC', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .section-rule {
+    flex: 1;
+    height: 0;
+    border-top: 1px solid var(--rule-dark);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .section-end-mark {
+    font-family: 'EB Garamond', serif;
+    font-size: 14px;
+    color: var(--sepia-faint);
+  }
+
+  /* ═══════ SUMMARY ═══════ */
+  .summary-block {
+    padding: 16px 24px;
+    border-left: 3px double var(--sepia-faint);
+    background: linear-gradient(90deg, rgba(92, 74, 50, 0.02), transparent);
+    font-size: 15.5px;
+    color: var(--ink-mid);
+    font-style: italic;
+  }
+
+  .summary-block .dropcap {
+    font-family: 'UnifrakturMaguntia', serif;
+    font-size: 52px;
+    float: left;
+    line-height: 0.8;
+    margin: 2px 8px 0 0;
+    color: var(--red-ink);
+  }
+
+  /* ═══════ EXPERIENCE ═══════ */
+  .exp-entry {
+    margin-bottom: 22px;
+    padding-bottom: 20px;
+    border-bottom: 1px dotted var(--rule);
+    page-break-inside: avoid;
+  }
+
+  .exp-entry:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  .exp-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .exp-role {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .exp-date {
+    font-family: 'Special Elite', monospace;
+    font-size: 13px;
+    color: var(--ink-faint);
+    letter-spacing: 0.5px;
+  }
+
+  .exp-company {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--sepia);
+    margin-bottom: 6px;
+  }
+
+  .exp-company .location {
+    color: var(--ink-faint);
+    font-style: normal;
+    font-size: 13.5px;
+  }
+
+  .exp-desc {
+    list-style: none;
+    margin-top: 6px;
+  }
+
+  .exp-desc li {
+    position: relative;
+    padding-left: 22px;
+    margin: 5px 0;
+    font-size: 14.5px;
+    color: var(--ink-mid);
+    line-height: 1.65;
+  }
+
+  .exp-desc li::before {
+    content: '※';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--sepia-faint);
+    font-size: 12px;
+  }
+
+  /* ═══════ EDUCATION ═══════ */
+  .edu-entry {
+    margin-bottom: 16px;
+    padding-left: 20px;
+    border-left: 2px solid var(--rule);
+  }
+
+  .edu-degree {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .edu-school {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--sepia);
+  }
+
+  .edu-year {
+    font-family: 'Special Elite', monospace;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+
+  .edu-honors {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  /* ═══════ SKILLS — Typeset style ═══════ */
+  .skills-columns {
+    columns: 2;
+    column-gap: 36px;
+    column-rule: 1px dotted var(--rule);
+  }
+
+  .skill-category {
+    break-inside: avoid;
+    margin-bottom: 14px;
+  }
+
+  .skill-cat-name {
+    font-family: 'Playfair Display SC', serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--sepia);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 2px;
+  }
+
+  .skill-items {
+    font-size: 14px;
+    color: var(--ink-mid);
+    line-height: 1.8;
+  }
+
+  .skill-items .sep {
+    color: var(--sepia-ghost);
+    margin: 0 4px;
+  }
+
+  /* ═══════ PUBLICATIONS / WORKS ═══════ */
+  .pub-entry {
+    margin-bottom: 12px;
+    padding-left: 20px;
+    position: relative;
+    font-size: 14.5px;
+    color: var(--ink-mid);
+  }
+
+  .pub-entry::before {
+    content: counter(pub-counter) '.';
+    counter-increment: pub-counter;
+    position: absolute;
+    left: 0;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--sepia-mid);
+    font-size: 13px;
+  }
+
+  .pub-list {
+    counter-reset: pub-counter;
+  }
+
+  .pub-title {
+    font-style: italic;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .pub-journal {
+    color: var(--sepia);
+  }
+
+  .pub-year {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+
+  /* ═══════ REFERENCES ═══════ */
+  .ref-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .ref-card {
+    padding: 14px 18px;
+    border: 1px solid var(--rule);
+    background: linear-gradient(135deg, rgba(92, 74, 50, 0.01), rgba(92, 74, 50, 0.03));
+    transition: all 0.3s;
+  }
+
+  .ref-card:hover {
+    border-color: var(--sepia-faint);
+    box-shadow: 0 2px 8px rgba(44, 30, 16, 0.06);
+  }
+
+  .ref-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .ref-title {
+    font-size: 13.5px;
+    font-style: italic;
+    color: var(--sepia);
+  }
+
+  .ref-contact {
+    font-size: 13px;
+    color: var(--ink-faint);
+    margin-top: 4px;
+  }
+
+  .ref-contact a {
+    color: var(--blue-ink);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--blue-ink);
+  }
+
+  /* ═══════ CERTIFICATIONS ═══════ */
+  .cert-list {
+    columns: 2;
+    column-gap: 30px;
+    column-rule: 1px dotted var(--rule);
+  }
+
+  .cert-item {
+    break-inside: avoid;
+    margin-bottom: 8px;
+    padding-left: 18px;
+    position: relative;
+    font-size: 14.5px;
+    color: var(--ink-mid);
+  }
+
+  .cert-item::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 10px;
+    top: 3px;
+  }
+
+  .cert-name { font-weight: 600; color: var(--ink); }
+  .cert-issuer { font-style: italic; color: var(--sepia); font-size: 13px; }
+
+  /* ═══════ LANGUAGES ═══════ */
+  .lang-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    font-size: 14.5px;
+  }
+
+  .lang-item { color: var(--ink-mid); }
+  .lang-item strong { color: var(--ink); font-weight: 600; }
+  .lang-level {
+    font-style: italic;
+    color: var(--ink-faint);
+    font-size: 13px;
+  }
+
+  /* ═══════ FOOTER ═══════ */
+  .doc-footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 2px double var(--rule);
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-style: italic;
+    letter-spacing: 0.5px;
+  }
+
+  .doc-footer .stamp {
+    display: inline-block;
+    border: 2px solid var(--red-ink);
+    color: var(--red-ink);
+    padding: 4px 18px;
+    font-family: 'Playfair Display SC', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-style: normal;
+    transform: rotate(-3deg);
+    opacity: 0.35;
+    margin-top: 12px;
+  }
+
+  .typed-note {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ═══════ RESPONSIVE ═══════ */
+  @media (max-width: 640px) {
+    .outer-frame { margin: 12px; }
+    .document { padding: 28px 22px 36px; }
+    .name-main { font-size: 32px; }
+    .title-line { font-size: 15px; }
+    .ornament-border-inner { padding: 22px 16px 18px; }
+    .exp-top { flex-direction: column; }
+    .skills-columns { columns: 1; }
+    .cert-list { columns: 1; }
+    .ref-grid { grid-template-columns: 1fr; }
+    .contact-block .contact-sep { display: none; }
+    .contact-block { display: flex; flex-direction: column; gap: 2px; align-items: center; }
+  }
+
+  /* Print styles */
+  @media print {
+    body { background: #fff; }
+    .outer-frame { box-shadow: none; margin: 0; padding: 0; }
+    .document { border: none; }
+    .document::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="outer-frame">
+  <div class="document">
+
+    <!-- ═══════ HEADER ═══════ -->
+    <div class="ornament-border">
+      <div class="ornament-border-inner">
+        <div class="cv-label">Curriculum Vitæ</div>
+        <h1 class="name-main">Eleanor Whitmore</h1>
+        <div class="name-ornament">— ✦ — ✦ —</div>
+        <div class="title-line">Senior Editor &amp; Literary Consultant</div>
+
+        <div class="fancy-rule">
+          <span class="line"></span>
+          <span class="diamond">◆</span>
+          <span class="line"></span>
+        </div>
+
+        <div class="contact-block">
+          <a href="#">eleanor@whitmoreletters.com</a>
+          <span class="contact-sep">·</span>
+          (212) 555-0197
+          <span class="contact-sep">·</span>
+          New York, New York
+          <span class="contact-sep">·</span>
+          <a href="#">whitmoreletters.com</a>
+          <span class="contact-sep">·</span>
+          <a href="#">linkedin.com/in/eleanorwhitmore</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ PERSONAL STATEMENT ═══════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Personal Statement</span>
+        <span class="section-rule"></span>
+        <span class="section-end-mark">§</span>
+      </div>
+      <div class="summary-block">
+        <span class="dropcap">A</span>
+        seasoned editor and literary consultant with over fifteen years of distinguished service in book publishing, periodical editing, and manuscript development. Known for a meticulous eye, deep reverence for the written word, and an abiding commitment to elevating both emerging and established authors. Experienced in managing editorial teams, cultivating author relationships, and guiding manuscripts from conception through to critical and commercial success.
+      </div>
+    </div>
+
+    <!-- ═══════ PROFESSIONAL EXPERIENCE ═══════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Professional Experience</span>
+        <span class="section-rule"></span>
+        <span class="section-end-mark">§</span>
+      </div>
+
+      <div class="exp-entry">
+        <div class="exp-top">
+          <span class="exp-role">Senior Editor, Literary Fiction</span>
+          <span class="exp-date">2018 — Present</span>
+        </div>
+        <div class="exp-company">Hargrove & Sons Publishing <span class="location">· New York, NY</span></div>
+        <ul class="exp-desc">
+          <li>Acquire and develop 12–15 literary fiction titles annually, managing a $2.4M editorial budget with consistent profitability</li>
+          <li>Guided three debut novels to the New York Times Bestseller list, including the Pulitzer Prize finalist "The Cartographer's Daughter"</li>
+          <li>Supervise a team of four associate editors, two copy editors, and a stable of 30+ freelance readers and consultants</li>
+          <li>Negotiate author contracts and cultivate lasting relationships with literary agents at major agencies</li>
+          <li>Serve on the editorial board, contributing to imprint strategy and seasonal catalogue direction</li>
+        </ul>
+      </div>
+
+      <div class="exp-entry">
+        <div class="exp-top">
+          <span class="exp-role">Associate Editor</span>
+          <span class="exp-date">2013 — 2018</span>
+        </div>
+        <div class="exp-company">Bellweather Press <span class="location">· Brooklyn, NY</span></div>
+        <ul class="exp-desc">
+          <li>Edited and shepherded 40+ titles to publication across literary fiction, creative nonfiction, and poetry collections</li>
+          <li>Developed the "New Voices" imprint for debut authors, growing it from 3 to 12 titles per season within four years</li>
+          <li>Managed editorial production schedules, coordinating with design, marketing, and rights departments</li>
+          <li>Represented the house at BookExpo America, Frankfurt Book Fair, and London Book Fair</li>
+        </ul>
+      </div>
+
+      <div class="exp-entry">
+        <div class="exp-top">
+          <span class="exp-role">Editorial Assistant → Assistant Editor</span>
+          <span class="exp-date">2009 — 2013</span>
+        </div>
+        <div class="exp-company">The Atlantic Monthly <span class="location">· Washington, D.C.</span></div>
+        <ul class="exp-desc">
+          <li>Fact-checked, copyedited, and proofread feature articles, essays, and reviews for monthly publication</li>
+          <li>Managed the unsolicited submissions pipeline, reading 200+ pitches per month and identifying promising writers</li>
+          <li>Commissioned and edited a 12-part digital essay series on American literary regionalism, garnering 500K+ reads</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════ EDUCATION ═══════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Education</span>
+        <span class="section-rule"></span>
+        <span class="section-end-mark">§</span>
+      </div>
+
+      <div class="edu-entry">
+        <div class="edu-degree">Master of Fine Arts in Creative Writing</div>
+        <div class="edu-school">Columbia University, School of the Arts</div>
+        <div class="edu-year">2009</div>
+        <div class="edu-honors">Thesis: "The Lamplighter's Almanac" (novella) · Henfield Prize Nominee · Woolrich Fellow</div>
+      </div>
+
+      <div class="edu-entry" style="margin-top: 16px;">
+        <div class="edu-degree">Bachelor of Arts in English Literature, <em>Magna Cum Laude</em></div>
+        <div class="edu-school">Smith College</div>
+        <div class="edu-year">2007</div>
+        <div class="edu-honors">Phi Beta Kappa · Senior Thesis: "Ekphrasis &amp; Elegy in Elizabeth Bishop" · Julia Harrington Prize</div>
+      </div>
+    </div>
+
+    <!-- ═══════ SKILLS ═══════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Proficiencies</span>
+        <span class="section-rule"></span>
+        <span class="section-end-mark">§</span>
+      </div>
+
+      <div class="skills-columns">
+        <div class="skill-category">
+          <div class="skill-cat-name">Editorial</div>
+          <div class="skill-items">
+            Developmental Editing<span class="sep">·</span>Line Editing<span class="sep">·</span>Copyediting<span class="sep">·</span>Proofreading<span class="sep">·</span>Manuscript Evaluation<span class="sep">·</span>Structural Critique
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-cat-name">Publishing</div>
+          <div class="skill-items">
+            Acquisitions<span class="sep">·</span>Contract Negotiation<span class="sep">·</span>Rights Management<span class="sep">·</span>Production Scheduling<span class="sep">·</span>Catalogue Planning<span class="sep">·</span>Author Relations
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-cat-name">Tools & Typesetting</div>
+          <div class="skill-items">
+            Chicago Manual of Style<span class="sep">·</span>AP Style<span class="sep">·</span>Adobe InDesign<span class="sep">·</span>InCopy<span class="sep">·</span>Scrivener<span class="sep">·</span>LaTeX<span class="sep">·</span>Edelweiss
+          </div>
+        </div>
+
+        <div class="skill-category">
+          <div class="skill-cat-name">Leadership</div>
+          <div class="skill-items">
+            Team Management<span class="sep">·</span>Mentorship<span class="sep">·</span>Budget Oversight<span class="sep">·</span>Strategic Planning<span class="sep">·</span>Public Speaking<span class="sep">·</span>Workshop Facilitation
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ SELECTED PUBLICATIONS ═══════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Selected Works Edited</span>
+        <span class="section-rule"></span>
+        <span class="section-end-mark">§</span>
+      </div>
+
+      <div class="pub-list">
+        <div class="pub-entry">
+          <span class="pub-title">"The Cartographer's Daughter"</span> by Alina Voss — <span class="pub-journal">Hargrove & Sons</span> <span class="pub-year">· 2023</span><br>
+          <span style="font-size:13px; color:var(--red-ink); font-style:italic;">Pulitzer Prize Finalist · NYT Bestseller · National Book Award Longlist</span>
+        </div>
+        <div class="pub-entry">
+          <span class="pub-title">"Winter Harbour"</span> by James Ó Ceallaigh — <span class="pub-journal">Hargrove & Sons</span> <span class="pub-year">· 2022</span><br>
+          <span style="font-size:13px; color:var(--ink-faint); font-style:italic;">Kirkus Starred Review · PEN/Faulkner Award Nominee</span>
+        </div>
+        <div class="pub-entry">
+          <span class="pub-title">"An Inventory of Small Mercies"</span> by Delia Park — <span class="pub-journal">Bellweather Press</span> <span class="pub-year">· 2017</span><br>
+          <span style="font-size:13px; color:var(--ink-faint); font-style:italic;">Debut Fiction · Lambda Literary Award Winner</span>
+        </div>
+        <div class="pub-entry">
+          <span class="pub-title">"The Collected Silences"</span> — Anthology, ed. E. Whitmore — <span class="pub-journal">Bellweather Press</span> <span class="pub-year">· 2015</span><br>
+          <span style="font-size:13px; color:var(--ink-faint); font-style:italic;">Pushcart Prize Selections · Best American Essays Notable</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ CERTIFICATIONS & MEMBERSHIPS ═══════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Memberships & Honours</span>
+        <span class="section-rule"></span>
+        <span class="section-end-mark">§</span>
+      </div>
+
+      <div class="cert-list">
+        <div class="cert-item">
+          <span class="cert-name">Fellow,</span> <span class="cert-issuer">Editorial Freelancers Association</span>
+        </div>
+        <div class="cert-item">
+          <span class="cert-name">Member,</span> <span class="cert-issuer">PEN America</span>
+        </div>
+        <div class="cert-item">
+          <span class="cert-name">Board Member,</span> <span class="cert-issuer">National Book Critics Circle</span>
+        </div>
+        <div class="cert-item">
+          <span class="cert-name">Judge,</span> <span class="cert-issuer">National Book Award, Fiction (2022)</span>
+        </div>
+        <div class="cert-item">
+          <span class="cert-name">Yaddo Residency,</span> <span class="cert-issuer">Saratoga Springs, 2016</span>
+        </div>
+        <div class="cert-item">
+          <span class="cert-name">MacDowell Colony,</span> <span class="cert-issuer">Peterborough, NH, 2014</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ LANGUAGES ═══════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">Languages</span>
+        <span class="section-rule"></span>
+        <span class="section-end-mark">§</span>
+      </div>
+
+      <div class="lang-line">
+        <span class="lang-item"><strong>English</strong> <span class="lang-level">(Native)</span></span>
+        <span style="color: var(--sepia-ghost);">·</span>
+        <span class="lang-item"><strong>French</strong> <span class="lang-level">(Fluent — reading, writing, conversation)</span></span>
+        <span style="color: var(--sepia-ghost);">·</span>
+        <span class="lang-item"><strong>Italian</strong> <span class="lang-level">(Conversational)</span></span>
+        <span style="color: var(--sepia-ghost);">·</span>
+        <span class="lang-item"><strong>Latin</strong> <span class="lang-level">(Reading proficiency)</span></span>
+      </div>
+    </div>
+
+    <!-- ═══════ REFERENCES ═══════ -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">References</span>
+        <span class="section-rule"></span>
+        <span class="section-end-mark">§</span>
+      </div>
+
+      <div class="ref-grid">
+        <div class="ref-card">
+          <div class="ref-name">Theodore R. Hargrove III</div>
+          <div class="ref-title">Publisher, Hargrove & Sons</div>
+          <div class="ref-contact"><a href="#">t.hargrove@hargrovepub.com</a> · (212) 555-0101</div>
+        </div>
+        <div class="ref-card">
+          <div class="ref-name">Prof. Margaret Atkinson</div>
+          <div class="ref-title">Chair, Creative Writing — Columbia University</div>
+          <div class="ref-contact"><a href="#">m.atkinson@columbia.edu</a> · (212) 555-0234</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ FOOTER ═══════ -->
+    <div class="doc-footer">
+      This document was prepared with care and may be verified upon request.
+      <div class="typed-note">Last revised: February 2026</div>
+      <div class="stamp">Authenticated</div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

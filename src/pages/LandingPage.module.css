@@ -476,6 +476,10 @@
     grid-template-columns: 1fr 1fr;
   }
 
+  .trustGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .steps::before {
     display: none;
   }
@@ -498,6 +502,14 @@
 
   .featureGrid {
     grid-template-columns: 1fr;
+  }
+
+  .trustGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .trustSection {
+    padding: 64px 20px;
   }
 
   .stats {

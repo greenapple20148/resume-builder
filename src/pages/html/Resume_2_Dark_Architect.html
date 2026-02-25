@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Marcus Chen</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #18181f;
+    --surface-2: #1f1f28;
+    --border: #2a2a36;
+    --text: #e4e2de;
+    --text-muted: #8a8690;
+    --accent: #64ffda;
+    --accent-dim: rgba(100, 255, 218, 0.08);
+    --warm: #ffd6a0;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; background: white; }
+    :root { --bg: #fff; --surface: #f5f5f5; --surface-2: #eee; --border: #ddd; --text: #222; --text-muted: #666; --accent: #00897b; --accent-dim: rgba(0,137,123,0.08); --warm: #e65100; }
+    @page { margin: 0.4in; size: letter; }
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 40px auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  /* Top accent bar */
+  .accent-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--warm), var(--accent));
+    background-size: 200% 100%;
+  }
+
+  header {
+    padding: 48px 56px 36px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: start;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .name h1 {
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    color: var(--text);
+  }
+  .name h1 .first { font-weight: 300; opacity: 0.7; }
+
+  .name .role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--accent);
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+  .name .role::before { content: '> '; opacity: 0.4; }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .contact-grid .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    opacity: 0.6;
+  }
+
+  /* Summary */
+  .summary-section {
+    padding: 32px 56px;
+    border-bottom: 1px solid var(--border);
+    background: var(--accent-dim);
+  }
+  .summary-section p {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--text);
+    max-width: 680px;
+  }
+
+  /* Main */
+  .body-content {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    min-height: 400px;
+  }
+
+  .main-col {
+    padding: 36px 48px 48px 56px;
+    border-right: 1px solid var(--border);
+  }
+
+  .side-col {
+    padding: 36px 36px 48px;
+    background: var(--surface-2);
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Experience */
+  .exp-entry { margin-bottom: 28px; }
+  .exp-entry:last-child { margin-bottom: 0; }
+
+  .exp-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 2px;
+  }
+
+  .exp-top h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .exp-top .period {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .exp-company {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .exp-company .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--warm); display: inline-block; }
+
+  .exp-entry ul { list-style: none; }
+  .exp-entry ul li {
+    font-size: 13.5px;
+    font-weight: 300;
+    color: var(--text);
+    opacity: 0.85;
+    line-height: 1.6;
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 5px;
+  }
+  .exp-entry ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 12px;
+  }
+
+  /* Side sections */
+  .side-section { margin-bottom: 28px; }
+
+  .skill-tag-group { margin-bottom: 14px; }
+  .skill-tag-group h4 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--warm);
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: rgba(100,255,218,0.06);
+    border: 1px solid rgba(100,255,218,0.15);
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .edu-entry { margin-bottom: 16px; }
+  .edu-entry h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .edu-entry p {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .side-list {
+    list-style: none;
+    font-size: 13px;
+    color: var(--text);
+    opacity: 0.8;
+  }
+  .side-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    font-weight: 300;
+  }
+  .side-list li:last-child { border: none; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="accent-bar"></div>
+
+  <header>
+    <div class="name">
+      <h1><span class="first">Marcus</span> Chen</h1>
+      <div class="role">Staff Software Engineer</div>
+    </div>
+    <div class="contact-grid">
+      <div><span class="label">Location</span><br>Seattle, WA</div>
+      <div><span class="label">Phone</span><br>(555) 903-1247</div>
+      <div><span class="label">Email</span><br>m.chen@email.com</div>
+      <div><span class="label">GitHub</span><br>github.com/marcusc</div>
+    </div>
+  </header>
+
+  <div class="summary-section">
+    <p>Staff engineer with 10 years building distributed systems and developer platforms at scale. Deep expertise in Golang, Kubernetes, and event-driven architectures. Led platform teams serving 800+ internal developers and processing 2B+ events daily.</p>
+  </div>
+
+  <div class="body-content">
+    <div class="main-col">
+      <div class="section-label">Experience</div>
+
+      <div class="exp-entry">
+        <div class="exp-top">
+          <h3>Staff Software Engineer</h3>
+          <span class="period">2022 — Present</span>
+        </div>
+        <div class="exp-company">Datadog <span class="dot"></span> Seattle, WA</div>
+        <ul>
+          <li>Designed event ingestion pipeline processing 2.4B events/day with 99.99% uptime</li>
+          <li>Led migration from monolith to microservices, reducing deploy times from 45min to 3min</li>
+          <li>Mentored 8 engineers and established architecture review process for platform org</li>
+        </ul>
+      </div>
+
+      <div class="exp-entry">
+        <div class="exp-top">
+          <h3>Senior Software Engineer</h3>
+          <span class="period">2019 — 2022</span>
+        </div>
+        <div class="exp-company">Stripe <span class="dot"></span> San Francisco, CA</div>
+        <ul>
+          <li>Built real-time fraud detection service handling 50K+ transactions/second</li>
+          <li>Reduced payment processing latency by 60% through distributed caching layer</li>
+          <li>Designed internal developer SDK used by 200+ engineers across 15 teams</li>
+        </ul>
+      </div>
+
+      <div class="exp-entry">
+        <div class="exp-top">
+          <h3>Software Engineer</h3>
+          <span class="period">2015 — 2019</span>
+        </div>
+        <div class="exp-company">Amazon Web Services <span class="dot"></span> Seattle, WA</div>
+        <ul>
+          <li>Core contributor to AWS Lambda runtime, optimizing cold start times by 40%</li>
+          <li>Implemented auto-scaling algorithm for DynamoDB adopted across 3 AWS services</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="side-col">
+      <div class="side-section">
+        <div class="section-label">Tech Stack</div>
+        <div class="skill-tag-group">
+          <h4>Languages</h4>
+          <div class="tags">
+            <span class="tag">Go</span>
+            <span class="tag">Rust</span>
+            <span class="tag">TypeScript</span>
+            <span class="tag">Python</span>
+          </div>
+        </div>
+        <div class="skill-tag-group">
+          <h4>Infrastructure</h4>
+          <div class="tags">
+            <span class="tag">K8s</span>
+            <span class="tag">AWS</span>
+            <span class="tag">Terraform</span>
+            <span class="tag">Kafka</span>
+          </div>
+        </div>
+        <div class="skill-tag-group">
+          <h4>Databases</h4>
+          <div class="tags">
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Redis</span>
+            <span class="tag">DynamoDB</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-section">
+        <div class="section-label">Education</div>
+        <div class="edu-entry">
+          <h4>M.S. Computer Science</h4>
+          <p>University of Washington<br>2015</p>
+        </div>
+        <div class="edu-entry">
+          <h4>B.S. Computer Engineering</h4>
+          <p>UC San Diego<br>2013</p>
+        </div>
+      </div>
+
+      <div class="side-section">
+        <div class="section-label">Open Source</div>
+        <ul class="side-list">
+          <li>gRPC-Go maintainer</li>
+          <li>K8s SIG-Scalability</li>
+          <li>3.2K GitHub stars</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Jordan Rivera</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --g-start: #1e1b4b;
+    --g-mid: #4338ca;
+    --g-end: #7c3aed;
+    --surface: #f8f7ff;
+    --card: #ffffff;
+    --border: #e8e5f5;
+    --text: #1e1b4b;
+    --text-mid: #4a4570;
+    --text-light: #8078a8;
+    --accent: #7c3aed;
+    --accent-soft: #ede9fe;
+    --teal: #0d9488;
+    --teal-soft: #e0f7f5;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; border-radius: 0; }
+    @page { margin: 0; size: letter; }
+  }
+
+  body {
+    background: #eee9f7;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 870px;
+    margin: 40px auto;
+    background: var(--surface);
+    box-shadow: 0 8px 48px rgba(30,27,75,0.12);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  /* ─── Gradient Header ─── */
+  .header-gradient {
+    background: linear-gradient(135deg, var(--g-start), var(--g-mid) 50%, var(--g-end));
+    color: white;
+    padding: 52px 56px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Floating shapes */
+  .header-gradient::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: 80px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.08);
+  }
+  .header-gradient::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; right: 200px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+
+  .header-inner {
+    position: relative; z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: end;
+  }
+
+  .header-inner h1 {
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+  }
+
+  .header-inner .sub {
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.7);
+    margin-top: 8px;
+  }
+
+  .header-contact {
+    text-align: right;
+    font-size: 13px;
+    line-height: 1.9;
+    color: rgba(255,255,255,0.65);
+    font-weight: 300;
+  }
+  .header-contact a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  /* ─── Metric Strip ─── */
+  .metric-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+  }
+  .metric {
+    padding: 20px 24px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .metric:last-child { border: none; }
+  .metric .num {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .metric .desc {
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 4px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ─── Body ─── */
+  .body-content {
+    padding: 40px 56px 52px;
+  }
+
+  .sec-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3.5px;
+    color: var(--accent);
+    margin-bottom: 18px;
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .sec-title:first-child { margin-top: 0; }
+  .sec-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Summary */
+  .summary-text {
+    font-family: 'Crimson Pro', serif;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--text-mid);
+    max-width: 660px;
+    margin-bottom: 4px;
+  }
+
+  /* Experience cards */
+  .exp-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-bottom: 14px;
+  }
+
+  .exp-card .row-1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .exp-card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .date-badge {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 4px 14px;
+    border-radius: 20px;
+  }
+
+  .exp-card .org {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--teal);
+    margin-bottom: 12px;
+  }
+
+  .exp-card ul { list-style: none; }
+  .exp-card li {
+    font-size: 13.5px;
+    color: var(--text-mid);
+    line-height: 1.65;
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 5px;
+    font-weight: 400;
+  }
+  .exp-card li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 9px;
+    width: 8px; height: 2px;
+    background: var(--accent);
+    border-radius: 1px;
+  }
+
+  /* Two-column bottom */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+
+  /* Skills */
+  .skill-cluster { margin-bottom: 16px; }
+  .skill-cluster h4 {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-mid);
+    margin-bottom: 8px;
+  }
+  .skill-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .skill-pills span {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 8px;
+  }
+  .skill-pills .purple { background: var(--accent-soft); color: var(--accent); }
+  .skill-pills .teal { background: var(--teal-soft); color: var(--teal); }
+
+  /* Education */
+  .edu-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 10px;
+  }
+  .edu-block h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .edu-block p {
+    font-size: 13px;
+    color: var(--text-light);
+    font-weight: 400;
+  }
+  .edu-block .yr {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* Certs */
+  .cert-list {
+    list-style: none;
+  }
+  .cert-list li {
+    font-size: 13.5px;
+    color: var(--text-mid);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 400;
+  }
+  .cert-list li:last-child { border: none; }
+  .cert-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header-gradient">
+    <div class="header-inner">
+      <div>
+        <h1>Jordan Rivera</h1>
+        <div class="sub">DevOps & Cloud Infrastructure Engineer</div>
+      </div>
+      <div class="header-contact">
+        Austin, TX<br>
+        (555) 291-4068<br>
+        <a href="#">j.rivera@email.com</a><br>
+        <a href="#">linkedin.com/in/jrivera</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="metric-strip">
+    <div class="metric">
+      <div class="num">99.99%</div>
+      <div class="desc">Uptime SLA</div>
+    </div>
+    <div class="metric">
+      <div class="num">$4.2M</div>
+      <div class="desc">Cloud Savings</div>
+    </div>
+    <div class="metric">
+      <div class="num">300+</div>
+      <div class="desc">Services Managed</div>
+    </div>
+    <div class="metric">
+      <div class="num">8</div>
+      <div class="desc">Years Experience</div>
+    </div>
+  </div>
+
+  <div class="body-content">
+    <div class="sec-title">Profile</div>
+    <p class="summary-text">
+      Cloud infrastructure engineer specializing in designing and operating large-scale distributed
+      systems on AWS and GCP. Deep expertise in Kubernetes orchestration, CI/CD automation, and
+      infrastructure-as-code. Proven track record of improving system reliability while reducing
+      infrastructure costs by 40%+ through architectural optimization.
+    </p>
+
+    <div class="sec-title">Experience</div>
+
+    <div class="exp-card">
+      <div class="row-1">
+        <h3>Principal DevOps Engineer</h3>
+        <span class="date-badge">2022 — Present</span>
+      </div>
+      <div class="org">Cloudflare · Austin, TX</div>
+      <ul>
+        <li>Architect infrastructure serving 20% of the web's HTTP traffic across 300+ global data centers</li>
+        <li>Led migration to Kubernetes-based deployment reducing release cycle from days to minutes</li>
+        <li>Designed cost optimization strategy saving $4.2M annually in cloud infrastructure spend</li>
+        <li>Built observability platform using Prometheus, Grafana, and custom alerting reducing MTTR by 65%</li>
+      </ul>
+    </div>
+
+    <div class="exp-card">
+      <div class="row-1">
+        <h3>Senior DevOps Engineer</h3>
+        <span class="date-badge">2019 — 2022</span>
+      </div>
+      <div class="org">Confluent · Mountain View, CA</div>
+      <ul>
+        <li>Managed 200+ microservices infrastructure on AWS and GCP across 12 regions</li>
+        <li>Implemented GitOps workflow with ArgoCD and Terraform reducing config drift by 95%</li>
+        <li>Built internal developer platform serving 400+ engineers with self-service deployments</li>
+      </ul>
+    </div>
+
+    <div class="exp-card">
+      <div class="row-1">
+        <h3>Cloud Engineer</h3>
+        <span class="date-badge">2017 — 2019</span>
+      </div>
+      <div class="org">Capital One · McLean, VA</div>
+      <ul>
+        <li>Led cloud-native transformation migrating 80+ applications from on-prem to AWS</li>
+        <li>Developed compliance-as-code framework for PCI-DSS achieving automated audit readiness</li>
+      </ul>
+    </div>
+
+    <div class="split">
+      <div>
+        <div class="sec-title">Skills</div>
+        <div class="skill-cluster">
+          <h4>Cloud & Infra</h4>
+          <div class="skill-pills">
+            <span class="purple">AWS</span>
+            <span class="purple">GCP</span>
+            <span class="purple">Kubernetes</span>
+            <span class="purple">Docker</span>
+            <span class="purple">Terraform</span>
+          </div>
+        </div>
+        <div class="skill-cluster">
+          <h4>Automation</h4>
+          <div class="skill-pills">
+            <span class="teal">CI/CD</span>
+            <span class="teal">ArgoCD</span>
+            <span class="teal">GitHub Actions</span>
+            <span class="teal">Ansible</span>
+          </div>
+        </div>
+        <div class="skill-cluster">
+          <h4>Observability</h4>
+          <div class="skill-pills">
+            <span class="purple">Prometheus</span>
+            <span class="purple">Grafana</span>
+            <span class="purple">Datadog</span>
+            <span class="purple">OpenTelemetry</span>
+          </div>
+        </div>
+        <div class="skill-cluster">
+          <h4>Languages</h4>
+          <div class="skill-pills">
+            <span class="teal">Go</span>
+            <span class="teal">Python</span>
+            <span class="teal">Bash</span>
+            <span class="teal">HCL</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="sec-title">Education</div>
+        <div class="edu-block">
+          <h4>M.S. Computer Science</h4>
+          <p>Georgia Tech (OMSCS)<br><span class="yr">2019</span></p>
+        </div>
+        <div class="edu-block">
+          <h4>B.S. Information Technology</h4>
+          <p>Virginia Tech<br><span class="yr">2017</span></p>
+        </div>
+
+        <div class="sec-title">Certifications</div>
+        <ul class="cert-list">
+          <li><span class="cert-dot"></span> AWS Solutions Architect — Professional</li>
+          <li><span class="cert-dot"></span> Certified Kubernetes Administrator (CKA)</li>
+          <li><span class="cert-dot"></span> Google Cloud Professional Cloud Architect</li>
+          <li><span class="cert-dot"></span> HashiCorp Terraform Associate</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

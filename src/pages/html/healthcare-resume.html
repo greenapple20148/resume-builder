@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Healthcare Resume — Dr. Sarah Chen</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f7fa;
+    --white: #ffffff;
+    --card: #ffffff;
+    --navy: #0f2b4c;
+    --navy-mid: #1a3d6b;
+    --navy-light: #2c5282;
+    --teal: #0d9488;
+    --teal-light: #14b8a6;
+    --teal-pale: #ccfbf1;
+    --teal-bg: rgba(13, 148, 136, 0.06);
+    --blue: #3b82f6;
+    --blue-pale: #dbeafe;
+    --blue-bg: rgba(59, 130, 246, 0.06);
+    --coral: #ef6461;
+    --coral-pale: #fee2e2;
+    --coral-bg: rgba(239, 100, 97, 0.06);
+    --amber: #d97706;
+    --amber-pale: #fef3c7;
+    --amber-bg: rgba(217, 119, 6, 0.06);
+    --purple: #7c3aed;
+    --purple-pale: #ede9fe;
+    --purple-bg: rgba(124, 58, 237, 0.06);
+    --text: #1e293b;
+    --text-mid: #475569;
+    --text-soft: #94a3b8;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
+    --shadow-sm: 0 1px 3px rgba(15, 43, 76, 0.04), 0 1px 2px rgba(15, 43, 76, 0.06);
+    --shadow-md: 0 4px 14px rgba(15, 43, 76, 0.06), 0 2px 6px rgba(15, 43, 76, 0.04);
+    --shadow-lg: 0 10px 30px rgba(15, 43, 76, 0.08), 0 4px 10px rgba(15, 43, 76, 0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Source Sans 3', -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .resume-page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 28px 20px 60px;
+  }
+
+  /* ═══════ HERO HEADER ═══════ */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    box-shadow: var(--shadow-lg);
+    animation: heroIn 0.7s ease-out;
+  }
+
+  @keyframes heroIn {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* EKG line decoration */
+  .ekg-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    opacity: 0.06;
+    overflow: hidden;
+  }
+
+  .ekg-line svg {
+    width: 200%;
+    height: 100%;
+    animation: ekgScroll 8s linear infinite;
+  }
+
+  @keyframes ekgScroll {
+    to { transform: translateX(-50%); }
+  }
+
+  /* Cross pattern */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 80px; height: 80px;
+    border: 2px solid rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+
+  .hero::after {
+    content: '+';
+    position: absolute;
+    top: 42px; right: 42px;
+    font-size: 28px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.06);
+    line-height: 1;
+  }
+
+  .hero-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .avatar-ring {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.08);
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .avatar-ring::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255,255,255,0.1);
+  }
+
+  .avatar-initials {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 1px;
+  }
+
+  .hero-info { flex: 1; }
+
+  .hero-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    line-height: 1.15;
+    color: #fff;
+  }
+
+  .hero-title {
+    font-size: 17px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.7);
+    margin-top: 2px;
+    letter-spacing: 0.3px;
+  }
+
+  .hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .hero-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .badge-teal { background: rgba(13, 148, 136, 0.25); color: #5eead4; }
+  .badge-coral { background: rgba(239, 100, 97, 0.2); color: #fca5a5; }
+  .badge-blue { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+
+  /* Contact strip */
+  .contact-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: 13.5px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .contact-item svg {
+    width: 14px; height: 14px;
+    color: var(--teal-light);
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+
+  .contact-item a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .contact-item a:hover { color: #fff; }
+
+  /* ═══════ VITALS STAT ROW ═══════ */
+  .vitals-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 20px;
+    animation: fadeUp 0.6s 0.2s ease-out both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .vital-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vital-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .vital-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .vital-card:nth-child(1)::before { background: var(--teal); }
+  .vital-card:nth-child(2)::before { background: var(--blue); }
+  .vital-card:nth-child(3)::before { background: var(--coral); }
+  .vital-card:nth-child(4)::before { background: var(--amber); }
+
+  .vital-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.1;
+  }
+
+  .vital-card:nth-child(1) .vital-number { color: var(--teal); }
+  .vital-card:nth-child(2) .vital-number { color: var(--blue); }
+  .vital-card:nth-child(3) .vital-number { color: var(--coral); }
+  .vital-card:nth-child(4) .vital-number { color: var(--amber); }
+
+  .vital-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 4px;
+  }
+
+  /* ═══════ SECTIONS ═══════ */
+  .section {
+    margin-top: 28px;
+    animation: fadeUp 0.6s ease-out both;
+  }
+
+  .section:nth-child(3) { animation-delay: 0.25s; }
+  .section:nth-child(4) { animation-delay: 0.35s; }
+  .section:nth-child(5) { animation-delay: 0.45s; }
+  .section:nth-child(6) { animation-delay: 0.55s; }
+  .section:nth-child(7) { animation-delay: 0.65s; }
+  .section:nth-child(8) { animation-delay: 0.75s; }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .section-icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .section-icon svg {
+    width: 18px; height: 18px;
+  }
+
+  .si-teal { background: var(--teal-bg); color: var(--teal); }
+  .si-blue { background: var(--blue-bg); color: var(--blue); }
+  .si-coral { background: var(--coral-bg); color: var(--coral); }
+  .si-amber { background: var(--amber-bg); color: var(--amber); }
+  .si-purple { background: var(--purple-bg); color: var(--purple); }
+
+  .section-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--navy);
+    letter-spacing: 0.3px;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ═══════ SUMMARY ═══════ */
+  .summary-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    border-left: 4px solid var(--teal);
+  }
+
+  .summary-card p {
+    color: var(--text-mid);
+    font-size: 15px;
+  }
+
+  /* ═══════ EXPERIENCE ═══════ */
+  .exp-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 26px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .exp-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--teal-pale);
+  }
+
+  .exp-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .exp-role {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--navy);
+  }
+
+  .exp-org {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--teal);
+  }
+
+  .exp-location {
+    font-size: 13px;
+    color: var(--text-soft);
+    font-weight: 400;
+  }
+
+  .exp-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-soft);
+    background: var(--border-light);
+    padding: 3px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-weight: 400;
+  }
+
+  .exp-desc {
+    list-style: none;
+    margin-top: 12px;
+  }
+
+  .exp-desc li {
+    position: relative;
+    padding-left: 20px;
+    margin: 7px 0;
+    color: var(--text-mid);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .exp-desc li::before {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 9px;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--teal-pale);
+    border: 2px solid var(--teal);
+  }
+
+  /* ═══════ EDUCATION ═══════ */
+  .edu-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .edu-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    transition: all 0.3s;
+  }
+
+  .edu-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .edu-emblem {
+    width: 52px; height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 22px;
+  }
+
+  .edu-degree {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--navy);
+  }
+
+  .edu-school {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--teal);
+  }
+
+  .edu-meta {
+    font-size: 13px;
+    color: var(--text-soft);
+  }
+
+  /* ═══════ SKILLS ═══════ */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+  }
+
+  .skill-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s;
+  }
+
+  .skill-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .skill-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .sc-teal .skill-card-title { color: var(--teal); }
+  .sc-blue .skill-card-title { color: var(--blue); }
+  .sc-coral .skill-card-title { color: var(--coral); }
+  .sc-amber .skill-card-title { color: var(--amber); }
+
+  .skill-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .skill-pill {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .sp-teal { background: var(--teal-bg); color: var(--teal); border: 1px solid rgba(13,148,136,0.12); }
+  .sp-teal:hover { background: var(--teal); color: #fff; }
+
+  .sp-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(59,130,246,0.12); }
+  .sp-blue:hover { background: var(--blue); color: #fff; }
+
+  .sp-coral { background: var(--coral-bg); color: var(--coral); border: 1px solid rgba(239,100,97,0.12); }
+  .sp-coral:hover { background: var(--coral); color: #fff; }
+
+  .sp-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(217,119,6,0.12); }
+  .sp-amber:hover { background: var(--amber); color: #fff; }
+
+  /* ═══════ CERTIFICATIONS & LICENSES ═══════ */
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+  }
+
+  .cert-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.25s;
+  }
+
+  .cert-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .cert-icon {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  .cert-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    line-height: 1.3;
+  }
+
+  .cert-issuer {
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  /* ═══════ PUBLICATIONS ═══════ */
+  .pub-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 22px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s;
+  }
+
+  .pub-item:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--purple-pale);
+  }
+
+  .pub-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: var(--navy);
+    line-height: 1.4;
+  }
+
+  .pub-journal {
+    font-size: 13px;
+    color: var(--purple);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .pub-meta {
+    font-size: 12.5px;
+    color: var(--text-soft);
+    margin-top: 2px;
+  }
+
+  /* ═══════ VOLUNTEER ═══════ */
+  .vol-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 12px;
+  }
+
+  .vol-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s;
+  }
+
+  .vol-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .vol-role {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: var(--navy);
+  }
+
+  .vol-org {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--coral);
+  }
+
+  .vol-desc {
+    font-size: 13.5px;
+    color: var(--text-mid);
+    margin-top: 6px;
+  }
+
+  /* ═══════ FOOTER ═══════ */
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text-soft);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .footer svg {
+    width: 16px; height: 16px;
+    color: var(--coral);
+    opacity: 0.6;
+  }
+
+  /* ═══════ RESPONSIVE ═══════ */
+  @media (max-width: 640px) {
+    .hero { padding: 28px 22px 26px; }
+    .hero-name { font-size: 28px; }
+    .hero-top { gap: 16px; }
+    .avatar-ring { width: 64px; height: 64px; }
+    .avatar-initials { font-size: 24px; }
+    .vitals-row { grid-template-columns: repeat(2, 1fr); }
+    .vital-number { font-size: 24px; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .cert-grid { grid-template-columns: 1fr; }
+    .exp-top { flex-direction: column; }
+    .edu-card { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="resume-page">
+
+  <!-- ═══════ HERO HEADER ═══════ -->
+  <header class="hero">
+    <div class="ekg-line">
+      <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+        <polyline fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"
+          points="0,30 50,30 70,30 80,10 90,50 100,20 110,40 120,30 170,30 220,30 240,30 250,10 260,50 270,20 280,40 290,30 340,30 390,30 410,30 420,10 430,50 440,20 450,40 460,30 510,30 560,30 580,30 590,10 600,50 610,20 620,40 630,30 680,30 730,30 750,30 760,10 770,50 780,20 790,40 800,30 850,30 900,30 920,30 930,10 940,50 950,20 960,40 970,30 1020,30 1070,30 1090,30 1100,10 1110,50 1120,20 1130,40 1140,30 1200,30"/>
+      </svg>
+    </div>
+
+    <div class="hero-top">
+      <div class="avatar-ring">
+        <span class="avatar-initials">SC</span>
+      </div>
+      <div class="hero-info">
+        <h1 class="hero-name">Dr. Sarah Chen</h1>
+        <p class="hero-title">Board-Certified Internal Medicine Physician & Clinical Researcher</p>
+        <div class="hero-badges">
+          <span class="hero-badge badge-teal">MD, FACP</span>
+          <span class="hero-badge badge-coral">Internal Medicine</span>
+          <span class="hero-badge badge-blue">Clinical Research</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-strip">
+      <span class="contact-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        <a href="#">dr.chen@meridianhealth.org</a>
+      </span>
+      <span class="contact-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        (617) 555-0142
+      </span>
+      <span class="contact-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        Boston, MA
+      </span>
+      <span class="contact-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <a href="#">NPI: 1234567890</a>
+      </span>
+    </div>
+  </header>
+
+  <!-- ═══════ VITALS ROW ═══════ -->
+  <div class="vitals-row">
+    <div class="vital-card">
+      <div class="vital-number">12+</div>
+      <div class="vital-label">Years Experience</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-number">8K+</div>
+      <div class="vital-label">Patients Treated</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-number">24</div>
+      <div class="vital-label">Publications</div>
+    </div>
+    <div class="vital-card">
+      <div class="vital-number">96%</div>
+      <div class="vital-label">Patient Satisfaction</div>
+    </div>
+  </div>
+
+  <!-- ═══════ SUMMARY ═══════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon si-teal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h2 class="section-label">Professional Summary</h2>
+      <span class="section-line"></span>
+    </div>
+    <div class="summary-card">
+      <p>Compassionate and detail-oriented internal medicine physician with over 12 years of clinical and research experience. Proven track record in patient-centered care, chronic disease management, and clinical trial design. Fellow of the American College of Physicians with active involvement in quality improvement initiatives and medical education. Seeking to leverage clinical expertise and research acumen to advance patient outcomes in an academic medical center setting.</p>
+    </div>
+  </div>
+
+  <!-- ═══════ EXPERIENCE ═══════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon si-blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h2 class="section-label">Clinical Experience</h2>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="exp-card">
+      <div class="exp-top">
+        <div>
+          <div class="exp-role">Attending Physician, Internal Medicine</div>
+          <div class="exp-org">Meridian Health — Massachusetts General Hospital</div>
+          <div class="exp-location">Boston, MA</div>
+        </div>
+        <span class="exp-date">2019 — Present</span>
+      </div>
+      <ul class="exp-desc">
+        <li>Manage a panel of 1,200+ patients with complex chronic conditions including diabetes, hypertension, heart failure, and COPD</li>
+        <li>Lead a multidisciplinary care team of 6 residents, 2 NPs, and support staff across outpatient and inpatient settings</li>
+        <li>Spearheaded a diabetes management initiative reducing HbA1c levels by an average of 1.4% across 300 patients over 18 months</li>
+        <li>Serve as principal investigator on two NIH-funded clinical trials in cardiovascular risk reduction</li>
+        <li>Achieved 96% patient satisfaction scores consistently over 4 years through patient-centered communication practices</li>
+      </ul>
+    </div>
+
+    <div class="exp-card">
+      <div class="exp-top">
+        <div>
+          <div class="exp-role">Internal Medicine Resident → Chief Resident</div>
+          <div class="exp-org">Brigham and Women's Hospital</div>
+          <div class="exp-location">Boston, MA</div>
+        </div>
+        <span class="exp-date">2015 — 2019</span>
+      </div>
+      <ul class="exp-desc">
+        <li>Completed 3-year residency with additional chief resident year overseeing 48 residents and medical students</li>
+        <li>Coordinated morning report, grand rounds, and quality improvement conferences for the department</li>
+        <li>Implemented a handoff standardization protocol that reduced adverse events during shift transitions by 28%</li>
+        <li>Received the Excellence in Teaching Award voted by medical students two consecutive years</li>
+      </ul>
+    </div>
+
+    <div class="exp-card">
+      <div class="exp-top">
+        <div>
+          <div class="exp-role">Clinical Research Fellow</div>
+          <div class="exp-org">Harvard Medical School — Cardiovascular Research Center</div>
+          <div class="exp-location">Boston, MA</div>
+        </div>
+        <span class="exp-date">2013 — 2015</span>
+      </div>
+      <ul class="exp-desc">
+        <li>Conducted translational research on novel biomarkers for early detection of heart failure</li>
+        <li>Co-authored 8 peer-reviewed publications in JAMA, NEJM, and Circulation journals</li>
+        <li>Presented findings at AHA and ACP national conferences, receiving Best Abstract Award in 2014</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════ EDUCATION ═══════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon si-amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m2 7 10 5 10-5-10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      </div>
+      <h2 class="section-label">Education</h2>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="edu-stack">
+      <div class="edu-card">
+        <div class="edu-emblem" style="background: var(--coral-bg); color: var(--coral);">🩺</div>
+        <div>
+          <div class="edu-degree">Doctor of Medicine (MD)</div>
+          <div class="edu-school">Harvard Medical School</div>
+          <div class="edu-meta">2013 · Alpha Omega Alpha Honor Society · Dean's List</div>
+        </div>
+      </div>
+      <div class="edu-card">
+        <div class="edu-emblem" style="background: var(--blue-bg); color: var(--blue);">🔬</div>
+        <div>
+          <div class="edu-degree">B.S. Biomedical Sciences, Minor in Public Health</div>
+          <div class="edu-school">Johns Hopkins University</div>
+          <div class="edu-meta">2009 · Summa Cum Laude · Phi Beta Kappa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ SKILLS ═══════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon si-teal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+      <h2 class="section-label">Core Competencies</h2>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="skills-grid">
+      <div class="skill-card sc-teal">
+        <div class="skill-card-title">
+          <span>🏥</span> Clinical Practice
+        </div>
+        <div class="skill-pills">
+          <span class="skill-pill sp-teal">Chronic Disease Mgmt</span>
+          <span class="skill-pill sp-teal">Preventive Medicine</span>
+          <span class="skill-pill sp-teal">Hospital Medicine</span>
+          <span class="skill-pill sp-teal">Geriatric Care</span>
+          <span class="skill-pill sp-teal">Telehealth</span>
+        </div>
+      </div>
+
+      <div class="skill-card sc-blue">
+        <div class="skill-card-title">
+          <span>🔬</span> Research & Data
+        </div>
+        <div class="skill-pills">
+          <span class="skill-pill sp-blue">Clinical Trial Design</span>
+          <span class="skill-pill sp-blue">Biostatistics</span>
+          <span class="skill-pill sp-blue">REDCap</span>
+          <span class="skill-pill sp-blue">SPSS / SAS / R</span>
+          <span class="skill-pill sp-blue">IRB Protocols</span>
+        </div>
+      </div>
+
+      <div class="skill-card sc-coral">
+        <div class="skill-card-title">
+          <span>💻</span> Health Technology
+        </div>
+        <div class="skill-pills">
+          <span class="skill-pill sp-coral">Epic EMR</span>
+          <span class="skill-pill sp-coral">Cerner</span>
+          <span class="skill-pill sp-coral">CPOE Systems</span>
+          <span class="skill-pill sp-coral">Health Informatics</span>
+          <span class="skill-pill sp-coral">HL7 / FHIR</span>
+        </div>
+      </div>
+
+      <div class="skill-card sc-amber">
+        <div class="skill-card-title">
+          <span>🤝</span> Leadership
+        </div>
+        <div class="skill-pills">
+          <span class="skill-pill sp-amber">Team Management</span>
+          <span class="skill-pill sp-amber">Medical Education</span>
+          <span class="skill-pill sp-amber">Quality Improvement</span>
+          <span class="skill-pill sp-amber">Grant Writing</span>
+          <span class="skill-pill sp-amber">Patient Advocacy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ CERTIFICATIONS & LICENSES ═══════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon si-coral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+      </div>
+      <h2 class="section-label">Licenses & Certifications</h2>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="cert-grid">
+      <div class="cert-card">
+        <div class="cert-icon" style="background: var(--teal-bg); color: var(--teal);">✓</div>
+        <div>
+          <div class="cert-name">ABIM Board Certified — Internal Medicine</div>
+          <div class="cert-issuer">American Board of Internal Medicine</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon" style="background: var(--blue-bg); color: var(--blue);">✓</div>
+        <div>
+          <div class="cert-name">FACP — Fellow, ACP</div>
+          <div class="cert-issuer">American College of Physicians</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon" style="background: var(--coral-bg); color: var(--coral);">✓</div>
+        <div>
+          <div class="cert-name">ACLS & BLS Certified</div>
+          <div class="cert-issuer">American Heart Association</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon" style="background: var(--amber-bg); color: var(--amber);">✓</div>
+        <div>
+          <div class="cert-name">MA Medical License #12345</div>
+          <div class="cert-issuer">Massachusetts Board of Medicine</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon" style="background: var(--purple-bg); color: var(--purple);">✓</div>
+        <div>
+          <div class="cert-name">DEA Registration</div>
+          <div class="cert-issuer">U.S. Drug Enforcement Administration</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon" style="background: var(--teal-bg); color: var(--teal);">✓</div>
+        <div>
+          <div class="cert-name">GCP Certification</div>
+          <div class="cert-issuer">CITI Program — Good Clinical Practice</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ PUBLICATIONS ═══════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon si-purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+      </div>
+      <h2 class="section-label">Selected Publications</h2>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-title">Novel Biomarker Panel for Early Detection of Heart Failure in At-Risk Populations: A Prospective Cohort Study</div>
+      <div class="pub-journal">Journal of the American Medical Association (JAMA)</div>
+      <div class="pub-meta">Chen S, Williams R, Patel M, et al. · 2023 · DOI: 10.1001/jama.2023.xxxxx</div>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-title">Impact of Integrated Telehealth Programs on HbA1c Reduction in Type 2 Diabetes: A Randomized Controlled Trial</div>
+      <div class="pub-journal">New England Journal of Medicine (NEJM)</div>
+      <div class="pub-meta">Chen S, Rodriguez A, Kim J. · 2022 · DOI: 10.1056/NEJMoa22xxxxx</div>
+    </div>
+
+    <div class="pub-item">
+      <div class="pub-title">Mycorrhizal Network Dynamics and Cardiovascular Health: An Emerging Connection in Environmental Medicine</div>
+      <div class="pub-journal">Circulation</div>
+      <div class="pub-meta">Chen S, O'Brien T. · 2021 · DOI: 10.1161/CIRCULATIONAHA.121.xxxxx</div>
+    </div>
+  </div>
+
+  <!-- ═══════ VOLUNTEER ═══════ -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-icon si-coral">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <h2 class="section-label">Community & Volunteer</h2>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="vol-row">
+      <div class="vol-card">
+        <div class="vol-role">Volunteer Physician</div>
+        <div class="vol-org">Boston Health Care for the Homeless</div>
+        <div class="vol-desc">Provide primary care to unhoused individuals at weekly walk-in clinics. Served 400+ patients annually since 2020.</div>
+      </div>
+      <div class="vol-card">
+        <div class="vol-role">Medical Advisor</div>
+        <div class="vol-org">Partners in Health — Global Outreach</div>
+        <div class="vol-desc">Advised on chronic disease management protocols for rural clinics in Haiti and Rwanda. Led 3 training missions.</div>
+      </div>
+      <div class="vol-card">
+        <div class="vol-role">Faculty Mentor</div>
+        <div class="vol-org">HMS Minority Student Alliance</div>
+        <div class="vol-desc">Mentor underrepresented medical students through clinical rotations, research opportunities, and career planning.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ FOOTER ═══════ -->
+  <footer class="footer">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    Dedicated to patient care · References and full CV available upon request
+  </footer>
+
+</div>
+
+</body>
+</html>
