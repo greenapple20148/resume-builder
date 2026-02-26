@@ -272,7 +272,7 @@ export default function AuthPage() {
 
           {mode === 'signup' && (
             <p className="text-[11px] text-ink-20 text-center mt-3.5 leading-relaxed">
-              By signing up you agree to our <a href="#" className="text-gold underline">Terms of Service</a> and <a href="#" className="text-gold underline">Privacy Policy</a>.
+              By signing up you agree to our <a href="/terms" className="text-gold underline">Terms of Service</a> and <a href="/privacy" className="text-gold underline">Privacy Policy</a>.
             </p>
           )}
         </div>

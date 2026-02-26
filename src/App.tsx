@@ -29,6 +29,10 @@ import CoverLetterPage from './pages/CoverLetterPage'
 import AIToolsPage from './pages/AIToolsPage'
 import WelcomePage from './pages/WelcomePage'
 import NotFoundPage from './pages/NotFoundPage'
+import AboutPage from './pages/AboutPage'
+import BlogPage from './pages/BlogPage'
+import ContactPage from './pages/ContactPage'
+import LegalPage from './pages/LegalPage'
 
 // Components
 import { Toast } from './components/Toast'
@@ -104,6 +108,12 @@ export default function App() {
         <Route path="/tools/cover-letter" element={<ProtectedRoute><CoverLetterPage /></ProtectedRoute>} />
         <Route path="/tools/ai" element={<AIToolsPage />} />
         <Route path="/welcome" element={<ProtectedRoute><WelcomePage /></ProtectedRoute>} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy" element={<LegalPage />} />
+        <Route path="/terms" element={<LegalPage />} />
+        <Route path="/cookies" element={<LegalPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <SupportAgent />

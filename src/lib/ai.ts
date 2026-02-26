@@ -188,6 +188,179 @@ export async function getPracticeHistory(): Promise<PracticeHistoryEntry[]> {
     return data?.history || []
 }
 
+// ─────────────── Resume AI Helpers ───────────────
+
+/**
+ * Enhance resume text using rule-based improvements.
+ * Rewrites passive voice, adds impact verbs, tightens phrasing.
+ */
+export async function enhanceTextWithAI(text: string): Promise<string> {
+    if (!text.trim()) return text
+
+    // Simulate a short async delay for UX
+    await new Promise(r => setTimeout(r, 600))
+
+    const lines = text.split('\n').map(line => {
+        let l = line.trim()
+        if (!l) return ''
+
+        // Remove leading bullet characters for processing
+        const bulletMatch = l.match(/^([•\-–—]\s*)(.*)/)
+        let prefix = ''
+        let content = l
+        if (bulletMatch) {
+            prefix = '• '
+            content = bulletMatch[2]
+        }
+
+        // Capitalize first letter
+        content = content.charAt(0).toUpperCase() + content.slice(1)
+
+        // Replace weak verbs with strong action verbs
+        const verbMap: Record<string, string> = {
+            'helped with': 'Contributed to',
+            'worked on': 'Developed',
+            'was responsible for': 'Led',
+            'responsible for': 'Led',
+            'was part of': 'Collaborated on',
+            'made improvements to': 'Optimized',
+            'did work on': 'Executed',
+            'assisted in': 'Supported',
+            'dealt with': 'Managed',
+            'took care of': 'Oversaw',
+            'put together': 'Assembled',
+            'came up with': 'Designed',
+            'set up': 'Established',
+            'looked into': 'Investigated',
+            'got better at': 'Improved',
+            'used': 'Leveraged',
+        }
+        for (const [weak, strong] of Object.entries(verbMap)) {
+            const regex = new RegExp(`\\b${weak}\\b`, 'gi')
+            if (regex.test(content)) {
+                content = content.replace(regex, strong)
+            }
+        }
+
+        // Add period if missing
+        if (content.length > 10 && !/[.!?]$/.test(content)) {
+            content += '.'
+        }
+
+        return prefix + content
+    })
+
+    return lines.filter(l => l !== undefined).join('\n')
+}
+
+/**
+ * Extract text content from a PDF file.
+ */
+export async function extractTextFromPDF(file: File): Promise<string> {
+    try {
+        const { getDocument, GlobalWorkerOptions } = await import('pdfjs-dist')
+        GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`
+
+        const arrayBuffer = await file.arrayBuffer()
+        const pdf = await getDocument({ data: arrayBuffer }).promise
+        const pages: string[] = []
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i)
+            const textContent = await page.getTextContent()
+            const text = textContent.items.map((item: any) => item.str).join(' ')
+            pages.push(text)
+        }
+
+        return pages.join('\n\n')
+    } catch (err) {
+        console.error('PDF extraction error:', err)
+        // Fallback: try reading as text
+        return await file.text()
+    }
+}
+
+/**
+ * Extract text content from a DOCX file.
+ */
+export async function extractTextFromDocx(file: File): Promise<string> {
+    try {
+        const mammoth = await import('mammoth')
+        const arrayBuffer = await file.arrayBuffer()
+        const result = await mammoth.extractRawText({ arrayBuffer })
+        return result.value
+    } catch (err) {
+        console.error('DOCX extraction error:', err)
+        return await file.text()
+    }
+}
+
+/**
+ * Parse raw resume text into structured ResumeData.
+ * Uses heuristic section detection.
+ */
+export async function parseResumeWithAI(text: string): Promise<any> {
+    await new Promise(r => setTimeout(r, 300))
+
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
+    const result: any = {
+        personal: { fullName: '', email: '', phone: '', location: '', jobTitle: '', website: '' },
+        summary: '',
+        experience: [],
+        education: [],
+        skills: [],
+    }
+
+    // Extract email
+    const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.]+/)
+    if (emailMatch) result.personal.email = emailMatch[0]
+
+    // Extract phone
+    const phoneMatch = text.match(/(\+?\d[\d\s\-().]{8,}\d)/)
+    if (phoneMatch) result.personal.phone = phoneMatch[1].trim()
+
+    // First non-empty line is likely the name
+    if (lines.length > 0) {
+        const nameLine = lines[0]
+        if (nameLine.length < 60 && !nameLine.includes('@')) {
+            result.personal.fullName = nameLine
+        }
+    }
+
+    // Detect sections by common headers
+    const sectionHeaders = /^(summary|profile|objective|experience|work|employment|education|skills|expertise|certifications?|projects?|languages?|awards?)/i
+    let currentSection = ''
+    const sectionContent: Record<string, string[]> = {}
+
+    for (const line of lines) {
+        if (sectionHeaders.test(line) && line.length < 40) {
+            currentSection = line.toLowerCase().replace(/[:\s]/g, '')
+            if (currentSection.startsWith('experience') || currentSection.startsWith('work') || currentSection.startsWith('employment')) currentSection = 'experience'
+            if (currentSection.startsWith('summary') || currentSection.startsWith('profile') || currentSection.startsWith('objective')) currentSection = 'summary'
+            if (currentSection.startsWith('skill') || currentSection.startsWith('expertise')) currentSection = 'skills'
+            sectionContent[currentSection] = []
+        } else if (currentSection) {
+            sectionContent[currentSection] = sectionContent[currentSection] || []
+            sectionContent[currentSection].push(line)
+        }
+    }
+
+    // Map parsed sections
+    if (sectionContent.summary) {
+        result.summary = sectionContent.summary.join(' ')
+    }
+
+    if (sectionContent.skills) {
+        result.skills = sectionContent.skills
+            .join(', ')
+            .split(/[,|;·•]/)
+            .map((s: string) => s.trim())
+            .filter((s: string) => s.length > 1 && s.length < 50)
+    }
+
+    return result
+}
+
 export const INTERVIEW_TYPES = {
     general: {
         id: 'general',

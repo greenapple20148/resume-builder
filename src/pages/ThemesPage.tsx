@@ -68,7 +68,7 @@ const FILTERS = [
 function ThemePreview({ theme, data }: { theme: Theme; data: Partial<ResumeData> | undefined }) {
   const PreviewComponent = PREVIEW_MAP[theme.id]
   if (!PreviewComponent) return null
-  return <PreviewComponent data={data} />
+  return <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100%' }}><PreviewComponent data={data} /></div>
 }
 
 export default function ThemesPage() {
@@ -119,7 +119,7 @@ export default function ThemesPage() {
                 {theme.premium && <div className="absolute top-2 right-2 z-[5] font-mono text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide bg-gradient-to-br from-[#1a1a1a] to-[#333] text-parchment dark:bg-gold dark:text-white">Premium</div>}
                 {theme.new && <div className="absolute top-2 right-2 z-[5] font-mono text-[8px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide bg-[#dcfce7] dark:bg-[rgba(76,175,122,0.15)] text-emerald">New</div>}
                 <div className="h-[200px] relative overflow-hidden bg-ink-05 after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-10 after:bg-gradient-to-b after:from-transparent after:to-ink-05 after:pointer-events-none after:z-[2]">
-                  <div className="w-[680px] min-h-[880px] scale-[0.28] origin-top-left pointer-events-none absolute top-0 left-0 overflow-hidden"><ThemePreview theme={theme} data={resumeData} /></div>
+                  <div className="w-[680px] min-h-[880px] scale-[0.28] origin-top-left pointer-events-none absolute top-0 left-0 overflow-hidden preview-fill"><ThemePreview theme={theme} data={resumeData} /></div>
                 </div>
                 <div className="px-3 py-2.5 border-t border-ink-10 flex items-center justify-between gap-2">
                   <div><div className="text-xs font-semibold text-ink mb-px">{theme.name}</div><div className="text-[10px] text-ink-40 font-mono">{theme.desc}</div></div>
@@ -141,7 +141,7 @@ export default function ThemesPage() {
               <button className="btn btn-gold" onClick={() => handleUseTheme(selectedTheme)}>Use This Theme →</button>
             </div>
             <div className="flex-1 min-h-0 flex items-start justify-center px-8 py-7 overflow-hidden relative">
-              <div className="w-[816px] h-[1200px] bg-white rounded shrink-0 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.06),0_12px_36px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_4px_12px_rgba(0,0,0,0.2),0_12px_36px_rgba(0,0,0,0.3)]" style={{ zoom: 0.65, transformOrigin: 'top center' }} key={selectedTheme.id}>
+              <div className="w-[816px] h-[1200px] bg-white rounded shrink-0 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.06),0_12px_36px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_4px_12px_rgba(0,0,0,0.2),0_12px_36px_rgba(0,0,0,0.3)] preview-fill" style={{ zoom: 0.65, transformOrigin: 'top center' }} key={selectedTheme.id}>
                 <ThemePreview theme={selectedTheme} data={resumeData} />
               </div>
             </div>

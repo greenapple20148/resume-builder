@@ -569,8 +569,8 @@ export default function LandingPage() {
           <nav aria-label="Footer navigation" className="flex gap-8 sm:gap-16 flex-wrap">
             {[
               { title: 'Product', links: [{ to: '/themes', text: 'Themes' }, { to: '/pricing', text: 'Pricing' }, { to: '/dashboard', text: 'Dashboard' }] },
-              { title: 'Company', links: [{ to: '#', text: 'About' }, { to: '#', text: 'Blog' }, { to: '#', text: 'Contact' }] },
-              { title: 'Legal', links: [{ to: '#', text: 'Privacy' }, { to: '#', text: 'Terms' }, { to: '#', text: 'Cookies' }] },
+              { title: 'Company', links: [{ to: '/about', text: 'About' }, { to: '/blog', text: 'Blog' }, { to: '/contact', text: 'Contact' }] },
+              { title: 'Legal', links: [{ to: '/privacy', text: 'Privacy' }, { to: '/terms', text: 'Terms' }, { to: '/cookies', text: 'Cookies' }] },
             ].map((col) => (
               <div key={col.title} className="flex flex-col gap-2.5">
                 <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[rgba(250,248,243,0.25)] mb-1">{col.title}</div>
@@ -583,7 +583,7 @@ export default function LandingPage() {
         </div>
         <div className="max-w-[1200px] mx-auto py-6 flex flex-col sm:flex-row justify-between text-xs text-[rgba(250,248,243,0.25)] font-mono gap-2">
           <span>© 2026 ResumeBuildIn. All rights reserved.</span>
-          <span>Made with care for job seekers everywhere.</span>
+          <span>Resume BuildIn is operated by RZeal Solutions, VA, United States.</span>
         </div>
       </footer>
     </div>

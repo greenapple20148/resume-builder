@@ -1,4 +1,23 @@
 /* ============================
+   GLOBAL: Force all preview children
+   to fill the preview container height
+   ============================ */
+.preview-fill {
+    display: flex;
+    flex-direction: column;
+}
+
+.preview-fill>* {
+    min-height: 100% !important;
+    flex: 1;
+}
+
+.preview-fill>*>* {
+    min-height: 100% !important;
+    flex: 1;
+}
+
+/* ============================
    THEME 1: CLASSIC
    ============================ */
 .classic-resume {

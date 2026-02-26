@@ -71,7 +71,7 @@ export const OrigamiZenPreview: React.FC<PreviewProps> = () => (
 /* ═══ Resume 21 — Corporate Slate ═══ */
 export const CorporateSlatePreview: React.FC<PreviewProps> = () => {
     const s = {
-        wrap: { fontFamily: "'Inter', sans-serif", background: '#fff', display: 'flex', overflow: 'hidden' } as React.CSSProperties,
+        wrap: { fontFamily: "'Inter', sans-serif", background: '#fff', display: 'flex', overflow: 'hidden', minHeight: '100%' } as React.CSSProperties,
         aside: { width: 256, flexShrink: 0, background: '#1e293b', color: '#94a3b8', display: 'flex', flexDirection: 'column' as const, gap: 28, padding: 32 },
         initials: { width: 64, height: 64, borderRadius: '50%', background: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 24, fontWeight: 700, marginBottom: 20 },
         h1: { color: '#fff', fontSize: 24, fontWeight: 700, lineHeight: 1.2 },
@@ -230,10 +230,10 @@ export const PurpleDuskPreview: React.FC<PreviewProps> = () => {
     const dot = { color: c.violet400, marginTop: 4, flexShrink: 0, fontSize: 8 }
 
     return (
-        <div style={{ fontFamily: "'Sora', 'DM Sans', sans-serif", background: c.white, overflow: 'hidden' }}>
+        <div style={{ fontFamily: "'Sora', 'DM Sans', sans-serif", background: c.white, overflow: 'hidden', display: 'flex', flexDirection: 'column' as const }}>
             {/* Top gradient strip */}
             <div style={{ height: 8, background: `linear-gradient(to right, ${c.violet700}, ${c.violet500}, ${c.fuchsia500})` }} />
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', flex: 1 }}>
                 {/* Sidebar */}
                 <aside style={{ width: 288, flexShrink: 0, background: `linear-gradient(to bottom, ${c.violet900}, ${c.violet950})`, color: c.white, padding: '40px 32px', display: 'flex', flexDirection: 'column', gap: 28 }}>
                     <div>

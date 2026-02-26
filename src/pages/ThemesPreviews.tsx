@@ -650,7 +650,7 @@ export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
   const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
   return (
-    <div style={{ fontFamily: "'Source Sans 3', 'DM Sans', sans-serif", background: c.cream, padding: '60px 64px', position: 'relative', overflow: 'hidden' }}>
+    <div style={{ fontFamily: "'Source Sans 3', 'DM Sans', sans-serif", background: c.cream, padding: '60px 64px', position: 'relative', overflow: 'hidden', minHeight: '100%', boxSizing: 'border-box' as const }}>
       {/* Corner marks */}
       <span style={{ position: 'absolute', top: 28, left: 28, width: 24, height: 24, borderTop: `2px solid ${c.accent}`, borderLeft: `2px solid ${c.accent}`, opacity: 0.4 }} />
       <span style={{ position: 'absolute', bottom: 28, right: 28, width: 24, height: 24, borderBottom: `2px solid ${c.accent}`, borderRight: `2px solid ${c.accent}`, opacity: 0.4 }} />
@@ -715,7 +715,7 @@ export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
   const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", background: c.surface, border: `1px solid ${c.border}`, borderRadius: 16, overflow: 'hidden', color: c.text }}>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", background: c.surface, border: `1px solid ${c.border}`, borderRadius: 16, overflow: 'hidden', color: c.text, minHeight: '100%', display: 'flex', flexDirection: 'column' as const }}>
       {/* Accent bar */}
       <div style={{ height: 3, background: `linear-gradient(90deg, ${c.accent}, ${c.warm}, ${c.accent})` }} />
       {/* Header */}
@@ -735,7 +735,7 @@ export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
         <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.75, color: c.text, maxWidth: 680 }}>{res.summary}</p>
       </div>
       {/* Body */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', flex: 1 }}>
         {/* Main */}
         <div style={{ padding: '36px 48px 48px 56px', borderRight: `1px solid ${c.border}` }}>
           <div style={sLabel}>Experience</div>
@@ -779,7 +779,7 @@ export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
   const sbHead: React.CSSProperties = { fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: c.coral, marginBottom: 12, paddingBottom: 6, borderBottom: '2px solid rgba(255,255,255,0.08)' }
   const initials = res.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
   return (
-    <div style={{ fontFamily: "'Sora', 'DM Sans', sans-serif", display: 'grid', gridTemplateColumns: '260px 1fr', overflow: 'hidden', borderRadius: 4, background: '#fff', color: c.text }}>
+    <div style={{ fontFamily: "'Sora', 'DM Sans', sans-serif", display: 'grid', gridTemplateColumns: '260px 1fr', overflow: 'hidden', borderRadius: 4, background: '#fff', color: c.text, minHeight: '100%' }}>
       {/* Sidebar */}
       <aside style={{ background: c.navy, color: '#fff', padding: '48px 28px 40px', position: 'relative' }}>
         {/* Coral triangle corner */}
@@ -922,7 +922,7 @@ export function Resume5SwissGridPreview({ data }: PreviewProps) {
   const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
   return (
-    <div style={{ fontFamily: "'Instrument Sans', 'DM Sans', sans-serif", background: c.white, color: c.type, overflow: 'hidden' }}>
+    <div style={{ fontFamily: "'Instrument Sans', 'DM Sans', sans-serif", background: c.white, color: c.type, overflow: 'hidden', display: 'flex', flexDirection: 'column' as const }}>
       {/* Top Bar */}
       <div style={{ background: c.black, color: c.white, padding: '44px 52px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 32, alignItems: 'flex-end' }}>
         <div>
@@ -934,7 +934,7 @@ export function Resume5SwissGridPreview({ data }: PreviewProps) {
         </div>
       </div>
       {/* Body Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', flex: 1 }}>
         {/* Profile */}
         <div style={rowLabel}><h2 style={sLabel}>Profile</h2></div>
         <div style={rowContent}>
