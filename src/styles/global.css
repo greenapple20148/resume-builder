@@ -440,6 +440,59 @@
     line-height: 1.5;
   }
 
+  /* ── Select / Dropdown — custom chevron & polish ──────── */
+  .form-select,
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    padding-right: 38px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a7870' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+  }
+
+  select:not(.form-select) {
+    background-color: var(--white);
+    border: 1.5px solid var(--ink-10);
+    border-radius: var(--radius);
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--ink);
+    padding: 10px 38px 10px 14px;
+    transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+    outline: none;
+  }
+
+  select:not(.form-select):focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201, 146, 60, 0.12);
+  }
+
+  select:not(.form-select):hover:not(:focus):not(:disabled) {
+    border-color: var(--ink-20);
+  }
+
+  .form-select:hover:not(:focus):not(:disabled),
+  select:hover:not(:focus):not(:disabled) {
+    border-color: var(--ink-20);
+  }
+
+  .form-select:disabled,
+  select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--ink-05);
+  }
+
+  /* Remove native arrow in IE/Edge */
+  .form-select::-ms-expand,
+  select::-ms-expand {
+    display: none;
+  }
+
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -457,17 +510,34 @@
   /* ── Dark mode — Form elements ──────────────────────── */
   [data-theme="dark"] .form-input,
   [data-theme="dark"] .form-textarea,
-  [data-theme="dark"] .form-select {
-    background: var(--ink-05);
+  [data-theme="dark"] .form-select,
+  [data-theme="dark"] select {
+    background-color: var(--ink-05);
     border-color: var(--ink-10);
     color: var(--ink);
   }
 
+  [data-theme="dark"] .form-select,
+  [data-theme="dark"] select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a887e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  }
+
   [data-theme="dark"] .form-input:focus,
   [data-theme="dark"] .form-textarea:focus,
-  [data-theme="dark"] .form-select:focus {
+  [data-theme="dark"] .form-select:focus,
+  [data-theme="dark"] select:focus {
     border-color: var(--gold);
     box-shadow: 0 0 0 3px rgba(217, 162, 76, 0.18);
+  }
+
+  [data-theme="dark"] .form-select:hover:not(:focus):not(:disabled),
+  [data-theme="dark"] select:hover:not(:focus):not(:disabled) {
+    border-color: var(--ink-20);
+  }
+
+  [data-theme="dark"] .form-select:disabled,
+  [data-theme="dark"] select:disabled {
+    background-color: var(--ink-10);
   }
 
   /* ── Card ────────────────────────────────────────────── */

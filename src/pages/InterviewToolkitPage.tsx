@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useStore } from '../lib/store'
@@ -543,6 +543,16 @@ const ROLE_QUESTIONS: Record<string, { category: string; questions: string[] }[]
 
 const AVAILABLE_ROLES = Object.keys(ROLE_QUESTIONS)
 
+// ── Interview tips database ─────────────────────────
+const INTERVIEW_TIPS = [
+    { icon: '🎯', title: 'Use the STAR Method', desc: 'Structure behavioral answers with Situation, Task, Action, and Result for clear, compelling stories.' },
+    { icon: '⏱️', title: 'Keep Answers Under 2 Minutes', desc: 'Practice concise answers. Use the timer below to build muscle memory for the right length.' },
+    { icon: '🔄', title: 'Prepare 5-8 Core Stories', desc: 'Most behavioral questions can be answered with 5-8 well-prepared stories from your experience.' },
+    { icon: '🪞', title: 'Mirror Their Language', desc: 'Use terminology from the job description in your answers to show alignment with the role.' },
+    { icon: '📊', title: 'Quantify Everything', desc: 'Numbers make stories memorable. "Improved by 34%" beats "made things better" every time.' },
+    { icon: '❓', title: 'Ask Smart Questions', desc: 'Prepare 3-5 thoughtful questions about the team, challenges, and success metrics for the role.' },
+]
+
 // ── STAR Builder ─────────────────────────────────────
 interface StarStory {
     id: string
@@ -551,6 +561,128 @@ interface StarStory {
     task: string
     action: string
     result: string
+}
+
+// ── Practice Timer Component ─────────────────────────
+function PracticeTimer() {
+    const [seconds, setSeconds] = useState(120)
+    const [isRunning, setIsRunning] = useState(false)
+    const [hasStarted, setHasStarted] = useState(false)
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+    useEffect(() => {
+        if (isRunning && seconds > 0) {
+            intervalRef.current = setInterval(() => setSeconds(s => s - 1), 1000)
+        }
+        return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
+    }, [isRunning, seconds])
+
+    useEffect(() => {
+        if (seconds === 0) setIsRunning(false)
+    }, [seconds])
+
+    const toggle = () => {
+        if (!hasStarted) setHasStarted(true)
+        setIsRunning(!isRunning)
+    }
+    const reset = () => { setSeconds(120); setIsRunning(false); setHasStarted(false) }
+    const pct = ((120 - seconds) / 120) * 100
+    const min = Math.floor(seconds / 60)
+    const sec = seconds % 60
+    const isWarning = seconds <= 30 && seconds > 0
+    const isDone = seconds === 0
+
+    return (
+        <div className="flex flex-col items-center gap-4 py-6">
+            <div className="relative w-36 h-36">
+                <svg className="w-36 h-36 -rotate-90" viewBox="0 0 144 144">
+                    <circle cx="72" cy="72" r="64" fill="none" stroke="var(--ink-10)" strokeWidth="6" />
+                    <circle cx="72" cy="72" r="64" fill="none"
+                        stroke={isDone ? '#ef4444' : isWarning ? '#f59e0b' : 'var(--gold)'}
+                        strokeWidth="6" strokeLinecap="round" strokeDasharray={`${2 * Math.PI * 64}`}
+                        strokeDashoffset={`${2 * Math.PI * 64 * (1 - pct / 100)}`}
+                        className="transition-all duration-1000" />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className={`font-mono text-3xl font-bold tabular-nums ${isDone ? 'text-[#ef4444]' : isWarning ? 'text-[#f59e0b]' : 'text-ink'}`}>
+                        {min}:{sec.toString().padStart(2, '0')}
+                    </span>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-ink-40 mt-0.5">
+                        {isDone ? 'TIME\'S UP' : isRunning ? 'speaking' : hasStarted ? 'paused' : 'ready'}
+                    </span>
+                </div>
+            </div>
+            <div className="flex gap-2">
+                <button className={`px-5 py-2 text-sm font-semibold rounded-full border cursor-pointer transition-all ${isRunning ? 'border-[#f59e0b] bg-[rgba(245,158,11,0.08)] text-[#f59e0b]' : 'border-gold bg-[rgba(201,146,60,0.08)] text-gold'} hover:shadow-md`} onClick={toggle}>
+                    {isRunning ? '⏸ Pause' : hasStarted ? '▶ Resume' : '▶ Start'}
+                </button>
+                {hasStarted && (
+                    <button className="px-4 py-2 text-sm font-medium rounded-full border border-ink-10 text-ink-40 cursor-pointer transition-all hover:border-ink-20 hover:text-ink" onClick={reset}>
+                        ↺ Reset
+                    </button>
+                )}
+            </div>
+            <p className="text-[11px] text-ink-20 text-center max-w-[260px] leading-relaxed">
+                Most interviewers expect answers between 1–2 minutes. Practice keeping your responses concise and impactful.
+            </p>
+        </div>
+    )
+}
+
+// ── Mock Interview Component ─────────────────────────
+function MockInterview({ role }: { role: string }) {
+    const allQuestions = ROLE_QUESTIONS[role]?.flatMap(c => c.questions) || []
+    const [currentIndex, setCurrentIndex] = useState(() => Math.floor(Math.random() * allQuestions.length))
+    const [showTip, setShowTip] = useState(false)
+    const [answeredCount, setAnsweredCount] = useState(0)
+
+    const nextQuestion = useCallback(() => {
+        setCurrentIndex(Math.floor(Math.random() * allQuestions.length))
+        setShowTip(false)
+        setAnsweredCount(c => c + 1)
+    }, [allQuestions.length])
+
+    if (allQuestions.length === 0) return null
+
+    const question = allQuestions[currentIndex]
+    const category = ROLE_QUESTIONS[role]?.find(c => c.questions.includes(question))?.category || ''
+
+    return (
+        <div className="flex flex-col items-center text-center py-4">
+            <div className="text-[10px] font-mono uppercase tracking-widest text-gold font-bold mb-3">{category}</div>
+            <div className="text-lg font-semibold text-ink leading-relaxed max-w-[560px] mb-6 min-h-[56px]" style={{ animation: 'fadeUp 0.4s ease both' }} key={currentIndex}>
+                "{question}"
+            </div>
+
+            <div className="flex gap-2 mb-4">
+                <button className="px-5 py-2.5 text-sm font-semibold rounded-full border border-gold bg-[rgba(201,146,60,0.08)] text-gold cursor-pointer transition-all hover:shadow-md" onClick={nextQuestion}>
+                    Next Question →
+                </button>
+                <button className={`px-4 py-2.5 text-sm font-medium rounded-full border cursor-pointer transition-all ${showTip ? 'border-gold bg-[rgba(201,146,60,0.08)] text-gold' : 'border-ink-10 text-ink-40 hover:border-ink-20'}`} onClick={() => setShowTip(!showTip)}>
+                    💡 {showTip ? 'Hide Tip' : 'Show Tip'}
+                </button>
+            </div>
+
+            {showTip && (
+                <div className="bg-ink-05 border border-ink-10 rounded-xl px-5 py-4 text-left max-w-[480px] text-[13px] text-ink-70 leading-relaxed" style={{ animation: 'fadeUp 0.3s ease both' }}>
+                    <strong className="text-ink text-xs font-mono uppercase tracking-wider block mb-2">💡 Answer Framework</strong>
+                    <ol className="list-decimal pl-4 flex flex-col gap-1.5 m-0">
+                        <li><strong>Set context</strong> — briefly describe the situation (10 sec)</li>
+                        <li><strong>Explain your role</strong> — what was YOUR specific responsibility</li>
+                        <li><strong>Detail your actions</strong> — be specific about what you did</li>
+                        <li><strong>Share the result</strong> — quantify impact wherever possible</li>
+                        <li><strong>Reflect</strong> — what did you learn or what would you do differently</li>
+                    </ol>
+                </div>
+            )}
+
+            {answeredCount > 0 && (
+                <div className="mt-4 text-[11px] font-mono text-ink-20">
+                    {answeredCount} question{answeredCount !== 1 ? 's' : ''} practiced this session
+                </div>
+            )}
+        </div>
+    )
 }
 
 export default function InterviewToolkitPage() {
@@ -569,14 +701,35 @@ export default function InterviewToolkitPage() {
 
     // ── Questions state
     const [selectedRole, setSelectedRole] = useState('')
+    const [activeTab, setActiveTab] = useState<'questions' | 'mock'>('questions')
+
+    // ── Bookmarks
+    const [bookmarks, setBookmarks] = useState<Set<string>>(() => {
+        try { return new Set(JSON.parse(localStorage.getItem('interview_bookmarks') || '[]')) }
+        catch { return new Set() }
+    })
+    const [showBookmarksOnly, setShowBookmarksOnly] = useState(false)
+
+    const toggleBookmark = (q: string) => {
+        setBookmarks(prev => {
+            const next = new Set(prev)
+            if (next.has(q)) next.delete(q); else next.add(q)
+            localStorage.setItem('interview_bookmarks', JSON.stringify([...next]))
+            return next
+        })
+    }
 
     // ── STAR state
-    const [stories, setStories] = useState<StarStory[]>([])
+    const [stories, setStories] = useState<StarStory[]>(() => {
+        try { return JSON.parse(localStorage.getItem('star_stories') || '[]') }
+        catch { return [] }
+    })
     const [currentStory, setCurrentStory] = useState<StarStory>({
         id: '', bullet: '', situation: '', task: '', action: '', result: ''
     })
     const [showStarForm, setShowStarForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
+    const [starStep, setStarStep] = useState(0)
 
     // ── Copy state
     const [copied, setCopied] = useState<string | null>(null)
@@ -590,31 +743,43 @@ export default function InterviewToolkitPage() {
     const startNewStory = () => {
         setCurrentStory({ id: Date.now().toString(), bullet: '', situation: '', task: '', action: '', result: '' })
         setEditingId(null)
+        setStarStep(0)
         setShowStarForm(true)
     }
 
     const editStory = (story: StarStory) => {
         setCurrentStory({ ...story })
         setEditingId(story.id)
+        setStarStep(0)
         setShowStarForm(true)
     }
 
     const saveStory = () => {
-        if (editingId) {
-            setStories(stories.map(s => s.id === editingId ? currentStory : s))
-        } else {
-            setStories([...stories, currentStory])
-        }
+        const updated = editingId
+            ? stories.map(s => s.id === editingId ? currentStory : s)
+            : [...stories, currentStory]
+        setStories(updated)
+        localStorage.setItem('star_stories', JSON.stringify(updated))
         setShowStarForm(false)
         setEditingId(null)
     }
 
     const deleteStory = (id: string) => {
-        setStories(stories.filter(s => s.id !== id))
+        const updated = stories.filter(s => s.id !== id)
+        setStories(updated)
+        localStorage.setItem('star_stories', JSON.stringify(updated))
     }
 
     const formatStarStory = (s: StarStory) =>
         `BULLET: ${s.bullet}\n\nSITUATION: ${s.situation}\n\nTASK: ${s.task}\n\nACTION: ${s.action}\n\nRESULT: ${s.result}`
+
+    const STAR_STEPS = [
+        { icon: '📌', label: 'Resume Bullet', key: 'bullet' as const, type: 'input', hint: 'Which achievement do you want to turn into a story?', placeholder: 'e.g. "Reduced cart abandonment by 34% through checkout redesign"' },
+        { icon: 'S', label: 'Situation', key: 'situation' as const, type: 'textarea', hint: 'What was the context? Describe the environment, team, and challenge.', placeholder: 'Our e-commerce checkout had a 67% abandonment rate...' },
+        { icon: 'T', label: 'Task', key: 'task' as const, type: 'textarea', hint: 'What was YOUR specific responsibility?', placeholder: 'I was tasked with leading the checkout redesign...' },
+        { icon: 'A', label: 'Action', key: 'action' as const, type: 'textarea', hint: 'What did you DO? Be specific about your contribution.', placeholder: 'I ran 12 user interviews and identified 3 key friction points...' },
+        { icon: 'R', label: 'Result', key: 'result' as const, type: 'textarea', hint: 'What was the measurable outcome?', placeholder: 'Cart abandonment dropped from 67% to 44%...' },
+    ]
 
     // ── Premium gate
     if (!isPremium) {
@@ -626,14 +791,17 @@ export default function InterviewToolkitPage() {
                     <h1>Interview Toolkit</h1>
                     <p className="text-base text-ink-40 mb-10 leading-relaxed">Prepare for interviews with role-specific questions and the STAR story builder.</p>
                     <div className="flex flex-col gap-4 text-left mb-10">
-                        <div className="flex gap-4 items-start p-5 bg-[var(--white)] border border-ink-10 rounded-xl">
-                            <span className="text-2xl shrink-0 mt-0.5">❓</span>
-                            <div><strong className="text-[15px] block mb-1">20 Questions by Role</strong><p className="text-[13px] text-ink-40 m-0 leading-relaxed">Curated behavioral, technical, and leadership questions for 6+ roles</p></div>
-                        </div>
-                        <div className="flex gap-4 items-start p-5 bg-[var(--white)] border border-ink-10 rounded-xl">
-                            <span className="text-2xl shrink-0 mt-0.5">⭐</span>
-                            <div><strong className="text-[15px] block mb-1">STAR Story Builder</strong><p className="text-[13px] text-ink-40 m-0 leading-relaxed">Guided framework: Situation → Task → Action → Result</p></div>
-                        </div>
+                        {[
+                            { icon: '❓', title: '20 Questions by Role', desc: 'Curated behavioral, technical, and leadership questions for 14 roles' },
+                            { icon: '⭐', title: 'STAR Story Builder', desc: 'Guided step-by-step framework: Situation → Task → Action → Result' },
+                            { icon: '🎯', title: 'Mock Interview Mode', desc: 'Random questions with answer frameworks and a 2-minute practice timer' },
+                            { icon: '🔖', title: 'Bookmark & Practice', desc: 'Save your toughest questions and review them before your interview' },
+                        ].map((f, i) => (
+                            <div key={i} className="flex gap-4 items-start p-5 bg-[var(--white)] border border-ink-10 rounded-xl">
+                                <span className="text-2xl shrink-0 mt-0.5">{f.icon}</span>
+                                <div><strong className="text-[15px] block mb-1">{f.title}</strong><p className="text-[13px] text-ink-40 m-0 leading-relaxed">{f.desc}</p></div>
+                            </div>
+                        ))}
                     </div>
                     <Link to="/pricing" className="btn btn-gold btn-lg">Upgrade to Premium →</Link>
                     <p className="text-xs text-ink-20 mt-3.5 font-mono">Available on the Premium plan</p>
@@ -642,48 +810,123 @@ export default function InterviewToolkitPage() {
         )
     }
 
+    // Get filtered questions for bookmarks view
+    const getFilteredQuestions = () => {
+        if (!selectedRole || !ROLE_QUESTIONS[selectedRole]) return []
+        if (!showBookmarksOnly) return ROLE_QUESTIONS[selectedRole]
+        return ROLE_QUESTIONS[selectedRole]
+            .map(cat => ({ ...cat, questions: cat.questions.filter(q => bookmarks.has(q)) }))
+            .filter(cat => cat.questions.length > 0)
+    }
+
     return (
         <div className="min-h-screen">
             <Navbar />
-            <div className="max-w-[800px] mx-auto px-5 sm:px-10 pt-10 pb-20">
+            <div className="max-w-[860px] mx-auto px-5 sm:px-10 pt-10 pb-20">
                 <div className="text-center mb-12">
                     <div className="mb-4"><span className="badge badge-gold">Premium</span></div>
                     <h1>Interview <em className="italic text-gold">Toolkit</em></h1>
-                    <p className="text-base text-ink-40">Practice with role-specific questions and build your STAR stories.</p>
+                    <p className="text-base text-ink-40">Master your interviews with practice questions, mock sessions, and STAR stories.</p>
                 </div>
+
+                {/* ── TIPS BANNER ──────────────────────────────── */}
+                <section className="mb-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {INTERVIEW_TIPS.map((tip, i) => (
+                            <div key={i} className="flex gap-3 items-start p-4 bg-[var(--white)] border border-ink-10 rounded-xl transition-all hover:border-gold-pale hover:shadow-sm" style={{ animation: `fadeUp 0.4s ease ${i * 0.06}s both` }}>
+                                <span className="text-xl shrink-0">{tip.icon}</span>
+                                <div>
+                                    <strong className="text-[13px] block mb-0.5 text-ink">{tip.title}</strong>
+                                    <p className="text-[11.5px] text-ink-40 m-0 leading-[1.6]">{tip.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
 
                 {/* ── ROLE QUESTIONS ──────────────────────────── */}
                 <section className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden mb-6">
                     <div className="flex items-start gap-4 px-7 py-6 bg-ink-05 border-b border-ink-10">
                         <span className="text-[28px] shrink-0 mt-0.5">❓</span>
-                        <div><h2 className="text-xl mb-1">Common Questions by Role</h2><p className="text-[13px] text-ink-40 m-0">20 curated interview questions organized by category.</p></div>
+                        <div className="flex-1">
+                            <h2 className="text-xl mb-1">Common Questions by Role</h2>
+                            <p className="text-[13px] text-ink-40 m-0">20 curated interview questions organized by category. Bookmark your favorites.</p>
+                        </div>
+                        {bookmarks.size > 0 && (
+                            <button className={`shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full border cursor-pointer transition-all ${showBookmarksOnly ? 'border-gold bg-[rgba(201,146,60,0.08)] text-gold' : 'border-ink-10 text-ink-40 hover:border-gold-pale'}`} onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}>
+                                🔖 {bookmarks.size} saved
+                            </button>
+                        )}
                     </div>
                     <div className="p-7">
                         <div className="mb-7">
                             <label className="block text-xs font-semibold font-mono uppercase tracking-wide text-ink-40 mb-3">Select your role:</label>
                             <div className="flex flex-wrap gap-2">
                                 {AVAILABLE_ROLES.map(role => (
-                                    <button key={role} className={`px-4 py-2 text-[13px] font-medium border rounded-full cursor-pointer transition-all ${selectedRole === role ? 'border-gold bg-[rgba(201,146,60,0.08)] text-gold font-semibold' : 'border-ink-10 bg-[var(--white)] text-ink-70 hover:border-gold-pale'}`} onClick={() => setSelectedRole(role)}>{role}</button>
+                                    <button key={role} className={`px-4 py-2 text-[13px] font-medium border rounded-full cursor-pointer transition-all ${selectedRole === role ? 'border-gold bg-[rgba(201,146,60,0.08)] text-gold font-semibold' : 'border-ink-10 bg-[var(--white)] text-ink-70 hover:border-gold-pale'}`} onClick={() => { setSelectedRole(role); setShowBookmarksOnly(false) }}>{role}</button>
                                 ))}
                             </div>
                         </div>
-                        {selectedRole && ROLE_QUESTIONS[selectedRole] && (
-                            <div className="flex flex-col gap-6">
-                                {ROLE_QUESTIONS[selectedRole].map((cat, ci) => (
-                                    <div key={ci} className="border-l-[3px] border-l-gold pl-5">
-                                        <div className="text-[11px] font-mono uppercase tracking-widest text-gold font-bold mb-3">{cat.category}</div>
-                                        <ol className="list-none flex flex-col gap-2.5">
-                                            {cat.questions.map((q, qi) => (
-                                                <li key={qi} className="flex items-start gap-3 text-sm text-ink-70 leading-relaxed">
-                                                    <span className="shrink-0 w-6 h-6 rounded-full bg-ink-05 dark:bg-ink-10 text-ink-40 text-[11px] font-bold font-mono flex items-center justify-center">{ci * 5 + qi + 1}</span>
-                                                    <span className="flex-1 pt-0.5">{q}</span>
-                                                </li>
-                                            ))}
-                                        </ol>
+
+                        {selectedRole && (
+                            <>
+                                {/* Tab switcher */}
+                                <div className="flex gap-1 p-1 bg-ink-05 rounded-lg mb-6 w-fit">
+                                    {([['questions', '📋 Questions'], ['mock', '🎯 Mock Interview']] as const).map(([key, label]) => (
+                                        <button key={key} className={`px-4 py-2 text-[13px] font-medium rounded-md cursor-pointer transition-all border-none ${activeTab === key ? 'bg-[var(--white)] text-ink shadow-sm font-semibold' : 'bg-transparent text-ink-40 hover:text-ink'}`} onClick={() => setActiveTab(key)}>
+                                            {label}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {activeTab === 'questions' ? (
+                                    <div className="flex flex-col gap-6">
+                                        {getFilteredQuestions().map((cat, ci) => (
+                                            <div key={ci} className="border-l-[3px] border-l-gold pl-5">
+                                                <div className="text-[11px] font-mono uppercase tracking-widest text-gold font-bold mb-3">{cat.category}</div>
+                                                <ol className="list-none flex flex-col gap-2.5">
+                                                    {cat.questions.map((q, qi) => (
+                                                        <li key={qi} className="group flex items-start gap-3 text-sm text-ink-70 leading-relaxed">
+                                                            <span className="shrink-0 w-6 h-6 rounded-full bg-ink-05 dark:bg-ink-10 text-ink-40 text-[11px] font-bold font-mono flex items-center justify-center">{ci * 5 + qi + 1}</span>
+                                                            <span className="flex-1 pt-0.5">{q}</span>
+                                                            <button
+                                                                className={`shrink-0 w-7 h-7 rounded-full border flex items-center justify-center cursor-pointer transition-all text-sm ${bookmarks.has(q) ? 'border-gold bg-[rgba(201,146,60,0.08)] text-gold' : 'border-transparent text-ink-10 opacity-0 group-hover:opacity-100 hover:border-ink-10 hover:text-ink-40'}`}
+                                                                onClick={() => toggleBookmark(q)}
+                                                                title={bookmarks.has(q) ? 'Remove bookmark' : 'Bookmark this question'}
+                                                            >
+                                                                {bookmarks.has(q) ? '★' : '☆'}
+                                                            </button>
+                                                        </li>
+                                                    ))}
+                                                </ol>
+                                            </div>
+                                        ))}
+                                        {showBookmarksOnly && getFilteredQuestions().length === 0 && (
+                                            <div className="text-center py-8 text-ink-20 text-sm">
+                                                No bookmarked questions for {selectedRole}.<br />
+                                                <button className="text-gold underline cursor-pointer bg-transparent border-none text-sm mt-2" onClick={() => setShowBookmarksOnly(false)}>Show all questions</button>
+                                            </div>
+                                        )}
                                     </div>
-                                ))}
-                            </div>
+                                ) : (
+                                    <MockInterview role={selectedRole} />
+                                )}
+                            </>
                         )}
+                    </div>
+                </section>
+
+                {/* ── PRACTICE TIMER ──────────────────────────── */}
+                <section className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden mb-6">
+                    <div className="flex items-start gap-4 px-7 py-6 bg-ink-05 border-b border-ink-10">
+                        <span className="text-[28px] shrink-0 mt-0.5">⏱️</span>
+                        <div>
+                            <h2 className="text-xl mb-1">Practice Timer</h2>
+                            <p className="text-[13px] text-ink-40 m-0">Time your answers to build confidence and conciseness.</p>
+                        </div>
+                    </div>
+                    <div className="p-7">
+                        <PracticeTimer />
                     </div>
                 </section>
 
@@ -691,7 +934,10 @@ export default function InterviewToolkitPage() {
                 <section className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden mb-6">
                     <div className="flex items-start gap-4 px-7 py-6 bg-ink-05 border-b border-ink-10">
                         <span className="text-[28px] shrink-0 mt-0.5">⭐</span>
-                        <div><h2 className="text-xl mb-1">STAR Story Builder</h2><p className="text-[13px] text-ink-40 m-0">Structure your experiences into compelling interview answers.</p></div>
+                        <div>
+                            <h2 className="text-xl mb-1">STAR Story Builder</h2>
+                            <p className="text-[13px] text-ink-40 m-0">Structure your experiences into compelling interview answers. Stories are saved locally.</p>
+                        </div>
                     </div>
                     <div className="p-7">
                         {!showStarForm ? (
@@ -717,30 +963,57 @@ export default function InterviewToolkitPage() {
                                 )}
                             </>
                         ) : (
-                            <div className="flex flex-col gap-5">
-                                {[
-                                    { icon: '📌', label: 'Resume Bullet', hint: 'Which achievement do you want to turn into a story?', field: 'bullet' as const, type: 'input', placeholder: 'e.g. "Reduced cart abandonment by 34% through checkout redesign"' },
-                                    { icon: 'S', label: 'Situation', hint: 'What was the context? Describe the environment, team, and challenge.', field: 'situation' as const, type: 'textarea', placeholder: 'Our e-commerce checkout had a 67% abandonment rate...' },
-                                    { icon: 'T', label: 'Task', hint: 'What was YOUR specific responsibility?', field: 'task' as const, type: 'textarea', placeholder: 'I was tasked with leading the checkout redesign...' },
-                                    { icon: 'A', label: 'Action', hint: 'What did you DO? Be specific about your contribution.', field: 'action' as const, type: 'textarea', placeholder: 'I ran 12 user interviews and identified 3 key friction points...' },
-                                    { icon: 'R', label: 'Result', hint: 'What was the measurable outcome?', field: 'result' as const, type: 'textarea', placeholder: 'Cart abandonment dropped from 67% to 44%...' },
-                                ].map((step) => (
-                                    <div key={step.field} className="p-5 bg-ink-05 rounded-xl border border-ink-10">
-                                        <div className="flex items-center gap-2 text-base font-bold text-ink mb-1.5">
-                                            <span className="w-7 h-7 rounded-full bg-gold text-white text-[13px] font-bold flex items-center justify-center shrink-0">{step.icon}</span>
-                                            {step.label}
+                            <div>
+                                {/* Stepper progress */}
+                                <div className="flex items-center gap-1 mb-8">
+                                    {STAR_STEPS.map((s, i) => (
+                                        <div key={i} className="flex items-center gap-1 flex-1">
+                                            <button
+                                                className={`w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold cursor-pointer transition-all border-none shrink-0 ${i === starStep ? 'bg-gold text-white shadow-md scale-110' : i < starStep && (currentStory as any)[s.key] ? 'bg-[rgba(76,175,122,0.12)] text-emerald' : 'bg-ink-05 text-ink-40'}`}
+                                                onClick={() => setStarStep(i)}
+                                            >
+                                                {i < starStep && (currentStory as any)[s.key] ? '✓' : s.icon}
+                                            </button>
+                                            {i < STAR_STEPS.length - 1 && (
+                                                <div className={`flex-1 h-0.5 rounded transition-colors ${i < starStep ? 'bg-gold' : 'bg-ink-10'}`} />
+                                            )}
                                         </div>
-                                        <p className="text-[13px] text-ink-40 mb-3 leading-relaxed">{step.hint}</p>
-                                        {step.type === 'input' ? (
-                                            <input type="text" className="w-full px-3.5 py-2.5 text-sm border border-ink-10 rounded-lg bg-[var(--white)] text-ink transition-colors focus:outline-none focus:border-gold focus:shadow-[0_0_0_3px_rgba(201,146,60,0.1)]" placeholder={step.placeholder} value={(currentStory as any)[step.field]} onChange={e => setCurrentStory({ ...currentStory, [step.field]: e.target.value })} />
-                                        ) : (
-                                            <textarea rows={3} className="w-full px-3.5 py-2.5 text-sm border border-ink-10 rounded-lg bg-[var(--white)] text-ink transition-colors focus:outline-none focus:border-gold focus:shadow-[0_0_0_3px_rgba(201,146,60,0.1)] resize-y leading-relaxed" placeholder={step.placeholder} value={(currentStory as any)[step.field]} onChange={e => setCurrentStory({ ...currentStory, [step.field]: e.target.value })} />
+                                    ))}
+                                </div>
+
+                                {/* Current step */}
+                                <div className="p-6 bg-ink-05 rounded-xl border border-ink-10 mb-5" key={starStep} style={{ animation: 'fadeUp 0.3s ease both' }}>
+                                    <div className="flex items-center gap-2.5 text-lg font-bold text-ink mb-2">
+                                        <span className="w-9 h-9 rounded-full bg-gold text-white text-sm font-bold flex items-center justify-center shrink-0">{STAR_STEPS[starStep].icon}</span>
+                                        {STAR_STEPS[starStep].label}
+                                    </div>
+                                    <p className="text-[13px] text-ink-40 mb-4 leading-relaxed">{STAR_STEPS[starStep].hint}</p>
+                                    {STAR_STEPS[starStep].type === 'input' ? (
+                                        <input type="text" className="w-full px-3.5 py-2.5 text-sm border border-ink-10 rounded-lg bg-[var(--white)] text-ink transition-colors focus:outline-none focus:border-gold focus:shadow-[0_0_0_3px_rgba(201,146,60,0.1)]" placeholder={STAR_STEPS[starStep].placeholder} value={(currentStory as any)[STAR_STEPS[starStep].key]} onChange={e => setCurrentStory({ ...currentStory, [STAR_STEPS[starStep].key]: e.target.value })} autoFocus />
+                                    ) : (
+                                        <textarea rows={4} className="w-full px-3.5 py-2.5 text-sm border border-ink-10 rounded-lg bg-[var(--white)] text-ink transition-colors focus:outline-none focus:border-gold focus:shadow-[0_0_0_3px_rgba(201,146,60,0.1)] resize-y leading-relaxed" placeholder={STAR_STEPS[starStep].placeholder} value={(currentStory as any)[STAR_STEPS[starStep].key]} onChange={e => setCurrentStory({ ...currentStory, [STAR_STEPS[starStep].key]: e.target.value })} autoFocus />
+                                    )}
+                                </div>
+
+                                {/* Navigation */}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex gap-2">
+                                        {starStep > 0 && (
+                                            <button className="btn btn-outline" onClick={() => setStarStep(s => s - 1)}>← Back</button>
                                         )}
                                     </div>
-                                ))}
-                                <div className="flex gap-3">
-                                    <button className="btn btn-gold" onClick={saveStory} disabled={!currentStory.bullet || !currentStory.situation || !currentStory.task || !currentStory.action || !currentStory.result}>{editingId ? 'Update Story' : 'Save Story'}</button>
-                                    <button className="btn btn-outline" onClick={() => setShowStarForm(false)}>Cancel</button>
+                                    <div className="flex gap-2">
+                                        <button className="px-4 py-2 text-sm font-medium rounded-lg border border-ink-10 text-ink-40 cursor-pointer transition-all hover:border-ink-20 hover:text-ink bg-transparent" onClick={() => setShowStarForm(false)}>Cancel</button>
+                                        {starStep < STAR_STEPS.length - 1 ? (
+                                            <button className="btn btn-gold" onClick={() => setStarStep(s => s + 1)} disabled={!(currentStory as any)[STAR_STEPS[starStep].key]}>
+                                                Next →
+                                            </button>
+                                        ) : (
+                                            <button className="btn btn-gold" onClick={saveStory} disabled={!currentStory.bullet || !currentStory.situation || !currentStory.task || !currentStory.action || !currentStory.result}>
+                                                {editingId ? '✓ Update Story' : '✓ Save Story'}
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         )}
