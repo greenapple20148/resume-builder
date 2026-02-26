@@ -6,6 +6,7 @@ import { useStore } from '../lib/store'
 import { useSEO } from '../lib/useSEO'
 import { PLANS, openCustomerPortal, verifySubscription } from '../lib/stripe'
 import { Resume } from '../types'
+import { getResumeScore } from '../lib/resumeScore'
 
 interface ResumeCardProps {
   resume: Resume
@@ -46,6 +47,35 @@ function ResumeCard({ resume, onEdit, onDelete, onDuplicate, onDownload }: Resum
           </div>
         </div>
       </div>
+      {/* Score card */}
+      {(() => {
+        const score = getResumeScore(resume)
+        const color = score > 70 ? '#22c55e' : score > 45 ? '#eab308' : '#ef4444'
+        const bg = score > 70 ? 'rgba(34,197,94,0.06)' : score > 45 ? 'rgba(234,179,8,0.06)' : 'rgba(239,68,68,0.06)'
+        const label = score > 80 ? 'Excellent' : score > 60 ? 'Good' : score > 40 ? 'Needs Work' : 'Weak'
+        const desc = score > 80
+          ? 'Ready to impress recruiters'
+          : score > 60
+            ? 'A few improvements will help'
+            : score > 40
+              ? 'Add metrics & stronger verbs'
+              : 'Missing key sections'
+        return (
+          <div className="mx-3 mb-3 p-2.5 rounded-lg" style={{ background: bg }}>
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px]" style={{ color }}>{score > 70 ? '✅' : score > 45 ? '⚠️' : '🔴'}</span>
+                <span className="text-[11px] font-semibold" style={{ color }}>{label}</span>
+              </div>
+              <span className="text-[11px] font-mono font-bold" style={{ color }}>{score}/100</span>
+            </div>
+            <div className="h-1.5 bg-[rgba(0,0,0,0.06)] rounded-full overflow-hidden mb-1.5">
+              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${score}%`, background: color }} />
+            </div>
+            <div className="text-[10px] text-ink-30 leading-snug">{desc}</div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
@@ -170,6 +200,7 @@ export default function DashboardPage() {
                 <Link to="/tools/mock-interview" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span>🤖</span> AI Mock Interview</Link>
               </>
             )}
+            <Link to="/tools/ai" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span>🧠</span> AI Tools</Link>
           </div>
 
           <div className="bg-[var(--white)] border border-ink-10 rounded-xl p-4 mt-4">

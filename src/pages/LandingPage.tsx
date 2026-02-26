@@ -191,7 +191,7 @@ export default function LandingPage() {
               ))}
             </div>
             <div className="text-center mt-10">
-              <Link to="/auth?mode=signup" className="btn btn-gold btn-lg">Unlock AI Features →</Link>
+              <Link to="/tools/ai" className="btn btn-gold btn-lg">Unlock AI Features →</Link>
             </div>
           </div>
         </section>
@@ -241,6 +241,105 @@ export default function LandingPage() {
                 <p className="text-sm text-ink-40 leading-[1.7]">{step.desc}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ── BUILT FOR ──────────────────────── */}
+        <section aria-label="Built for" className="bg-ink-05 px-5 sm:px-10 py-16 sm:py-24">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="text-center max-w-[560px] mx-auto mb-12">
+              <h2 className="mb-3">Built for people<br /><em className="italic text-gold">who mean business</em></h2>
+              <p className="text-base text-ink-40">Whether you're switching careers or climbing the ladder — we've got you covered.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {[
+                { icon: '💻', title: 'Built for Tech Professionals', desc: 'Optimized for SWE, PM, Data, DevOps, and Design roles with industry-specific formatting.' },
+                { icon: '🔄', title: 'Built for Career Switchers', desc: 'Highlight transferable skills and reframe experience for a completely new industry.' },
+                { icon: '📈', title: 'Built for Promotion-Ready Employees', desc: 'Showcase internal impact, leadership growth, and metrics that justify your next level.' },
+                { icon: '🇺🇸', title: 'Built for US Job Market', desc: 'Follows US resume conventions — no photo, no DOB, ATS-compliant formatting.' },
+                { icon: '🏢', title: 'Built for Fortune 500 ATS', desc: 'Tested against Workday, Greenhouse, Lever, and iCIMS parsing systems.' },
+              ].map((item, i) => (
+                <div key={i} className="p-6 bg-[var(--white)] border border-ink-10 rounded-xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-gold-pale">
+                  <div className="text-3xl mb-3">{item.icon}</div>
+                  <h4 className="text-[14px] font-semibold mb-2 leading-snug">{item.title}</h4>
+                  <p className="text-[12px] text-ink-40 leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── EMOTIONAL RELIEF ───────────────── */}
+        <section aria-label="Eliminate resume anxiety" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
+          <div className="text-center max-w-[620px] mx-auto mb-12">
+            <h2 className="mb-3">We get it.<br /><em className="italic text-gold">Job searching is stressful.</em></h2>
+            <p className="text-base text-ink-40">You shouldn't have to wonder if your resume is good enough. We built these tools so you never have to guess again.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {[
+              { icon: '😰', text: 'Stop Guessing If Your Resume Is Good Enough' },
+              { icon: '💬', text: 'Practice Interviews Before the Real One' },
+              { icon: '🛡', text: 'Eliminate Resume Anxiety' },
+              { icon: '🎤', text: 'Never Freeze in an Interview Again' },
+              { icon: '🚀', text: 'Feel Prepared — Not Panicked' },
+            ].map((item, i) => (
+              <div key={i} className="p-5 bg-[var(--white)] border border-ink-10 rounded-xl text-center transition-all duration-300 hover:shadow-md hover:border-gold-pale hover:-translate-y-1">
+                <div className="text-3xl mb-3">{item.icon}</div>
+                <p className="text-[13px] font-semibold text-ink leading-snug">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── PRODUCT DIFFERENTIATORS ────────── */}
+        <section aria-label="Product experience" className="bg-[#0e0d0b] dark:bg-[#0e0d0b] px-5 sm:px-10 py-16 sm:py-24">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="text-center max-w-[620px] mx-auto mb-12">
+              <h2 className="text-parchment mb-3">An experience<br /><em className="italic text-gold-light">competitors can't match</em></h2>
+              <p className="text-[rgba(250,248,243,0.4)] text-base">Real-time feedback, instant formatting, and unlimited flexibility — all in one editor.</p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              {[
+                { icon: '⚡', text: 'Build Resume in Under 10 Minutes' },
+                { icon: '📂', text: 'Unlimited Resume Versions' },
+                { icon: '🔄', text: 'Instant Resume Format Switch' },
+                { icon: '📄', text: 'One-Click Clean Formatting' },
+                { icon: '📊', text: 'Live Resume Score as You Edit' },
+              ].map((item, i) => (
+                <div key={i} className="p-5 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] text-center transition-all duration-300 hover:border-[rgba(201,146,60,0.2)] hover:bg-[rgba(255,255,255,0.04)] group">
+                  <div className="text-2xl mb-2.5 group-hover:scale-110 transition-transform">{item.icon}</div>
+                  <p className="text-[12px] text-[rgba(250,248,243,0.6)] font-medium leading-snug">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── FOUNDER ANGLE ──────────────────── */}
+        <section aria-label="About us" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
+          <div className="max-w-[760px] mx-auto text-center">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold mb-4 opacity-70">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              From Our Founders
+            </div>
+            <h2 className="mb-6">Built by engineers,<br /><em className="italic text-gold">not marketing teams.</em></h2>
+            <p className="text-base text-ink-40 leading-[1.8] mb-10 max-w-[560px] mx-auto">
+              We got tired of resume builders that looked like they were designed in 2010. So we built one ourselves — with real AI, real design, and obsessive attention to what actually gets people hired.
+            </p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { icon: '👨‍💻', title: 'Built by Engineers', desc: 'Product-obsessed founders who ship weekly' },
+                { icon: '📈', title: 'Constantly Improving AI', desc: 'Models retrained on real hiring data' },
+                { icon: '🧪', title: 'Founder-Led Product', desc: 'Every feature decision made by builders' },
+                { icon: '💡', title: 'We Listen to Members', desc: 'Founding members shape the roadmap' },
+              ].map((item, i) => (
+                <div key={i} className="p-5 bg-ink-05 border border-ink-10 rounded-xl text-center">
+                  <div className="text-2xl mb-2.5">{item.icon}</div>
+                  <h4 className="text-[13px] font-semibold mb-1">{item.title}</h4>
+                  <p className="text-[11px] text-ink-30 leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 

@@ -148,6 +148,9 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                       <Link to="/tools/mock-interview" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                         🤖 AI Mock Interview
                       </Link>
+                      <Link to="/tools/ai" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
+                        🧠 AI Tools
+                      </Link>
                     </>
                   )}
                   <Link to="/pricing" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>

@@ -26,6 +26,7 @@ import LinkedInToolkitPage from './pages/LinkedInToolkitPage'
 import InterviewToolkitPage from './pages/InterviewToolkitPage'
 import MockInterviewPage from './pages/MockInterviewPage'
 import CoverLetterPage from './pages/CoverLetterPage'
+import AIToolsPage from './pages/AIToolsPage'
 import WelcomePage from './pages/WelcomePage'
 import NotFoundPage from './pages/NotFoundPage'
 
@@ -100,6 +101,7 @@ export default function App() {
         <Route path="/tools/interview" element={<ProtectedRoute><InterviewToolkitPage /></ProtectedRoute>} />
         <Route path="/tools/mock-interview" element={<ProtectedRoute><MockInterviewPage /></ProtectedRoute>} />
         <Route path="/tools/cover-letter" element={<ProtectedRoute><CoverLetterPage /></ProtectedRoute>} />
+        <Route path="/tools/ai" element={<AIToolsPage />} />
         <Route path="/welcome" element={<ProtectedRoute><WelcomePage /></ProtectedRoute>} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
