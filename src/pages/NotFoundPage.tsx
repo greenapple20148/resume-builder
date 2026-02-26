@@ -1,7 +1,14 @@
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import { useSEO } from '../lib/useSEO'
 
 export default function NotFoundPage() {
+  useSEO({
+    title: 'Page Not Found (404)',
+    description: 'The page you\'re looking for doesn\'t exist or has been moved.',
+    noindex: true,
+  })
+
   return (
     <div>
       <Navbar />

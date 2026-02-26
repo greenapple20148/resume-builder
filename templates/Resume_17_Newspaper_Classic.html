@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — William Crawford</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IM+Fell+English:ital@0;1&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1410;
+    --mid: #4a3f34;
+    --muted: #7a6e64;
+    --rule: #c8bfb4;
+    --cream: #f7f3ee;
+    --paper: #faf7f3;
+    --red: #8b1a1a;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; }
+    @page { margin: 0.4in; size: letter; }
+  }
+
+  body {
+    background: #d8d0c4;
+    font-family: 'Source Sans 3', sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 840px;
+    margin: 40px auto;
+    background: var(--paper);
+    box-shadow: 0 4px 32px rgba(0,0,0,0.12);
+    padding: 52px 60px;
+  }
+
+  /* Masthead */
+  .masthead {
+    text-align: center;
+    border-top: 3px double var(--ink);
+    border-bottom: 3px double var(--ink);
+    padding: 16px 0;
+    margin-bottom: 8px;
+  }
+
+  .pub-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .name {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    font-weight: 900;
+    color: var(--ink);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+
+  .name em {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .edition-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid var(--rule);
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Source Sans 3', sans-serif;
+  }
+
+  .edition-bar .tagline {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  /* Lede */
+  .lede {
+    font-family: 'IM Fell English', serif;
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--mid);
+    text-align: center;
+    margin: 22px 0 28px;
+    padding: 0 40px;
+    font-style: italic;
+  }
+
+  /* Three-column layout */
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 2px 1fr 2px 1fr;
+    gap: 0 28px;
+    border-top: 1px solid var(--rule);
+    padding-top: 28px;
+  }
+
+  .col-divider {
+    background: var(--rule);
+  }
+
+  /* Section headings */
+  .col-section {
+    margin-bottom: 24px;
+  }
+
+  .col-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red);
+    border-bottom: 1px solid var(--red);
+    padding-bottom: 5px;
+    margin-bottom: 14px;
+  }
+
+  .entry { margin-bottom: 18px; }
+
+  .entry-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 2px;
+  }
+
+  .entry-meta {
+    font-size: 11px;
+    color: var(--red);
+    font-weight: 600;
+    margin-bottom: 2px;
+    letter-spacing: 0.3px;
+  }
+
+  .entry-date {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-style: italic;
+    font-family: 'IM Fell English', serif;
+  }
+
+  .entry p {
+    font-size: 12.5px;
+    color: var(--mid);
+    line-height: 1.75;
+    font-weight: 300;
+  }
+
+  .skill-item {
+    font-size: 12.5px;
+    color: var(--mid);
+    line-height: 1.8;
+    padding-bottom: 5px;
+    border-bottom: 1px dotted var(--rule);
+    margin-bottom: 5px;
+    font-weight: 300;
+  }
+
+  .skill-item strong {
+    font-weight: 600;
+    color: var(--ink);
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 3px double var(--ink);
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="masthead">
+    <div class="pub-name">Curriculum Vitae</div>
+    <div class="name">William <em>Crawford</em></div>
+    <div class="edition-bar">
+      <span>San Francisco, CA · (415) 777-2093 · w.crawford@law.com</span>
+      <span class="tagline">Counselor · Litigator · Advisor</span>
+      <span>linkedin.com/in/wcrawford</span>
+    </div>
+  </div>
+
+  <p class="lede">
+    Senior litigation attorney with 14 years representing Fortune 100 companies in complex commercial disputes,
+    securities litigation, and regulatory investigations. Former federal law clerk.
+    Track record of favorable outcomes in 87% of matters reaching trial.
+  </p>
+
+  <div class="columns">
+    <!-- Column 1: Experience -->
+    <div>
+      <div class="col-section">
+        <div class="col-title">Legal Experience</div>
+
+        <div class="entry">
+          <div class="entry-title">Partner, Litigation</div>
+          <div class="entry-meta">Skadden, Arps · San Francisco</div>
+          <div class="entry-date">2020 — Present</div>
+          <p>Lead counsel for NASDAQ-listed companies in securities class actions and SEC enforcement matters. Successfully resolved $1.2B shareholder derivative suit via negotiated settlement. Maintain active docket of 12 concurrent matters.</p>
+        </div>
+
+        <div class="entry">
+          <div class="entry-title">Senior Associate</div>
+          <div class="entry-meta">Quinn Emanuel · Los Angeles</div>
+          <div class="entry-date">2015 — 2020</div>
+          <p>Managed trial teams of 6 attorneys on high-stakes IP and commercial litigation. Won summary judgment in landmark patent case establishing industry precedent. Billed 2,800+ hours annually while leading pro bono practice.</p>
+        </div>
+
+        <div class="entry">
+          <div class="entry-title">Associate Attorney</div>
+          <div class="entry-meta">Gibson, Dunn & Crutcher · New York</div>
+          <div class="entry-date">2012 — 2015</div>
+          <p>Defended financial institutions in post-2008 regulatory investigations. Managed document review teams of 40+ contract attorneys. Drafted appellate briefs in circuit court proceedings.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-divider"></div>
+
+    <!-- Column 2: Education + Clerk -->
+    <div>
+      <div class="col-section">
+        <div class="col-title">Education</div>
+
+        <div class="entry">
+          <div class="entry-title">J.D., magna cum laude</div>
+          <div class="entry-meta">Yale Law School</div>
+          <div class="entry-date">2012</div>
+          <p>Order of the Coif. Yale Law Journal, Senior Editor. Moot Court Board Champion, 2011.</p>
+        </div>
+
+        <div class="entry">
+          <div class="entry-title">B.A. Political Science, Philosophy</div>
+          <div class="entry-meta">Princeton University</div>
+          <div class="entry-date">2009 — Summa Cum Laude</div>
+          <p>Phi Beta Kappa. Senior thesis on constitutional standing doctrine awarded departmental prize.</p>
+        </div>
+      </div>
+
+      <div class="col-section">
+        <div class="col-title">Clerkship</div>
+        <div class="entry">
+          <div class="entry-title">Judicial Clerk</div>
+          <div class="entry-meta">Hon. Richard Posner, 7th Circuit</div>
+          <div class="entry-date">2012 — 2013</div>
+          <p>Researched and drafted opinions in 40+ appellate matters. Assisted in three published decisions cited in subsequent circuit rulings.</p>
+        </div>
+      </div>
+
+      <div class="col-section">
+        <div class="col-title">Bar Admissions</div>
+        <div class="entry">
+          <p>California State Bar<br>New York State Bar<br>U.S. District Court, N.D. Cal.<br>U.S. Court of Appeals, 9th Cir.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-divider"></div>
+
+    <!-- Column 3: Skills + Awards -->
+    <div>
+      <div class="col-section">
+        <div class="col-title">Practice Areas</div>
+        <div class="skill-item"><strong>Securities Litigation</strong> — Class actions, SEC enforcement</div>
+        <div class="skill-item"><strong>Commercial Disputes</strong> — Breach of contract, fraud</div>
+        <div class="skill-item"><strong>Intellectual Property</strong> — Patent, trade secrets</div>
+        <div class="skill-item"><strong>Regulatory Defense</strong> — DOJ, FTC investigations</div>
+        <div class="skill-item"><strong>Appellate Practice</strong> — Circuit court briefing</div>
+        <div class="skill-item"><strong>Arbitration</strong> — AAA, JAMS, ICC panels</div>
+      </div>
+
+      <div class="col-section">
+        <div class="col-title">Recognition</div>
+        <div class="skill-item"><strong>Super Lawyers</strong> — 2020, 2021, 2022, 2023, 2024</div>
+        <div class="skill-item"><strong>Best Lawyers in America</strong> — Commercial Litigation 2022</div>
+        <div class="skill-item"><strong>Chambers USA</strong> — Band 1, Securities Litigation</div>
+        <div class="skill-item"><strong>Law360 Rising Star</strong> — Litigation 2018</div>
+      </div>
+
+      <div class="col-section">
+        <div class="col-title">Publications</div>
+        <div class="skill-item"><strong>Yale L.J.</strong> — "Standing in Digital Markets" (2024)</div>
+        <div class="skill-item"><strong>Stanford L. Rev.</strong> — "Securities Fraud & AI" (2023)</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>References furnished upon request</span>
+    <span>·</span>
+    <span>Confidential — not for distribution</span>
+  </footer>
+</div>
+</body>
+</html>

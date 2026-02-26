@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Rhys Harrington</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+  body { font-family: 'Space Grotesk', sans-serif; }
+</style>
+</head>
+<body class="bg-zinc-950 min-h-screen py-10">
+  <div class="max-w-[860px] mx-auto">
+
+    <!-- Name banner -->
+    <div class="bg-zinc-900 border border-zinc-800 px-14 py-10 mb-0.5">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-white text-[52px] font-bold leading-none tracking-tighter">Rhys<br><span class="text-zinc-400 font-light">Harrington</span></h1>
+          <p class="text-zinc-500 text-xs tracking-[4px] uppercase mt-3 font-medium">Data Engineering Lead</p>
+        </div>
+        <div class="text-right text-zinc-500 text-[13px] leading-loose font-light">
+          <p class="text-zinc-300 font-medium">London, UK</p>
+          <p>+44 7800 123456</p>
+          <p>rhys@harrington.dev</p>
+          <p class="text-zinc-400">rhysharrington.dev</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary band -->
+    <div class="bg-zinc-800 border-x border-zinc-700 px-14 py-5 flex items-center gap-4">
+      <div class="w-0.5 h-12 bg-white shrink-0"></div>
+      <p class="text-zinc-400 text-[13.5px] leading-relaxed font-light">
+        Data engineering leader with 9 years designing pipelines and data platforms for fintech, media, and e-commerce at scale.
+        Expert in Apache Spark, dbt, and cloud data warehousing. Reduced data processing costs by $3.8M at current company.
+      </p>
+    </div>
+
+    <!-- Main body -->
+    <div class="bg-zinc-900 border border-zinc-800 mt-0.5">
+      <div class="grid grid-cols-5">
+
+        <!-- Experience (3 cols) -->
+        <div class="col-span-3 border-r border-zinc-800 px-12 py-10">
+          <h2 class="text-zinc-500 text-[10px] tracking-[4px] uppercase font-semibold mb-6">Experience</h2>
+
+          <div class="space-y-8">
+            <div>
+              <div class="flex justify-between items-baseline mb-1">
+                <h3 class="text-white font-semibold text-[16px]">Lead Data Engineer</h3>
+                <span class="text-zinc-500 text-[11px] font-medium tracking-wider whitespace-nowrap">2022 — NOW</span>
+              </div>
+              <p class="text-zinc-400 text-[12.5px] font-medium tracking-wider uppercase mb-3 text-[11px]">Monzo · London</p>
+              <ul class="space-y-2 text-[13px] text-zinc-500 font-light leading-relaxed">
+                <li class="before:content-['/'] before:text-white before:font-bold before:mr-2">Architected streaming data platform processing £4B/day in transaction events using Kafka + Flink</li>
+                <li class="before:content-['/'] before:text-white before:font-bold before:mr-2">Migrated 400+ Airflow DAGs to Prefect reducing pipeline failures by 78%</li>
+                <li class="before:content-['/'] before:text-white before:font-bold before:mr-2">Implemented data cost governance saving $3.8M annually in BigQuery compute</li>
+                <li class="before:content-['/'] before:text-white before:font-bold before:mr-2">Led team of 8 engineers, conducting 40+ technical interviews to double team size</li>
+              </ul>
+            </div>
+
+            <div class="border-t border-zinc-800 pt-8">
+              <div class="flex justify-between items-baseline mb-1">
+                <h3 class="text-white font-semibold text-[16px]">Senior Data Engineer</h3>
+                <span class="text-zinc-500 text-[11px] font-medium tracking-wider whitespace-nowrap">2019 — 2022</span>
+              </div>
+              <p class="text-zinc-400 tracking-wider uppercase mb-3 text-[11px]">Deliveroo · London</p>
+              <ul class="space-y-2 text-[13px] text-zinc-500 font-light leading-relaxed">
+                <li class="before:content-['/'] before:text-white before:font-bold before:mr-2">Built real-time order attribution pipeline tracking 2M+ daily orders across 12 markets</li>
+                <li class="before:content-['/'] before:text-white before:font-bold before:mr-2">Led dbt migration from Looker PDTs reducing transformation run time 65%</li>
+                <li class="before:content-['/'] before:text-white before:font-bold before:mr-2">Designed data mesh architecture enabling 60+ analytical self-service users</li>
+              </ul>
+            </div>
+
+            <div class="border-t border-zinc-800 pt-8">
+              <div class="flex justify-between items-baseline mb-1">
+                <h3 class="text-white font-semibold text-[16px]">Data Engineer</h3>
+                <span class="text-zinc-500 text-[11px] font-medium tracking-wider whitespace-nowrap">2016 — 2019</span>
+              </div>
+              <p class="text-zinc-400 tracking-wider uppercase mb-3 text-[11px]">Sky UK · London</p>
+              <ul class="space-y-2 text-[13px] text-zinc-500 font-light leading-relaxed">
+                <li class="before:content-['/'] before:text-white before:font-bold before:mr-2">Built ETL pipelines for viewer analytics platform processing 8TB daily across 12M subscribers</li>
+                <li class="before:content-['/'] before:text-white before:font-bold before:mr-2">Created Python-based data quality framework catching 99.4% of schema violations</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar (2 cols) -->
+        <div class="col-span-2 px-10 py-10 space-y-8">
+          <!-- Stack -->
+          <div>
+            <h2 class="text-zinc-500 text-[10px] tracking-[4px] uppercase font-semibold mb-4">Tech Stack</h2>
+            <div class="space-y-2.5">
+              <div class="flex justify-between items-center">
+                <span class="text-zinc-300 text-[13px]">Python / SQL</span>
+                <div class="flex gap-1">
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                </div>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-zinc-300 text-[13px]">dbt + BigQuery</span>
+                <div class="flex gap-1">
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                </div>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-zinc-300 text-[13px]">Apache Spark</span>
+                <div class="flex gap-1">
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-zinc-700 rounded-sm"></div>
+                </div>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-zinc-300 text-[13px]">Kafka / Flink</span>
+                <div class="flex gap-1">
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-zinc-700 rounded-sm"></div>
+                </div>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-zinc-300 text-[13px]">Terraform / GCP</span>
+                <div class="flex gap-1">
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-white rounded-sm"></div>
+                  <div class="w-2 h-2 bg-zinc-700 rounded-sm"></div>
+                  <div class="w-2 h-2 bg-zinc-700 rounded-sm"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-zinc-800 pt-8">
+            <h2 class="text-zinc-500 text-[10px] tracking-[4px] uppercase font-semibold mb-4">Education</h2>
+            <div>
+              <p class="text-zinc-200 text-[13.5px] font-semibold">MEng Computer Science</p>
+              <p class="text-zinc-500 text-[12px] mt-0.5">Imperial College London<br>First Class Honours · 2016</p>
+            </div>
+          </div>
+
+          <div class="border-t border-zinc-800 pt-8">
+            <h2 class="text-zinc-500 text-[10px] tracking-[4px] uppercase font-semibold mb-4">Certifications</h2>
+            <div class="space-y-2">
+              <div class="border border-zinc-700 px-3 py-2 text-zinc-400 text-[12px]">GCP Professional Data Engineer</div>
+              <div class="border border-zinc-700 px-3 py-2 text-zinc-400 text-[12px]">dbt Analytics Engineering</div>
+              <div class="border border-zinc-700 px-3 py-2 text-zinc-400 text-[12px]">Databricks Associate DE</div>
+            </div>
+          </div>
+
+          <div class="border-t border-zinc-800 pt-8">
+            <h2 class="text-zinc-500 text-[10px] tracking-[4px] uppercase font-semibold mb-3">Numbers</h2>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="bg-zinc-800 p-3 text-center">
+                <div class="text-white text-xl font-bold">$3.8M</div>
+                <div class="text-zinc-500 text-[10px] mt-0.5 uppercase tracking-wider">Saved</div>
+              </div>
+              <div class="bg-zinc-800 p-3 text-center">
+                <div class="text-white text-xl font-bold">400+</div>
+                <div class="text-zinc-500 text-[10px] mt-0.5 uppercase tracking-wider">Pipelines</div>
+              </div>
+              <div class="bg-zinc-800 p-3 text-center">
+                <div class="text-white text-xl font-bold">8TB</div>
+                <div class="text-zinc-500 text-[10px] mt-0.5 uppercase tracking-wider">Daily</div>
+              </div>
+              <div class="bg-zinc-800 p-3 text-center">
+                <div class="text-white text-xl font-bold">99.4%</div>
+                <div class="text-zinc-500 text-[10px] mt-0.5 uppercase tracking-wider">Uptime</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

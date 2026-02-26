@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { toast } from '../components/Toast'
+import { useSEO } from '../lib/useSEO'
 import { PLANS } from '../lib/stripe'
-import styles from './EditorPage.module.css'
+
 import '../styles/terminal.css'
 import '../styles/scifi.css'
 import '../styles/sophisticated.css'
@@ -115,7 +116,7 @@ interface SectionProps<T> {
 function PersonalSection({ data, onChange }: SectionProps<PersonalInfo>) {
   const set = (field: keyof PersonalInfo) => (val: string) => onChange({ ...data, [field]: val })
   return (
-    <div className={styles.sectionForm}>
+    <div className="flex flex-col gap-4 max-w-[640px]">
       <div className="form-row">
         <Field label="Full Name" value={data.fullName} onChange={set('fullName')} placeholder="Alex Johnson" />
         <Field label="Job Title" value={data.jobTitle} onChange={set('jobTitle')} placeholder="Senior Product Manager" />
@@ -151,7 +152,7 @@ function SummarySection({ data, onChange }: SectionProps<string>) {
   }
 
   return (
-    <div className={styles.sectionForm}>
+    <div className="flex flex-col gap-4 max-w-[640px]">
       <TextArea
         label="Professional Summary"
         value={data}
@@ -160,7 +161,7 @@ function SummarySection({ data, onChange }: SectionProps<string>) {
         rows={5}
       />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 8 }}>
-        <p className={styles.hint}>💡 3-4 sentences highlighting your biggest strengths and career goals.</p>
+        <p className="text-xs text-ink-20 leading-relaxed italic">💡 3-4 sentences highlighting your biggest strengths and career goals.</p>
         <button className="btn btn-ghost btn-sm" style={{ color: 'var(--blue)', fontSize: 12 }} onClick={handleAi} disabled={isAiLoading || !data}>
           {isAiLoading ? '✨ Rewriting...' : '✨ AI Rewrite'}
         </button>
@@ -197,11 +198,11 @@ function ExperienceSection({ data = [], onChange }: SectionProps<ExperienceEntry
   }
 
   return (
-    <div className={styles.sectionForm}>
+    <div className="flex flex-col gap-4 max-w-[640px]">
       {data.map((exp, idx) => (
-        <div key={exp.id || idx} className={styles.entryCard}>
-          <div className={styles.entryHeader}>
-            <span className={styles.entryLabel}>{exp.title || `Position ${idx + 1}`}</span>
+        <div key={exp.id || idx} className="bg-white dark:bg-ink-05 border border-ink-10 rounded-xl p-[18px] flex flex-col gap-3">
+          <div className="flex justify-between items-center">
+            <span className="text-[13px] font-medium text-ink font-mono tracking-wide">{exp.title || `Position ${idx + 1}`}</span>
             <button className="btn btn-ghost btn-icon btn-sm" onClick={() => remove(idx)} aria-label="Remove">✕</button>
           </div>
           <div className="form-row">
@@ -241,7 +242,7 @@ function ExperienceSection({ data = [], onChange }: SectionProps<ExperienceEntry
           </div>
         </div>
       ))}
-      <button className={styles.addBtn} onClick={add}>
+      <button className="flex items-center gap-2 px-4 py-3 bg-transparent border-2 border-dashed border-ink-10 rounded-lg text-[13px] text-ink-40 cursor-pointer transition-all w-full hover:border-gold hover:text-gold hover:bg-gold-pale [&>span]:w-[22px] [&>span]:h-[22px] [&>span]:rounded-full [&>span]:bg-ink-05 [&>span]:flex [&>span]:items-center [&>span]:justify-center [&>span]:text-base [&>span]:leading-none" onClick={add}>
         <span>+</span> Add Experience
       </button>
     </div>
@@ -256,11 +257,11 @@ function EducationSection({ data = [], onChange }: SectionProps<EducationEntry[]
   }
 
   return (
-    <div className={styles.sectionForm}>
+    <div className="flex flex-col gap-4 max-w-[640px]">
       {data.map((edu, idx) => (
-        <div key={edu.id || idx} className={styles.entryCard}>
-          <div className={styles.entryHeader}>
-            <span className={styles.entryLabel}>{edu.degree || `Degree ${idx + 1}`}</span>
+        <div key={edu.id || idx} className="bg-white dark:bg-ink-05 border border-ink-10 rounded-xl p-[18px] flex flex-col gap-3">
+          <div className="flex justify-between items-center">
+            <span className="text-[13px] font-medium text-ink font-mono tracking-wide">{edu.degree || `Degree ${idx + 1}`}</span>
             <button className="btn btn-ghost btn-icon btn-sm" onClick={() => remove(idx)}>✕</button>
           </div>
           <div className="form-row">
@@ -278,7 +279,7 @@ function EducationSection({ data = [], onChange }: SectionProps<EducationEntry[]
           <Field label="Honors / Notes (optional)" value={edu.notes} onChange={(v) => update(idx, 'notes', v)} placeholder="Summa Cum Laude, Dean's List" />
         </div>
       ))}
-      <button className={styles.addBtn} onClick={add}><span>+</span> Add Education</button>
+      <button className="flex items-center gap-2 px-4 py-3 bg-transparent border-2 border-dashed border-ink-10 rounded-lg text-[13px] text-ink-40 cursor-pointer transition-all w-full hover:border-gold hover:text-gold hover:bg-gold-pale [&>span]:w-[22px] [&>span]:h-[22px] [&>span]:rounded-full [&>span]:bg-ink-05 [&>span]:flex [&>span]:items-center [&>span]:justify-center [&>span]:text-base [&>span]:leading-none" onClick={add}><span>+</span> Add Education</button>
     </div>
   )
 }
@@ -294,8 +295,8 @@ function SkillsSection({ data = [], onChange }: SectionProps<string[]>) {
   const remove = (s: string) => onChange(data.filter((x) => x !== s))
 
   return (
-    <div className={styles.sectionForm}>
-      <div className={styles.skillInput}>
+    <div className="flex flex-col gap-4 max-w-[640px]">
+      <div className="flex gap-2.5">
         <input
           type="text"
           className="form-input"
@@ -306,11 +307,11 @@ function SkillsSection({ data = [], onChange }: SectionProps<string[]>) {
         />
         <button className="btn btn-outline" onClick={add}>Add</button>
       </div>
-      <div className={styles.skillTags}>
+      <div className="flex flex-wrap gap-2 min-h-[40px]">
         {data.map((skill) => (
-          <span key={skill} className={styles.skillTag}>
+          <span key={skill} className="inline-flex items-center gap-1.5 bg-ink dark:bg-gold text-parchment dark:text-white px-3 py-[5px] rounded-full text-xs font-medium">
             {skill}
-            <button onClick={() => remove(skill)}>✕</button>
+            <button className="bg-transparent border-none cursor-pointer text-[rgba(250,248,243,0.5)] text-[10px] p-0 leading-none transition-colors hover:text-parchment" onClick={() => remove(skill)}>✕</button>
           </span>
         ))}
       </div>
@@ -327,9 +328,9 @@ function LanguagesSection({ data = [], onChange }: SectionProps<LanguageEntry[]>
   const LEVELS = ['Native', 'Fluent', 'Advanced', 'Intermediate', 'Basic']
 
   return (
-    <div className={styles.sectionForm}>
+    <div className="flex flex-col gap-4 max-w-[640px]">
       {data.map((lang, idx) => (
-        <div key={lang.id || idx} className={styles.inlineRow}>
+        <div key={lang.id || idx} className="flex gap-2.5 items-end">
           <input className="form-input" value={lang.language} onChange={(e) => update(idx, 'language', e.target.value)} placeholder="Language" />
           <select className="form-input form-select" value={lang.level} onChange={(e) => update(idx, 'level', e.target.value)}>
             {LEVELS.map((l) => <option key={l}>{l}</option>)}
@@ -337,7 +338,7 @@ function LanguagesSection({ data = [], onChange }: SectionProps<LanguageEntry[]>
           <button className="btn btn-ghost btn-icon btn-sm" onClick={() => remove(idx)}>✕</button>
         </div>
       ))}
-      <button className={styles.addBtn} onClick={add}><span>+</span> Add Language</button>
+      <button className="flex items-center gap-2 px-4 py-3 bg-transparent border-2 border-dashed border-ink-10 rounded-lg text-[13px] text-ink-40 cursor-pointer transition-all w-full hover:border-gold hover:text-gold hover:bg-gold-pale [&>span]:w-[22px] [&>span]:h-[22px] [&>span]:rounded-full [&>span]:bg-ink-05 [&>span]:flex [&>span]:items-center [&>span]:justify-center [&>span]:text-base [&>span]:leading-none" onClick={add}><span>+</span> Add Language</button>
     </div>
   )
 }
@@ -350,11 +351,11 @@ function CertificationsSection({ data = [], onChange }: SectionProps<Certificati
   }
 
   return (
-    <div className={styles.sectionForm}>
+    <div className="flex flex-col gap-4 max-w-[640px]">
       {data.map((cert, idx) => (
-        <div key={cert.id || idx} className={styles.entryCard}>
-          <div className={styles.entryHeader}>
-            <span className={styles.entryLabel}>{cert.name || `Certificate ${idx + 1}`}</span>
+        <div key={cert.id || idx} className="bg-white dark:bg-ink-05 border border-ink-10 rounded-xl p-[18px] flex flex-col gap-3">
+          <div className="flex justify-between items-center">
+            <span className="text-[13px] font-medium text-ink font-mono tracking-wide">{cert.name || `Certificate ${idx + 1}`}</span>
             <button className="btn btn-ghost btn-icon btn-sm" onClick={() => remove(idx)}>✕</button>
           </div>
           <div className="form-row">
@@ -367,7 +368,7 @@ function CertificationsSection({ data = [], onChange }: SectionProps<Certificati
           </div>
         </div>
       ))}
-      <button className={styles.addBtn} onClick={add}><span>+</span> Add Certification</button>
+      <button className="flex items-center gap-2 px-4 py-3 bg-transparent border-2 border-dashed border-ink-10 rounded-lg text-[13px] text-ink-40 cursor-pointer transition-all w-full hover:border-gold hover:text-gold hover:bg-gold-pale [&>span]:w-[22px] [&>span]:h-[22px] [&>span]:rounded-full [&>span]:bg-ink-05 [&>span]:flex [&>span]:items-center [&>span]:justify-center [&>span]:text-base [&>span]:leading-none" onClick={add}><span>+</span> Add Certification</button>
     </div>
   )
 }
@@ -380,11 +381,11 @@ function ProjectsSection({ data = [], onChange }: SectionProps<ProjectEntry[]>) 
   }
 
   return (
-    <div className={styles.sectionForm}>
+    <div className="flex flex-col gap-4 max-w-[640px]">
       {data.map((proj, idx) => (
-        <div key={proj.id || idx} className={styles.entryCard}>
-          <div className={styles.entryHeader}>
-            <span className={styles.entryLabel}>{proj.name || `Project ${idx + 1}`}</span>
+        <div key={proj.id || idx} className="bg-white dark:bg-ink-05 border border-ink-10 rounded-xl p-[18px] flex flex-col gap-3">
+          <div className="flex justify-between items-center">
+            <span className="text-[13px] font-medium text-ink font-mono tracking-wide">{proj.name || `Project ${idx + 1}`}</span>
             <button className="btn btn-ghost btn-icon btn-sm" onClick={() => remove(idx)}>✕</button>
           </div>
           <div className="form-row">
@@ -395,7 +396,7 @@ function ProjectsSection({ data = [], onChange }: SectionProps<ProjectEntry[]>) 
           <TextArea label="Description" value={proj.description} onChange={(v) => update(idx, 'description', v)} placeholder="Built a real-time analytics dashboard..." rows={3} />
         </div>
       ))}
-      <button className={styles.addBtn} onClick={add}><span>+</span> Add Project</button>
+      <button className="flex items-center gap-2 px-4 py-3 bg-transparent border-2 border-dashed border-ink-10 rounded-lg text-[13px] text-ink-40 cursor-pointer transition-all w-full hover:border-gold hover:text-gold hover:bg-gold-pale [&>span]:w-[22px] [&>span]:h-[22px] [&>span]:rounded-full [&>span]:bg-ink-05 [&>span]:flex [&>span]:items-center [&>span]:justify-center [&>span]:text-base [&>span]:leading-none" onClick={add}><span>+</span> Add Project</button>
     </div>
   )
 }
@@ -555,6 +556,13 @@ export default function EditorPage() {
     }
   }
 
+  useSEO({
+    title: `Editing: ${title}`,
+    description: 'Edit your resume with the ResumeBuildIn live editor.',
+    path: `/editor/${id}`,
+    noindex: true,
+  })
+
   if (loading) return <div className="loading-screen"><div className="spinner" /></div>
   if (error) return <div className="error-screen"><h2>{error}</h2><Link to="/dashboard">Back</Link></div>
 
@@ -574,30 +582,30 @@ export default function EditorPage() {
   }
 
   return (
-    <div className={styles.editor}>
-      <div className={styles.toolbar}>
-        <div className={styles.toolbarLeft}>
+    <div className="flex flex-col h-screen overflow-hidden bg-parchment">
+      <div className="h-[54px] bg-[var(--white)] border-b border-ink-10 flex items-center justify-between px-4 gap-3 shrink-0 z-10">
+        <div className="flex items-center gap-2 flex-1">
           <Link to="/dashboard" className="btn btn-ghost btn-sm">← Back</Link>
-          <div className={styles.toolbarDivider} />
+          <div className="w-px h-5 bg-ink-10 shrink-0" />
           {editingTitle ? (
             <input
               autoFocus
-              className={`form-input ${styles.titleInput}`}
+              className="form-input w-[200px] px-2 py-1 h-8 text-sm font-medium"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={handleTitleSave}
               onKeyDown={(e) => e.key === 'Enter' && handleTitleSave()}
             />
           ) : (
-            <span className={styles.titleBtn} onClick={() => setEditingTitle(true)}>{title}</span>
+            <span className="bg-transparent border-none text-sm font-medium text-ink cursor-pointer px-2 py-1 rounded-sm transition-colors hover:bg-ink-05" onClick={() => setEditingTitle(true)}>{title}</span>
           )}
-          <div className={styles.saveStatus}>
+          <div className="flex items-center gap-1.5 text-xs font-mono text-ink-40 whitespace-nowrap">
             {saveStatus === 'saving' && <><div className="spinner" style={{ width: 12, height: 12 }} /> Saving…</>}
             {saveStatus === 'saved' && '✓ Saved'}
             {saveStatus === 'error' && '⚠ Error'}
           </div>
         </div>
-        <div className={styles.toolbarRight}>
+        <div className="flex items-center gap-2 flex-1 justify-end">
           <button className="btn btn-outline btn-sm" onClick={handleDownload} disabled={downloading}>
             {downloading ? 'Generating…' : '📄 PDF'}
           </button>
@@ -605,22 +613,22 @@ export default function EditorPage() {
         </div>
       </div>
 
-      <div className={styles.layout}>
-        <div className={styles.sectionNav}>
-          <div className={styles.navTitle}>Sections</div>
+      <div className="flex flex-1 overflow-hidden">
+        <div className="w-[196px] max-md:w-[52px] bg-[var(--white)] border-r border-ink-10 py-4 overflow-y-auto shrink-0">
+          <div className="font-mono text-[9px] tracking-[0.15em] uppercase text-ink-20 px-3.5 mb-2">Sections</div>
           {SECTIONS.map((sec) => (
             <button
               key={sec.id}
               onClick={() => setActiveSection(sec.id as SectionId)}
-              className={`${styles.navItem} ${activeSection === sec.id ? styles.navActive : ''}`}
+              className={`flex items-center gap-2 w-full px-3.5 py-2 text-[13px] bg-transparent border-none border-l-2 cursor-pointer text-left transition-all relative ${activeSection === sec.id ? '!bg-gold-pale !text-gold border-l-gold font-medium' : 'text-ink-40 border-l-transparent hover:bg-ink-05 hover:text-ink'}`}
             >
-              <span className={styles.navIcon}>{sec.icon}</span>
+              <span className="text-[11px] w-4 shrink-0">{sec.icon}</span>
               {sec.label}
             </button>
           ))}
         </div>
-        <div className={styles.formArea}>{renderSection()}</div>
-        <div className={styles.previewPanel}>
+        <div className="flex-1 overflow-y-auto flex flex-col">{renderSection()}</div>
+        <div className="w-[540px] max-xl:hidden border-l border-ink-10 flex flex-col shrink-0 bg-ink-05">
           <div id="resume-preview-content">
             <LivePreview resumeData={resumeData} themeId={themeId} />
           </div>

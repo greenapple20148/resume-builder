@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useStore } from '../lib/store'
 import { verifySubscription } from '../lib/stripe'
-import styles from './InterviewToolkitPage.module.css'
+
 
 // ── Role-specific interview questions database ──────
 const ROLE_QUESTIONS: Record<string, { category: string; questions: string[] }[]> = {
@@ -619,80 +619,64 @@ export default function InterviewToolkitPage() {
     // ── Premium gate
     if (!isPremium) {
         return (
-            <div className={styles.page}>
+            <div className="min-h-screen">
                 <Navbar />
-                <div className={styles.gate}>
-                    <div className={styles.gateIcon}>🎤</div>
+                <div className="max-w-[560px] mx-auto px-10 py-20 text-center">
+                    <div className="text-[56px] mb-5">🎤</div>
                     <h1>Interview Toolkit</h1>
-                    <p>Prepare for interviews with role-specific questions and the STAR story builder.</p>
-                    <div className={styles.gateFeatures}>
-                        <div className={styles.gateFeature}>
-                            <span className={styles.gateFeatureIcon}>❓</span>
-                            <div>
-                                <strong>20 Questions by Role</strong>
-                                <p>Curated behavioral, technical, and leadership questions for 6+ roles</p>
-                            </div>
+                    <p className="text-base text-ink-40 mb-10 leading-relaxed">Prepare for interviews with role-specific questions and the STAR story builder.</p>
+                    <div className="flex flex-col gap-4 text-left mb-10">
+                        <div className="flex gap-4 items-start p-5 bg-[var(--white)] border border-ink-10 rounded-xl">
+                            <span className="text-2xl shrink-0 mt-0.5">❓</span>
+                            <div><strong className="text-[15px] block mb-1">20 Questions by Role</strong><p className="text-[13px] text-ink-40 m-0 leading-relaxed">Curated behavioral, technical, and leadership questions for 6+ roles</p></div>
                         </div>
-                        <div className={styles.gateFeature}>
-                            <span className={styles.gateFeatureIcon}>⭐</span>
-                            <div>
-                                <strong>STAR Story Builder</strong>
-                                <p>Guided framework: Situation → Task → Action → Result</p>
-                            </div>
+                        <div className="flex gap-4 items-start p-5 bg-[var(--white)] border border-ink-10 rounded-xl">
+                            <span className="text-2xl shrink-0 mt-0.5">⭐</span>
+                            <div><strong className="text-[15px] block mb-1">STAR Story Builder</strong><p className="text-[13px] text-ink-40 m-0 leading-relaxed">Guided framework: Situation → Task → Action → Result</p></div>
                         </div>
                     </div>
                     <Link to="/pricing" className="btn btn-gold btn-lg">Upgrade to Premium →</Link>
-                    <p className={styles.gateCaveat}>Available on the Premium plan</p>
+                    <p className="text-xs text-ink-20 mt-3.5 font-mono">Available on the Premium plan</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className={styles.page}>
+        <div className="min-h-screen">
             <Navbar />
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <div className={styles.headerBadge}><span className="badge badge-gold">Premium</span></div>
-                    <h1>Interview <em>Toolkit</em></h1>
-                    <p>Practice with role-specific questions and build your STAR stories.</p>
+            <div className="max-w-[800px] mx-auto px-5 sm:px-10 pt-10 pb-20">
+                <div className="text-center mb-12">
+                    <div className="mb-4"><span className="badge badge-gold">Premium</span></div>
+                    <h1>Interview <em className="italic text-gold">Toolkit</em></h1>
+                    <p className="text-base text-ink-40">Practice with role-specific questions and build your STAR stories.</p>
                 </div>
 
                 {/* ── ROLE QUESTIONS ──────────────────────────── */}
-                <section className={styles.tool}>
-                    <div className={styles.toolHeader}>
-                        <span className={styles.toolIcon}>❓</span>
-                        <div>
-                            <h2>Common Questions by Role</h2>
-                            <p>20 curated interview questions organized by category.</p>
-                        </div>
+                <section className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden mb-6">
+                    <div className="flex items-start gap-4 px-7 py-6 bg-ink-05 border-b border-ink-10">
+                        <span className="text-[28px] shrink-0 mt-0.5">❓</span>
+                        <div><h2 className="text-xl mb-1">Common Questions by Role</h2><p className="text-[13px] text-ink-40 m-0">20 curated interview questions organized by category.</p></div>
                     </div>
-                    <div className={styles.toolBody}>
-                        <div className={styles.roleSelector}>
-                            <label>Select your role:</label>
-                            <div className={styles.roleChips}>
+                    <div className="p-7">
+                        <div className="mb-7">
+                            <label className="block text-xs font-semibold font-mono uppercase tracking-wide text-ink-40 mb-3">Select your role:</label>
+                            <div className="flex flex-wrap gap-2">
                                 {AVAILABLE_ROLES.map(role => (
-                                    <button
-                                        key={role}
-                                        className={`${styles.roleChip} ${selectedRole === role ? styles.roleChipActive : ''}`}
-                                        onClick={() => setSelectedRole(role)}
-                                    >
-                                        {role}
-                                    </button>
+                                    <button key={role} className={`px-4 py-2 text-[13px] font-medium border rounded-full cursor-pointer transition-all ${selectedRole === role ? 'border-gold bg-[rgba(201,146,60,0.08)] text-gold font-semibold' : 'border-ink-10 bg-[var(--white)] text-ink-70 hover:border-gold-pale'}`} onClick={() => setSelectedRole(role)}>{role}</button>
                                 ))}
                             </div>
                         </div>
-
                         {selectedRole && ROLE_QUESTIONS[selectedRole] && (
-                            <div className={styles.questionCategories}>
+                            <div className="flex flex-col gap-6">
                                 {ROLE_QUESTIONS[selectedRole].map((cat, ci) => (
-                                    <div key={ci} className={styles.questionCategory}>
-                                        <div className={styles.categoryLabel}>{cat.category}</div>
-                                        <ol className={styles.questionList}>
+                                    <div key={ci} className="border-l-[3px] border-l-gold pl-5">
+                                        <div className="text-[11px] font-mono uppercase tracking-widest text-gold font-bold mb-3">{cat.category}</div>
+                                        <ol className="list-none flex flex-col gap-2.5">
                                             {cat.questions.map((q, qi) => (
-                                                <li key={qi} className={styles.questionItem}>
-                                                    <span className={styles.questionNum}>{ci * 5 + qi + 1}</span>
-                                                    <span className={styles.questionText}>{q}</span>
+                                                <li key={qi} className="flex items-start gap-3 text-sm text-ink-70 leading-relaxed">
+                                                    <span className="shrink-0 w-6 h-6 rounded-full bg-ink-05 dark:bg-ink-10 text-ink-40 text-[11px] font-bold font-mono flex items-center justify-center">{ci * 5 + qi + 1}</span>
+                                                    <span className="flex-1 pt-0.5">{q}</span>
                                                 </li>
                                             ))}
                                         </ol>
@@ -704,41 +688,28 @@ export default function InterviewToolkitPage() {
                 </section>
 
                 {/* ── STAR STORY BUILDER ──────────────────────── */}
-                <section className={styles.tool}>
-                    <div className={styles.toolHeader}>
-                        <span className={styles.toolIcon}>⭐</span>
-                        <div>
-                            <h2>STAR Story Builder</h2>
-                            <p>Structure your experiences into compelling interview answers.</p>
-                        </div>
+                <section className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden mb-6">
+                    <div className="flex items-start gap-4 px-7 py-6 bg-ink-05 border-b border-ink-10">
+                        <span className="text-[28px] shrink-0 mt-0.5">⭐</span>
+                        <div><h2 className="text-xl mb-1">STAR Story Builder</h2><p className="text-[13px] text-ink-40 m-0">Structure your experiences into compelling interview answers.</p></div>
                     </div>
-                    <div className={styles.toolBody}>
+                    <div className="p-7">
                         {!showStarForm ? (
                             <>
-                                <button className="btn btn-gold" onClick={startNewStory}>
-                                    + Build a New STAR Story
-                                </button>
-
+                                <button className="btn btn-gold" onClick={startNewStory}>+ Build a New STAR Story</button>
                                 {stories.length > 0 && (
-                                    <div className={styles.savedStories}>
-                                        <div className={styles.storiesLabel}>Saved Stories ({stories.length})</div>
+                                    <div className="mt-7">
+                                        <div className="text-xs font-semibold font-mono uppercase tracking-wide text-ink-40 mb-3">Saved Stories ({stories.length})</div>
                                         {stories.map(story => (
-                                            <div key={story.id} className={styles.storyCard}>
-                                                <div className={styles.storyCardContent}>
-                                                    <div className={styles.storyBullet}>{story.bullet}</div>
-                                                    <div className={styles.storyPreview}>
-                                                        <span><strong>S:</strong> {story.situation.slice(0, 60)}…</span>
-                                                    </div>
+                                            <div key={story.id} className="flex items-center justify-between gap-4 px-5 py-4 bg-ink-05 border border-ink-10 rounded-xl mb-2 transition-colors hover:border-gold-pale">
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-sm font-semibold text-ink mb-1 truncate">{story.bullet}</div>
+                                                    <div className="text-xs text-ink-40 truncate"><span><strong>S:</strong> {story.situation.slice(0, 60)}…</span></div>
                                                 </div>
-                                                <div className={styles.storyActions}>
-                                                    <button className={styles.storyActionBtn} onClick={() => editStory(story)}>Edit</button>
-                                                    <button
-                                                        className={styles.storyActionBtn}
-                                                        onClick={() => copyToClipboard(formatStarStory(story), story.id)}
-                                                    >
-                                                        {copied === story.id ? '✓' : 'Copy'}
-                                                    </button>
-                                                    <button className={`${styles.storyActionBtn} ${styles.deleteBtn}`} onClick={() => deleteStory(story.id)}>×</button>
+                                                <div className="flex gap-1.5 shrink-0">
+                                                    <button className="px-3 py-1 text-xs font-semibold font-mono border border-ink-10 rounded-lg bg-[var(--white)] text-ink-70 cursor-pointer transition-all hover:border-gold hover:text-gold" onClick={() => editStory(story)}>Edit</button>
+                                                    <button className="px-3 py-1 text-xs font-semibold font-mono border border-ink-10 rounded-lg bg-[var(--white)] text-ink-70 cursor-pointer transition-all hover:border-gold hover:text-gold" onClick={() => copyToClipboard(formatStarStory(story), story.id)}>{copied === story.id ? '✓' : 'Copy'}</button>
+                                                    <button className="px-3 py-1 text-xs font-semibold font-mono border border-ink-10 rounded-lg bg-[var(--white)] text-ink-70 cursor-pointer transition-all hover:border-[#ef4444] hover:text-[#ef4444]" onClick={() => deleteStory(story.id)}>×</button>
                                                 </div>
                                             </div>
                                         ))}
@@ -746,83 +717,30 @@ export default function InterviewToolkitPage() {
                                 )}
                             </>
                         ) : (
-                            <div className={styles.starForm}>
-                                <div className={styles.starStep}>
-                                    <div className={styles.starStepLabel}>
-                                        <span className={styles.starStepNum}>📌</span> Resume Bullet
+                            <div className="flex flex-col gap-5">
+                                {[
+                                    { icon: '📌', label: 'Resume Bullet', hint: 'Which achievement do you want to turn into a story?', field: 'bullet' as const, type: 'input', placeholder: 'e.g. "Reduced cart abandonment by 34% through checkout redesign"' },
+                                    { icon: 'S', label: 'Situation', hint: 'What was the context? Describe the environment, team, and challenge.', field: 'situation' as const, type: 'textarea', placeholder: 'Our e-commerce checkout had a 67% abandonment rate...' },
+                                    { icon: 'T', label: 'Task', hint: 'What was YOUR specific responsibility?', field: 'task' as const, type: 'textarea', placeholder: 'I was tasked with leading the checkout redesign...' },
+                                    { icon: 'A', label: 'Action', hint: 'What did you DO? Be specific about your contribution.', field: 'action' as const, type: 'textarea', placeholder: 'I ran 12 user interviews and identified 3 key friction points...' },
+                                    { icon: 'R', label: 'Result', hint: 'What was the measurable outcome?', field: 'result' as const, type: 'textarea', placeholder: 'Cart abandonment dropped from 67% to 44%...' },
+                                ].map((step) => (
+                                    <div key={step.field} className="p-5 bg-ink-05 rounded-xl border border-ink-10">
+                                        <div className="flex items-center gap-2 text-base font-bold text-ink mb-1.5">
+                                            <span className="w-7 h-7 rounded-full bg-gold text-white text-[13px] font-bold flex items-center justify-center shrink-0">{step.icon}</span>
+                                            {step.label}
+                                        </div>
+                                        <p className="text-[13px] text-ink-40 mb-3 leading-relaxed">{step.hint}</p>
+                                        {step.type === 'input' ? (
+                                            <input type="text" className="w-full px-3.5 py-2.5 text-sm border border-ink-10 rounded-lg bg-[var(--white)] text-ink transition-colors focus:outline-none focus:border-gold focus:shadow-[0_0_0_3px_rgba(201,146,60,0.1)]" placeholder={step.placeholder} value={(currentStory as any)[step.field]} onChange={e => setCurrentStory({ ...currentStory, [step.field]: e.target.value })} />
+                                        ) : (
+                                            <textarea rows={3} className="w-full px-3.5 py-2.5 text-sm border border-ink-10 rounded-lg bg-[var(--white)] text-ink transition-colors focus:outline-none focus:border-gold focus:shadow-[0_0_0_3px_rgba(201,146,60,0.1)] resize-y leading-relaxed" placeholder={step.placeholder} value={(currentStory as any)[step.field]} onChange={e => setCurrentStory({ ...currentStory, [step.field]: e.target.value })} />
+                                        )}
                                     </div>
-                                    <p className={styles.starStepHint}>Which achievement do you want to turn into a story?</p>
-                                    <input
-                                        type="text"
-                                        placeholder='e.g. "Reduced cart abandonment by 34% through checkout redesign"'
-                                        value={currentStory.bullet}
-                                        onChange={e => setCurrentStory({ ...currentStory, bullet: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className={styles.starStep}>
-                                    <div className={styles.starStepLabel}>
-                                        <span className={styles.starStepNum}>S</span> Situation
-                                    </div>
-                                    <p className={styles.starStepHint}>What was the context? Describe the environment, team, and challenge.</p>
-                                    <textarea
-                                        rows={3}
-                                        placeholder="Our e-commerce checkout had a 67% abandonment rate, significantly higher than the industry average of 45%. The product team was under pressure to improve conversion before Q4."
-                                        value={currentStory.situation}
-                                        onChange={e => setCurrentStory({ ...currentStory, situation: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className={styles.starStep}>
-                                    <div className={styles.starStepLabel}>
-                                        <span className={styles.starStepNum}>T</span> Task
-                                    </div>
-                                    <p className={styles.starStepHint}>What was YOUR specific responsibility?</p>
-                                    <textarea
-                                        rows={3}
-                                        placeholder="I was tasked with leading the checkout redesign — conducting user research, proposing solutions, and shipping the new flow within 6 weeks."
-                                        value={currentStory.task}
-                                        onChange={e => setCurrentStory({ ...currentStory, task: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className={styles.starStep}>
-                                    <div className={styles.starStepLabel}>
-                                        <span className={styles.starStepNum}>A</span> Action
-                                    </div>
-                                    <p className={styles.starStepHint}>What did you DO? Be specific about your contribution.</p>
-                                    <textarea
-                                        rows={4}
-                                        placeholder="I ran 12 user interviews and identified 3 key friction points. I designed a streamlined single-page checkout with progress indicators, implemented guest checkout, and A/B tested against the original flow."
-                                        value={currentStory.action}
-                                        onChange={e => setCurrentStory({ ...currentStory, action: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className={styles.starStep}>
-                                    <div className={styles.starStepLabel}>
-                                        <span className={styles.starStepNum}>R</span> Result
-                                    </div>
-                                    <p className={styles.starStepHint}>What was the measurable outcome?</p>
-                                    <textarea
-                                        rows={3}
-                                        placeholder="Cart abandonment dropped from 67% to 44% — a 34% improvement. The new flow generated an additional $2.1M in Q4 revenue."
-                                        value={currentStory.result}
-                                        onChange={e => setCurrentStory({ ...currentStory, result: e.target.value })}
-                                    />
-                                </div>
-
-                                <div className={styles.starFormActions}>
-                                    <button
-                                        className="btn btn-gold"
-                                        onClick={saveStory}
-                                        disabled={!currentStory.bullet || !currentStory.situation || !currentStory.task || !currentStory.action || !currentStory.result}
-                                    >
-                                        {editingId ? 'Update Story' : 'Save Story'}
-                                    </button>
-                                    <button className="btn btn-outline" onClick={() => setShowStarForm(false)}>
-                                        Cancel
-                                    </button>
+                                ))}
+                                <div className="flex gap-3">
+                                    <button className="btn btn-gold" onClick={saveStory} disabled={!currentStory.bullet || !currentStory.situation || !currentStory.task || !currentStory.action || !currentStory.result}>{editingId ? 'Update Story' : 'Save Story'}</button>
+                                    <button className="btn btn-outline" onClick={() => setShowStarForm(false)}>Cancel</button>
                                 </div>
                             </div>
                         )}

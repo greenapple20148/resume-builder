@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Omar Hassan</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+  body { font-family: 'Space Grotesk', sans-serif; }
+  .blueprint-wrap { position: relative; overflow: hidden; }
+  .blueprint-wrap::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(66,140,220,0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(66,140,220,0.25) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none; opacity: 0.5;
+  }
+  .blueprint-wrap::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(66,140,220,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(66,140,220,0.08) 1px, transparent 1px);
+    background-size: 8px 8px;
+    pointer-events: none;
+  }
+  .section-cmd { display: flex; align-items: center; gap: 10px; }
+  .section-cmd::before { content: '//'; color: #6a90b8; font-family: 'Share Tech Mono', monospace; }
+  .section-cmd::after { content: ''; flex: 1; height: 1px; background: rgba(66,140,220,0.25); }
+  .arrow-li li { position: relative; padding-left: 20px; margin-bottom: 4px; }
+  .arrow-li li::before { content: '→'; position: absolute; left: 0; color: #4a9eff; font-size: 11px; top: 1px; }
+</style>
+</head>
+<body class="bg-[#050d1a] min-h-screen py-10">
+<div class="blueprint-wrap max-w-[860px] mx-auto bg-[#0a1628]" style="box-shadow:0 0 0 1px rgba(66,140,220,0.25),0 20px 80px rgba(0,0,0,0.5)">
+
+  <div class="relative z-10">
+    <!-- Header -->
+    <header class="px-14 py-12 bg-[#0e1e36]" style="border-bottom:1px solid rgba(66,140,220,0.25)">
+      <div class="flex justify-between items-start">
+        <div>
+          <div class="font-['Share_Tech_Mono'] text-[10px] text-[#6a90b8] tracking-widest mb-4 uppercase">DOC_TYPE: RESUME // REV: 2025.01 // STATUS: ACTIVE</div>
+          <div class="text-[42px] font-bold text-[#e8f2ff] tracking-tight leading-tight">Omar <span class="text-[#4a9eff] font-light">Hassan</span></div>
+          <div class="font-['Share_Tech_Mono'] text-[13px] text-[#7ec8f0] mt-2.5 tracking-[2px]">// SYSTEMS_ARCHITECT</div>
+        </div>
+        <div class="p-4 font-['Share_Tech_Mono'] text-[11px] text-[#6a90b8] leading-loose bg-[rgba(10,22,40,0.8)] min-w-[220px]" style="border:1px solid rgba(66,140,220,0.25)">
+          LOCATION: <span class="text-[#7ec8f0]">Austin, TX</span><br>
+          EMAIL: <span class="text-[#7ec8f0]">omar@hassan.dev</span><br>
+          PHONE: <span class="text-[#7ec8f0]">(512) 349-0087</span><br>
+          WEB: <span class="text-[#7ec8f0]">omarhassan.dev</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Body -->
+    <div class="grid grid-cols-[1fr_220px]">
+      <!-- Main -->
+      <div class="px-14 py-10" style="border-right:1px solid rgba(66,140,220,0.25)">
+        <div class="mb-10">
+          <div class="section-cmd font-['Share_Tech_Mono'] text-[11px] text-[#4a9eff] tracking-[2px] mb-5">PROFILE</div>
+          <p class="text-[13.5px] text-[#6a90b8] leading-[1.85] border-l-2 border-[#4a9eff] pl-4">
+            Infrastructure and platform engineer with 9 years designing large-scale distributed systems.
+            Specializing in cloud-native architecture, Kubernetes orchestration, and zero-downtime deployments
+            at companies processing billions of events daily. Open-source contributor to CNCF projects.
+          </p>
+        </div>
+
+        <div class="mb-10">
+          <div class="section-cmd font-['Share_Tech_Mono'] text-[11px] text-[#4a9eff] tracking-[2px] mb-5">EXPERIENCE</div>
+
+          <div class="mb-7">
+            <div class="flex justify-between items-baseline mb-1">
+              <div class="text-[15px] font-semibold text-[#e8f2ff]">Principal Platform Engineer</div>
+              <div class="font-['Share_Tech_Mono'] text-[10.5px] text-[#6a90b8] tracking-wide">2022 — PRESENT</div>
+            </div>
+            <div class="font-['Share_Tech_Mono'] text-[11px] text-[#7ec8f0] tracking-widest uppercase mb-2.5">// CLOUDFLARE · AUSTIN, TX</div>
+            <ul class="arrow-li text-[13px] text-[#6a90b8] leading-relaxed">
+              <li>Designed global edge-compute platform running 35M+ requests/sec across 285 cities</li>
+              <li>Led Kubernetes migration reducing infrastructure costs by $4.2M/yr across 3 cloud providers</li>
+              <li>Built zero-downtime deploy pipeline enabling 200+ deployments per day</li>
+              <li>Authored Terraform modules adopted by 40+ internal engineering teams</li>
+            </ul>
+          </div>
+
+          <div class="mb-7">
+            <div class="flex justify-between items-baseline mb-1">
+              <div class="text-[15px] font-semibold text-[#e8f2ff]">Senior Site Reliability Engineer</div>
+              <div class="font-['Share_Tech_Mono'] text-[10.5px] text-[#6a90b8] tracking-wide">2019 — 2022</div>
+            </div>
+            <div class="font-['Share_Tech_Mono'] text-[11px] text-[#7ec8f0] tracking-widest uppercase mb-2.5">// DATADOG · NEW YORK, NY</div>
+            <ul class="arrow-li text-[13px] text-[#6a90b8] leading-relaxed">
+              <li>Maintained 99.995% availability for metrics ingestion processing 4TB/day</li>
+              <li>Designed on-call runbook system reducing MTTR from 45 to 8 minutes</li>
+              <li>Implemented chaos engineering program exposing 23 latent failure modes</li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-baseline mb-1">
+              <div class="text-[15px] font-semibold text-[#e8f2ff]">DevOps Engineer</div>
+              <div class="font-['Share_Tech_Mono'] text-[10.5px] text-[#6a90b8] tracking-wide">2016 — 2019</div>
+            </div>
+            <div class="font-['Share_Tech_Mono'] text-[11px] text-[#7ec8f0] tracking-widest uppercase mb-2.5">// HASHICORP · SAN FRANCISCO, CA</div>
+            <ul class="arrow-li text-[13px] text-[#6a90b8] leading-relaxed">
+              <li>Contributed 140+ commits to Terraform core and AWS provider</li>
+              <li>Maintained CI/CD infrastructure for 80-engineer organization</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="bg-[#0e1e36] px-7 py-10 space-y-8">
+        <div>
+          <div class="font-['Share_Tech_Mono'] text-[10px] text-[#4a9eff] tracking-[2px] mb-4">TECH_STACK</div>
+          <div class="mb-3.5">
+            <div class="font-['Share_Tech_Mono'] text-[11.5px] text-[#c8daf0] mb-1.5 flex justify-between">Kubernetes<span class="text-[#4a9eff] text-[10px]">95%</span></div>
+            <div class="h-[2px] bg-[rgba(74,158,255,0.15)]"><div class="h-full bg-[#4a9eff]" style="width:95%"></div></div>
+          </div>
+          <div class="mb-3.5">
+            <div class="font-['Share_Tech_Mono'] text-[11.5px] text-[#c8daf0] mb-1.5 flex justify-between">Terraform<span class="text-[#4a9eff] text-[10px]">92%</span></div>
+            <div class="h-[2px] bg-[rgba(74,158,255,0.15)]"><div class="h-full bg-[#4a9eff]" style="width:92%"></div></div>
+          </div>
+          <div class="mb-3.5">
+            <div class="font-['Share_Tech_Mono'] text-[11.5px] text-[#c8daf0] mb-1.5 flex justify-between">Go<span class="text-[#4a9eff] text-[10px]">88%</span></div>
+            <div class="h-[2px] bg-[rgba(74,158,255,0.15)]"><div class="h-full bg-[#4a9eff]" style="width:88%"></div></div>
+          </div>
+          <div class="mb-3.5">
+            <div class="font-['Share_Tech_Mono'] text-[11.5px] text-[#c8daf0] mb-1.5 flex justify-between">AWS / GCP<span class="text-[#4a9eff] text-[10px]">90%</span></div>
+            <div class="h-[2px] bg-[rgba(74,158,255,0.15)]"><div class="h-full bg-[#4a9eff]" style="width:90%"></div></div>
+          </div>
+          <div class="mb-3.5">
+            <div class="font-['Share_Tech_Mono'] text-[11.5px] text-[#c8daf0] mb-1.5 flex justify-between">Prometheus<span class="text-[#4a9eff] text-[10px]">85%</span></div>
+            <div class="h-[2px] bg-[rgba(74,158,255,0.15)]"><div class="h-full bg-[#4a9eff]" style="width:85%"></div></div>
+          </div>
+          <div class="mb-3.5">
+            <div class="font-['Share_Tech_Mono'] text-[11.5px] text-[#c8daf0] mb-1.5 flex justify-between">Rust<span class="text-[#4a9eff] text-[10px]">72%</span></div>
+            <div class="h-[2px] bg-[rgba(74,158,255,0.15)]"><div class="h-full bg-[#4a9eff]" style="width:72%"></div></div>
+          </div>
+        </div>
+
+        <div class="pt-8" style="border-top:1px solid rgba(66,140,220,0.25)">
+          <div class="font-['Share_Tech_Mono'] text-[10px] text-[#4a9eff] tracking-[2px] mb-4">EDUCATION</div>
+          <h4 class="text-[13px] text-[#e8f2ff] font-semibold">B.S. Computer Engineering</h4>
+          <p class="font-['Share_Tech_Mono'] text-[11px] text-[#6a90b8] mt-1 leading-relaxed">UT Austin<br>2016</p>
+        </div>
+
+        <div class="pt-8" style="border-top:1px solid rgba(66,140,220,0.25)">
+          <div class="font-['Share_Tech_Mono'] text-[10px] text-[#4a9eff] tracking-[2px] mb-4">CERTS</div>
+          <div class="font-['Share_Tech_Mono'] text-[10.5px] text-[#6a90b8] py-1.5 leading-snug" style="border-bottom:1px solid rgba(66,140,220,0.25)">AWS Solutions Architect Pro</div>
+          <div class="font-['Share_Tech_Mono'] text-[10.5px] text-[#6a90b8] py-1.5 leading-snug" style="border-bottom:1px solid rgba(66,140,220,0.25)">CKA / CKAD</div>
+          <div class="font-['Share_Tech_Mono'] text-[10.5px] text-[#6a90b8] py-1.5 leading-snug" style="border-bottom:1px solid rgba(66,140,220,0.25)">HashiCorp Terraform Associate</div>
+          <div class="font-['Share_Tech_Mono'] text-[10.5px] text-[#6a90b8] py-1.5 leading-snug">GCP Professional DE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

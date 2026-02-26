@@ -1015,7 +1015,7 @@
 
 .timeline-resume .tl2-summary {
     padding: 12px 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid #ddd;
 }
 
 .timeline-resume .tl2-summary .tl2-section-label {
@@ -1024,7 +1024,7 @@
 
 .timeline-resume .tl2-summary-text {
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.7);
+    color: #555;
     line-height: 1.55;
 }
 

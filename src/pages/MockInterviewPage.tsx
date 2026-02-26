@@ -14,7 +14,6 @@ import {
     InterviewSummary,
     PracticeHistoryEntry,
 } from '../lib/ai'
-import styles from './MockInterviewPage.module.css'
 
 type Phase = 'select' | 'configure' | 'interview' | 'summary'
 
@@ -57,20 +56,18 @@ export default function MockInterviewPage() {
     // ── Premium gate
     if (!canAccess) {
         return (
-            <div className={styles.page}>
+            <div className="min-h-screen">
                 <Navbar />
-                <div className={styles.gate}>
-                    <div className={styles.gateIcon}>🤖</div>
+                <div className="max-w-[560px] mx-auto px-10 py-20 text-center">
+                    <div className="text-[56px] mb-5">🤖</div>
                     <h1>AI Mock Interview</h1>
-                    <p>Practice with an AI interviewer that adapts to your role, evaluates your answers in real-time, and gives actionable feedback.</p>
-                    <div className={styles.gatePlans}>
-                        <div className={styles.gatePlan}>
-                            <strong>Premium — $24.99/mo</strong>
-                            <span>3 mock interviews/month</span>
+                    <p className="text-base text-ink-40 mb-10 leading-relaxed">Practice with an AI interviewer that adapts to your role, evaluates your answers in real-time, and gives actionable feedback.</p>
+                    <div className="flex flex-col gap-4 text-left mb-10">
+                        <div className="flex gap-4 items-start p-5 bg-[var(--white)] border border-ink-10 rounded-xl">
+                            <div><strong className="text-[15px] block mb-1">Premium — $24.99/mo</strong><span className="text-[13px] text-ink-40">3 mock interviews/month</span></div>
                         </div>
-                        <div className={styles.gatePlan}>
-                            <strong>Career+ — $34.99/mo</strong>
-                            <span>20 mock interviews/month + JD match</span>
+                        <div className="flex gap-4 items-start p-5 bg-[var(--white)] border border-ink-10 rounded-xl">
+                            <div><strong className="text-[15px] block mb-1">Career+ — $34.99/mo</strong><span className="text-[13px] text-ink-40">20 mock interviews/month + JD match</span></div>
                         </div>
                     </div>
                     <Link to="/pricing" className="btn btn-gold btn-lg">Unlock Mock Interviews →</Link>
@@ -166,48 +163,48 @@ export default function MockInterviewPage() {
         setError('')
     }
 
-    const scoreClass = (score: number) =>
-        score >= 8 ? styles.scoreHigh : score >= 5 ? styles.scoreMedium : styles.scoreLow
+    const scoreColor = (score: number) =>
+        score >= 8 ? 'bg-gradient-to-br from-green-500 to-green-600' : score >= 5 ? 'bg-gradient-to-br from-gold to-gold-light' : 'bg-gradient-to-br from-red-500 to-red-600'
 
     const typeInfo = (INTERVIEW_TYPES as any)[config.type]
 
     const ScoreGauge = ({ label, value, max = 10 }: { label: string; value: number; max?: number }) => (
-        <div className={styles.gauge}>
-            <div className={styles.gaugeBar}>
+        <div className="py-2">
+            <div className="h-1.5 bg-ink-10 rounded-full overflow-hidden mb-1">
                 <div
-                    className={`${styles.gaugeFill} ${value >= 8 ? styles.gaugeGreen : value >= 5 ? styles.gaugeGold : styles.gaugeRed}`}
+                    className={`h-full rounded-full transition-all duration-500 ${value >= 8 ? 'bg-gradient-to-r from-green-500 to-green-600' : value >= 5 ? 'bg-gradient-to-r from-gold to-gold-light' : 'bg-gradient-to-r from-red-500 to-red-600'}`}
                     style={{ width: `${(value / max) * 100}%` }}
                 />
             </div>
-            <div className={styles.gaugeLabel}>
+            <div className="flex justify-between items-center text-[11px] text-ink-40">
                 <span>{label}</span>
-                <span className={styles.gaugeValue}>{value}/{max}</span>
+                <span className="font-bold text-ink-60">{value}/{max}</span>
             </div>
         </div>
     )
 
     return (
-        <div className={styles.page}>
+        <div className="min-h-screen bg-[var(--bg)]">
             <Navbar />
-            <div className={styles.container}>
+            <div className="max-w-[900px] mx-auto px-6 pt-10 pb-20">
 
                 {/* ── SELECT TYPE ─────────────────────────── */}
                 {phase === 'select' && (
                     <>
-                        <div className={styles.header}>
-                            <div className={styles.headerBadge}>
+                        <div className="text-center mb-10">
+                            <div className="mb-2">
                                 <span className="badge badge-gold">{plan === 'career_plus' ? 'Career+' : 'Premium'}</span>
                             </div>
-                            <h1>AI Mock <em>Interview</em></h1>
-                            <p>Choose an interview mode and practice with AI-powered feedback.</p>
-                            <div className={styles.usageBar}>
+                            <h1 className="text-3xl font-bold text-ink my-2">AI Mock <em className="not-italic bg-gradient-to-br from-gold to-gold-light bg-clip-text text-transparent">Interview</em></h1>
+                            <p className="text-[15px] text-ink-40">Choose an interview mode and practice with AI-powered feedback.</p>
+                            <div className="flex items-center justify-center gap-3 flex-wrap mt-4 px-5 py-3 bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl text-[13px] text-ink-60">
                                 {plan === 'career_plus' ? (
-                                    <><span className={styles.usageCount}>{20 - (profile?.mock_sessions_used || 0)}</span> of 20 sessions remaining</>
+                                    <><span className="font-bold text-gold text-[15px]">{20 - (profile?.mock_sessions_used || 0)}</span> of 20 sessions remaining</>
                                 ) : (
-                                    <><span className={styles.usageCount}>{3 - (profile?.mock_sessions_used || 0)}</span> sessions remaining this month</>
+                                    <><span className="font-bold text-gold text-[15px]">{3 - (profile?.mock_sessions_used || 0)}</span> sessions remaining this month</>
                                 )}
                                 {practiceHistory.length > 0 && (
-                                    <button className={styles.historyBtn} onClick={() => setShowHistory(!showHistory)}>
+                                    <button className="bg-[var(--bg)] border border-ink-10 text-ink-60 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-all hover:border-gold hover:text-gold" onClick={() => setShowHistory(!showHistory)}>
                                         📊 {showHistory ? 'Hide' : 'View'} History ({practiceHistory.length})
                                     </button>
                                 )}
@@ -216,34 +213,34 @@ export default function MockInterviewPage() {
 
                         {/* Practice History */}
                         {showHistory && practiceHistory.length > 0 && (
-                            <div className={styles.historySection}>
-                                <div className={styles.historyTitle}>Practice History</div>
-                                <div className={styles.historyGrid}>
+                            <div className="mb-8">
+                                <div className="text-sm font-bold text-ink mb-3">Practice History</div>
+                                <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-3">
                                     {practiceHistory.map((entry) => {
                                         const typeData = (INTERVIEW_TYPES as any)[entry.interview_type]
                                         return (
-                                            <div key={entry.id} className={styles.historyCard}>
-                                                <div className={styles.historyCardHeader}>
-                                                    <span className={styles.historyCardIcon}>{typeData?.icon || '🎯'}</span>
+                                            <div key={entry.id} className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl p-4 transition-colors hover:border-gold">
+                                                <div className="flex items-center gap-2.5 mb-2.5">
+                                                    <span className="text-2xl">{typeData?.icon || '🎯'}</span>
                                                     <div>
-                                                        <div className={styles.historyCardType}>{typeData?.name || entry.interview_type}</div>
-                                                        <div className={styles.historyCardRole}>{entry.role} · {entry.difficulty}</div>
+                                                        <div className="text-[13px] font-bold text-ink">{typeData?.name || entry.interview_type}</div>
+                                                        <div className="text-[11px] text-ink-40">{entry.role} · {entry.difficulty}</div>
                                                     </div>
-                                                    <div className={`${styles.historyCardScore} ${scoreClass(entry.overall_score)}`}>
+                                                    <div className={`ml-auto w-9 h-9 rounded-full flex items-center justify-center text-[15px] font-extrabold text-white ${scoreColor(entry.overall_score)}`}>
                                                         {entry.overall_score}
                                                     </div>
                                                 </div>
-                                                <div className={styles.historyCardMetrics}>
+                                                <div className="flex gap-2.5 flex-wrap text-[11px] text-ink-40 mb-1.5">
                                                     <span>🎯 Clarity: {entry.clarity_avg}/10</span>
                                                     <span>💪 Confidence: {entry.confidence_avg}/10</span>
                                                     <span>🔑 Keywords: {entry.keyword_relevance_avg}/10</span>
                                                 </div>
-                                                <div className={styles.historyCardDate}>
+                                                <div className="text-[11px] text-ink-20">
                                                     {new Date(entry.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                                     {' · '}{entry.question_count} questions
                                                     {entry.star_usage_rate !== 'N/A' && ` · STAR: ${entry.star_usage_rate}`}
                                                 </div>
-                                                {entry.verdict && <div className={styles.historyCardVerdict}>{entry.verdict}</div>}
+                                                {entry.verdict && <div className="text-xs text-ink-60 mt-1.5 italic">{entry.verdict}</div>}
                                             </div>
                                         )
                                     })}
@@ -251,13 +248,13 @@ export default function MockInterviewPage() {
                             </div>
                         )}
 
-                        <div className={styles.typeGrid}>
+                        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 mb-8">
                             {Object.entries(INTERVIEW_TYPES).map(([id, type]) => (
-                                <div key={id} className={styles.typeCard} onClick={() => handleTypeSelect(id)}>
-                                    <span className={styles.typeCardIcon}>{type.icon}</span>
-                                    <div className={styles.typeCardName}>{type.name}</div>
-                                    <div className={styles.typeCardDesc}>{type.description}</div>
-                                    <div className={styles.typeCardQuestions}>{type.defaultQuestions} questions</div>
+                                <div key={id} className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-2xl p-6 cursor-pointer transition-all text-left hover:border-gold hover:-translate-y-0.5 hover:shadow-xl" onClick={() => handleTypeSelect(id)}>
+                                    <span className="text-[32px] mb-3 block">{type.icon}</span>
+                                    <div className="font-bold text-base text-ink mb-1.5">{type.name}</div>
+                                    <div className="text-[13px] text-ink-40 leading-relaxed">{type.description}</div>
+                                    <div className="mt-2.5 text-[11px] text-ink-20 uppercase tracking-wide font-semibold">{type.defaultQuestions} questions</div>
                                 </div>
                             ))}
                         </div>
@@ -266,83 +263,64 @@ export default function MockInterviewPage() {
 
                 {/* ── CONFIGURE ───────────────────────────── */}
                 {phase === 'configure' && typeInfo && (
-                    <div className={styles.configPanel}>
-                        <div className={styles.configTitle}>{typeInfo.icon} {typeInfo.name}</div>
-                        <div className={styles.configSubtitle}>{typeInfo.description}</div>
+                    <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-2xl p-8 mb-6">
+                        <div className="text-lg font-bold text-ink mb-1">{typeInfo.icon} {typeInfo.name}</div>
+                        <div className="text-[13px] text-ink-40 mb-6">{typeInfo.description}</div>
 
-                        <div className={styles.configGrid}>
-                            <div className={styles.configField}>
-                                <label>Target Role</label>
-                                <select
-                                    value={config.role}
-                                    onChange={e => setConfig(prev => ({ ...prev, role: e.target.value }))}
-                                >
+                        <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-5 mb-6">
+                            <div>
+                                <label className="block text-xs font-semibold text-ink-60 mb-1.5 uppercase tracking-wide">Target Role</label>
+                                <select className="w-full px-3.5 py-2.5 border border-ink-10 rounded-xl bg-[var(--bg)] text-ink text-sm" value={config.role} onChange={e => setConfig(prev => ({ ...prev, role: e.target.value }))}>
                                     <option value="">Select a role…</option>
                                     {MOCK_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                                 </select>
                             </div>
-                            <div className={styles.configField}>
-                                <label>Questions</label>
-                                <select
-                                    value={config.questionCount}
-                                    onChange={e => setConfig(prev => ({ ...prev, questionCount: Number(e.target.value) }))}
-                                >
+                            <div>
+                                <label className="block text-xs font-semibold text-ink-60 mb-1.5 uppercase tracking-wide">Questions</label>
+                                <select className="w-full px-3.5 py-2.5 border border-ink-10 rounded-xl bg-[var(--bg)] text-ink text-sm" value={config.questionCount} onChange={e => setConfig(prev => ({ ...prev, questionCount: Number(e.target.value) }))}>
                                     {[3, 5, 6, 8, 10].map(n => <option key={n} value={n}>{n} questions</option>)}
                                 </select>
                             </div>
                         </div>
 
-                        <div className={styles.configField} style={{ marginBottom: 24 }}>
-                            <label>Difficulty</label>
-                            <div className={styles.difficultyChips}>
+                        <div className="mb-6">
+                            <label className="block text-xs font-semibold text-ink-60 mb-1.5 uppercase tracking-wide">Difficulty</label>
+                            <div className="flex gap-2">
                                 {(['easy', 'medium', 'hard'] as const).map(d => (
-                                    <button
-                                        key={d}
-                                        className={`${styles.difficultyChip} ${config.difficulty === d ? styles.difficultyChipActive : ''}`}
-                                        onClick={() => setConfig(prev => ({ ...prev, difficulty: d }))}
-                                    >
+                                    <button key={d} className={`px-4 py-2 rounded-lg border text-[13px] cursor-pointer transition-all ${config.difficulty === d ? 'bg-gradient-to-br from-gold to-gold-light text-black border-gold font-semibold' : 'border-ink-10 bg-[var(--bg)] text-ink-60 hover:border-gold'}`} onClick={() => setConfig(prev => ({ ...prev, difficulty: d }))}>
                                         {d === 'easy' ? '🟢 Easy' : d === 'medium' ? '🟡 Medium' : '🔴 Hard'}
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        <div className={styles.configActions}>
-                            <button className="btn btn-gold" onClick={handleStart} disabled={!config.role}>
-                                Start Interview →
-                            </button>
-                            <button className="btn btn-ghost" onClick={() => setPhase('select')}>
-                                ← Back
-                            </button>
+                        <div className="flex gap-3">
+                            <button className="btn btn-gold" onClick={handleStart} disabled={!config.role}>Start Interview →</button>
+                            <button className="btn btn-ghost" onClick={() => setPhase('select')}>← Back</button>
                         </div>
                     </div>
                 )}
 
                 {/* ── ACTIVE INTERVIEW ────────────────────── */}
                 {phase === 'interview' && (
-                    <div className={styles.interviewContainer}>
-                        <div className={styles.progressBar}>
-                            <div className={styles.progressTrack}>
-                                <div
-                                    className={styles.progressFill}
-                                    style={{ width: `${((currentIndex + (currentEvaluation ? 1 : 0)) / config.questionCount) * 100}%` }}
-                                />
+                    <div className="max-w-[740px] mx-auto">
+                        <div className="flex items-center gap-3 mb-7">
+                            <div className="flex-1 h-1.5 bg-ink-10 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-gold to-gold-light rounded-full transition-all duration-400" style={{ width: `${((currentIndex + (currentEvaluation ? 1 : 0)) / config.questionCount) * 100}%` }} />
                             </div>
-                            <span className={styles.progressLabel}>
-                                {currentIndex + 1} / {config.questionCount}
-                            </span>
+                            <span className="text-xs text-ink-40 font-semibold whitespace-nowrap">{currentIndex + 1} / {config.questionCount}</span>
                         </div>
 
                         {error && (
-                            <div style={{ padding: 16, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 12, marginBottom: 16, color: '#ef4444', fontSize: 14 }}>
+                            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl mb-4 text-red-500 text-sm">
                                 {error.includes('MOCK_LIMIT') ? (
-                                    <>You've reached your session limit. <Link to="/pricing" style={{ color: 'var(--gold)' }}>Upgrade your plan</Link></>
+                                    <>You've reached your session limit. <Link to="/pricing" className="text-gold">Upgrade your plan</Link></>
                                 ) : error}
                             </div>
                         )}
 
                         {isLoading && (
-                            <div className={styles.aiThinking}>
+                            <div className="flex items-center gap-3 p-5 bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl mb-5 text-ink-60 text-sm">
                                 <div className="spinner" style={{ width: 18, height: 18 }} />
                                 {loadingText}
                             </div>
@@ -350,38 +328,26 @@ export default function MockInterviewPage() {
 
                         {!isLoading && currentQuestion && (
                             <>
-                                <div className={styles.questionCard}>
-                                    <div className={styles.questionLabel}>
-                                        {typeInfo?.icon} Question {currentIndex + 1}
-                                    </div>
-                                    <div className={styles.questionText}>{currentQuestion}</div>
+                                <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-2xl p-7 mb-5">
+                                    <div className="text-[11px] uppercase tracking-wide font-bold text-gold mb-2.5">{typeInfo?.icon} Question {currentIndex + 1}</div>
+                                    <div className="text-[17px] font-semibold text-ink leading-relaxed">{currentQuestion}</div>
                                 </div>
 
                                 {/* Answer input */}
                                 {!currentEvaluation && (
-                                    <div className={styles.answerSection}>
+                                    <div className="mb-5">
                                         <textarea
-                                            className={styles.answerTextarea}
-                                            placeholder={config.type === 'salary'
-                                                ? 'Type your negotiation response…'
-                                                : 'Type your answer here… Be specific and use examples where possible.'}
+                                            className="w-full min-h-[150px] p-4 border border-ink-10 rounded-xl bg-white dark:bg-[var(--surface)] text-ink text-sm leading-relaxed resize-y transition-colors focus:outline-none focus:border-gold"
+                                            placeholder={config.type === 'salary' ? 'Type your negotiation response…' : 'Type your answer here… Be specific and use examples where possible.'}
                                             value={currentAnswer}
                                             onChange={e => setCurrentAnswer(e.target.value)}
                                             disabled={isLoading}
                                         />
-                                        <div className={styles.answerActions}>
-                                            <button
-                                                className="btn btn-gold"
-                                                onClick={handleSubmitAnswer}
-                                                disabled={!currentAnswer.trim() || isLoading}
-                                            >
-                                                Submit Answer
-                                            </button>
-                                            <button className="btn btn-ghost btn-sm" onClick={handleReset}>
-                                                End Interview
-                                            </button>
+                                        <div className="flex gap-2.5 mt-3">
+                                            <button className="btn btn-gold" onClick={handleSubmitAnswer} disabled={!currentAnswer.trim() || isLoading}>Submit Answer</button>
+                                            <button className="btn btn-ghost btn-sm" onClick={handleReset}>End Interview</button>
                                         </div>
-                                        <div className={styles.answerHint}>
+                                        <div className="text-xs text-ink-20 mt-2">
                                             {config.type === 'behavioral' && '💡 Tip: Use the STAR method (Situation → Task → Action → Result)'}
                                             {config.type === 'system_design' && '💡 Tip: Start with requirements, then high-level design, then deep-dive'}
                                             {config.type === 'technical' && '💡 Tip: Explain your thought process, not just the solution'}
@@ -392,24 +358,24 @@ export default function MockInterviewPage() {
 
                                 {/* Evaluation with enhanced metrics */}
                                 {currentEvaluation && (
-                                    <div className={styles.evaluationCard}>
+                                    <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-2xl p-6 mb-5 animate-[slideUp_0.3s_ease]">
                                         {/* Score header */}
-                                        <div className={styles.scoreRow}>
-                                            <div className={`${styles.scoreCircle} ${scoreClass(currentEvaluation.score)}`}>
+                                        <div className="flex items-center gap-4 mb-5">
+                                            <div className={`w-14 h-14 rounded-full flex items-center justify-center text-[22px] font-extrabold text-white shrink-0 ${scoreColor(currentEvaluation.score)}`}>
                                                 {currentEvaluation.score}
                                             </div>
                                             <div>
-                                                <div className={styles.scoreLabel}>
+                                                <div className="text-sm font-semibold text-ink">
                                                     {currentEvaluation.score >= 8 ? 'Excellent answer!' :
                                                         currentEvaluation.score >= 6 ? 'Good answer' :
                                                             currentEvaluation.score >= 4 ? 'Needs improvement' : 'Weak answer'}
                                                 </div>
-                                                <div className={styles.scoreSubLabel}>Overall: {currentEvaluation.score}/10</div>
+                                                <div className="text-xs text-ink-40 mt-0.5">Overall: {currentEvaluation.score}/10</div>
                                             </div>
                                         </div>
 
                                         {/* Metric gauges */}
-                                        <div className={styles.metricsGrid}>
+                                        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3 mb-4">
                                             <ScoreGauge label="🎯 Clarity" value={currentEvaluation.clarity_score} />
                                             <ScoreGauge label="💪 Confidence" value={currentEvaluation.confidence_score} />
                                             <ScoreGauge label="🔑 Keywords" value={currentEvaluation.keyword_relevance} />
@@ -420,43 +386,43 @@ export default function MockInterviewPage() {
 
                                         {/* STAR Detection */}
                                         {currentEvaluation.star_detected && currentEvaluation.star_breakdown && (
-                                            <div className={styles.starSection}>
-                                                <div className={styles.starLabel}>⭐ STAR Structure Detected</div>
-                                                <div className={styles.starBreakdown}>
+                                            <div className="mb-4">
+                                                <div className="text-xs font-bold text-gold mb-2">⭐ STAR Structure Detected</div>
+                                                <div className="grid grid-cols-4 gap-2 mb-4">
                                                     {Object.entries(currentEvaluation.star_breakdown).map(([key, val]) => (
-                                                        <div key={key} className={styles.starItem}>
-                                                            <div className={styles.starItemLetter}>{key[0].toUpperCase()}</div>
-                                                            <div className={styles.starItemScore}>{val}/10</div>
+                                                        <div key={key} className="text-center py-2.5 px-1.5 bg-[var(--bg)] rounded-lg border border-ink-10">
+                                                            <div className="text-lg font-extrabold text-gold">{key[0].toUpperCase()}</div>
+                                                            <div className="text-xs text-ink-40 mt-0.5">{val}/10</div>
                                                         </div>
                                                     ))}
                                                 </div>
                                             </div>
                                         )}
                                         {currentEvaluation.star_detected === false && config.type === 'behavioral' && (
-                                            <div className={styles.starMissing}>
+                                            <div className="px-3.5 py-2.5 bg-amber-500/[0.08] border border-amber-500/20 rounded-lg text-xs text-amber-500 mb-4">
                                                 ⚠️ No STAR structure detected. Try structuring with Situation → Task → Action → Result.
                                             </div>
                                         )}
 
                                         {/* Keywords */}
                                         {(currentEvaluation.keywords_found?.length > 0 || currentEvaluation.keywords_missing?.length > 0) && (
-                                            <div className={styles.keywordsSection}>
+                                            <div className="mb-4 p-3 bg-[var(--bg)] rounded-xl border border-ink-10">
                                                 {currentEvaluation.keywords_found?.length > 0 && (
-                                                    <div className={styles.keywordRow}>
-                                                        <span className={styles.keywordLabel}>✅ Keywords used:</span>
-                                                        <div className={styles.keywordTags}>
+                                                    <div className="mb-2 last:mb-0">
+                                                        <span className="block text-[11px] font-semibold text-green-500 mb-1">✅ Keywords used:</span>
+                                                        <div className="flex flex-wrap gap-1">
                                                             {currentEvaluation.keywords_found.map((k, i) => (
-                                                                <span key={i} className={styles.keywordTag}>{k}</span>
+                                                                <span key={i} className="inline-block px-2 py-0.5 rounded text-[11px] bg-green-500/10 text-green-500 border border-green-500/20">{k}</span>
                                                             ))}
                                                         </div>
                                                     </div>
                                                 )}
                                                 {currentEvaluation.keywords_missing?.length > 0 && (
-                                                    <div className={styles.keywordRow}>
-                                                        <span className={styles.keywordLabelMissing}>⚠️ Missing keywords:</span>
-                                                        <div className={styles.keywordTags}>
+                                                    <div className="mb-2 last:mb-0">
+                                                        <span className="block text-[11px] font-semibold text-amber-500 mb-1">⚠️ Missing keywords:</span>
+                                                        <div className="flex flex-wrap gap-1">
                                                             {currentEvaluation.keywords_missing.map((k, i) => (
-                                                                <span key={i} className={`${styles.keywordTag} ${styles.keywordTagMissing}`}>{k}</span>
+                                                                <span key={i} className="inline-block px-2 py-0.5 rounded text-[11px] bg-amber-500/10 text-amber-500 border border-amber-500/20">{k}</span>
                                                             ))}
                                                         </div>
                                                     </div>
@@ -466,40 +432,40 @@ export default function MockInterviewPage() {
 
                                         {/* Strengths & Improvements */}
                                         {currentEvaluation.strengths?.length > 0 && (
-                                            <div className={styles.feedbackSection}>
-                                                <div className={`${styles.feedbackTitle} ${styles.strengths}`}>Strengths</div>
-                                                <ul className={styles.feedbackList}>
-                                                    {currentEvaluation.strengths.map((s, i) => <li key={i}>{s}</li>)}
+                                            <div className="mb-4">
+                                                <div className="text-xs uppercase tracking-wide font-bold text-green-500 mb-2">Strengths</div>
+                                                <ul className="list-none p-0 m-0">
+                                                    {currentEvaluation.strengths.map((s, i) => <li key={i} className="text-[13px] text-ink-60 py-1 pl-4 relative before:content-['→'] before:absolute before:left-0 before:text-ink-20">{s}</li>)}
                                                 </ul>
                                             </div>
                                         )}
 
                                         {currentEvaluation.improvements?.length > 0 && (
-                                            <div className={styles.feedbackSection}>
-                                                <div className={`${styles.feedbackTitle} ${styles.improvements}`}>Areas to Improve</div>
-                                                <ul className={styles.feedbackList}>
-                                                    {currentEvaluation.improvements.map((s, i) => <li key={i}>{s}</li>)}
+                                            <div className="mb-4">
+                                                <div className="text-xs uppercase tracking-wide font-bold text-amber-500 mb-2">Areas to Improve</div>
+                                                <ul className="list-none p-0 m-0">
+                                                    {currentEvaluation.improvements.map((s, i) => <li key={i} className="text-[13px] text-ink-60 py-1 pl-4 relative before:content-['→'] before:absolute before:left-0 before:text-ink-20">{s}</li>)}
                                                 </ul>
                                             </div>
                                         )}
 
                                         {/* Improved answer */}
                                         {currentEvaluation.improved_answer && (
-                                            <div className={styles.improvedAnswer}>
-                                                <div className={styles.improvedAnswerLabel}>✨ Suggested Improved Answer</div>
-                                                <div className={styles.improvedAnswerText}>{currentEvaluation.improved_answer}</div>
+                                            <div className="mt-4 p-3.5 bg-gradient-to-br from-gold/[0.06] to-gold/[0.02] rounded-xl border border-gold/20">
+                                                <div className="text-[11px] uppercase tracking-wide font-bold text-gold mb-1.5">✨ Suggested Improved Answer</div>
+                                                <div className="text-[13px] text-ink-60 leading-relaxed">{currentEvaluation.improved_answer}</div>
                                             </div>
                                         )}
 
                                         {/* Ideal answer */}
                                         {currentEvaluation.sample_answer && (
-                                            <div className={styles.sampleAnswer}>
-                                                <div className={styles.sampleAnswerLabel}>💎 Ideal Answer</div>
-                                                <div className={styles.sampleAnswerText}>{currentEvaluation.sample_answer}</div>
+                                            <div className="mt-3 p-3.5 bg-[var(--bg)] rounded-xl border border-ink-10">
+                                                <div className="text-[11px] uppercase tracking-wide font-bold text-ink-40 mb-1.5">💎 Ideal Answer</div>
+                                                <div className="text-[13px] text-ink-60 leading-relaxed">{currentEvaluation.sample_answer}</div>
                                             </div>
                                         )}
 
-                                        <div style={{ marginTop: 16 }}>
+                                        <div className="mt-4">
                                             <button className="btn btn-gold" onClick={handleNext}>
                                                 {currentIndex + 1 >= config.questionCount ? 'Finish Interview →' : 'Next Question →'}
                                             </button>
@@ -513,91 +479,82 @@ export default function MockInterviewPage() {
 
                 {/* ── SUMMARY ─────────────────────────────── */}
                 {phase === 'summary' && summary && (
-                    <div className={styles.summaryPage}>
-                        <div className={styles.summaryHeader}>
-                            <div className={`${styles.summaryScore} ${scoreClass(summary.overall_score)}`}>
+                    <div className="max-w-[700px] mx-auto">
+                        <div className="text-center mb-8">
+                            <div className={`w-[100px] h-[100px] rounded-full mx-auto mb-4 flex items-center justify-center text-[38px] font-extrabold text-white ${scoreColor(summary.overall_score)}`}>
                                 {summary.overall_score}
                             </div>
-                            <div className={styles.summaryVerdict}>{summary.verdict}</div>
-                            <div className={styles.summaryMeta}>
-                                {typeInfo?.icon} {typeInfo?.name} · {config.role} · {config.difficulty}
-                            </div>
+                            <div className="text-lg font-bold text-ink mb-1">{summary.verdict}</div>
+                            <div className="text-[13px] text-ink-40">{typeInfo?.icon} {typeInfo?.name} · {config.role} · {config.difficulty}</div>
                         </div>
 
                         {isLoading && (
-                            <div className={styles.aiThinking}>
+                            <div className="flex items-center gap-3 p-5 bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl mb-5 text-ink-60 text-sm">
                                 <div className="spinner" style={{ width: 18, height: 18 }} />
                                 {loadingText}
                             </div>
                         )}
 
                         {/* Summary metrics */}
-                        <div className={styles.summaryMetrics}>
-                            <div className={styles.summaryMetric}>
-                                <div className={styles.summaryMetricValue}>{summary.clarity_avg}</div>
-                                <div className={styles.summaryMetricLabel}>Clarity</div>
-                            </div>
-                            <div className={styles.summaryMetric}>
-                                <div className={styles.summaryMetricValue}>{summary.confidence_avg}</div>
-                                <div className={styles.summaryMetricLabel}>Confidence</div>
-                            </div>
-                            <div className={styles.summaryMetric}>
-                                <div className={styles.summaryMetricValue}>{summary.keyword_relevance_avg}</div>
-                                <div className={styles.summaryMetricLabel}>Keywords</div>
-                            </div>
+                        <div className="flex justify-center gap-6 mb-7 flex-wrap">
+                            {[
+                                { value: summary.clarity_avg, label: 'Clarity' },
+                                { value: summary.confidence_avg, label: 'Confidence' },
+                                { value: summary.keyword_relevance_avg, label: 'Keywords' },
+                            ].map(m => (
+                                <div key={m.label} className="text-center px-5 py-3.5 bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl min-w-[90px]">
+                                    <div className="text-2xl font-extrabold text-gold">{m.value}</div>
+                                    <div className="text-[11px] text-ink-40 uppercase tracking-wide mt-0.5">{m.label}</div>
+                                </div>
+                            ))}
                             {summary.star_usage_rate !== 'N/A' && (
-                                <div className={styles.summaryMetric}>
-                                    <div className={styles.summaryMetricValue} style={{ fontSize: 16 }}>{summary.star_usage_rate}</div>
-                                    <div className={styles.summaryMetricLabel}>STAR Usage</div>
+                                <div className="text-center px-5 py-3.5 bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl min-w-[90px]">
+                                    <div className="text-base font-extrabold text-gold">{summary.star_usage_rate}</div>
+                                    <div className="text-[11px] text-ink-40 uppercase tracking-wide mt-0.5">STAR Usage</div>
                                 </div>
                             )}
                         </div>
 
-                        <div className={styles.summaryGrid}>
-                            <div className={styles.summaryCard}>
-                                <div className={`${styles.summaryCardTitle} ${styles.green}`}>Top Strengths</div>
-                                <ul className={`${styles.summaryCardList} ${styles.strengths}`}>
-                                    {summary.top_strengths.map((s, i) => <li key={i}>{s}</li>)}
+                        <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-4 mb-6">
+                            <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl p-5">
+                                <div className="text-xs uppercase tracking-wide font-bold text-green-500 mb-2">Top Strengths</div>
+                                <ul className="list-none p-0 m-0">
+                                    {summary.top_strengths.map((s, i) => <li key={i} className="text-[13px] text-ink-60 py-1 pl-4 relative before:content-['→'] before:absolute before:left-0 before:text-ink-20">{s}</li>)}
                                 </ul>
                             </div>
-                            <div className={styles.summaryCard}>
-                                <div className={`${styles.summaryCardTitle} ${styles.amber}`}>Areas to Improve</div>
-                                <ul className={`${styles.summaryCardList} ${styles.improvements}`}>
-                                    {summary.areas_to_improve.map((s, i) => <li key={i}>{s}</li>)}
+                            <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl p-5">
+                                <div className="text-xs uppercase tracking-wide font-bold text-amber-500 mb-2">Areas to Improve</div>
+                                <ul className="list-none p-0 m-0">
+                                    {summary.areas_to_improve.map((s, i) => <li key={i} className="text-[13px] text-ink-60 py-1 pl-4 relative before:content-['→'] before:absolute before:left-0 before:text-ink-20">{s}</li>)}
                                 </ul>
                             </div>
                         </div>
 
                         {summary.final_offer && (
-                            <div className={styles.recommendationCard}>
-                                <h4>💰 Estimated Final Offer</h4>
-                                <p>{summary.final_offer}</p>
+                            <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl p-5 mb-4">
+                                <h4 className="text-sm font-bold text-ink mb-2">💰 Estimated Final Offer</h4>
+                                <p className="text-[13px] text-ink-60 leading-relaxed">{summary.final_offer}</p>
                             </div>
                         )}
 
-                        <div className={styles.recommendationCard}>
-                            <h4>📋 Recommendation</h4>
-                            <p>{summary.recommendation}</p>
+                        <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl p-5 mb-6">
+                            <h4 className="text-sm font-bold text-ink mb-2">📋 Recommendation</h4>
+                            <p className="text-[13px] text-ink-60 leading-relaxed">{summary.recommendation}</p>
                         </div>
 
                         {/* Q&A Review */}
-                        <div className={styles.reviewSection}>
-                            <div className={styles.reviewTitle}>Question-by-Question Review</div>
+                        <div className="mb-8">
+                            <div className="text-sm font-bold text-ink mb-3">Question-by-Question Review</div>
                             {questions.map((q, i) => (
-                                <div key={i} className={styles.reviewItem}>
-                                    <div
-                                        className={styles.reviewItemHeader}
-                                        onClick={() => setExpandedReview(expandedReview === i ? null : i)}
-                                    >
-                                        <div className={`${styles.reviewItemScore} ${scoreClass(q.evaluation?.score || 0)}`}>
+                                <div key={i} className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl mb-2 overflow-hidden">
+                                    <div className="flex items-center gap-3 px-5 py-3 cursor-pointer transition-colors hover:bg-ink-05" onClick={() => setExpandedReview(expandedReview === i ? null : i)}>
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-extrabold text-white shrink-0 ${scoreColor(q.evaluation?.score || 0)}`}>
                                             {q.evaluation?.score || '—'}
                                         </div>
-                                        <div className={styles.reviewItemQuestion}>
-                                            Q{i + 1}: {q.question.slice(0, 80)}{q.question.length > 80 ? '…' : ''}
-                                        </div>
-                                        <div className={styles.reviewItemMeta}>
+                                        <div className="flex-1 text-[13px] font-medium text-ink truncate">Q{i + 1}: {q.question.slice(0, 80)}{q.question.length > 80 ? '…' : ''}</div>
+                                        <div>
                                             {q.evaluation && (
-                                                <span style={{ fontSize: 11, color: 'var(--ink-40)' }}>
+                                                <span className="text-[11px] text-ink-40">
                                                     C:{q.evaluation.clarity_score} · K:{q.evaluation.keyword_relevance}
                                                     {q.evaluation.star_detected && ' · ⭐'}
                                                 </span>
@@ -605,13 +562,13 @@ export default function MockInterviewPage() {
                                         </div>
                                     </div>
                                     {expandedReview === i && q.evaluation && (
-                                        <div className={styles.reviewItemBody}>
+                                        <div className="px-5 py-4 border-t border-ink-10 text-[13px] text-ink-60 leading-relaxed">
                                             <p><strong>Your answer:</strong> {q.answer}</p>
                                             {q.evaluation.improved_answer && (
-                                                <p style={{ marginTop: 8, color: 'var(--gold)' }}><strong>✨ Improved:</strong> {q.evaluation.improved_answer}</p>
+                                                <p className="mt-2 text-gold"><strong>✨ Improved:</strong> {q.evaluation.improved_answer}</p>
                                             )}
                                             {q.evaluation.sample_answer && (
-                                                <p style={{ marginTop: 8 }}><strong>💎 Ideal:</strong> {q.evaluation.sample_answer}</p>
+                                                <p className="mt-2"><strong>💎 Ideal:</strong> {q.evaluation.sample_answer}</p>
                                             )}
                                         </div>
                                     )}
@@ -619,13 +576,9 @@ export default function MockInterviewPage() {
                             ))}
                         </div>
 
-                        <div className={styles.summaryActions}>
-                            <button className="btn btn-gold" onClick={handleReset}>
-                                Start New Interview
-                            </button>
-                            <Link to="/dashboard" className="btn btn-ghost">
-                                Back to Dashboard
-                            </Link>
+                        <div className="flex gap-3 justify-center">
+                            <button className="btn btn-gold" onClick={handleReset}>Start New Interview</button>
+                            <Link to="/dashboard" className="btn btn-ghost">Back to Dashboard</Link>
                         </div>
                     </div>
                 )}

@@ -12,6 +12,7 @@ import '../styles/new-templates.css'
 import '../styles/new-templates-extra.css'
 import '../styles/new-templates-extra2.css'
 import '../styles/new-templates-extra3.css'
+import { OrigamiZenPreview, CorporateSlatePreview, TealWavePreview, PurpleDuskPreview, CoralBrightPreview, OceanDeepPreview, SageProPreview, CarbonNoirPreview, SandDunePreview, IndigoSharpPreview, PlatinumElitePreview, CascadeBluePreview, NordicMinimalPreview, MidnightProPreview, BlueprintPreview, EmeraldFreshPreview, SunsetWarmPreview, NewspaperClassicPreview, IvoryMarblePreview, NeonCyberPreview } from './ThemesPreviews2'
 import { ResumeData } from '../types'
 
 const SAMPLE_PERSONAS: Record<string, {
@@ -494,121 +495,6 @@ export function MinimalistPreview({ data }: PreviewProps) {
   )
 }
 
-export function SidebarPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'sidebar')
-  return (
-    <div className="sidebar-resume">
-      <div className="sb-left">
-        <div className="sb-avatar">{res.name[0]}</div>
-        <div className="sb-name">{res.name}</div>
-        <div className="sb-role">{res.role}</div>
-        <div className="sb-section-title">Contact</div>
-        <div className="sb-contact-item">{res.email}</div>
-        <div className="sb-contact-item">{res.phone}</div>
-        <div className="sb-contact-item">{res.location}</div>
-        <div className="sb-divider" />
-        <div className="sb-section-title">Skills</div>
-        {res.skills.map((skill, i) => (
-          <div key={i} className="sb-skill-bar">
-            <div className="sb-skill-name">{skill}</div>
-            <div className="sb-bar-bg"><div className="sb-bar-fill" style={{ width: `${85 - i * 8}%` }} /></div>
-          </div>
-        ))}
-        <div className="sb-divider" />
-        <div className="sb-section-title">Education</div>
-        {res.education.map((edu, i) => (
-          <div key={i} style={{ marginBottom: 6 }}>
-            <div style={{ fontSize: '9px', fontWeight: 600 }}>{edu.degree}</div>
-            <div className="sb-contact-item">{edu.school}</div>
-          </div>
-        ))}
-        <div className="sb-divider" />
-        <div className="sb-section-title">Certifications</div>
-        <div style={{ marginBottom: 5 }}>
-          <div style={{ fontSize: '9px', fontWeight: 600 }}>AWS Solutions Architect</div>
-          <div className="sb-contact-item">Amazon · 2023</div>
-        </div>
-        <div style={{ marginBottom: 5 }}>
-          <div style={{ fontSize: '9px', fontWeight: 600 }}>Deep Learning Specialization</div>
-          <div className="sb-contact-item">DeepLearning.AI · 2022</div>
-        </div>
-        <div className="sb-divider" />
-        <div className="sb-section-title">Languages</div>
-        <div className="sb-contact-item">English — Native</div>
-        <div className="sb-contact-item">Mandarin — Fluent</div>
-        <div className="sb-contact-item">French — Conversational</div>
-      </div>
-      <div className="sb-right">
-        <div className="sb-r-name">Profile</div>
-        <div className="sb-r-section">
-          <div className="sb-r-job-desc">{res.summary}</div>
-        </div>
-        <div className="sb-r-section">
-          <div className="sb-r-label">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="sb-r-job">
-              <div className="sb-r-job-title">{exp.title}</div>
-              <div className="sb-r-job-meta">{exp.company} | {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              <div className="sb-r-job-desc">{exp.description}</div>
-            </div>
-          ))}
-        </div>
-        <div className="sb-r-section">
-          <div className="sb-r-label">Selected Projects</div>
-          {[
-            { name: 'ML Fraud Pipeline', co: 'Netflix · 2023', desc: 'Real-time anomaly system flagging 99.4% fraudulent streams. Reduced chargebacks by $8M annually.' },
-            { name: 'Recommendation Engine v3', co: 'Netflix · 2022', desc: 'Two-tower neural net boosting watch-time 18% for 230M subscribers. Deployed in A/B across 6 regions.' },
-            { name: 'Studio Analytics Dashboard', co: 'Netflix · 2021', desc: 'Built self-serve BI tool used by 400+ content executives. Reduced reporting cycle from 5 days to real-time.' },
-          ].map((proj, i) => (
-            <div key={i} className="sb-r-job">
-              <div className="sb-r-job-title">{proj.name}</div>
-              <div className="sb-r-job-meta">{proj.co}</div>
-              <div className="sb-r-job-desc">{proj.desc}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function CreativePreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'creative')
-  return (
-    <div className="creative-resume">
-      <div className="cr2-top">
-        <div className="cr2-name">{res.name}</div>
-        <div className="cr2-role">{res.role}</div>
-      </div>
-      <div className="cr2-body">
-        <div className="cr2-contact">
-          <div className="cr2-contact-item">{res.email}</div>
-          <div className="cr2-contact-item">{res.phone}</div>
-          <div className="cr2-contact-item">{res.location}</div>
-        </div>
-        <div style={{ fontSize: '9px', color: '#555', lineHeight: 1.6, marginBottom: 12 }}>{res.summary}</div>
-        <div className="cr2-section-title">Experience</div>
-        {res.experience.map((exp, i) => (
-          <div key={i} className="cr2-item">
-            <div className="cr2-item-title">{exp.title}</div>
-            <div className="cr2-item-sub">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-            <div className="cr2-item-desc">{exp.description}</div>
-          </div>
-        ))}
-        <div className="cr2-section-title">Education</div>
-        {res.education.map((edu, i) => (
-          <div key={i} className="cr2-item">
-            <div className="cr2-item-title">{edu.degree}</div>
-            <div className="cr2-item-sub">{edu.school} · {edu.startDate} – {edu.endDate}</div>
-          </div>
-        ))}
-        <div className="cr2-section-title">Skills</div>
-        <div className="cr2-tags">{res.skills.map((s, i) => <span key={i} className="cr2-tag">{s}</span>)}</div>
-      </div>
-    </div>
-  )
-}
-
 export function DarkPreview({ data }: PreviewProps) {
   const res = useDynamicData(data || {}, 'dark')
   return (
@@ -673,734 +559,6 @@ export function DarkPreview({ data }: PreviewProps) {
     </div>
   )
 }
-
-export function EditorialPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'editorial')
-  return (
-    <div className="editorial-resume">
-      <div className="er-header">
-        <div className="er-issue">ISSUE No. 42</div>
-        <div className="er-name">{res.name}</div>
-        <div className="er-tagline">{res.role}</div>
-      </div>
-      <div className="er-body">
-        <div className="er-col-main">
-          <div className="er-section-label">Profile</div>
-          <div className="er-item-desc" style={{ marginBottom: 12 }}>{res.summary}</div>
-          <div className="er-section-label">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="er-item">
-              <div className="er-item-title">{exp.title}</div>
-              <div className="er-item-sub">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              <div className="er-item-desc">{exp.description}</div>
-            </div>
-          ))}
-        </div>
-        <div className="er-col-side">
-          <div className="er-section-label">Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} className="er-item">
-              <div className="er-item-title">{edu.degree}</div>
-              <div className="er-item-sub">{edu.school}</div>
-            </div>
-          ))}
-          <div className="er-section-label" style={{ marginTop: 10 }}>Skills</div>
-          <div>{res.skills.map((s, i) => <span key={i} className="er-tag">{s}</span>)}</div>
-          <div className="er-section-label" style={{ marginTop: 10 }}>Awards</div>
-          <div className="er-item"><div className="er-item-title">Pulitzer Finalist</div><div className="er-item-sub">Feature Writing · 2023</div></div>
-          <div className="er-item"><div className="er-item-title">SPJ Award</div><div className="er-item-sub">Investigative Reporting · 2022</div></div>
-          <div className="er-item"><div className="er-item-title">IRE Award</div><div className="er-item-sub">Data Journalism · 2021</div></div>
-          <div className="er-section-label" style={{ marginTop: 10 }}>Publications</div>
-          <div className="er-item"><div className="er-item-title">"The Algorithm Beat"</div><div className="er-item-sub">NYT Magazine · 2023</div></div>
-          <div className="er-item"><div className="er-item-title">"Platform Power"</div><div className="er-item-sub">The Atlantic · 2022</div></div>
-          <div className="er-section-label" style={{ marginTop: 10 }}>Contact</div>
-          <div className="er-item-sub">{res.email}</div>
-          <div className="er-item-sub">{res.phone}</div>
-          <div className="er-item-sub">{res.location}</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function BoldPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'bold')
-  return (
-    <div className="bold-resume">
-      <div className="ba-left">
-        <div className="ba-top-block">
-          <div className="ba-avatar">{res.name[0]}</div>
-        </div>
-        <div className="ba-left-body">
-          <div className="ba-section-head">Contact</div>
-          <div className="ba-contact-item">{res.email}</div>
-          <div className="ba-contact-item">{res.phone}</div>
-          <div className="ba-contact-item">{res.location}</div>
-          <div className="ba-section-head">Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} className="ba-edu-item">
-              <div className="ba-edu-year">{edu.startDate} – {edu.endDate}</div>
-              <div className="ba-edu-deg">{edu.degree}</div>
-              <div className="ba-edu-school">{edu.school}</div>
-            </div>
-          ))}
-          <div className="ba-section-head">Skills</div>
-          {res.skills.map((skill, i) => (
-            <div key={i} className="ba-skill-item">
-              <div className="ba-skill-name">{skill}</div>
-              <div className="ba-skill-track"><div className="ba-skill-fill" style={{ width: `${90 - i * 10}%` }} /></div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="ba-right">
-        <div className="ba-name">{res.name}</div>
-        <div className="ba-title">{res.role}</div>
-        <div style={{ fontSize: '8.5px', color: '#555', lineHeight: 1.5, marginBottom: 10, fontFamily: 'DM Sans, sans-serif' }}>{res.summary}</div>
-        <div className="ba-r-section-head">Experience</div>
-        {res.experience.map((exp, i) => (
-          <div key={i} className="ba-exp-item">
-            <div className="ba-exp-meta"><span>{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span><span>{exp.location}</span></div>
-            <div className="ba-exp-title">{exp.title}</div>
-            <div className="ba-exp-company">{exp.company}</div>
-            <div className="ba-exp-desc">{exp.description}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-export function TealPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'teal')
-  return (
-    <div className="teal-resume">
-      <div className="tl-left">
-        <div className="tl-photo">
-          <div className="tl-photo-circle">{res.name[0]}</div>
-        </div>
-        <div className="tl-body">
-          <div className="tl-section-head">Info</div>
-          <div className="tl-contact-item">{res.email}</div>
-          <div className="tl-contact-item">{res.phone}</div>
-          <div className="tl-contact-item">{res.location}</div>
-          <div className="tl-section-head">Skills</div>
-          {res.skills.map((skill, i) => (
-            <div key={i} className="tl-skill-item">
-              <div className="tl-skill-name"><span>{skill}</span></div>
-              <div className="tl-dots-row">
-                {[1, 2, 3, 4, 5].map(d => <div key={d} className={d <= 4 - Math.min(i, 2) ? 'tl-dot-filled' : 'tl-dot-empty'} />)}
-              </div>
-            </div>
-          ))}
-          <div className="tl-section-head">Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} style={{ marginBottom: 6 }}>
-              <div style={{ fontSize: '8.5px', fontWeight: 600 }}>{edu.degree}</div>
-              <div className="tl-contact-item">{edu.school}</div>
-            </div>
-          ))}
-          <div className="tl-section-head">Certifications</div>
-          <div style={{ marginBottom: 5 }}><div style={{ fontSize: '8.5px', fontWeight: 600 }}>GitHub Actions CI/CD</div><div className="tl-contact-item">GitHub · 2023</div></div>
-          <div style={{ marginBottom: 5 }}><div style={{ fontSize: '8.5px', fontWeight: 600 }}>CKA — Kubernetes Admin</div><div className="tl-contact-item">CNCF · 2022</div></div>
-          <div className="tl-section-head">Languages</div>
-          <div className="tl-contact-item">English — Native</div>
-          <div className="tl-contact-item">Korean — Fluent</div>
-          <div className="tl-contact-item">Japanese — Basic</div>
-        </div>
-      </div>
-      <div className="tl-right">
-        <div className="tl-cv-label">CV</div>
-        <div className="tl-name">{res.name}</div>
-        <div className="tl-job">{res.role}</div>
-        <div style={{ fontSize: '8px', color: '#555', lineHeight: 1.5, marginBottom: 8 }}>{res.summary}</div>
-        <div className="tl-r-section-head">Experience</div>
-        {res.experience.map((exp, i) => (
-          <div key={i} className="tl-exp-item">
-            <div className="tl-exp-date">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-            <div className="tl-exp-title">{exp.title}</div>
-            <div className="tl-exp-company">{exp.company}</div>
-            <div className="tl-exp-desc">{exp.description}</div>
-          </div>
-        ))}
-        <div className="tl-r-section-head">Projects</div>
-        {[
-          { title: 'Open Source CLI Tool', co: 'Personal · 2023', desc: '2.3K GitHub stars. Automated Kubernetes deployment workflows for small teams.' },
-          { title: 'Edge Cache Layer', co: 'Vercel · 2022', desc: 'Reduced TTFB by 61% globally using Redis + CDN integration. Processed 800M req/day.' },
-        ].map((proj, i) => (
-          <div key={i} className="tl-exp-item">
-            <div className="tl-exp-title">{proj.title}</div>
-            <div className="tl-exp-company">{proj.co}</div>
-            <div className="tl-exp-desc">{proj.desc}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-export function TimelinePreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'timeline')
-  return (
-    <div className="timeline-resume">
-      <div className="tl2-header">
-        <div className="tl2-name">{res.name}</div>
-        <div className="tl2-role">{res.role}</div>
-      </div>
-      <div className="tl2-summary">
-        <div className="tl2-section-label">Profile</div>
-        <div className="tl2-summary-text">{res.summary}</div>
-      </div>
-      <div className="tl2-body">
-        <div className="tl2-col">
-          <div className="tl2-section-label">History</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="tl2-item">
-              <div className="tl2-item-title">{exp.title}</div>
-              <div className="tl2-item-sub">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              <div className="tl2-item-desc">{exp.description}</div>
-            </div>
-          ))}
-        </div>
-        <div className="tl2-center">
-          <div className="tl2-center-dot" />
-          <div className="tl2-center-line" />
-          <div className="tl2-center-dot" />
-        </div>
-        <div className="tl2-col">
-          <div className="tl2-section-label">Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} className="tl2-item">
-              <div className="tl2-item-title">{edu.degree}</div>
-              <div className="tl2-item-sub">{edu.school} · {edu.startDate} – {edu.endDate}</div>
-            </div>
-          ))}
-          <div className="tl2-section-label" style={{ marginTop: 10 }}>Skills</div>
-          {res.skills.map((skill, i) => (
-            <div key={i} className="tl2-skill-item">
-              <div className="tl2-skill-name">{skill}</div>
-              <div className="tl2-skill-bar"><div className="tl2-skill-fill" style={{ width: `${85 - i * 10}%` }} /></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function GrandePreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'grande')
-  return (
-    <div className="grande-resume">
-      <div className="gr-header">
-        <div className="gr-name">{res.name}</div>
-        <div className="gr-role">{res.role}</div>
-        <div className="gr-divider-line"></div>
-      </div>
-      <div className="gr-body">
-        <div className="gr-left">
-          <div className="gr-section-title">Contact</div>
-          <div className="gr-contact-item">{res.email}</div>
-          <div className="gr-contact-item">{res.phone}</div>
-          <div className="gr-contact-item">{res.location}</div>
-          <div className="gr-section-title" style={{ marginTop: 12 }}>Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} className="gr-edu-item">
-              <div className="gr-edu-school">{edu.school}</div>
-              <div className="gr-edu-degree">{edu.degree}</div>
-              <div className="gr-edu-year">{edu.startDate} – {edu.endDate}</div>
-            </div>
-          ))}
-          <div className="gr-section-title" style={{ marginTop: 12 }}>Skills</div>
-          <div className="gr-skills-list">
-            {res.skills.map((skill, i) => (
-              <span key={i} className="gr-skill-tag">{skill}</span>
-            ))}
-          </div>
-          <div className="gr-section-title" style={{ marginTop: 12 }}>Achievements</div>
-          <div className="gr-edu-item"><div className="gr-edu-school">Forbes 30 Under 30</div><div className="gr-edu-degree">Healthcare · 2022</div></div>
-          <div className="gr-edu-item"><div className="gr-edu-school">HIMSS Innovation Award</div><div className="gr-edu-degree">Digital Health · 2023</div></div>
-          <div className="gr-edu-item"><div className="gr-edu-school">AMA Health Tech Speaker</div><div className="gr-edu-degree">Annual Conf. · 2023</div></div>
-          <div className="gr-section-title" style={{ marginTop: 12 }}>Certifications</div>
-          <div className="gr-edu-item"><div className="gr-edu-school">PMP — Project Mgmt</div><div className="gr-edu-degree">PMI · 2022</div></div>
-          <div className="gr-edu-item"><div className="gr-edu-school">HL7 FHIR Developer</div><div className="gr-edu-degree">HL7 Intl · 2021</div></div>
-          <div className="gr-section-title" style={{ marginTop: 12 }}>Languages</div>
-          <div className="gr-skills-list">
-            <span className="gr-skill-tag">English</span>
-            <span className="gr-skill-tag">Tagalog</span>
-            <span className="gr-skill-tag">Spanish</span>
-          </div>
-        </div>
-        <div className="gr-right">
-          <div className="gr-section-title">Summary</div>
-          <div className="gr-exp-desc" style={{ marginBottom: 10 }}>{res.summary}</div>
-          <div className="gr-section-title">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="gr-exp-item">
-              <div className="gr-exp-company">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              <div className="gr-exp-title">{exp.title}</div>
-              <div className="gr-exp-desc">{exp.description}</div>
-            </div>
-          ))}
-          <div className="gr-section-title">Selected Projects</div>
-          {[
-            { co: 'Epic Systems · 2023', title: 'Smart Triage AI', desc: 'NLP model triaging 2M+ patient messages/month. Reduced ER wait times 31% at 14 hospital systems.' },
-            { co: 'MedStar Health · 2022', title: 'FHIR Integration Layer', desc: 'Built HL7 FHIR API connecting 6 disparate EHR systems. Enabled real-time data sharing for 800K patients.' },
-          ].map((proj, i) => (
-            <div key={i} className="gr-exp-item">
-              <div className="gr-exp-company">{proj.co}</div>
-              <div className="gr-exp-title">{proj.title}</div>
-              <div className="gr-exp-desc">{proj.desc}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function BlobPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'blob')
-  return (
-    <div className="blob-resume">
-      <div className="bl-blob1"></div>
-      <div className="bl-header">
-        <div className="bl-avatar">{res.name[0]}</div>
-        <div className="bl-name-block">
-          <div className="bl-name">{res.name}</div>
-          <div className="bl-contact">{res.role} · {res.email} · {res.phone}</div>
-        </div>
-      </div>
-      <div className="bl-body">
-        <div className="bl-col">
-          <div className="bl-section-title">Summary</div>
-          <div className="bl-item-desc" style={{ marginBottom: 8 }}>{res.summary}</div>
-          <div className="bl-section-title">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="bl-item">
-              <div className="bl-item-title">{exp.title}</div>
-              <div className="bl-item-sub">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              <div className="bl-item-desc">{exp.description}</div>
-            </div>
-          ))}
-        </div>
-        <div className="bl-divider-v"></div>
-        <div className="bl-col">
-          <div className="bl-section-title">Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} className="bl-item">
-              <div className="bl-item-title">{edu.degree}</div>
-              <div className="bl-item-sub">{edu.school} · {edu.startDate} – {edu.endDate}</div>
-            </div>
-          ))}
-          <div className="bl-section-title" style={{ marginTop: 8 }}>Skills</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {res.skills.map((s, i) => <span key={i} style={{ fontSize: '8px', background: 'linear-gradient(135deg, #ffb3c6, #c3b1e1)', color: '#fff', padding: '2px 8px', borderRadius: 100, fontWeight: 600 }}>{s}</span>)}
-          </div>
-          <div className="bl-section-title" style={{ marginTop: 8 }}>Awards</div>
-          <div className="bl-item"><div className="bl-item-title">Webby Award — Best UX</div><div className="bl-item-sub">Interactive Media · 2023</div></div>
-          <div className="bl-item"><div className="bl-item-title">Communication Arts Award</div><div className="bl-item-sub">Design Excellence · 2022</div></div>
-          <div className="bl-item"><div className="bl-item-title">CSS Design Awards</div><div className="bl-item-sub">Site of the Year · 2021</div></div>
-          <div className="bl-section-title" style={{ marginTop: 8 }}>Selected Work</div>
-          <div className="bl-item"><div className="bl-item-title">Headspace Refresh</div><div className="bl-item-sub">Brand identity + motion system · 2023</div></div>
-          <div className="bl-item"><div className="bl-item-title">Airbnb Icons</div><div className="bl-item-sub">450-icon design system · 2022</div></div>
-          <div className="bl-item"><div className="bl-item-title">Figma Community Kit</div><div className="bl-item-sub">32K downloads · 2021</div></div>
-          <div className="bl-section-title" style={{ marginTop: 8 }}>Languages</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            <span style={{ fontSize: '8px', background: 'linear-gradient(135deg, #c3b1e1, #a29bd4)', color: '#fff', padding: '2px 8px', borderRadius: 100, fontWeight: 600 }}>English</span>
-            <span style={{ fontSize: '8px', background: 'linear-gradient(135deg, #ffb3c6, #f4a0b5)', color: '#fff', padding: '2px 8px', borderRadius: 100, fontWeight: 600 }}>Portuguese</span>
-            <span style={{ fontSize: '8px', background: 'linear-gradient(135deg, #c3b1e1, #a29bd4)', color: '#fff', padding: '2px 8px', borderRadius: 100, fontWeight: 600 }}>Spanish</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function SplitPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'split')
-  return (
-    <div className="split-resume">
-      <div className="sp-left">
-        <div className="sp-name">{res.name}</div>
-        <div className="sp-role">{res.role}</div>
-        <div className="sp-divider"></div>
-        <div className="sp-section-title">Contact</div>
-        <div className="sp-contact-item">{res.email}</div>
-        <div className="sp-contact-item">{res.phone}</div>
-        <div className="sp-contact-item">{res.location}</div>
-        <div className="sp-section-title" style={{ marginTop: 12 }}>Education</div>
-        {res.education.map((edu, i) => (
-          <div key={i} className="sp-edu-item">
-            <div className="sp-edu-degree">{edu.degree}</div>
-            <div className="sp-edu-school">{edu.school}</div>
-            <div className="sp-edu-year">{edu.startDate} – {edu.endDate}</div>
-          </div>
-        ))}
-        <div className="sp-section-title" style={{ marginTop: 12 }}>Skills</div>
-        <div className="sp-skills-grid">
-          {res.skills.map((skill, i) => (
-            <div key={i} className="sp-skill-item">
-              <div className="sp-skill-name">{skill}</div>
-              <div className="sp-skill-bar"><div className="sp-skill-fill" style={{ width: `${85 - i * 10}%` }} /></div>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="sp-right">
-        <div className="sp-exp-section">
-          <div className="sp-r-section-title">Summary</div>
-          <div className="sp-exp-desc" style={{ marginBottom: 10 }}>{res.summary}</div>
-        </div>
-        <div className="sp-exp-section">
-          <div className="sp-r-section-title">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="sp-exp-item">
-              <div className="sp-exp-company">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              <div className="sp-exp-title">{exp.title}</div>
-              <div className="sp-exp-desc">{exp.description}</div>
-            </div>
-          ))}
-        </div>
-        <div className="sp-exp-section">
-          <div className="sp-r-section-title">Selected Projects</div>
-          {[
-            { co: 'Shopify · 2023', title: 'Checkout Conversion Suite', desc: 'Rebuilt payment flow reducing cart abandonment 34%. Shipped across 1.7M merchant stores globally.' },
-            { co: 'Shopify · 2022', title: 'B2B Commerce Platform', desc: 'End-to-end wholesale commerce product. $120M ARR in first year, 14K enterprise merchants onboarded.' },
-          ].map((proj, i) => (
-            <div key={i} className="sp-exp-item">
-              <div className="sp-exp-company">{proj.co}</div>
-              <div className="sp-exp-title">{proj.title}</div>
-              <div className="sp-exp-desc">{proj.desc}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function ObsidianPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'obsidian')
-  return (
-    <div className="obsidian-resume">
-      <div className="ob-border-frame"></div>
-      <div className="ob-corner tl"></div><div className="ob-corner tr"></div>
-      <div className="ob-corner bl"></div><div className="ob-corner br"></div>
-      <div className="ob-inner">
-        <div className="ob-monogram">{res.name.split(' ').map(n => n[0]).join('')}</div>
-        <div className="ob-name">{res.name}</div>
-        <div className="ob-title">{res.role}</div>
-        <div className="ob-divider"><div className="ob-divider-line"></div><div className="ob-divider-gem"></div><div className="ob-divider-line"></div></div>
-        <div className="ob-section">
-          <div className="ob-section-head">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="ob-exp">
-              <div className="ob-exp-title">{exp.title}</div>
-              <div className="ob-exp-meta">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              <div className="ob-exp-desc">{exp.description}</div>
-            </div>
-          ))}
-        </div>
-        <div className="ob-section">
-          <div className="ob-section-head">Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} className="ob-exp">
-              <div className="ob-exp-title">{edu.degree}</div>
-              <div className="ob-exp-meta">{edu.school} · {edu.startDate} – {edu.endDate}</div>
-            </div>
-          ))}
-        </div>
-        <div className="ob-section">
-          <div className="ob-section-head">Skills</div>
-          <div className="ob-skills">{res.skills.map((s, i) => <span key={i} className="ob-skill">{s}</span>)}</div>
-        </div>
-        <div className="ob-section">
-          <div className="ob-section-head">Selected Projects</div>
-          {[
-            { title: 'Luminary Brand Identity', co: 'Obsidian Studio · 2023', desc: 'Rebranded luxury hotel chain across 48 properties. Identity system spanning print, digital and environmental design.' },
-            { title: 'Nocturne Editorial Series', co: 'Harper’s Bazaar · 2022', desc: '12-issue visual language system for print and digital. Grew digital readership 41% in first quarter.' },
-          ].map((proj, i) => (
-            <div key={i} className="ob-exp">
-              <div className="ob-exp-title">{proj.title}</div>
-              <div className="ob-exp-meta">{proj.co}</div>
-              <div className="ob-exp-desc">{proj.desc}</div>
-            </div>
-          ))}
-        </div>
-        <div className="ob-section">
-          <div className="ob-section-head">Awards</div>
-          <div className="ob-exp"><div className="ob-exp-title">D&AD Pencil — Gold</div><div className="ob-exp-meta">Typography · 2023</div></div>
-          <div className="ob-exp"><div className="ob-exp-title">Cannes Lions Silver</div><div className="ob-exp-meta">Brand Design · 2022</div></div>
-          <div className="ob-exp"><div className="ob-exp-title">Type Directors Club</div><div className="ob-exp-meta">Communication Design · 2021</div></div>
-        </div>
-        <div className="ob-section">
-          <div className="ob-section-head">Contact</div>
-          <div className="ob-contact">
-            <div className="ob-contact-item"><div className="ob-contact-dot"></div>{res.email}</div>
-            <div className="ob-contact-item"><div className="ob-contact-dot"></div>{res.phone}</div>
-            <div className="ob-contact-item"><div className="ob-contact-dot"></div>{res.location}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function IvoryPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'ivory')
-  return (
-    <div className="ivory-resume">
-      <div className="iv-top-stripe"></div>
-      <div className="iv-header">
-        <div className="iv-header-text">
-          <div className="iv-name">{res.name}</div>
-          <div className="iv-title-bar"><div className="iv-title">{res.role}</div><div className="iv-title-dash"></div></div>
-        </div>
-        <div className="iv-header-contact">
-          <div className="iv-contact-item">{res.email}</div>
-          <div className="iv-contact-item">{res.phone}</div>
-          <div className="iv-contact-item">{res.location}</div>
-        </div>
-      </div>
-      <div className="iv-body">
-        <div className="iv-main">
-          <div className="iv-section-label">Experience</div>
-          <div className="iv-section-rule"></div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="iv-exp-item">
-              <div className="iv-exp-role">{exp.title}</div>
-              <div className="iv-exp-where">
-                <span className="iv-exp-co">{exp.company}</span>
-                <span className="iv-exp-dot"></span>
-                <span className="iv-exp-date">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span>
-              </div>
-              <div className="iv-exp-desc">{exp.description}</div>
-            </div>
-          ))}
-        </div>
-        <div className="iv-aside">
-          <div className="iv-aside-section">
-            <div className="iv-aside-label">Education</div>
-            {res.education.map((edu, i) => (
-              <div key={i} className="iv-edu-item">
-                <div className="iv-edu-degree">{edu.degree}</div>
-                <div className="iv-edu-school">{edu.school}</div>
-                <div className="iv-edu-year">{edu.startDate} – {edu.endDate}</div>
-              </div>
-            ))}
-          </div>
-          <div className="iv-aside-section">
-            <div className="iv-aside-label">Skills</div>
-            {res.skills.map((skill, i) => (
-              <div key={i} className="iv-skill-row">
-                <div className="iv-skill-name">{skill}</div>
-                <div className="iv-skill-dots">
-                  {[1, 2, 3, 4, 5].map(d => <div key={d} className={d <= 4 - Math.min(i, 2) ? 'iv-dot-on' : 'iv-dot-off'} />)}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="iv-aside-section">
-            <div className="iv-aside-label">Awards</div>
-            <div className="iv-edu-item"><div className="iv-edu-degree">National Book Award</div><div className="iv-edu-school">Fiction · 2023</div></div>
-            <div className="iv-edu-item"><div className="iv-edu-degree">PEN/Faulkner Award</div><div className="iv-edu-school">American Fiction · 2022</div></div>
-            <div className="iv-edu-item"><div className="iv-edu-degree">Whiting Award</div><div className="iv-edu-school">Emerging Writers · 2021</div></div>
-          </div>
-          <div className="iv-aside-section">
-            <div className="iv-aside-label">Languages</div>
-            <div className="iv-edu-item"><div className="iv-edu-degree">English — Native</div><div className="iv-edu-degree">French — Fluent</div><div className="iv-edu-degree">Italian — Conversational</div></div>
-          </div>
-          <div className="iv-quote">
-            <p>{res.summary}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function NoirPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'noir')
-  return (
-    <div className="noir-resume">
-      <div className="na-header">
-        <div className="na-index">NA-2026-X</div>
-        <div className="na-name"><em>{res.name.split(' ')[0]}</em> {res.name.split(' ').slice(1).join(' ')}</div>
-        <div className="na-role">{res.role}</div>
-      </div>
-      <div className="na-divider"><div className="na-divider-seg"></div><div className="na-divider-seg"></div><div className="na-divider-seg"></div></div>
-      <div className="na-body">
-        <div className="na-left">
-          <div className="na-section-label">Contact</div>
-          <div className="na-contact-item"><span className="na-contact-slash">//</span> {res.email}</div>
-          <div className="na-contact-item"><span className="na-contact-slash">//</span> {res.phone}</div>
-          <div className="na-contact-item"><span className="na-contact-slash">//</span> {res.location}</div>
-          <div className="na-section-label" style={{ marginTop: 12 }}>Skills</div>
-          {res.skills.map((skill, i) => (
-            <div key={i} className="na-skill-item">
-              <div className="na-skill-name">{skill} <span>{90 - i * 10}%</span></div>
-              <div className="na-skill-bar-bg"><div className="na-skill-bar-fill" style={{ width: `${90 - i * 10}%` }} /></div>
-            </div>
-          ))}
-        </div>
-        <div className="na-right">
-          <div className="na-section-label">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="na-exp-item">
-              <div className="na-exp-role">{exp.title}</div>
-              <div className="na-exp-meta">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              <div className="na-exp-desc">{exp.description}</div>
-            </div>
-          ))}
-          <div className="na-section-label" style={{ marginTop: 10 }}>Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} className="na-exp-item">
-              <div className="na-exp-role">{edu.degree}</div>
-              <div className="na-exp-meta">{edu.school} · {edu.startDate} – {edu.endDate}</div>
-            </div>
-          ))}
-          <div className="na-section-label" style={{ marginTop: 10 }}>Selected Projects</div>
-          {[
-            { title: 'Zero-Day Response Protocol', co: 'Mandiant · 2023', desc: 'Incident response framework adopted by 60+ enterprise clients. Reduced mean time-to-contain by 71%.' },
-            { title: 'Kernel Exploit Research', co: 'NSA Collaboration · 2022', desc: 'Identified 3 CVEs in Linux kernel. Coordinated disclosure with kernel maintainers and major vendors.' },
-            { title: 'Red Team Automation Suite', co: 'Personal · 2021', desc: '1.8K GitHub stars. Automated recon and privilege escalation chains for internal red team exercises.' },
-          ].map((proj, i) => (
-            <div key={i} className="na-exp-item">
-              <div className="na-exp-role">{proj.title}</div>
-              <div className="na-exp-meta">{proj.co}</div>
-              <div className="na-exp-desc">{proj.desc}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function RosePreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'rose')
-  return (
-    <div className="rose-resume">
-      <div className="ra-accent-col"></div>
-      <div className="ra-main">
-        <div className="ra-header">
-          <div className="ra-eyebrow">RESUME</div>
-          <div className="ra-name">{res.name}</div>
-          <div className="ra-title">{res.role}</div>
-        </div>
-        <div className="ra-body">
-          <div className="ra-left">
-            <div className="ra-section-head">Contact</div>
-            <div className="ra-contact-item"><div className="ra-contact-pip"></div>{res.email}</div>
-            <div className="ra-contact-item"><div className="ra-contact-pip"></div>{res.phone}</div>
-            <div className="ra-contact-item"><div className="ra-contact-pip"></div>{res.location}</div>
-            <div className="ra-section-head" style={{ marginTop: 12 }}>Education</div>
-            {res.education.map((edu, i) => (
-              <div key={i} style={{ marginBottom: 6 }}>
-                <div style={{ fontSize: '9px', fontWeight: 600, color: '#2a1f1f' }}>{edu.degree}</div>
-                <div style={{ fontSize: '8px', color: '#a07878' }}>{edu.school}</div>
-              </div>
-            ))}
-            <div className="ra-section-head" style={{ marginTop: 12 }}>Certifications</div>
-            <div style={{ marginBottom: 4 }}><div style={{ fontSize: '9px', fontWeight: 600, color: '#2a1f1f' }}>Google UX Certification</div><div style={{ fontSize: '8px', color: '#a07878' }}>Google Career Cert · 2023</div></div>
-            <div style={{ marginBottom: 4 }}><div style={{ fontSize: '9px', fontWeight: 600, color: '#2a1f1f' }}>Nielsen Norman UX</div><div style={{ fontSize: '8px', color: '#a07878' }}>NN/g · 2022</div></div>
-            <div className="ra-section-head" style={{ marginTop: 12 }}>Languages</div>
-            <div style={{ fontSize: '8px', color: '#5a4040', marginBottom: 3 }}>• English — Native</div>
-            <div style={{ fontSize: '8px', color: '#5a4040', marginBottom: 3 }}>• Spanish — Fluent</div>
-            <div style={{ fontSize: '8px', color: '#5a4040', marginBottom: 3 }}>• Italian — Conversational</div>
-          </div>
-          <div className="ra-right">
-            <div className="ra-section-head">Summary</div>
-            <div style={{ fontSize: '8.5px', color: '#5a4040', lineHeight: 1.6, marginBottom: 10 }}>{res.summary}</div>
-            <div className="ra-section-head">Experience</div>
-            {res.experience.map((exp, i) => (
-              <div key={i} style={{ marginBottom: 10 }}>
-                <div style={{ fontSize: '10px', fontWeight: 600, color: '#2a1f1f' }}>{exp.title}</div>
-                <div style={{ fontSize: '8px', color: '#c4789a', marginBottom: 2 }}>{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-                <div style={{ fontSize: '8px', color: '#5a4040', lineHeight: 1.5 }}>{exp.description}</div>
-              </div>
-            ))}
-            <div className="ra-section-head">Selected Work</div>
-            {[
-              { title: 'Bloom Health App', co: 'Bloom Digital · 2023', desc: 'Led UX for women’s health platform. 4.9★ App Store rating, 800K downloads in 6 months.' },
-              { title: 'Atelier Rebrand', co: 'Maison Atelier · 2022', desc: 'End-to-end brand identity and digital experience for luxury fashion house. +62% e-commerce conversion.' },
-            ].map((proj, i) => (
-              <div key={i} style={{ marginBottom: 8 }}>
-                <div style={{ fontSize: '10px', fontWeight: 600, color: '#2a1f1f' }}>{proj.title}</div>
-                <div style={{ fontSize: '8px', color: '#c4789a', marginBottom: 2 }}>{proj.co}</div>
-                <div style={{ fontSize: '8px', color: '#5a4040', lineHeight: 1.5 }}>{proj.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function ExecutivePreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'executive')
-  return (
-    <div className="executive-resume">
-      <div className="ex-name">{res.name}</div>
-      <div className="ex-role">{res.role}</div>
-      <div className="ex-contact">{res.email} | {res.phone} | {res.location}</div>
-      <div className="ex-divider"></div>
-      <div className="ex-section">
-        <div className="ex-section-title">Summary</div>
-        <div className="ex-profile">{res.summary}</div>
-      </div>
-      <div className="ex-section">
-        <div className="ex-section-title">Experience</div>
-        {res.experience.map((exp, i) => (
-          <div key={i} style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: '11px', fontWeight: 600 }}>{exp.title}</div>
-            <div style={{ fontSize: '9px', color: '#777', fontStyle: 'italic', marginBottom: 3 }}>{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-            <div style={{ fontSize: '9px', color: '#555', lineHeight: 1.5 }}>{exp.description}</div>
-          </div>
-        ))}
-      </div>
-      <div className="ex-section">
-        <div className="ex-section-title">Education</div>
-        {res.education.map((edu, i) => (
-          <div key={i} style={{ marginBottom: 6 }}>
-            <div style={{ fontSize: '10px', fontWeight: 600 }}>{edu.degree}</div>
-            <div style={{ fontSize: '9px', color: '#777' }}>{edu.school} · {edu.startDate} – {edu.endDate}</div>
-          </div>
-        ))}
-      </div>
-      <div className="ex-section">
-        <div className="ex-section-title">Skills</div>
-        <div style={{ fontSize: '9px', color: '#555' }}>{res.skills.join(' · ')}</div>
-      </div>
-      <div className="ex-section">
-        <div className="ex-section-title">Selected Projects</div>
-        {[
-          { title: 'Enterprise GTM Transformation', co: 'Palantir · 2023', desc: 'Led $200M+ enterprise sales motion across 8 verticals. Built 40-person GTM team from the ground up. Exceeded quota by 38% in year one.' },
-          { title: 'EMEA Market Expansion', co: 'Palantir · 2022', desc: 'Opened UK, Germany and France markets simultaneously. $45M in new ARR within 18 months of launch.' },
-        ].map((proj, i) => (
-          <div key={i} style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: '10px', fontWeight: 600 }}>{proj.title}</div>
-            <div style={{ fontSize: '9px', color: '#777', fontStyle: 'italic', marginBottom: 3 }}>{proj.co}</div>
-            <div style={{ fontSize: '9px', color: '#555', lineHeight: 1.5 }}>{proj.desc}</div>
-          </div>
-        ))}
-      </div>
-      <div className="ex-section">
-        <div className="ex-section-title">Board &amp; Advisory</div>
-        <div style={{ marginBottom: 6 }}><div style={{ fontSize: '10px', fontWeight: 600 }}>Board Observer</div><div style={{ fontSize: '9px', color: '#777' }}>Series B SaaS startup · 2022–Present</div></div>
-        <div style={{ marginBottom: 6 }}><div style={{ fontSize: '10px', fontWeight: 600 }}>Advisor — GTM Strategy</div><div style={{ fontSize: '9px', color: '#777' }}>Y Combinator W23 Cohort · 2023</div></div>
-      </div>
-      <div className="ex-section">
-        <div className="ex-section-title">Languages</div>
-        <div style={{ fontSize: '9px', color: '#555' }}>English — Native · German — Fluent · French — Conversational</div>
-      </div>
-    </div>
-  )
-}
-
-// ─── THEMES 18-25 (With Dedicated CSS Files) ────────────────
 
 export function TerminalPreview({ data }: PreviewProps) {
   const res = useDynamicData(data || {}, 'terminal')
@@ -1484,458 +642,73 @@ export function TerminalPreview({ data }: PreviewProps) {
   )
 }
 
-export function HealthcarePreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'healthcare')
-  const initials = res.name.split(' ').map(n => n[0]).join('')
-  const vitals = [{ num: '12+', label: 'Years Exp', color: '#0d9488' }, { num: '8K+', label: 'Patients', color: '#3b82f6' }, { num: '24', label: 'Publications', color: '#ef6461' }, { num: '96%', label: 'Satisfaction', color: '#d97706' }]
-  return (
-    <div className="health-theme-wrapper">
-      <div className="health-hero">
-        <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginBottom: 10 }}>
-          <div style={{ width: 48, height: 48, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', color: 'rgba(255,255,255,0.85)', flexShrink: 0 }}>{initials}</div>
-          <div>
-            <div className="health-name">{res.name}</div>
-            <div className="health-title">{res.role}</div>
-          </div>
-        </div>
-        <div className="health-contact"><span>{res.email}</span><span>{res.phone}</span><span>{res.location}</span></div>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, padding: '0 14px', marginTop: -8 }}>
-        {vitals.map((v, i) => (
-          <div key={i} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '8px 6px', textAlign: 'center' as const, position: 'relative' as const, overflow: 'hidden' }}>
-            <div style={{ position: 'absolute' as const, top: 0, left: 0, right: 0, height: 2, background: v.color }} />
-            <div style={{ fontSize: '16px', fontWeight: 400, color: v.color, lineHeight: 1.1 }}>{v.num}</div>
-            <div style={{ fontSize: '6px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginTop: 2 }}>{v.label}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ padding: '12px 16px' }}>
-        <div style={{ background: '#fff', borderLeft: '3px solid #0d9488', borderRadius: '0 8px 8px 0', padding: '10px 14px', fontSize: '9px', color: '#475569', lineHeight: 1.6, marginBottom: 12, boxShadow: '0 1px 3px rgba(15,43,76,0.04)' }}>{res.summary}</div>
-        <div style={{ fontSize: '9px', fontWeight: 700, color: '#0d9488', textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 6 }}>Experience</div>
-        {res.experience.map((exp, i) => (
-          <div key={i} style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '10px 12px', marginBottom: 8, boxShadow: '0 1px 3px rgba(15,43,76,0.04)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 4 }}>
-              <div><div style={{ fontSize: '10px', fontWeight: 600, color: '#0f2b4c' }}>{exp.title}</div><div style={{ fontSize: '8px', color: '#0d9488', fontWeight: 600 }}>{exp.company}</div></div>
-              <span style={{ fontSize: '7px', color: '#94a3b8', background: '#f1f5f9', padding: '2px 8px', borderRadius: 4, whiteSpace: 'nowrap' as const }}>{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span>
-            </div>
-            <div style={{ fontSize: '8px', color: '#475569', lineHeight: 1.5, marginTop: 6 }}>{exp.description}</div>
-          </div>
-        ))}
-        <div style={{ fontSize: '9px', fontWeight: 700, color: '#0d9488', textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 6, marginTop: 8 }}>Education</div>
-        {res.education.map((edu, i) => (
-          <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '10px 12px', marginBottom: 6 }}>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: i === 0 ? 'rgba(239,100,97,0.06)' : 'rgba(59,130,246,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', flexShrink: 0 }}>{i === 0 ? '🩺' : '🔬'}</div>
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: 600, color: '#0f2b4c' }}>{edu.degree}</div>
-              <div style={{ fontSize: '8px', color: '#0d9488', fontWeight: 600 }}>{edu.school}</div>
-              <div style={{ fontSize: '7px', color: '#94a3b8' }}>{edu.startDate} – {edu.endDate}</div>
-            </div>
-          </div>
-        ))}
-        <div style={{ fontSize: '9px', fontWeight: 700, color: '#0d9488', textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 6, marginTop: 8 }}>Skills</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 4, marginBottom: 12 }}>
-          {res.skills.map((s, i) => <span key={i} style={{ fontSize: '8px', background: 'rgba(13,148,136,0.06)', color: '#0d9488', padding: '3px 10px', borderRadius: 100, border: '1px solid rgba(13,148,136,0.12)' }}>{s}</span>)}
-        </div>
-        <div style={{ fontSize: '9px', fontWeight: 700, color: '#0d9488', textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 6 }}>Certifications &amp; Licenses</div>
-        {[
-          { name: 'Board Certified — Internal Medicine', issuer: 'ABIM · 2022' },
-          { name: 'Clinical Informatics Certificate', issuer: 'AMIA · 2021' },
-          { name: 'Advanced Cardiac Life Support', issuer: 'AHA · 2023' },
-        ].map((cert, i) => (
-          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '8px', color: '#475569', marginBottom: 4, paddingBottom: 4, borderBottom: '1px solid #f1f5f9' }}>
-            <span style={{ fontWeight: 500 }}>{cert.name}</span>
-            <span style={{ color: '#94a3b8', whiteSpace: 'nowrap' as const, marginLeft: 8 }}>{cert.issuer}</span>
-          </div>
-        ))}
-        <div style={{ fontSize: '9px', fontWeight: 700, color: '#0d9488', textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: 6, marginTop: 8 }}>Publications &amp; Research</div>
-        {[
-          { title: '"AI Triage in Emergency Medicine"', journal: 'NEJM · 2023 · 4,200+ citations' },
-          { title: '"Predictive Models for Sepsis"', journal: 'JAMA · 2022 · 2,800+ citations' },
-          { title: '"EHR Usability Barriers"', journal: 'JAMIA · 2021 · 1,400+ citations' },
-        ].map((pub, i) => (
-          <div key={i} style={{ fontSize: '8px', color: '#475569', marginBottom: 5 }}>
-            <div style={{ fontWeight: 600, color: '#0f2b4c' }}>{pub.title}</div>
-            <div style={{ color: '#94a3b8', fontSize: '7.5px' }}>{pub.journal}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-
-
-export function ScifiPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'scifi')
-  const skillPcts = [95, 88, 84, 78, 72]
-  return (
-    <div className="scifi-theme-wrapper">
-      <div className="scifi-sys-bar"><span>⚡ STATUS: ACTIVE</span><span>SECTOR-7 · {new Date().toISOString().split('T')[0]}</span></div>
-      <div className="scifi-header">
-        <div className="scifi-name" data-name={res.name}>{res.name}</div>
-        <div className="scifi-designation">{res.role}</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap' as const, justifyContent: 'center', gap: '4px 16px', marginTop: 8, fontSize: '7px', letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>
-          {[['COMM', res.email], ['SIG', res.phone], ['BASE', res.location]].map(([k, v], i) => (
-            <span key={i}><span style={{ color: 'rgba(0,195,255,0.4)' }}>[{k}]</span> <span style={{ color: 'rgba(0,195,255,0.7)' }}>{v}</span></span>
-          ))}
-        </div>
-      </div>
-      <div className="scifi-section">
-        <div className="scifi-section-head"><div className="scifi-section-title">◈ MISSION BRIEF</div><div className="scifi-section-line"></div></div>
-        <div style={{ fontSize: '8px', color: 'rgba(0,195,255,0.5)', lineHeight: 1.65, paddingLeft: 8, borderLeft: '2px solid rgba(0,195,255,0.15)' }}>{res.summary}</div>
-      </div>
-      <div className="scifi-section">
-        <div className="scifi-section-head"><div className="scifi-section-title">◈ CAPABILITIES</div><div className="scifi-section-line"></div></div>
-        {res.skills.slice(0, 5).map((s, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '4px 0', paddingLeft: 8 }}>
-            <span style={{ fontSize: '8px', color: 'rgba(0,195,255,0.7)', minWidth: 70, letterSpacing: '0.05em' }}>{s}</span>
-            <div style={{ flex: 1, height: 4, background: 'rgba(0,195,255,0.06)', overflow: 'hidden' }}>
-              <div style={{ width: `${skillPcts[i] || 60}%`, height: '100%', background: `linear-gradient(90deg, rgba(0,195,255,0.2), rgba(0,195,255,0.6))` }} />
-            </div>
-            <span style={{ fontSize: '7px', color: 'rgba(0,195,255,0.4)', minWidth: 22, textAlign: 'right' as const }}>{skillPcts[i] || 60}%</span>
-          </div>
-        ))}
-        <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 4, paddingLeft: 8, marginTop: 8 }}>
-          {res.skills.slice(5).map((s, i) => <span key={i} style={{ fontSize: '7px', border: '1px solid rgba(0,195,255,0.2)', color: 'rgba(0,195,255,0.6)', padding: '2px 8px', letterSpacing: '0.05em', background: 'rgba(0,195,255,0.03)' }}>{s}</span>)}
-        </div>
-      </div>
-      <div className="scifi-section">
-        <div className="scifi-section-head"><div className="scifi-section-title">◈ SERVICE RECORD</div><div className="scifi-section-line"></div></div>
-        {res.experience.map((exp, i) => (
-          <div key={i} className="scifi-exp-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <div className="scifi-exp-role">{exp.title}</div>
-              <span style={{ fontSize: '7px', color: 'rgba(0,195,255,0.3)', letterSpacing: '0.1em' }}>{exp.startDate} – {exp.current ? 'ACTIVE' : exp.endDate}</span>
-            </div>
-            <div className="scifi-exp-co">{exp.company}</div>
-            <div style={{ fontSize: '7.5px', color: 'rgba(0,195,255,0.4)', lineHeight: 1.5, marginTop: 4 }}>{exp.description}</div>
-          </div>
-        ))}
-      </div>
-      <div className="scifi-section">
-        <div className="scifi-section-head"><div className="scifi-section-title">◈ TRAINING LOG</div><div className="scifi-section-line"></div></div>
-        {res.education.map((edu, i) => (
-          <div key={i} className="scifi-exp-card">
-            <div className="scifi-exp-role">{edu.degree}</div>
-            <div className="scifi-exp-co">{edu.school}</div>
-            <div style={{ fontSize: '7px', color: 'rgba(0,195,255,0.3)' }}>{edu.startDate} – {edu.endDate}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ marginTop: 10, borderTop: '1px solid rgba(0,195,255,0.08)', paddingTop: 8, display: 'flex', justifyContent: 'space-between', fontSize: '7px', color: 'rgba(0,195,255,0.25)', letterSpacing: '0.15em', textTransform: 'uppercase' as const }}>
-        <span>⚡ {res.name} · Personnel File</span>
-        <span>CLEARANCE: OPEN</span>
-      </div>
-    </div>
-  )
-}
-
-export function SophisticatedPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'sophisticated')
-  const skillPcts = [98, 95, 93, 90, 88, 85]
-  return (
-    <div className="sophisticated-theme-wrapper">
-      <div className="sophisticated-hero">
-        <div className="sophisticated-hero-content">
-          <div>
-            <div style={{ fontSize: '7px', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' as const, color: '#b8953e', marginBottom: 4 }}>Executive Profile</div>
-            <div className="sophisticated-name">{res.name}</div>
-            <div className="sophisticated-title">{res.role}</div>
-          </div>
-          <div className="sophisticated-contact-box">
-            <div className="sophisticated-contact-label">Contact</div>
-            <div style={{ fontSize: '8px', color: '#ddd', lineHeight: 1.6 }}>{res.email}<br />{res.phone}</div>
-            <div className="sophisticated-contact-label" style={{ marginTop: 6 }}>Location</div>
-            <div style={{ fontSize: '8px', color: '#ddd' }}>{res.location}</div>
-          </div>
-        </div>
-      </div>
-      <div className="sophisticated-body" style={{ display: 'grid', gridTemplateColumns: '1fr 180px' }}>
-        <div className="sophisticated-main" style={{ padding: '14px 16px 16px 20px', borderRight: '1px solid #e8e3dd' }}>
-          <div className="sophisticated-section-label">Executive Summary</div>
-          <div style={{ borderLeft: '2px solid #b8953e', paddingLeft: 12, marginLeft: 2, fontStyle: 'italic', fontSize: '9px', color: '#555', lineHeight: 1.65, marginBottom: 14 }}>{res.summary}</div>
-          <div className="sophisticated-section-label">Professional Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} style={{ marginBottom: 12, paddingBottom: 10, borderBottom: i < res.experience.length - 1 ? '1px solid #f0ebe5' : 'none' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap' as const, gap: 4 }}>
-                <span style={{ fontSize: '10px', fontWeight: 700, color: '#1a1a1a', letterSpacing: '0.2px' }}>{exp.title}</span>
-                <span style={{ fontSize: '8px', color: '#aaa', letterSpacing: '0.5px' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
-              </div>
-              <div style={{ fontSize: '9px', fontStyle: 'italic', color: '#888', marginBottom: 4 }}>{exp.company}</div>
-              <div style={{ fontSize: '8px', color: '#555', lineHeight: 1.6 }}>{exp.description}</div>
-            </div>
-          ))}
-          <div className="sophisticated-section-label" style={{ marginTop: 6 }}>Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} style={{ marginBottom: 6 }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, color: '#1a1a1a' }}>{edu.degree}</div>
-              <div style={{ fontSize: '9px', fontStyle: 'italic', color: '#888' }}>{edu.school}</div>
-              <div style={{ fontSize: '8px', color: '#aaa' }}>{edu.startDate} – {edu.endDate}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ padding: '14px 14px 16px 12px', background: '#faf9f7' }}>
-          <div style={{ fontSize: '7px', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase' as const, color: '#b8953e', marginBottom: 10, paddingBottom: 6, borderBottom: '1px solid #e8e3dd' }}>Core Competencies</div>
-          {res.skills.slice(0, 6).map((s, i) => (
-            <div key={i} style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: '8px', fontWeight: 500, color: '#444', marginBottom: 3 }}>{s}</div>
-              <div style={{ width: '100%', height: 2, background: '#e8e3dd', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${skillPcts[i] || 80}%`, background: 'linear-gradient(90deg, #b8953e, #d4b96a)' }} />
-              </div>
-            </div>
-          ))}
-          <div style={{ fontSize: '7px', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase' as const, color: '#b8953e', marginTop: 14, marginBottom: 8, paddingBottom: 6, borderBottom: '1px solid #e8e3dd' }}>Expertise</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 4 }}>
-            {res.skills.slice(6).map((s, i) => <span key={i} style={{ fontSize: '7px', padding: '3px 8px', border: '1px solid #e8e3dd', color: '#555', background: '#fff' }}>{s}</span>)}
-          </div>
-          <div style={{ fontSize: '7px', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase' as const, color: '#b8953e', marginTop: 14, marginBottom: 8, paddingBottom: 6, borderBottom: '1px solid #e8e3dd' }}>Board Roles</div>
-          <div style={{ fontSize: '8px', color: '#555', marginBottom: 5 }}><strong>Advisor</strong><br />OpenAI LP · 2023–Present</div>
-          <div style={{ fontSize: '8px', color: '#555', marginBottom: 5 }}><strong>Board Observer</strong><br />Anthropic · 2022</div>
-          <div style={{ fontSize: '7px', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase' as const, color: '#b8953e', marginTop: 14, marginBottom: 8, paddingBottom: 6, borderBottom: '1px solid #e8e3dd' }}>Awards</div>
-          <div style={{ fontSize: '8px', color: '#555', marginBottom: 5 }}>Fortune 40 Under 40 · 2023</div>
-          <div style={{ fontSize: '8px', color: '#555', marginBottom: 5 }}>WSJ CEO Innovation Award · 2022</div>
-          <div style={{ fontSize: '8px', color: '#555', marginBottom: 5 }}>Salesforce Trailblazer · 2021</div>
-        </div>
-      </div>
-      <div style={{ background: '#1a1a1a', padding: '8px 20px', display: 'flex', justifyContent: 'space-between', fontSize: '7px' }}>
-        <span style={{ fontStyle: 'italic', color: '#888' }}>“Strategy without execution is hallucination.”</span>
-        <span style={{ fontWeight: 500, letterSpacing: '2px', textTransform: 'uppercase' as const, color: '#b8953e' }}>References Upon Request</span>
-      </div>
-    </div>
-  )
-}
-
-
-
-export function FuturisticPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'futuristic')
-  const initials = res.name.split(' ').map(n => n[0]).join('')
-  const metrics = [{ value: `${res.experience.length}+`, label: 'Years Exp' }, { value: '60+', label: 'Projects' }, { value: '12M', label: 'Users' }, { value: '3', label: 'Awards' }]
-  const chipColors = ['rgba(110,231,183,0.12)', 'rgba(129,140,248,0.12)', 'rgba(251,146,160,0.12)', 'rgba(103,232,249,0.12)']
-  const chipBorders = ['rgba(110,231,183,0.3)', 'rgba(129,140,248,0.3)', 'rgba(251,146,160,0.3)', 'rgba(103,232,249,0.3)']
-  const chipTexts = ['#6ee7b7', '#818cf8', '#fb929f', '#67e8f9']
-  return (
-    <div className="futuristic-resume-wrapper" style={{ height: '100%', overflow: 'hidden', fontSize: '10px' }}>
-      <div className="bg-mesh"><div className="orb orb-1"></div><div className="orb orb-2"></div></div>
-      <div className="page" style={{ padding: '16px' }}>
-        <div className="status-bar" style={{ marginBottom: '10px' }}><span><span style={{ display: 'inline-block', width: 5, height: 5, borderRadius: '50%', background: '#6ee7b7', marginRight: 5, verticalAlign: 'middle' }} />PROFILE ACTIVE · v4.7.2</span><span>CLEARANCE: OPEN</span></div>
-        <div className="hero-card glass" style={{ marginBottom: '10px' }}>
-          <div className="hero-layout">
-            <div className="avatar-orb" style={{ width: '50px', height: '50px' }}><span className="avatar-initials" style={{ fontSize: '14px' }}>{initials}</span></div>
-            <div className="hero-info">
-              <div className="hero-name" style={{ fontSize: '18px' }}>{res.name}</div>
-              <div className="hero-role" style={{ fontSize: '10px' }}>{res.role}</div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: '4px 14px', fontSize: '8px', marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-            {[['Mail', res.email], ['Tel', res.phone], ['Base', res.location]].map(([k, v], i) => (
-              <span key={i}><span style={{ color: 'rgba(255,255,255,0.3)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' as const, marginRight: 4 }}>{k}</span><span style={{ color: 'rgba(255,255,255,0.7)' }}>{v}</span></span>
-            ))}
-          </div>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 10 }}>
-          {metrics.map((m, i) => (
-            <div key={i} className="glass" style={{ padding: '8px 6px', textAlign: 'center' as const, borderRadius: 8 }}>
-              <div style={{ fontSize: '16px', fontWeight: 300, background: 'linear-gradient(135deg, #6ee7b7, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{m.value}</div>
-              <div style={{ fontSize: '7px', color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em', textTransform: 'uppercase' as const }}>{m.label}</div>
-            </div>
-          ))}
-        </div>
-        <div className="bento" style={{ gap: '8px' }}>
-          <div className="bento-card bento-full glass" style={{ padding: '12px' }}>
-            <div className="card-label cl-mint">Profile Summary</div>
-            <div className="summary-text" style={{ fontSize: '9px' }}>{res.summary}</div>
-          </div>
-          <div className="bento-card bento-full glass" style={{ padding: '12px' }}>
-            <div className="card-label cl-indigo">Experience</div>
-            {res.experience.map((exp, i) => (
-              <div key={i} style={{ marginBottom: 10, paddingBottom: 8, borderBottom: i < res.experience.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 4 }}>
-                  <span style={{ fontSize: '10px', fontWeight: 600, color: '#f0f6fc' }}>{exp.title}</span>
-                  <span style={{ fontSize: '7px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em' }}>{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</span>
-                </div>
-                <div style={{ fontSize: '8px', color: '#6ee7b7', fontWeight: 500 }}>{exp.company}</div>
-                <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.5, marginTop: 4 }}>{exp.description}</div>
-              </div>
-            ))}
-          </div>
-          <div className="bento-card glass" style={{ padding: '12px' }}>
-            <div className="card-label cl-rose">Toolkit</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 4 }}>
-              {res.skills.map((s, i) => <span key={i} style={{ fontSize: '8px', background: chipColors[i % 4], border: `1px solid ${chipBorders[i % 4]}`, color: chipTexts[i % 4], padding: '3px 8px', borderRadius: 4 }}>{s}</span>)}
-            </div>
-          </div>
-          <div className="bento-card glass" style={{ padding: '12px' }}>
-            <div className="card-label cl-amber">Education</div>
-            {res.education.map((edu, i) => (
-              <div key={i} style={{ marginBottom: 6 }}>
-                <div style={{ fontSize: '9px', fontWeight: 600, color: '#f0f6fc' }}>{edu.degree}</div>
-                <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.4)' }}>{edu.school}</div>
-                <div style={{ fontSize: '7px', color: 'rgba(255,255,255,0.25)' }}>{edu.startDate} – {edu.endDate}</div>
-              </div>
-            ))}
-          </div>
-          <div className="bento-card bento-full glass" style={{ padding: '12px' }}>
-            <div className="card-label cl-mint">Patents &amp; Publications</div>
-            {[
-              { title: 'Spatial UI Rendering System', type: 'Patent · US11,234,567 · 2023' },
-              { title: 'Hand-Tracking Interaction in visionOS', type: 'Apple Tech Talk · WWDC 2023' },
-              { title: 'Real-Time XR Mesh Compression', type: 'SIGGRAPH 2022 · ACM Digital Library' },
-            ].map((pub, i) => (
-              <div key={i} style={{ marginBottom: 6, paddingBottom: 5, borderBottom: i < 2 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-                <div style={{ fontSize: '9px', fontWeight: 600, color: '#f0f6fc' }}>{pub.title}</div>
-                <div style={{ fontSize: '7px', color: '#6ee7b7' }}>{pub.type}</div>
-              </div>
-            ))}
-          </div>
-          <div className="bento-card glass" style={{ padding: '12px' }}>
-            <div className="card-label cl-indigo">Awards</div>
-            <div style={{ fontSize: '8px', marginBottom: 5 }}><span style={{ color: '#818cf8', fontWeight: 600 }}>Apple Design Award</span><span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '7px' }}> · 2023</span></div>
-            <div style={{ fontSize: '8px', marginBottom: 5 }}><span style={{ color: '#818cf8', fontWeight: 600 }}>GDC Best XR Experience</span><span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '7px' }}> · 2022</span></div>
-            <div style={{ fontSize: '8px', marginBottom: 5 }}><span style={{ color: '#818cf8', fontWeight: 600 }}>Unity Award — Graphics</span><span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '7px' }}> · 2021</span></div>
-          </div>
-        </div>
-        <div style={{ textAlign: 'center' as const, marginTop: 10, padding: '8px', fontSize: '8px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.5px' }}>
-          <span style={{ background: 'linear-gradient(90deg, #6ee7b7, #818cf8, #fb929f)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 700 }}>{res.name.toUpperCase()}</span> · PROFILE INTERFACE · REFS ON REQUEST
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── EDITOR PAGE PREVIEW MAP ───────────────────────────────
-
-
 export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'editorial_luxe')
+  const c = { ink: '#1a1a1a', cream: '#f8f5f0', accent: '#c4553a', muted: '#7a7167', rule: '#d4cec5' }
+  const sTitle: React.CSSProperties = { fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14 }
   return (
-    <div className="editorial-luxe-wrapper">
-      <header>
-        <div className="name-block">
-          <h1>{res.name.split(' ')[0]} <span>{res.name.split(' ').slice(1).join(' ')}</span></h1>
-          <div className="tagline">{res.role}</div>
+    <div style={{ fontFamily: "'Source Sans 3', 'DM Sans', sans-serif", background: c.cream, padding: '60px 64px', position: 'relative', overflow: 'hidden' }}>
+      {/* Corner marks */}
+      <span style={{ position: 'absolute', top: 28, left: 28, width: 24, height: 24, borderTop: `2px solid ${c.accent}`, borderLeft: `2px solid ${c.accent}`, opacity: 0.4 }} />
+      <span style={{ position: 'absolute', bottom: 28, right: 28, width: 24, height: 24, borderBottom: `2px solid ${c.accent}`, borderRight: `2px solid ${c.accent}`, opacity: 0.4 }} />
+      {/* Header */}
+      <header style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'flex-end', gap: 32, paddingBottom: 28, borderBottom: `1px solid ${c.rule}`, marginBottom: 36 }}>
+        <div>
+          <h1 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontWeight: 900, fontSize: 52, letterSpacing: -1, lineHeight: 1, color: c.ink }}>Elena <span style={{ color: c.accent, fontStyle: 'italic', fontWeight: 400 }}>Vasquez</span></h1>
+          <div style={{ fontSize: 15, fontWeight: 300, color: c.muted, letterSpacing: 3, textTransform: 'uppercase', marginTop: 10 }}>Senior Product Manager</div>
         </div>
-        <div className="contact-block">
-          {res.location}<br />
-          {res.phone}<br />
-          <a href={`mailto:${res.email}`}>{res.email}</a><br />
-          linkedin.com/in/elenavasquez
+        <div style={{ textAlign: 'right', fontSize: 13.5, color: c.muted, lineHeight: 1.8 }}>
+          New York, NY<br />(555) 412-8903<br /><span style={{ color: c.accent }}>elena.vasquez@email.com</span><br /><span style={{ color: c.accent }}>linkedin.com/in/evasquez</span>
         </div>
       </header>
-
-      <div className="summary">{res.summary}</div>
-
-      <div style={{ display: 'flex', borderTop: '1px solid #e8e0d4', borderBottom: '1px solid #e8e0d4', margin: '0 0 16px' }}>
-        {[['9+', 'Years Exp.'], ['180M+', 'Users Reached'], ['$4M', 'Budget Managed'], ['28%', 'Activation Lift']].map(([val, label], i) => (
-          <div key={i} style={{ flex: 1, textAlign: 'center' as const, padding: '8px 4px', borderRight: i < 3 ? '1px solid #e8e0d4' : 'none' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: '#1a1a1a', fontFamily: 'Georgia, serif' }}>{val}</div>
-            <div style={{ fontSize: '6.5px', color: '#999', letterSpacing: '0.08em', textTransform: 'uppercase' as const, marginTop: 1 }}>{label}</div>
-          </div>
-        ))}
+      {/* Summary */}
+      <div style={{ fontSize: 15.5, lineHeight: 1.7, color: '#444', fontWeight: 300, marginBottom: 36, paddingLeft: 20, borderLeft: `3px solid ${c.accent}` }}>
+        Product leader with 9+ years of experience shipping consumer and B2B products at scale. Expert in data-informed decision-making, cross-functional collaboration, and translating complex user needs into elegant solutions. Track record of growing product revenue by 3× and launching features used by 20M+ people.
       </div>
-
-      <div className="content">
+      {/* Content */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 48 }}>
+        {/* Main */}
         <main>
-          <div className="section-title">Experience</div>
-
-          {res.experience.map((exp, i) => (
-            <div className="entry" key={i}>
-              <div className="entry-header">
-                <h3>{exp.title}</h3>
-                <span className="dates">{exp.startDate} — {exp.endDate}</span>
+          <div style={sTitle}>Experience<span style={{ flex: 1, height: 1, background: c.rule }} /></div>
+          {[
+            { title: 'Senior Product Manager', date: '2021 — Present', co: 'Notion · New York, NY', bullets: ['Led cross-functional team of 14 to launch AI-powered workspace features, driving 40% increase in daily active users', 'Defined product roadmap generating $28M in net-new ARR within first year', 'Established experimentation culture with 120+ A/B tests, improving core funnel conversion by 22%'] },
+            { title: 'Product Manager', date: '2018 — 2021', co: 'Spotify · New York, NY', bullets: ['Owned discovery and personalization features reaching 180M+ monthly listeners', 'Shipped Blend playlists feature from 0→1, achieving 15M monthly active users in 6 months', 'Reduced churn in first-month subscribers by 18% through onboarding flow redesign'] },
+            { title: 'Associate Product Manager', date: '2016 — 2018', co: 'Google · Mountain View, CA', bullets: ['Managed search quality features for Google Maps used by 1B+ monthly users', 'Launched local business review summaries, increasing review engagement by 35%'] },
+          ].map((e, i) => (
+            <div key={i} style={{ marginBottom: 26 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
+                <h3 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 17, fontWeight: 700, color: c.ink }}>{e.title}</h3>
+                <span style={{ fontSize: 12.5, color: c.muted, whiteSpace: 'nowrap' }}>{e.date}</span>
               </div>
-              <div className="company">{exp.company} · {exp.location}</div>
-              <ul>
-                {exp.description.split('. ').map((bullet, bi) => (
-                  <li key={bi}>{bullet}{bullet.endsWith('.') ? '' : '.'}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-
-          <div className="section-title" style={{ marginTop: 14 }}>Selected Projects</div>
-          {[
-            { name: 'AI Workspace Assistant', co: 'Notion · 2023', desc: 'GPT-4 writing assistant — 2.1M activations in 60 days, #1 Product of the Week on ProductHunt.' },
-            { name: 'Spotify Blend', co: 'Spotify · 2021', desc: 'Collaborative playlist merging two users\' tastes — 15M+ shares in first 30 days, featured in TechCrunch.' },
-            { name: 'Search Quality Initiative', co: 'Google · 2017', desc: '+4.2% search satisfaction improvement across 12 verticals, impacting 2B+ daily queries.' },
-          ].map((proj, i) => (
-            <div className="entry" key={i}>
-              <div className="entry-header"><h3>{proj.name}</h3></div>
-              <div className="company">{proj.co}</div>
-              <ul><li>{proj.desc}</li></ul>
-            </div>
-          ))}
-
-          <div className="main-heading">
-            <svg className="geo" viewBox="0 0 14 14" style={{ width: '12px', height: '12px' }}><rect fill="#1a1a2e" width="14" height="14" /></svg>
-            <h2>Selected Projects</h2>
-          </div>
-          {[
-            { name: 'Visual Search Engine', co: 'Wayfair · 2023', desc: 'Built image-similarity model powering 38% lift in product discovery for 22M monthly shoppers. Deployed on GPU cluster with 12ms P99 latency.' },
-            { name: 'Real-Time Rec System', co: 'Netflix · 2021', desc: 'Personalization pipeline for 230M subscribers using two-tower neural network. Reduced cold-start problem by 44% for new user cohorts.' },
-            { name: 'Alt-Data NLP Pipeline', co: 'Two Sigma · 2017', desc: 'Processed 500K+ financial documents daily with sentiment + entity extraction. Alpha signal contributed to $120M AUM strategy.' },
-          ].map((proj, i) => (
-            <div className="exp-item" key={i}>
-              <div className="top-row"><h3>{proj.name}</h3></div>
-              <div className="company">{proj.co}</div>
-              <ul><li>{proj.desc}</li></ul>
+              <div style={{ fontSize: 14, color: c.accent, fontWeight: 600, marginBottom: 8 }}>{e.co}</div>
+              {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13.5, color: '#555', lineHeight: 1.6, paddingLeft: 16, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, color: c.accent, fontWeight: 600 }}>—</span>{b}</div>)}
             </div>
           ))}
         </main>
-
-        <aside className="sidebar">
-          <div className="section">
-            <div className="section-title">Skills</div>
-            <div className="skill-group"><h4>Strategy</h4><p>Roadmapping · OKRs · GTM · Competitive Analysis · Stakeholder Mgmt</p></div>
-            <div className="skill-group"><h4>Analytics</h4><p>SQL · A/B Testing · Mixpanel · Amplitude · User Research</p></div>
-            <div className="skill-group"><h4>Tools</h4><p>Figma · Jira · Linear · Looker · dbt · Notion</p></div>
-          </div>
-
-          <div className="section">
-            <div className="section-title">Education</div>
-            {res.education.map((edu, i) => (
-              <div className="edu-item" key={i}>
-                <h4>{edu.degree}</h4>
-                <p>{edu.school}<br />{edu.endDate}</p>
+        {/* Sidebar */}
+        <aside>
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18 }}>Skills</div>
+            {[['Product', 'Roadmapping, OKRs, PRDs, User Research, A/B Testing, Analytics'], ['Technical', 'SQL, Python, Amplitude, Mixpanel, Figma, Jira'], ['Leadership', 'Cross-functional Team Leadership, Stakeholder Management, Mentoring']].map(([label, items], i) => (
+              <div key={i} style={{ marginBottom: 16 }}>
+                <h4 style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 2, color: c.muted, fontWeight: 600, marginBottom: 6 }}>{label}</h4>
+                <p style={{ fontSize: 13.5, color: '#444', lineHeight: 1.6 }}>{items}</p>
               </div>
             ))}
           </div>
-
-          <div className="section">
-            <div className="section-title">Achievements</div>
-            <div className="edu-item">
-              <h4>Top PM — New York, 2023</h4>
-              <p>ProductHunt Community Award</p>
-            </div>
-            <div className="edu-item">
-              <h4>Speaker — ProductCon 2022</h4>
-              <p>"Data-Driven Onboarding at Scale"</p>
-            </div>
-            <div className="edu-item">
-              <h4>Forbes 30 Under 30</h4>
-              <p>Consumer Technology, 2021</p>
-            </div>
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18 }}>Education</div>
+            {[['MBA, Technology Management', 'Columbia Business School', '2016'], ['B.S. Computer Science', 'Stanford University', '2014']].map(([d, s, y], i) => (
+              <div key={i} style={{ marginBottom: 14 }}>
+                <h4 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 14.5, fontWeight: 700, color: c.ink }}>{d}</h4>
+                <p style={{ fontSize: 13, color: c.muted, lineHeight: 1.5 }}>{s}<br />{y}</p>
+              </div>
+            ))}
           </div>
-
-          <div className="section">
-            <div className="section-title">Certifications</div>
-            <div className="edu-item">
-              <h4>AWS Certified Solutions Architect</h4>
-              <p>Amazon Web Services · 2022</p>
-            </div>
-            <div className="edu-item">
-              <h4>Product Strategy</h4>
-              <p>SVPG · 2020</p>
-            </div>
-          </div>
-
-          <div className="section">
-            <div className="section-title">Languages</div>
-            <div className="edu-item">
-              <h4>English &mdash; Native</h4>
-              <h4>Spanish &mdash; Fluent</h4>
-              <h4>French &mdash; Conversational</h4>
-            </div>
+          <div>
+            <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18 }}>Certifications</div>
+            {['Pragmatic Institute Certified', 'Google Analytics Certified', 'SAFe Product Owner'].map((cert, i) => (
+              <div key={i} style={{ fontSize: 13, color: '#555', lineHeight: 1.8 }}><span style={{ color: c.accent, fontSize: 8, marginRight: 8, verticalAlign: 'middle' }}>◆</span>{cert}</div>
+            ))}
           </div>
         </aside>
       </div>
@@ -1944,62 +717,76 @@ export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
 }
 
 export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'dark_architect')
+  const c = { bg: '#0f0f13', surface: '#18181f', surface2: '#1f1f28', border: '#2a2a36', text: '#e4e2de', muted: '#8a8690', accent: '#64ffda', accentDim: 'rgba(100,255,218,0.08)', warm: '#ffd6a0' }
+  const mono = "'JetBrains Mono', 'DM Mono', monospace"
+  const sLabel: React.CSSProperties = { fontFamily: mono, fontSize: 10, fontWeight: 500, letterSpacing: 3, textTransform: 'uppercase', color: c.muted, marginBottom: 20, paddingBottom: 8, borderBottom: `1px solid ${c.border}` }
+  const tag: React.CSSProperties = { fontFamily: mono, fontSize: 11, padding: '4px 10px', borderRadius: 4, background: 'rgba(100,255,218,0.06)', border: '1px solid rgba(100,255,218,0.15)', color: c.accent }
   return (
-    <div className="dark-architect-wrapper">
-      <div className="accent-bar"></div>
-      <header>
-        <div className="name">
-          <h1><span className="first">{res.name.split(' ')[0]}</span> {res.name.split(' ').slice(1).join(' ')}</h1>
-          <div className="role">{res.role}</div>
+    <div style={{ fontFamily: "'DM Sans', sans-serif", background: c.surface, border: `1px solid ${c.border}`, borderRadius: 16, overflow: 'hidden', color: c.text }}>
+      {/* Accent bar */}
+      <div style={{ height: 3, background: `linear-gradient(90deg, ${c.accent}, ${c.warm}, ${c.accent})` }} />
+      {/* Header */}
+      <header style={{ padding: '48px 56px 36px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'flex-start', borderBottom: `1px solid ${c.border}` }}>
+        <div>
+          <h1 style={{ fontSize: 42, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.1, color: c.text }}><span style={{ fontWeight: 300, opacity: 0.7 }}>Marcus</span> Chen</h1>
+          <div style={{ fontFamily: mono, fontSize: 13, color: c.accent, marginTop: 8, letterSpacing: 1 }}><span style={{ opacity: 0.4 }}>{'> '}</span>Staff Software Engineer</div>
         </div>
-        <div className="contact-grid">
-          <div><span className="label">Location</span><br />{res.location}</div>
-          <div><span className="label">Phone</span><br />{res.phone}</div>
-          <div><span className="label">Email</span><br />{res.email}</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 24px', fontFamily: mono, fontSize: 12, color: c.muted }}>
+          {[['Location', 'Seattle, WA'], ['Phone', '(555) 903-1247'], ['Email', 'm.chen@email.com'], ['GitHub', 'github.com/marcusc']].map(([label, val], i) => (
+            <div key={i}><span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1.5, color: c.accent, opacity: 0.6 }}>{label}</span><br />{val}</div>
+          ))}
         </div>
       </header>
-
-      <div className="summary-section">
-        <p>{res.summary}</p>
+      {/* Summary */}
+      <div style={{ padding: '32px 56px', borderBottom: `1px solid ${c.border}`, background: c.accentDim }}>
+        <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.75, color: c.text, maxWidth: 680 }}>Staff engineer with 10 years building distributed systems and developer platforms at scale. Deep expertise in Golang, Kubernetes, and event-driven architectures. Led platform teams serving 800+ internal developers and processing 2B+ events daily.</p>
       </div>
-
-      <div className="body-content">
-        <div className="main-col">
-          <div className="section-label">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div className="exp-entry" key={i}>
-              <div className="exp-top">
-                <h3>{exp.title}</h3>
-                <span className="period">{exp.startDate} — {exp.endDate}</span>
+      {/* Body */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px' }}>
+        {/* Main */}
+        <div style={{ padding: '36px 48px 48px 56px', borderRight: `1px solid ${c.border}` }}>
+          <div style={sLabel}>Experience</div>
+          {[
+            { title: 'Staff Software Engineer', date: '2022 — Present', co: 'Datadog', loc: 'Seattle, WA', bullets: ['Designed event ingestion pipeline processing 2.4B events/day with 99.99% uptime', 'Led migration from monolith to microservices, reducing deploy times from 45min to 3min', 'Mentored 8 engineers and established architecture review process for platform org'] },
+            { title: 'Senior Software Engineer', date: '2019 — 2022', co: 'Stripe', loc: 'San Francisco, CA', bullets: ['Built real-time fraud detection service handling 50K+ transactions/second', 'Reduced payment processing latency by 60% through distributed caching layer', 'Designed internal developer SDK used by 200+ engineers across 15 teams'] },
+            { title: 'Software Engineer', date: '2015 — 2019', co: 'Amazon Web Services', loc: 'Seattle, WA', bullets: ['Core contributor to AWS Lambda runtime, optimizing cold start times by 40%', 'Implemented auto-scaling algorithm for DynamoDB adopted across 3 AWS services'] },
+          ].map((e, i) => (
+            <div key={i} style={{ marginBottom: 28 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 2 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: c.text }}>{e.title}</h3>
+                <span style={{ fontFamily: mono, fontSize: 11.5, color: c.muted, whiteSpace: 'nowrap' }}>{e.date}</span>
               </div>
-              <div className="exp-company">{exp.company} <span className="dot"></span> {exp.location}</div>
-              <ul>
-                {exp.description.split('. ').map((bullet, bi) => (
-                  <li key={bi}>{bullet}{bullet.endsWith('.') ? '' : '.'}</li>
-                ))}
-              </ul>
+              <div style={{ fontSize: 13.5, fontWeight: 500, color: c.accent, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>{e.co}<span style={{ width: 4, height: 4, borderRadius: '50%', background: c.warm }} />{e.loc}</div>
+              {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13.5, fontWeight: 300, color: c.text, opacity: 0.85, lineHeight: 1.6, paddingLeft: 18, position: 'relative', marginBottom: 5 }}><span style={{ position: 'absolute', left: 0, color: c.accent, fontSize: 12 }}>▸</span>{b}</div>)}
             </div>
           ))}
         </div>
-
-        <div className="side-col">
-          <div className="side-section">
-            <div className="section-label">Skills</div>
-            <div className="tags">
-              {res.skills.map((skill, i) => (
-                <span className="tag" key={i}>{skill}</span>
-              ))}
-            </div>
-          </div>
-
-          <div className="side-section">
-            <div className="section-label">Education</div>
-            {res.education.map((edu, i) => (
-              <div className="edu-entry" key={i}>
-                <h4>{edu.degree}</h4>
-                <p>{edu.school}<br />{edu.endDate}</p>
+        {/* Sidebar */}
+        <div style={{ padding: '36px 36px 48px', background: c.surface2 }}>
+          <div style={{ marginBottom: 28 }}>
+            <div style={sLabel}>Tech Stack</div>
+            {[['Languages', ['Go', 'Rust', 'TypeScript', 'Python']], ['Infrastructure', ['K8s', 'AWS', 'Terraform', 'Kafka']], ['Databases', ['PostgreSQL', 'Redis', 'DynamoDB']]].map(([group, tags], i) => (
+              <div key={i} style={{ marginBottom: 14 }}>
+                <h4 style={{ fontFamily: mono, fontSize: 10, textTransform: 'uppercase', letterSpacing: 1.5, color: c.warm, marginBottom: 8, fontWeight: 400 }}>{group as string}</h4>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {(tags as string[]).map((t, j) => <span key={j} style={tag}>{t}</span>)}
+                </div>
               </div>
+            ))}
+          </div>
+          <div style={{ marginBottom: 28 }}>
+            <div style={sLabel}>Education</div>
+            {[['M.S. Computer Science', 'University of Washington', '2015'], ['B.S. Computer Engineering', 'UC San Diego', '2013']].map(([d, s, y], i) => (
+              <div key={i} style={{ marginBottom: 16 }}>
+                <h4 style={{ fontSize: 14, fontWeight: 600, color: c.text }}>{d}</h4>
+                <p style={{ fontSize: 12.5, color: c.muted, lineHeight: 1.5 }}>{s}<br />{y}</p>
+              </div>
+            ))}
+          </div>
+          <div>
+            <div style={sLabel}>Open Source</div>
+            {['gRPC-Go maintainer', 'K8s SIG-Scalability', '3.2K GitHub stars'].map((item, i, arr) => (
+              <div key={i} style={{ fontSize: 13, color: c.text, opacity: 0.8, padding: '5px 0', borderBottom: i < arr.length - 1 ? `1px solid ${c.border}` : 'none', fontWeight: 300 }}>{item}</div>
             ))}
           </div>
         </div>
@@ -2009,90 +796,102 @@ export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
 }
 
 export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'bauhaus_geometric')
+  const c = { navy: '#0d1b3e', coral: '#e8634a', gold: '#f0c75e', sky: '#4a98d9', cream: '#faf8f4', text: '#2c2c2c', muted: '#6e6e6e', ltBg: '#f2efe8' }
+  const sbHead: React.CSSProperties = { fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: c.coral, marginBottom: 12, paddingBottom: 6, borderBottom: '2px solid rgba(255,255,255,0.08)' }
+  const mainHead = (color: string, shape: React.ReactNode): React.CSSProperties & { _shape?: React.ReactNode } => ({ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22, marginTop: 8 } as any)
   return (
-    <div className="bauhaus-geometric-wrapper">
-      <aside className="sidebar">
-        <div className="avatar-placeholder">{res.name.split(' ').map(n => n[0]).join('')}</div>
-        <h1>{res.name}</h1>
-        <div className="role">{res.role}</div>
-
-        <div className="sb-section">
-          <div className="sb-heading">Contact</div>
-          <div className="sb-contact">
-            <p>{res.location}<br />
-              {res.phone}<br />
-              <a href={`mailto:${res.email}`}>{res.email}</a><br />
-              linkedin.com/in/priyanair
-            </p>
+    <div style={{ fontFamily: "'Sora', 'DM Sans', sans-serif", display: 'grid', gridTemplateColumns: '260px 1fr', overflow: 'hidden', borderRadius: 4, background: '#fff', color: c.text }}>
+      {/* Sidebar */}
+      <aside style={{ background: c.navy, color: '#fff', padding: '48px 28px 40px', position: 'relative' }}>
+        {/* Coral triangle corner */}
+        <div style={{ position: 'absolute', top: 0, right: 0, width: 60, height: 60, background: c.coral, clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
+        {/* Gold circle ornament */}
+        <div style={{ position: 'absolute', bottom: 40, left: 28, width: 36, height: 36, border: `3px solid ${c.gold}`, borderRadius: '50%', opacity: 0.4 }} />
+        {/* Avatar */}
+        <div style={{ width: 80, height: 80, borderRadius: '50%', background: `linear-gradient(135deg, ${c.coral}, ${c.gold})`, marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, color: '#fff' }}>PN</div>
+        <h1 style={{ fontSize: 26, fontWeight: 800, lineHeight: 1.15, marginBottom: 6 }}>Priya Nair</h1>
+        <div style={{ fontSize: 12, fontWeight: 300, letterSpacing: 2.5, textTransform: 'uppercase', color: c.gold, marginBottom: 32 }}>Data Science Lead</div>
+        {/* Contact */}
+        <div style={{ marginBottom: 28 }}>
+          <div style={sbHead}>Contact</div>
+          <p style={{ fontSize: 12.5, fontWeight: 300, lineHeight: 2, color: 'rgba(255,255,255,0.8)' }}>Boston, MA<br />(555) 708-2341<br /><span style={{ color: c.gold }}>priya.nair@email.com</span><br /><span style={{ color: c.gold }}>linkedin.com/in/priyanair</span></p>
+        </div>
+        {/* Skills */}
+        <div style={{ marginBottom: 28 }}>
+          <div style={sbHead}>Expertise</div>
+          {[['Machine Learning', 95], ['Python / PyTorch', 92], ['NLP & LLMs', 88], ['Data Engineering', 80], ['Statistical Analysis', 90]].map(([name, pct], i) => (
+            <div key={i} style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>{name as string}</div>
+              <div style={{ height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{ height: '100%', borderRadius: 2, background: `linear-gradient(90deg, ${c.coral}, ${c.gold})`, width: `${pct}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Education */}
+        <div style={{ marginBottom: 28 }}>
+          <div style={sbHead}>Education</div>
+          {[['Ph.D. Computer Science', 'MIT · 2018', 'Focus: Deep Learning & NLP'], ['B.Tech, Computer Science', 'IIT Bombay · 2013', '']].map(([d, s, note], i) => (
+            <div key={i} style={{ marginBottom: 14 }}>
+              <h4 style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{d}</h4>
+              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>{s}{note ? <><br />{note}</> : null}</p>
+            </div>
+          ))}
+        </div>
+        {/* Languages */}
+        <div>
+          <div style={sbHead}>Languages</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {['English', 'Hindi', 'Malayalam', 'French'].map((l, i) => (
+              <span key={i} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 20, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.1)' }}>{l}</span>
+            ))}
           </div>
         </div>
-
-        <div className="sb-section">
-          <div className="sb-heading">Expertise</div>
-          {res.skills.map((skill, i) => (
-            <div className="skill-bar-group" key={i}>
-              <div className="label" style={{ fontSize: '10px', marginBottom: '2px', color: 'rgba(255,255,255,0.8)' }}>{skill}</div>
-              <div className="bar-track"><div className="bar-fill" style={{ width: `${95 - i * 5}%` }}></div></div>
-            </div>
-          ))}
-        </div>
-
-        <div className="sb-section">
-          <div className="sb-heading">Education</div>
-          {res.education.map((edu, i) => (
-            <div className="sb-edu-item" key={i}>
-              <h4>{edu.degree}</h4>
-              <p>{edu.school} · {edu.endDate}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="sb-section">
-          <div className="sb-heading">Certifications</div>
-          <div className="sb-edu-item"><h4>Google ML Engineer</h4><p>Google Cloud · 2023</p></div>
-          <div className="sb-edu-item"><h4>Deep Learning Specialization</h4><p>DeepLearning.AI · 2022</p></div>
-          <div className="sb-edu-item"><h4>AWS Data Analytics</h4><p>Amazon · 2021</p></div>
-        </div>
-
-        <div className="sb-section">
-          <div className="sb-heading">Languages</div>
-          <div className="sb-edu-item"><h4>English — Native</h4><h4>Hindi — Fluent</h4><h4>Tamil — Conversational</h4></div>
-        </div>
       </aside>
-
-      <main className="main">
-        <div className="main-heading">
-          <svg className="geo" viewBox="0 0 14 14" style={{ width: '12px', height: '12px' }}><circle fill="#e8634a" cx="7" cy="7" r="7" /></svg>
-          <h2>Profile</h2>
+      {/* Main */}
+      <main style={{ padding: '48px 48px 40px' }}>
+        {/* Profile */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
+          <svg width="14" height="14" viewBox="0 0 14 14"><circle fill={c.coral} cx="7" cy="7" r="7" /></svg>
+          <h2 style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.navy }}>Profile</h2>
+          <span style={{ flex: 1, height: 2, background: c.ltBg }} />
         </div>
-        <div className="summary-block">{res.summary}</div>
-
-        <div style={{ display: 'flex', gap: 6, margin: '12px 0 16px' }}>
-          {[['8+', 'Years Exp.'], ['230M+', 'Users Impacted'], ['3', 'Papers Published'], ['40%', 'Discovery Lift']].map(([val, label], i) => (
-            <div key={i} style={{ flex: 1, background: i % 2 === 0 ? '#1a1a2e' : '#e8634a', borderRadius: 4, padding: '8px 6px', textAlign: 'center' as const }}>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: '#fff', fontFamily: 'Helvetica Neue, sans-serif' }}>{val}</div>
-              <div style={{ fontSize: '6.5px', color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase' as const, marginTop: 2 }}>{label}</div>
+        <div style={{ fontFamily: "'IBM Plex Serif', 'Georgia', serif", fontSize: 15, lineHeight: 1.75, color: c.muted, marginBottom: 32, padding: '20px 24px', background: c.cream, borderLeft: `4px solid ${c.coral}`, borderRadius: '0 8px 8px 0' }}>
+          Data science leader with 8+ years building ML systems that drive measurable business impact. Published 12 papers in top-tier venues (NeurIPS, ICML). Expert in NLP, recommendation systems, and deploying models at scale.
+        </div>
+        {/* Impact */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22, marginTop: 8 }}>
+          <svg width="14" height="14" viewBox="0 0 14 14"><polygon fill={c.gold} points="7,0 14,14 0,14" /></svg>
+          <h2 style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.navy }}>Impact</h2>
+          <span style={{ flex: 1, height: 2, background: c.ltBg }} />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
+          {[['$45M+', 'Annual Revenue from ML Products'], ['12', 'Peer-Reviewed Publications'], ['3B+', 'Daily Predictions Served']].map(([num, label], i) => (
+            <div key={i} style={{ textAlign: 'center', padding: '18px 12px', background: c.cream, borderRadius: 10, border: '1px solid #e8e4dc' }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: c.navy, lineHeight: 1 }}>{num}</div>
+              <div style={{ fontSize: 11, color: c.muted, marginTop: 4, lineHeight: 1.3 }}>{label}</div>
             </div>
           ))}
         </div>
-
-        <div className="main-heading">
-          <svg className="geo" viewBox="0 0 14 14" style={{ width: '12px', height: '12px' }}><polygon fill="#f0c75e" points="7,0 14,14 0,14" /></svg>
-          <h2>Experience</h2>
+        {/* Experience */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22, marginTop: 8 }}>
+          <svg width="14" height="14" viewBox="0 0 14 14"><rect fill={c.sky} width="14" height="14" /></svg>
+          <h2 style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.navy }}>Experience</h2>
+          <span style={{ flex: 1, height: 2, background: c.ltBg }} />
         </div>
-        {res.experience.map((exp, i) => (
-          <div className="exp-item" key={i}>
-            <div className="top-row">
-              <h3>{exp.title}</h3>
-              <span className="dates">{exp.startDate} — {exp.endDate}</span>
+        {[
+          { title: 'Lead Data Scientist', date: '2021 — Present', co: 'Wayfair · Boston, MA', bullets: ['Built visual search recommendation engine increasing product discovery by 38%', 'Led team of 10 scientists deploying models serving 3B+ daily predictions', 'Designed LLM-powered product description generator reducing content creation time by 70%'] },
+          { title: 'Senior Data Scientist', date: '2018 — 2021', co: 'Netflix · Los Gatos, CA', bullets: ['Developed personalization algorithms for 230M+ subscriber content recommendations', 'Built causal inference framework for measuring A/B test impact on retention', 'Published 4 papers on sequential recommendation systems at NeurIPS and RecSys'] },
+          { title: 'Research Scientist Intern', date: '2017', co: 'Google DeepMind · London, UK', bullets: ['Contributed to attention mechanism research that influenced Transformer architecture', 'Co-authored paper on multi-task learning accepted at ICML 2018'] },
+        ].map((e, i) => (
+          <div key={i} style={{ marginBottom: 26, paddingLeft: 20, borderLeft: `2px solid ${c.ltBg}`, position: 'relative' }}>
+            <div style={{ position: 'absolute', left: -5, top: 6, width: 8, height: 8, background: c.coral, borderRadius: '50%' }} />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: c.navy }}>{e.title}</h3>
+              <span style={{ fontSize: 12, color: c.muted, whiteSpace: 'nowrap', background: c.cream, padding: '2px 10px', borderRadius: 10 }}>{e.date}</span>
             </div>
-            <div className="company">{exp.company} · {exp.location}</div>
-            <ul>
-              {exp.description.split('. ').map((bullet, bi) => (
-                <li key={bi}>{bullet}{bullet.endsWith('.') ? '' : '.'}</li>
-              ))}
-            </ul>
+            <div style={{ fontSize: 13.5, fontWeight: 600, color: c.coral, marginBottom: 8 }}>{e.co}</div>
+            {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13.5, color: '#555', lineHeight: 1.65, paddingLeft: 16, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, top: 9, width: 6, height: 2, background: c.gold }} />{b}</div>)}
           </div>
         ))}
       </main>
@@ -2101,938 +900,182 @@ export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
 }
 
 export function Resume4SoftPastelPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'soft_pastel')
+  const c = { rose: '#d4726a', roseLt: '#f8e8e6', sage: '#7a9e7e', sageLt: '#e4f0e5', lav: '#8e7cc3', lavLt: '#ece8f6', bg: '#fdfbf8', text: '#3a3535', light: '#7d7575', border: '#ede8e3' }
+  const divider = (label: string) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 16, margin: '36px 0 24px' }}>
+      <span style={{ flex: 1, height: 1, background: c.border }} />
+      <h2 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 14, fontWeight: 600, color: c.rose, letterSpacing: 2.5, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{label}</h2>
+      <span style={{ flex: 1, height: 1, background: c.border }} />
+    </div>
+  )
+  const chipColors = [c.roseLt, c.sageLt, c.lavLt]
+  const gradients = [`linear-gradient(90deg, ${c.rose}, ${c.lav})`, `linear-gradient(90deg, ${c.sage}, ${c.rose})`, `linear-gradient(90deg, ${c.lav}, ${c.sage})`]
   return (
-    <div className="soft_pastel-wrapper">
-
-      <header>
-        <h1>{res.name}</h1>
-        <div className="role">Healthcare UX Researcher</div>
-        <div className="contact-pills">
-          <span className="pill"><span className="icon">📍</span>Portland, OR</span>
-          <span className="pill"><span className="icon">📱</span>(555) 219-4087</span>
-          <span className="pill"><span className="icon">✉️</span>olivia.park@email.com</span>
-          <span className="pill"><span className="icon">🔗</span>oliviapark.design</span>
+    <div style={{ fontFamily: "'Outfit', 'DM Sans', sans-serif", background: c.bg, borderRadius: 20, padding: '52px 56px', overflow: 'hidden', color: c.text, lineHeight: 1.5 }}>
+      {/* Header */}
+      <header style={{ textAlign: 'center', marginBottom: 40 }}>
+        <h1 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 44, fontWeight: 600, color: c.text, letterSpacing: -0.5, marginBottom: 6 }}>Olivia <span style={{ color: c.rose }}>Park</span></h1>
+        <div style={{ fontSize: 15, fontWeight: 500, color: c.sage, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 16 }}>Healthcare UX Researcher</div>
+        <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 10 }}>
+          {[['📍', 'Portland, OR'], ['📱', '(555) 219-4087'], ['✉️', 'olivia.park@email.com'], ['🔗', 'oliviapark.design']].map(([icon, val], i) => (
+            <span key={i} style={{ fontSize: 12.5, padding: '6px 16px', borderRadius: 20, background: '#fff', border: `1px solid ${c.border}`, color: c.light }}><span style={{ marginRight: 6, opacity: 0.6 }}>{icon}</span>{val}</span>
+          ))}
         </div>
       </header>
-
-      <div className="divider"><h2>About</h2></div>
-      <p className="summary">
-        UX researcher specializing in healthcare and digital health products. 7 years of experience
-        conducting mixed-methods research that shapes products used by millions of patients and clinicians.
-        Passionate about designing accessible, equitable experiences that improve health outcomes.
+      {/* About */}
+      {divider('About')}
+      <p style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 12px', fontSize: 15, fontWeight: 300, lineHeight: 1.8, color: c.light }}>
+        UX researcher specializing in healthcare and digital health products. 7 years of experience conducting mixed-methods research that shapes products used by millions of patients and clinicians. Passionate about designing accessible, equitable experiences that improve health outcomes.
       </p>
-
-      <div className="divider"><h2>Core Skills</h2></div>
-      <div className="skills-ribbon">
-        <span className="skill-chip rose">User Interviews</span>
-        <span className="skill-chip sage">Usability Testing</span>
-        <span className="skill-chip lav">Survey Design</span>
-        <span className="skill-chip rose">Journey Mapping</span>
-        <span className="skill-chip sage">Accessibility (WCAG)</span>
-        <span className="skill-chip lav">Quantitative Analysis</span>
-        <span className="skill-chip rose">Figma & Miro</span>
-        <span className="skill-chip sage">HIPAA Compliance</span>
-        <span className="skill-chip lav">Stakeholder Presentations</span>
+      {/* Skills */}
+      {divider('Core Skills')}
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10, marginBottom: 8 }}>
+        {['User Interviews', 'Usability Testing', 'Survey Design', 'Journey Mapping', 'Accessibility (WCAG)', 'Quantitative Analysis', 'Figma & Miro', 'HIPAA Compliance', 'Stakeholder Presentations'].map((s, i) => (
+          <span key={i} style={{ fontSize: 12, fontWeight: 500, padding: '6px 16px', borderRadius: 20, color: c.text, background: chipColors[i % 3] }}>{s}</span>
+        ))}
       </div>
-
-      <div className="divider"><h2>Experience</h2></div>
-
-      <div className="exp-card c1">
-        <div className="top">
-          <h3>Senior UX Researcher</h3>
-          <span className="dates">2022 — Present</span>
+      {/* Experience */}
+      {divider('Experience')}
+      {[
+        { title: 'Senior UX Researcher', date: '2022 — Present', co: 'Epic Systems · Portland, OR', bullets: ['Lead research for patient-facing MyChart features used by 190M+ activated patients', 'Conducted 200+ user sessions across 15 health systems to redesign medication management', 'Reduced appointment scheduling drop-off by 34% through iterative prototype testing'] },
+        { title: 'UX Researcher', date: '2019 — 2022', co: 'One Medical · San Francisco, CA', bullets: ['Built and scaled research operations from ad-hoc studies to structured program with 40+ studies/year', 'Designed telehealth experience research framework adopted across all product teams', 'Identified accessibility barriers leading to WCAG 2.1 AA compliance across mobile app'] },
+        { title: 'Junior UX Researcher', date: '2017 — 2019', co: 'Kaiser Permanente · Oakland, CA', bullets: ['Conducted ethnographic studies in 8 clinical settings to understand EHR workflows', 'Co-created personas and journey maps used to secure $2M product investment'] },
+      ].map((e, i) => (
+        <div key={i} style={{ background: '#fff', border: `1px solid ${c.border}`, borderRadius: 14, padding: '22px 24px', marginBottom: 16, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: gradients[i] }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 2 }}>
+            <h3 style={{ fontSize: 15.5, fontWeight: 600, color: c.text }}>{e.title}</h3>
+            <span style={{ fontSize: 12, color: c.light, whiteSpace: 'nowrap' }}>{e.date}</span>
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: c.rose, marginBottom: 10 }}>{e.co}</div>
+          {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13, color: c.light, lineHeight: 1.6, paddingLeft: 14, position: 'relative', marginBottom: 4, fontWeight: 300 }}><span style={{ position: 'absolute', left: 0, top: 8, width: 5, height: 5, borderRadius: '50%', background: c.sage }} />{b}</div>)}
         </div>
-        <div className="company">Epic Systems · Portland, OR</div>
-        <ul>
-          <li>Lead research for patient-facing MyChart features used by 190M+ activated patients</li>
-          <li>Conducted 200+ user sessions across 15 health systems to redesign medication management</li>
-          <li>Reduced appointment scheduling drop-off by 34% through iterative prototype testing</li>
-        </ul>
-      </div>
-
-      <div className="exp-card c2">
-        <div className="top">
-          <h3>UX Researcher</h3>
-          <span className="dates">2019 — 2022</span>
-        </div>
-        <div className="company">One Medical · San Francisco, CA</div>
-        <ul>
-          <li>Built and scaled research operations from ad-hoc studies to structured program with 40+ studies/year</li>
-          <li>Designed telehealth experience research framework adopted across all product teams</li>
-          <li>Identified accessibility barriers leading to WCAG 2.1 AA compliance across mobile app</li>
-        </ul>
-      </div>
-
-      <div className="exp-card c3">
-        <div className="top">
-          <h3>Junior UX Researcher</h3>
-          <span className="dates">2017 — 2019</span>
-        </div>
-        <div className="company">Kaiser Permanente · Oakland, CA</div>
-        <ul>
-          <li>Conducted ethnographic studies in 8 clinical settings to understand EHR workflows</li>
-          <li>Co-created personas and journey maps used to secure $2M product investment</li>
-        </ul>
-      </div>
-
-      <div className="divider"><h2>Education & More</h2></div>
-
-      <div className="two-col">
+      ))}
+      {/* Education & More */}
+      {divider('Education & More')}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
         <div>
-          <div className="edu-card">
-            <h3>M.S. Human-Computer Interaction</h3>
-            <p>Carnegie Mellon University · 2017</p>
-          </div>
-          <div className="edu-card">
-            <h3>B.A. Psychology & Design</h3>
-            <p>University of Michigan · 2015</p>
-          </div>
-
-          <h4 style={{ "fontFamily": "'Lora',serif", "fontSize": "13px", "color": "var(--rose)", "letterSpacing": "2px", "textTransform": "uppercase", "margin": "24px 0 12px" }}>Volunteering</h4>
-          <div className="vol-item">
-            <h4>Code for America — UX Lead</h4>
-            <p>Redesigned public benefits application for low-income families</p>
-          </div>
-          <div className="vol-item">
-            <h4>AIGA Portland — Mentorship Chair</h4>
-            <p>Pair early-career designers with senior mentors in healthcare</p>
-          </div>
+          {[['M.S. Human-Computer Interaction', 'Carnegie Mellon University · 2017'], ['B.A. Psychology & Design', 'University of Michigan · 2015']].map(([d, s], i) => (
+            <div key={i} style={{ background: '#fff', border: `1px solid ${c.border}`, borderRadius: 14, padding: '20px 24px', marginBottom: 14 }}>
+              <h3 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 15, fontWeight: 600, color: c.text, marginBottom: 2 }}>{d}</h3>
+              <p style={{ fontSize: 13, color: c.light, fontWeight: 300 }}>{s}</p>
+            </div>
+          ))}
+          <h4 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 13, color: c.rose, letterSpacing: 2, textTransform: 'uppercase', margin: '24px 0 12px' }}>Volunteering</h4>
+          {[['Code for America — UX Lead', 'Redesigned public benefits application for low-income families'], ['AIGA Portland — Mentorship Chair', 'Pair early-career designers with senior mentors in healthcare']].map(([t, d], i) => (
+            <div key={i} style={{ marginBottom: 14 }}>
+              <h4 style={{ fontSize: 14, fontWeight: 600, color: c.text }}>{t}</h4>
+              <p style={{ fontSize: 12.5, color: c.light, fontWeight: 300, lineHeight: 1.5 }}>{d}</p>
+            </div>
+          ))}
         </div>
-
         <div>
-          <h4 style={{ "fontFamily": "'Lora',serif", "fontSize": "13px", "color": "var(--rose)", "letterSpacing": "2px", "textTransform": "uppercase", "marginBottom": "12px" }}>Awards & Speaking</h4>
-          <ul className="awards-list">
-            <li><span className="award-dot r"></span> UXPA International Best Paper 2023</li>
-            <li><span className="award-dot s"></span> Speaker, HIMSS Conference 2022</li>
-            <li><span className="award-dot l"></span> Fast Company Innovation by Design Finalist</li>
-            <li><span className="award-dot r"></span> Epic Research Excellence Award 2024</li>
-            <li><span className="award-dot s"></span> Keynote, DesignOps Summit 2021</li>
-          </ul>
+          <h4 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 13, color: c.rose, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 }}>Awards & Speaking</h4>
+          {[
+            { dot: c.rose, text: 'UXPA International Best Paper 2023' },
+            { dot: c.sage, text: 'Speaker, HIMSS Conference 2022' },
+            { dot: c.lav, text: 'Fast Company Innovation by Design Finalist' },
+            { dot: c.rose, text: 'Epic Research Excellence Award 2024' },
+            { dot: c.sage, text: 'Keynote, DesignOps Summit 2021' },
+          ].map((a, i, arr) => (
+            <div key={i} style={{ fontSize: 13.5, color: c.text, padding: '10px 0', borderBottom: i < arr.length - 1 ? `1px solid ${c.border}` : 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: a.dot, flexShrink: 0 }} />{a.text}
+            </div>
+          ))}
         </div>
       </div>
-
     </div>
   )
 }
 
 export function Resume5SwissGridPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'swiss_grid')
+  const c = { black: '#111', white: '#fff', red: '#d63031', g1: '#f7f7f7', g2: '#e5e5e5', g3: '#999', g4: '#666', type: '#222' }
+  const rowLabel: React.CSSProperties = { padding: '28px 24px 28px 52px', borderRight: `1px solid ${c.g2}`, borderBottom: `1px solid ${c.g2}`, background: c.g1 }
+  const rowContent: React.CSSProperties = { padding: '28px 52px 28px 32px', borderBottom: `1px solid ${c.g2}` }
+  const sLabel: React.CSSProperties = { fontSize: 10, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.red }
   return (
-    <div className="swiss_grid-wrapper">
-
-      <div className="top-bar">
+    <div style={{ fontFamily: "'Instrument Sans', 'DM Sans', sans-serif", background: c.white, color: c.type, overflow: 'hidden' }}>
+      {/* Top Bar */}
+      <div style={{ background: c.black, color: c.white, padding: '44px 52px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 32, alignItems: 'flex-end' }}>
         <div>
-          <h1>{res.name}</h1>
-          <div className="subtitle">Strategy &amp; Management Consultant</div>
+          <h1 style={{ fontSize: 48, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>Tobias <span style={{ color: c.red }}>Keller</span></h1>
+          <div style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontSize: 16, fontStyle: 'italic', color: c.g3, marginTop: 8 }}>Strategy &amp; Management Consultant</div>
         </div>
-        <div className="top-contact">
-          <strong>Chicago, IL</strong><br />
-          (555) 801-3456<br />
-          t.keller@email.com<br />
-          linkedin.com/in/tkeller
+        <div style={{ textAlign: 'right', fontSize: 13, color: c.g3, lineHeight: 1.9 }}>
+          <strong style={{ color: c.white, fontWeight: 500 }}>Chicago, IL</strong><br />(555) 801-3456<br />t.keller@email.com<br />linkedin.com/in/tkeller
         </div>
       </div>
-
-      <div className="body-grid">
-
-        <div className="row-label"><h2>Profile</h2></div>
-        <div className="row-content">
-          <p className="summary-text">
-            Management consultant with 10+ years advising Fortune 500 companies on digital transformation,
-            operational efficiency, and growth strategy. Trusted advisor to C-suite leaders across technology,
-            financial services, and healthcare. Known for synthesizing complex data into clear strategic recommendations
-            that drive measurable outcomes.
-          </p>
+      {/* Body Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr' }}>
+        {/* Profile */}
+        <div style={rowLabel}><h2 style={sLabel}>Profile</h2></div>
+        <div style={rowContent}>
+          <p style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontSize: 16, lineHeight: 1.75, color: c.g4, maxWidth: 580 }}>Management consultant with 10+ years advising Fortune 500 companies on digital transformation, operational efficiency, and growth strategy. Trusted advisor to C-suite leaders across technology, financial services, and healthcare.</p>
         </div>
-
-
-        <div className="row-label"><h2>Experience</h2></div>
-        <div className="row-content">
-          <div className="exp-block">
-            <div className="exp-meta">
-              <h3>Principal Consultant</h3>
-              <span className="period">2021 — Present</span>
-            </div>
-            <div className="exp-org">McKinsey & Company <span className="sep"></span> <span className="loc">Chicago, IL</span></div>
-            <ul>
-              <li>Lead digital transformation engagements for 3 Fortune 100 clients with combined revenue of $85B</li>
-              <li>Designed operating model restructure delivering $120M in annual cost savings for major bank</li>
-              <li>Built and manage team of 12 consultants; promoted 4 to engagement manager within 2 years</li>
-              <li>Authored firm-wide knowledge asset on AI adoption strategy downloaded 2,000+ times internally</li>
-            </ul>
-          </div>
-
-          <div className="exp-block">
-            <div className="exp-meta">
-              <h3>Senior Associate</h3>
-              <span className="period">2018 — 2021</span>
-            </div>
-            <div className="exp-org">McKinsey & Company <span className="sep"></span> <span className="loc">New York, NY</span></div>
-            <ul>
-              <li>Led workstreams on 15+ engagements across tech, healthcare, and private equity due diligence</li>
-              <li>Developed pricing optimization model increasing client margins by 8 percentage points</li>
-              <li>Selected as facilitator for firm's global leadership development program</li>
-            </ul>
-          </div>
-
-          <div className="exp-block">
-            <div className="exp-meta">
-              <h3>Business Analyst</h3>
-              <span className="period">2015 — 2018</span>
-            </div>
-            <div className="exp-org">Bain & Company <span className="sep"></span> <span className="loc">Boston, MA</span></div>
-            <ul>
-              <li>Supported M&A due diligence on 8 deals totaling $4.2B in transaction value</li>
-              <li>Built customer segmentation framework adopted by $3B consumer goods client</li>
-            </ul>
-          </div>
-        </div>
-
-
-        <div className="row-label"><h2>Expertise</h2></div>
-        <div className="row-content">
-          <div className="skills-grid">
-            <div className="skill-col">
-              <h4>Strategy</h4>
-              <p>Digital Transformation, Growth Strategy, M&A Due Diligence, Market Entry, Operating Model Design</p>
-            </div>
-            <div className="skill-col">
-              <h4>Analytical</h4>
-              <p>Financial Modeling, Pricing Optimization, Data Analytics, Competitive Benchmarking, Scenario Planning</p>
-            </div>
-            <div className="skill-col">
-              <h4>Leadership</h4>
-              <p>Executive Communication, Team Development, Stakeholder Alignment, Workshop Facilitation, Change Management</p>
-            </div>
-          </div>
-        </div>
-
-
-        <div className="row-label"><h2>Education</h2></div>
-        <div className="row-content">
-          <div className="edu-grid">
-            <div className="edu-item">
-              <h3>MBA</h3>
-              <div className="school">Harvard Business School</div>
-              <div className="year">2018 · Baker Scholar</div>
-            </div>
-            <div className="edu-item">
-              <h3>B.A. Economics & Mathematics</h3>
-              <div className="school">Williams College</div>
-              <div className="year">2015 · Summa Cum Laude</div>
-            </div>
-          </div>
-        </div>
-
-
-        <div className="row-label"><h2>More</h2></div>
-        <div className="row-content">
-          <div className="extras-grid">
-            <div className="extras-group">
-              <h4>Publications</h4>
-              <ul>
-                <li><strong>HBR:</strong> "Rethinking Digital Transformation for the AI Era" (2024)</li>
-                <li><strong>McKinsey Quarterly:</strong> "The CFO's Guide to GenAI ROI" (2023)</li>
-                <li><strong>MIT Sloan Review:</strong> "Operating Models for the Platform Economy" (2022)</li>
-              </ul>
-            </div>
-            <div className="extras-group">
-              <h4>Board & Advisory</h4>
-              <ul>
-                <li><strong>Board Member</strong> — Chicago Digital Health Initiative</li>
-                <li><strong>Advisor</strong> — Two Series-B SaaS startups</li>
-                <li><strong>CFA Charterholder</strong></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="footer-bar">References available upon request</div>
-
-    </div>
-  )
-}
-
-export function Resume6BrutalistRawPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'brutalist_raw')
-  return (
-    <div className="brutalist_raw-wrapper">
-
-      <div className="corner-block"></div>
-
-      <header>
-        <h1>{res.name}</h1>
-        <div className="role-bar">CREATIVE TECHNOLOGIST</div>
-        <div className="contact-row">
-          <span>Los Angeles, CA</span>
-          <span>(555) 739-0214</span>
-          <span>kai@nakamura.dev</span>
-          <span>nakamura.dev</span>
-        </div>
-      </header>
-
-      <div className="section">
-        <div className="section-head">ABOUT</div>
-        <p className="summary">
-          Creative technologist and full-stack developer blending art, code, and emerging tech to build
-          immersive digital experiences. 8 years crafting interactive installations, WebGL experiments,
-          and creative tools for brands like Nike, Spotify, and the Museum of Modern Art. Obsessed with
-          pushing the boundaries of what the browser can do.
-        </p>
-      </div>
-
-      <div className="section">
-        <div className="section-head">EXPERIENCE</div>
-
-        <div className="exp-entry">
-          <div className="exp-top">
-            <h3>LEAD CREATIVE TECHNOLOGIST</h3>
-            <span className="dates">2022 — PRESENT</span>
-          </div>
-          <div className="exp-org">Active Theory · Los Angeles, CA</div>
-          <ul>
-            <li>Directed technical development of award-winning interactive experiences for Nike and Google</li>
-            <li>Built real-time 3D product configurator with Three.js serving 4M+ sessions monthly</li>
-            <li>Won 3 Awwwards Site of the Year nominations and 1 FWA Grand Prix</li>
-            <li>Mentored team of 6 developers on WebGL, shaders, and creative coding techniques</li>
-          </ul>
-        </div>
-
-        <div className="exp-entry">
-          <div className="exp-top">
-            <h3>SENIOR DEVELOPER</h3>
-            <span className="dates">2019 — 2022</span>
-          </div>
-          <div className="exp-org">Resn · Amsterdam, NL</div>
-          <ul>
-            <li>Developed immersive WebGL experiences for Spotify Wrapped reaching 120M+ users</li>
-            <li>Created generative art system for Adidas campaign generating 1M+ unique NFT artworks</li>
-            <li>Optimized rendering pipeline achieving 60fps on mobile for complex 3D scenes</li>
-          </ul>
-        </div>
-
-        <div className="exp-entry">
-          <div className="exp-top">
-            <h3>CREATIVE DEVELOPER</h3>
-            <span className="dates">2017 — 2019</span>
-          </div>
-          <div className="exp-org">Jam3 · Toronto, CA</div>
-          <ul>
-            <li>Built interactive installation for MoMA exhibition visited by 200K+ people</li>
-            <li>Developed AR experiences using WebXR for Facebook's Spark AR platform</li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="section">
-        <div className="section-head">SKILLS</div>
-        <div className="skills-raw">
-          <div className="skill-cell">
-            <div className="name">Three.js / WebGL</div>
-            <div className="level"><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div></div>
-          </div>
-          <div className="skill-cell">
-            <div className="name">GLSL Shaders</div>
-            <div className="level"><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div></div>
-          </div>
-          <div className="skill-cell">
-            <div className="name">TypeScript</div>
-            <div className="level"><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block"></div></div>
-          </div>
-          <div className="skill-cell">
-            <div className="name">React / Next.js</div>
-            <div className="level"><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block"></div></div>
-          </div>
-          <div className="skill-cell">
-            <div className="name">Creative Coding</div>
-            <div className="level"><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div></div>
-          </div>
-          <div className="skill-cell">
-            <div className="name">WebXR / AR</div>
-            <div className="level"><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block"></div></div>
-          </div>
-          <div className="skill-cell">
-            <div className="name">Motion Design</div>
-            <div className="level"><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block"></div><div className="block"></div></div>
-          </div>
-          <div className="skill-cell">
-            <div className="name">Blender / C4D</div>
-            <div className="level"><div className="block filled"></div><div className="block filled"></div><div className="block filled"></div><div className="block"></div><div className="block"></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div className="section">
-        <div className="section-head">EDUCATION</div>
-        <div className="edu-row">
-          <div className="edu-item">
-            <h4>MFA DESIGN & TECHNOLOGY</h4>
-            <p>Parsons School of Design<br /><span className="year">2017</span></p>
-          </div>
-          <div className="edu-item">
-            <h4>B.S. COMPUTER SCIENCE</h4>
-            <p>University of British Columbia<br /><span className="year">2015</span></p>
-          </div>
-        </div>
-      </div>
-
-      <div className="footer-strip">PORTFOLIO → NAKAMURA.DEV</div>
-
-    </div>
-  )
-}
-
-export function Resume7WarmEarthPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'warm_earth')
-  return (
-    <div className="warm_earth-wrapper">
-
-      <div className="hero">
-        <div className="hero-inner">
-          <div>
-            <h1>{res.name}</h1>
-            <div className="tagline">Brand Strategist & Marketing Director</div>
-          </div>
-          <div className="hero-contact">
-            <strong>Atlanta, GA</strong><br />
-            (555) 482-1093<br />
-            amara.osei@email.com<br />
-            linkedin.com/in/amaraosei
-          </div>
-        </div>
-      </div>
-
-      <div className="body-wrap">
-        <div className="sec-head"><div className="dot terra"></div><h2>About</h2></div>
-        <div className="summary-wrap">
-          <p>
-            Storyteller-turned-strategist with <strong>10+ years</strong> building culturally resonant brands
-            for Fortune 500 companies and high-growth startups. Expert in brand positioning, consumer insights,
-            and integrated campaign strategy. Led rebrands generating <strong>$200M+</strong> in measurable brand value
-            and campaigns reaching <strong>500M+ impressions</strong>.
-          </p>
-        </div>
-
-        <div className="sec-head"><div className="dot terra"></div><h2>Experience</h2></div>
-        <div className="timeline">
-          <div className="tl-entry">
-            <div className="tl-top">
-              <h3>VP, Brand Strategy</h3>
-              <span className="dates">2022 — Present</span>
-            </div>
-            <div className="tl-org">Mailchimp (Intuit) · Atlanta, GA</div>
-            <ul>
-              <li>Lead 18-person brand team responsible for positioning, creative strategy, and brand governance</li>
-              <li>Orchestrated brand refresh increasing unaided brand awareness by 32% in 12 months</li>
-              <li>Launched "Made With Mailchimp" campaign reaching 500M+ impressions across 6 channels</li>
-              <li>Established brand measurement framework adopted across Intuit's portfolio brands</li>
-            </ul>
-          </div>
-
-          <div className="tl-entry">
-            <div className="tl-top">
-              <h3>Director of Brand Marketing</h3>
-              <span className="dates">2019 — 2022</span>
-            </div>
-            <div className="tl-org">Glossier · New York, NY</div>
-            <ul>
-              <li>Built brand strategy for 3 product line launches generating $45M in first-year revenue</li>
-              <li>Developed community-driven marketing approach growing social following from 1.2M to 3.8M</li>
-              <li>Created influencer partnership model achieving 8× industry-average engagement rates</li>
-            </ul>
-          </div>
-
-          <div className="tl-entry">
-            <div className="tl-top">
-              <h3>Senior Brand Strategist</h3>
-              <span className="dates">2016 — 2019</span>
-            </div>
-            <div className="tl-org">Wieden+Kennedy · Portland, OR</div>
-            <ul>
-              <li>Developed brand platforms for Nike, Coca-Cola, and Samsung global campaigns</li>
-              <li>Won Gold Cannes Lion for Nike "Dream Further" brand narrative work</li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="bottom-grid">
-          <div>
-            <div className="sec-head"><div className="dot olive"></div><h2>Skills</h2></div>
-            <div className="skill-group">
-              <h4>Strategy</h4>
-              <div className="skill-tags">
-                <span>Brand Positioning</span>
-                <span>Consumer Insights</span>
-                <span>Market Research</span>
-                <span>Competitive Analysis</span>
+        {/* Experience */}
+        <div style={rowLabel}><h2 style={sLabel}>Experience</h2></div>
+        <div style={rowContent}>
+          {[
+            { title: 'Principal Consultant', date: '2021 — Present', co: 'McKinsey & Company', loc: 'Chicago, IL', bullets: ['Lead digital transformation engagements for 3 Fortune 100 clients with combined revenue of $85B', 'Designed operating model restructure delivering $120M in annual cost savings for major bank', 'Built and manage team of 12 consultants; promoted 4 to engagement manager within 2 years', 'Authored firm-wide knowledge asset on AI adoption strategy downloaded 2,000+ times internally'] },
+            { title: 'Senior Associate', date: '2018 — 2021', co: 'McKinsey & Company', loc: 'New York, NY', bullets: ['Led workstreams on 15+ engagements across tech, healthcare, and private equity due diligence', 'Developed pricing optimization model increasing client margins by 8 percentage points', "Selected as facilitator for firm's global leadership development program"] },
+            { title: 'Business Analyst', date: '2015 — 2018', co: 'Bain & Company', loc: 'Boston, MA', bullets: ['Supported M&A due diligence on 8 deals totaling $4.2B in transaction value', 'Built customer segmentation framework adopted by $3B consumer goods client'] },
+          ].map((e, i) => (
+            <div key={i} style={{ marginBottom: i < 2 ? 28 : 0 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'baseline', marginBottom: 4 }}>
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: c.black }}>{e.title}</h3>
+                <span style={{ fontSize: 12, fontWeight: 500, color: c.g3, textTransform: 'uppercase', letterSpacing: 1 }}>{e.date}</span>
               </div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: c.red, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>{e.co}<span style={{ width: 20, height: 1, background: c.g2 }} /><span style={{ fontWeight: 400, color: c.g3 }}>{e.loc}</span></div>
+              {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13.5, color: c.g4, lineHeight: 1.65, paddingLeft: 20, position: 'relative', marginBottom: 5 }}><span style={{ position: 'absolute', left: 0, top: 8, width: 8, height: 1, background: c.red }} />{b}</div>)}
             </div>
-            <div className="skill-group">
-              <h4>Creative</h4>
-              <div className="skill-tags">
-                <span>Campaign Strategy</span>
-                <span>Storytelling</span>
-                <span>Content Strategy</span>
-                <span>Social Media</span>
+          ))}
+        </div>
+        {/* Skills */}
+        <div style={rowLabel}><h2 style={sLabel}>Expertise</h2></div>
+        <div style={rowContent}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+            {[['Strategy', 'Digital Transformation, Growth Strategy, M&A Due Diligence, Market Entry, Operating Model Design'], ['Analytical', 'Financial Modeling, Pricing Optimization, Data Analytics, Competitive Benchmarking, Scenario Planning'], ['Leadership', 'Executive Communication, Team Development, Stakeholder Alignment, Workshop Facilitation, Change Management']].map(([h, p], i) => (
+              <div key={i}>
+                <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, color: c.black, marginBottom: 10, paddingBottom: 6, borderBottom: `2px solid ${c.red}`, display: 'inline-block' }}>{h}</h4>
+                <p style={{ fontSize: 13, color: c.g4, lineHeight: 1.8 }}>{p}</p>
               </div>
-            </div>
-            <div className="skill-group">
-              <h4>Leadership</h4>
-              <div className="skill-tags">
-                <span>Team Building</span>
-                <span>P&L Management</span>
-                <span>Agency Relations</span>
+            ))}
+          </div>
+        </div>
+        {/* Education */}
+        <div style={rowLabel}><h2 style={sLabel}>Education</h2></div>
+        <div style={rowContent}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            {[['MBA', 'Harvard Business School', '2018 · Baker Scholar'], ['B.A. Economics & Mathematics', 'Williams College', '2015 · Summa Cum Laude']].map(([d, s, y], i) => (
+              <div key={i}>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: c.black, marginBottom: 2 }}>{d}</h3>
+                <div style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontStyle: 'italic', fontSize: 13.5, color: c.g4 }}>{s}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: c.red, marginTop: 2 }}>{y}</div>
               </div>
-            </div>
+            ))}
           </div>
-
-          <div>
-            <div className="sec-head"><div className="dot earth"></div><h2>Education</h2></div>
-            <div className="edu-card">
-              <h4>MBA, Marketing</h4>
-              <p>NYU Stern School of Business<br /><span className="yr">2016</span></p>
+        </div>
+        {/* More */}
+        <div style={rowLabel}><h2 style={sLabel}>More</h2></div>
+        <div style={rowContent}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+            <div>
+              <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, color: c.black, marginBottom: 10 }}>Publications</h4>
+              {[['HBR:', ' "Rethinking Digital Transformation for the AI Era" (2024)'], ['McKinsey Quarterly:', ' "The CFO\'s Guide to GenAI ROI" (2023)'], ['MIT Sloan Review:', ' "Operating Models for the Platform Economy" (2022)']].map(([b, t], i, arr) => (
+                <div key={i} style={{ fontSize: 13, color: c.g4, lineHeight: 1.7, padding: '6px 0', borderBottom: i < arr.length - 1 ? `1px solid ${c.g1}` : 'none' }}><strong style={{ fontWeight: 600, color: c.type }}>{b}</strong>{t}</div>
+              ))}
             </div>
-            <div className="edu-card">
-              <h4>B.A. English & African Studies</h4>
-              <p>Spelman College<br /><span className="yr">2013</span></p>
-            </div>
-
-            <div className="sec-head" style={{ "marginTop": "24px" }}><div className="dot terra"></div><h2>Recognition</h2></div>
-            <div className="award-item">
-              <div className="aw-icon">★</div>
-              <p><strong>Cannes Gold Lion</strong> — Nike "Dream Further"</p>
-            </div>
-            <div className="award-item">
-              <div className="aw-icon">★</div>
-              <p><strong>Adweek Brand Genius</strong> — 2023 Honoree</p>
-            </div>
-            <div className="award-item">
-              <div className="aw-icon">★</div>
-              <p><strong>Forbes 30 Under 30</strong> — Marketing & Advertising</p>
+            <div>
+              <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, color: c.black, marginBottom: 10 }}>Board & Advisory</h4>
+              {[['Board Member', ' — Chicago Digital Health Initiative'], ['Advisor', ' — Two Series-B SaaS startups'], ['CFA Charterholder', '']].map(([b, t], i, arr) => (
+                <div key={i} style={{ fontSize: 13, color: c.g4, lineHeight: 1.7, padding: '6px 0', borderBottom: i < arr.length - 1 ? `1px solid ${c.g1}` : 'none' }}><strong style={{ fontWeight: 600, color: c.type }}>{b}</strong>{t}</div>
+              ))}
             </div>
           </div>
         </div>
       </div>
-
-    </div>
-  )
-}
-
-export function Resume8MonochromePrecisionPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'monochrome_precision')
-  return (
-    <div className="monochrome_precision-wrapper">
-
-      <header>
-        <div className="name-area">
-          <h1>{res.name}</h1>
-          <div className="role">Clinical Psychologist</div>
-        </div>
-        <div className="contact-area">
-          <div className="c-item"><span className="c-label">Location</span>Denver, CO</div>
-          <div className="c-item"><span className="c-label">Phone</span>(555) 316-7842</div>
-          <div className="c-item"><span className="c-label">Email</span>lhoffman@email.com</div>
-          <div className="c-item"><span className="c-label">LinkedIn</span>linkedin.com/in/lenahoffman</div>
-        </div>
-      </header>
-
-      <hr className="big-rule" />
-
-      <div className="summary-row">
-        <div className="label-col">Profile</div>
-        <div className="content-col">
-          <p className="summary">
-            Licensed clinical psychologist with 12 years of experience in cognitive behavioral therapy,
-            trauma-informed care, and clinical research. Expertise in treating anxiety, PTSD, and mood disorders.
-            Published researcher with 18 peer-reviewed articles. Passionate about reducing barriers to
-            mental healthcare access through telehealth innovation and community programming.
-          </p>
-        </div>
-      </div>
-
-      <hr className="thin-rule" />
-
-      <div className="data-row">
-        <div className="label-col">Experience</div>
-        <div className="content-col">
-          <div className="exp-item">
-            <div className="exp-line-1">
-              <h3>Director of Clinical Services</h3>
-              <span className="period">2021 — Present</span>
-            </div>
-            <div className="exp-line-2">Denver Health Behavioral Health · Denver, CO</div>
-            <ul>
-              <li>Oversee clinical operations for 24-provider outpatient behavioral health practice</li>
-              <li>Launched telehealth program expanding access to 3,200+ rural patients annually</li>
-              <li>Reduced average wait time for new patients from 6 weeks to 10 days through workflow redesign</li>
-              <li>Implemented measurement-based care model improving clinical outcomes scores by 28%</li>
-            </ul>
-          </div>
-
-          <div className="exp-item">
-            <div className="exp-line-1">
-              <h3>Senior Clinical Psychologist</h3>
-              <span className="period">2017 — 2021</span>
-            </div>
-            <div className="exp-line-2">VA Eastern Colorado Healthcare System · Aurora, CO</div>
-            <ul>
-              <li>Provided evidence-based treatment for PTSD and TBI to 200+ veteran patients annually</li>
-              <li>Trained and supervised 12 psychology interns and postdoctoral fellows</li>
-              <li>Led research study on CPT effectiveness published in Journal of Traumatic Stress</li>
-            </ul>
-          </div>
-
-          <div className="exp-item">
-            <div className="exp-line-1">
-              <h3>Clinical Psychologist</h3>
-              <span className="period">2013 — 2017</span>
-            </div>
-            <div className="exp-line-2">Massachusetts General Hospital · Boston, MA</div>
-            <ul>
-              <li>Conducted CBT and DBT for adults with anxiety, depression, and personality disorders</li>
-              <li>Co-developed group therapy protocol adopted across 4 MGH satellite clinics</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <hr className="thin-rule" />
-
-      <div className="data-row">
-        <div className="label-col">Expertise</div>
-        <div className="content-col">
-          <table className="skills-table">
-            <tr>
-              <td className="sk-cat">Clinical</td>
-              <td className="sk-items">CBT, DBT, CPT, EMDR, Trauma-Informed Care, Psychological Assessment, Crisis Intervention</td>
-            </tr>
-            <tr>
-              <td className="sk-cat">Research</td>
-              <td className="sk-items">Clinical Trials, SPSS, R, Outcomes Measurement, IRB Protocol Development, Grant Writing</td>
-            </tr>
-            <tr>
-              <td className="sk-cat">Leadership</td>
-              <td className="sk-items">Program Development, Clinical Supervision, Telehealth Operations, Quality Improvement</td>
-            </tr>
-          </table>
-        </div>
-      </div>
-
-      <hr className="thin-rule" />
-
-      <div className="data-row">
-        <div className="label-col">Education</div>
-        <div className="content-col">
-          <div className="edu-pair">
-            <div className="edu-block">
-              <h4>Psy.D. Clinical Psychology</h4>
-              <p>University of Denver, GSPP</p>
-              <span className="year">2013</span>
-            </div>
-            <div className="edu-block">
-              <h4>B.A. Psychology</h4>
-              <p>Wellesley College</p>
-              <span className="year">2008</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <hr className="thin-rule" />
-
-      <div className="data-row">
-        <div className="label-col">Selected<br />Publications</div>
-        <div className="content-col">
-          <div className="pub-item">
-            <strong>Hoffman, L.</strong>, et al. (2023). Telehealth-delivered CPT for PTSD: A randomized controlled trial. <em>Journal of Traumatic Stress, 36</em>(2), 412–425.
-          </div>
-          <div className="pub-item">
-            <strong>Hoffman, L.</strong> & Rivera, M. (2021). Measurement-based care in community behavioral health. <em>Professional Psychology: Research and Practice, 52</em>(4), 318–329.
-          </div>
-          <div className="pub-item">
-            <strong>Hoffman, L.</strong>, et al. (2019). Group CBT protocol for comorbid anxiety and depression. <em>Cognitive Therapy and Research, 43</em>(1), 89–102.
-          </div>
-        </div>
-      </div>
-
-      <div className="footer">Licensed · Colorado (PSY.0012847) · Massachusetts (PSY-28491)</div>
-
-    </div>
-  )
-}
-
-export function Resume9GradientHorizonPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'gradient_horizon')
-  return (
-    <div className="gradient_horizon-wrapper">
-
-      <div className="header-gradient">
-        <div className="header-inner">
-          <div>
-            <h1>{res.name}</h1>
-            <div className="sub">DevOps & Cloud Infrastructure Engineer</div>
-          </div>
-          <div className="header-contact">
-            Austin, TX<br />
-            (555) 291-4068<br />
-            <a href="#">j.rivera@email.com</a><br />
-            <a href="#">linkedin.com/in/jrivera</a>
-          </div>
-        </div>
-      </div>
-
-      <div className="metric-strip">
-        <div className="metric">
-          <div className="num">99.99%</div>
-          <div className="desc">Uptime SLA</div>
-        </div>
-        <div className="metric">
-          <div className="num">$4.2M</div>
-          <div className="desc">Cloud Savings</div>
-        </div>
-        <div className="metric">
-          <div className="num">300+</div>
-          <div className="desc">Services Managed</div>
-        </div>
-        <div className="metric">
-          <div className="num">8</div>
-          <div className="desc">Years Experience</div>
-        </div>
-      </div>
-
-      <div className="body-content">
-        <div className="sec-title">Profile</div>
-        <p className="summary-text">
-          Cloud infrastructure engineer specializing in designing and operating large-scale distributed
-          systems on AWS and GCP. Deep expertise in Kubernetes orchestration, CI/CD automation, and
-          infrastructure-as-code. Proven track record of improving system reliability while reducing
-          infrastructure costs by 40%+ through architectural optimization.
-        </p>
-
-        <div className="sec-title">Experience</div>
-
-        <div className="exp-card">
-          <div className="row-1">
-            <h3>Principal DevOps Engineer</h3>
-            <span className="date-badge">2022 — Present</span>
-          </div>
-          <div className="org">Cloudflare · Austin, TX</div>
-          <ul>
-            <li>Architect infrastructure serving 20% of the web's HTTP traffic across 300+ global data centers</li>
-            <li>Led migration to Kubernetes-based deployment reducing release cycle from days to minutes</li>
-            <li>Designed cost optimization strategy saving $4.2M annually in cloud infrastructure spend</li>
-            <li>Built observability platform using Prometheus, Grafana, and custom alerting reducing MTTR by 65%</li>
-          </ul>
-        </div>
-
-        <div className="exp-card">
-          <div className="row-1">
-            <h3>Senior DevOps Engineer</h3>
-            <span className="date-badge">2019 — 2022</span>
-          </div>
-          <div className="org">Confluent · Mountain View, CA</div>
-          <ul>
-            <li>Managed 200+ microservices infrastructure on AWS and GCP across 12 regions</li>
-            <li>Implemented GitOps workflow with ArgoCD and Terraform reducing config drift by 95%</li>
-            <li>Built internal developer platform serving 400+ engineers with self-service deployments</li>
-          </ul>
-        </div>
-
-        <div className="exp-card">
-          <div className="row-1">
-            <h3>Cloud Engineer</h3>
-            <span className="date-badge">2017 — 2019</span>
-          </div>
-          <div className="org">Capital One · McLean, VA</div>
-          <ul>
-            <li>Led cloud-native transformation migrating 80+ applications from on-prem to AWS</li>
-            <li>Developed compliance-as-code framework for PCI-DSS achieving automated audit readiness</li>
-          </ul>
-        </div>
-
-        <div className="split">
-          <div>
-            <div className="sec-title">Skills</div>
-            <div className="skill-cluster">
-              <h4>Cloud & Infra</h4>
-              <div className="skill-pills">
-                <span className="purple">AWS</span>
-                <span className="purple">GCP</span>
-                <span className="purple">Kubernetes</span>
-                <span className="purple">Docker</span>
-                <span className="purple">Terraform</span>
-              </div>
-            </div>
-            <div className="skill-cluster">
-              <h4>Automation</h4>
-              <div className="skill-pills">
-                <span className="teal">CI/CD</span>
-                <span className="teal">ArgoCD</span>
-                <span className="teal">GitHub Actions</span>
-                <span className="teal">Ansible</span>
-              </div>
-            </div>
-            <div className="skill-cluster">
-              <h4>Observability</h4>
-              <div className="skill-pills">
-                <span className="purple">Prometheus</span>
-                <span className="purple">Grafana</span>
-                <span className="purple">Datadog</span>
-                <span className="purple">OpenTelemetry</span>
-              </div>
-            </div>
-            <div className="skill-cluster">
-              <h4>Languages</h4>
-              <div className="skill-pills">
-                <span className="teal">Go</span>
-                <span className="teal">Python</span>
-                <span className="teal">Bash</span>
-                <span className="teal">HCL</span>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div className="sec-title">Education</div>
-            <div className="edu-block">
-              <h4>M.S. Computer Science</h4>
-              <p>Georgia Tech (OMSCS)<br /><span className="yr">2019</span></p>
-            </div>
-            <div className="edu-block">
-              <h4>B.S. Information Technology</h4>
-              <p>Virginia Tech<br /><span className="yr">2017</span></p>
-            </div>
-
-            <div className="sec-title">Certifications</div>
-            <ul className="cert-list">
-              <li><span className="cert-dot"></span> AWS Solutions Architect — Professional</li>
-              <li><span className="cert-dot"></span> Certified Kubernetes Administrator (CKA)</li>
-              <li><span className="cert-dot"></span> Google Cloud Professional Cloud Architect</li>
-              <li><span className="cert-dot"></span> HashiCorp Terraform Associate</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  )
-}
-
-export function Resume10ArtDecoRevivalPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'art_deco_revival')
-  return (
-    <div className="art_deco_revival-wrapper">
-
-      <div className="deco-frame"></div>
-
-      <div className="header-deco">
-        <h1>{res.name}</h1>
-        <div className="divider-line"></div>
-        <div className="role">Investment Banking · Managing Director</div>
-        <div className="contact-line">
-          New York, NY <span className="sep">◆</span>
-          (555) 704-8312 <span className="sep">◆</span>
-          i.fontaine@email.com <span className="sep">◆</span>
-          linkedin.com/in/ifontaine
-        </div>
-      </div>
-
-      <div className="body-wrap">
-        <div className="section-head"><h2>Profile</h2></div>
-        <p className="summary-deco">
-          Managing Director with 16 years in investment banking specializing in cross-border M&A,
-          capital markets, and financial restructuring. Led advisory on $28B+ in completed transactions
-          across technology, healthcare, and industrials. Known for building deep client relationships
-          and delivering creative deal structures in complex situations.
-        </p>
-
-        <div className="section-head"><h2>Experience</h2></div>
-
-        <div className="exp-entry">
-          <div className="exp-header">
-            <h3>Managing Director, M&A</h3>
-            <span className="dates">2020 — Present</span>
-          </div>
-          <div className="exp-org">Goldman Sachs · New York, NY</div>
-          <ul>
-            <li>Lead cross-border M&A advisory practice for technology sector with $12B+ in active mandates</li>
-            <li>Advised on $8.4B acquisition of European SaaS platform — largest tech deal of 2023</li>
-            <li>Manage team of 28 bankers across New York, London, and Hong Kong offices</li>
-            <li>Grew client revenue 45% by developing strategic relationships with PE sponsors</li>
-          </ul>
-        </div>
-
-        <div className="exp-entry">
-          <div className="exp-header">
-            <h3>Executive Director</h3>
-            <span className="dates">2016 — 2020</span>
-          </div>
-          <div className="exp-org">Morgan Stanley · New York, NY</div>
-          <ul>
-            <li>Executed 20+ M&A and capital markets transactions totaling $15B in enterprise value</li>
-            <li>Structured $3.2B leveraged buyout for industrial conglomerate with complex carve-out</li>
-            <li>Named to internal "High Potential Leaders" program — top 2% of VP/ED cohort</li>
-          </ul>
-        </div>
-
-        <div className="exp-entry">
-          <div className="exp-header">
-            <h3>Vice President</h3>
-            <span className="dates">2012 — 2016</span>
-          </div>
-          <div className="exp-org">Lazard · Paris / New York</div>
-          <ul>
-            <li>Advised European corporates on US market entry and transatlantic M&A transactions</li>
-            <li>Led financial restructuring advisory for €2.1B distressed media conglomerate</li>
-          </ul>
-        </div>
-
-        <div className="section-head"><h2>Credentials</h2></div>
-
-        <div className="three-col">
-          <div className="col-block">
-            <h4>Education</h4>
-            <div className="edu-mini">
-              <h5>MBA, Finance</h5>
-              <p>INSEAD<br /><span className="yr">2012</span></p>
-            </div>
-            <div className="edu-mini">
-              <h5>M.S. Financial Engineering</h5>
-              <p>Sciences Po Paris<br /><span className="yr">2009</span></p>
-            </div>
-          </div>
-
-          <div className="col-block">
-            <h4>Expertise</h4>
-            <ul>
-              <li>Cross-Border M&A</li>
-              <li>Capital Markets</li>
-              <li>Financial Restructuring</li>
-              <li>LBO Structuring</li>
-              <li>Fairness Opinions</li>
-              <li>Client Origination</li>
-            </ul>
-          </div>
-
-          <div className="col-block">
-            <h4>Recognition</h4>
-            <ul>
-              <li>Dealogic Top 10 Tech M&A Advisor 2023</li>
-              <li>Financial Times "Rising Star in Banking"</li>
-              <li>Women in Finance Award 2022</li>
-              <li>CFA Charterholder</li>
-              <li>Series 7, 63, 79</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div className="footer-deco">
-        <p>References and transaction list available upon request</p>
-      </div>
-
+      {/* Footer */}
+      <div style={{ background: c.black, padding: '14px 52px', fontSize: 11, color: c.g3, textAlign: 'center', letterSpacing: 1 }}>References available upon request</div>
     </div>
   )
 }
@@ -3338,35 +1381,33 @@ export const PREVIEW_MAP: Record<string, React.FC<PreviewProps>> = {
   bauhaus_geometric: Resume3BauhausGeometricPreview,
   soft_pastel: Resume4SoftPastelPreview,
   swiss_grid: Resume5SwissGridPreview,
-  brutalist_raw: Resume6BrutalistRawPreview,
-  warm_earth: Resume7WarmEarthPreview,
-  monochrome_precision: Resume8MonochromePrecisionPreview,
-  gradient_horizon: Resume9GradientHorizonPreview,
-  art_deco_revival: Resume10ArtDecoRevivalPreview,
+
   phd: PhdResumePreview,
 
   classic: ClassicPreview,
   minimalist: MinimalistPreview,
-  sidebar: SidebarPreview,
-  creative: CreativePreview,
   dark: DarkPreview,
-  editorial: EditorialPreview,
-  bold: BoldPreview,
-  teal: TealPreview,
-  timeline: TimelinePreview,
-  grande: GrandePreview,
-  blob: BlobPreview,
-  split: SplitPreview,
-  obsidian: ObsidianPreview,
-  ivory: IvoryPreview,
-  noir: NoirPreview,
-  rose: RosePreview,
-  executive: ExecutivePreview,
+
   terminal: TerminalPreview,
-  healthcare: HealthcarePreview,
 
-  scifi: ScifiPreview,
-  sophisticated: SophisticatedPreview,
-
-  futuristic: FuturisticPreview,
+  corporate_slate: CorporateSlatePreview,
+  teal_wave: TealWavePreview,
+  purple_dusk: PurpleDuskPreview,
+  coral_bright: CoralBrightPreview,
+  ocean_deep: OceanDeepPreview,
+  sage_pro: SageProPreview,
+  carbon_noir: CarbonNoirPreview,
+  sand_dune: SandDunePreview,
+  indigo_sharp: IndigoSharpPreview,
+  platinum_elite: PlatinumElitePreview,
+  cascade_blue: CascadeBluePreview,
+  nordic_minimal: NordicMinimalPreview,
+  midnight_pro: MidnightProPreview,
+  blueprint: BlueprintPreview,
+  emerald_fresh: EmeraldFreshPreview,
+  sunset_warm: SunsetWarmPreview,
+  newspaper_classic: NewspaperClassicPreview,
+  ivory_marble: IvoryMarblePreview,
+  neon_cyber: NeonCyberPreview,
+  origami_zen: OrigamiZenPreview,
 }

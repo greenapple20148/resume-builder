@@ -335,6 +335,7 @@
     font-weight: 700;
     line-height: 1;
     letter-spacing: -1px;
+    color: var(--white);
 }
 
 .swiss_grid-wrapper .top-bar h1 .accent {

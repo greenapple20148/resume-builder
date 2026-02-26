@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Nathan Brooks</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+  @theme {
+    --font-sans: 'Inter', sans-serif;
+    --color-slate-sidebar: #1e293b;
+    --color-accent: #3b82f6;
+    --color-accent-light: #eff6ff;
+  }
+  body { font-family: 'Inter', sans-serif; }
+</style>
+</head>
+<body class="bg-slate-200 min-h-screen py-10">
+  <div class="max-w-[900px] mx-auto bg-white shadow-2xl shadow-slate-400/30 flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 shrink-0 bg-slate-800 text-slate-300 flex flex-col gap-7 p-8">
+      <!-- Avatar placeholder / initials -->
+      <div>
+        <div class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold mb-5">NB</div>
+        <h1 class="text-white text-2xl font-bold leading-tight">Nathan<br>Brooks</h1>
+        <p class="text-blue-400 text-xs tracking-widest uppercase mt-2 font-medium">Operations Manager</p>
+      </div>
+
+      <hr class="border-slate-600">
+
+      <!-- Contact -->
+      <div>
+        <h2 class="text-blue-400 text-[10px] tracking-[3px] uppercase font-semibold mb-3">Contact</h2>
+        <ul class="space-y-2 text-[12.5px]">
+          <li class="flex items-start gap-2">
+            <svg class="w-3.5 h-3.5 mt-0.5 fill-blue-400 shrink-0" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+            <span class="text-slate-400">n.brooks@ops.com</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <svg class="w-3.5 h-3.5 mt-0.5 fill-blue-400 shrink-0" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+            <span class="text-slate-400">(312) 504-8820</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <svg class="w-3.5 h-3.5 mt-0.5 fill-blue-400 shrink-0" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+            <span class="text-slate-400">Chicago, IL</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <svg class="w-3.5 h-3.5 mt-0.5 fill-blue-400 shrink-0" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clip-rule="evenodd"/></svg>
+            <span class="text-slate-400">linkedin.com/in/nbrooks</span>
+          </li>
+        </ul>
+      </div>
+
+      <hr class="border-slate-600">
+
+      <!-- Skills -->
+      <div>
+        <h2 class="text-blue-400 text-[10px] tracking-[3px] uppercase font-semibold mb-3">Skills</h2>
+        <div class="space-y-2.5">
+          <div>
+            <div class="flex justify-between text-[12px] mb-1">
+              <span class="text-slate-300">Process Optimization</span>
+              <span class="text-blue-400 text-[11px]">95%</span>
+            </div>
+            <div class="h-1 bg-slate-700 rounded-full"><div class="h-full w-[95%] bg-blue-500 rounded-full"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-[12px] mb-1">
+              <span class="text-slate-300">Supply Chain</span>
+              <span class="text-blue-400 text-[11px]">88%</span>
+            </div>
+            <div class="h-1 bg-slate-700 rounded-full"><div class="h-full w-[88%] bg-blue-500 rounded-full"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-[12px] mb-1">
+              <span class="text-slate-300">Budget Management</span>
+              <span class="text-blue-400 text-[11px]">90%</span>
+            </div>
+            <div class="h-1 bg-slate-700 rounded-full"><div class="h-full w-[90%] bg-blue-500 rounded-full"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-[12px] mb-1">
+              <span class="text-slate-300">ERP Systems (SAP)</span>
+              <span class="text-blue-400 text-[11px]">82%</span>
+            </div>
+            <div class="h-1 bg-slate-700 rounded-full"><div class="h-full w-[82%] bg-blue-500 rounded-full"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-[12px] mb-1">
+              <span class="text-slate-300">Data Analysis</span>
+              <span class="text-blue-400 text-[11px]">78%</span>
+            </div>
+            <div class="h-1 bg-slate-700 rounded-full"><div class="h-full w-[78%] bg-blue-500 rounded-full"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="border-slate-600">
+
+      <!-- Education -->
+      <div>
+        <h2 class="text-blue-400 text-[10px] tracking-[3px] uppercase font-semibold mb-3">Education</h2>
+        <div class="space-y-3">
+          <div>
+            <p class="text-white text-[13px] font-semibold leading-tight">MBA, Operations</p>
+            <p class="text-slate-400 text-[11.5px] mt-0.5">Kellogg School of Management<br>Northwestern · 2017</p>
+          </div>
+          <div>
+            <p class="text-white text-[13px] font-semibold leading-tight">B.S. Industrial Engineering</p>
+            <p class="text-slate-400 text-[11.5px] mt-0.5">Purdue University · 2015</p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="border-slate-600">
+
+      <!-- Certifications -->
+      <div>
+        <h2 class="text-blue-400 text-[10px] tracking-[3px] uppercase font-semibold mb-3">Certifications</h2>
+        <ul class="space-y-1.5 text-[12px] text-slate-400">
+          <li class="before:content-['◆'] before:text-blue-500 before:text-[8px] before:mr-2">PMP Certified</li>
+          <li class="before:content-['◆'] before:text-blue-500 before:text-[8px] before:mr-2">Lean Six Sigma Black Belt</li>
+          <li class="before:content-['◆'] before:text-blue-500 before:text-[8px] before:mr-2">APICS CPIM</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-10">
+      <!-- Decorative bars -->
+      <div class="flex gap-1 mb-8">
+        <div class="h-1 w-14 bg-blue-500 rounded-full"></div>
+        <div class="h-1 w-9 bg-blue-300 rounded-full"></div>
+        <div class="h-1 w-5 bg-blue-200 rounded-full"></div>
+      </div>
+
+      <!-- Summary -->
+      <section class="mb-8">
+        <h2 class="text-[11px] font-bold tracking-[2.5px] uppercase text-blue-600 border-b-2 border-blue-100 pb-2 mb-4">Professional Summary</h2>
+        <p class="text-slate-600 text-[14px] leading-relaxed">
+          Operations manager with 8 years optimizing supply chain processes and leading cross-functional
+          teams at manufacturing and logistics companies. Delivered $14M in annual cost savings through
+          lean methodologies and ERP transformation initiatives. Skilled at translating operational data
+          into strategic decisions that scale.
+        </p>
+      </section>
+
+      <!-- Experience -->
+      <section class="mb-8">
+        <h2 class="text-[11px] font-bold tracking-[2.5px] uppercase text-blue-600 border-b-2 border-blue-100 pb-2 mb-5">Work Experience</h2>
+
+        <div class="space-y-6">
+          <div>
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="text-[15px] font-semibold text-slate-800">Senior Operations Manager</h3>
+              <span class="text-[11.5px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-medium whitespace-nowrap">2022 — Present</span>
+            </div>
+            <p class="text-[13px] text-blue-600 font-semibold mb-2">Amazon Logistics · Chicago, IL</p>
+            <ul class="space-y-1.5 text-[13px] text-slate-500 leading-relaxed">
+              <li class="flex gap-2"><span class="text-blue-400 mt-1 shrink-0">▸</span>Managed 340-person warehouse operation processing 120K orders/day during peak periods</li>
+              <li class="flex gap-2"><span class="text-blue-400 mt-1 shrink-0">▸</span>Implemented lean improvements reducing picking error rate by 62% and labor costs by $3.2M</li>
+              <li class="flex gap-2"><span class="text-blue-400 mt-1 shrink-0">▸</span>Led SAP WMS deployment across 3 facilities on-time and 8% under $4M budget</li>
+              <li class="flex gap-2"><span class="text-blue-400 mt-1 shrink-0">▸</span>Achieved 99.4% on-time shipment rate, top 5% in Amazon's fulfillment network</li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="text-[15px] font-semibold text-slate-800">Operations Manager</h3>
+              <span class="text-[11.5px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-medium whitespace-nowrap">2019 — 2022</span>
+            </div>
+            <p class="text-[13px] text-blue-600 font-semibold mb-2">Caterpillar Inc. · Peoria, IL</p>
+            <ul class="space-y-1.5 text-[13px] text-slate-500 leading-relaxed">
+              <li class="flex gap-2"><span class="text-blue-400 mt-1 shrink-0">▸</span>Oversaw $80M annual production budget and 200-person manufacturing floor</li>
+              <li class="flex gap-2"><span class="text-blue-400 mt-1 shrink-0">▸</span>Reduced production cycle time 28% through value stream mapping and cell redesign</li>
+              <li class="flex gap-2"><span class="text-blue-400 mt-1 shrink-0">▸</span>Achieved ISO 9001:2015 recertification with zero nonconformances</li>
+            </ul>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-start mb-1">
+              <h3 class="text-[15px] font-semibold text-slate-800">Supply Chain Analyst</h3>
+              <span class="text-[11.5px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-medium whitespace-nowrap">2017 — 2019</span>
+            </div>
+            <p class="text-[13px] text-blue-600 font-semibold mb-2">Deloitte Consulting · Chicago, IL</p>
+            <ul class="space-y-1.5 text-[13px] text-slate-500 leading-relaxed">
+              <li class="flex gap-2"><span class="text-blue-400 mt-1 shrink-0">▸</span>Delivered 6 supply chain transformation engagements for $1B+ industrial manufacturers</li>
+              <li class="flex gap-2"><span class="text-blue-400 mt-1 shrink-0">▸</span>Built demand forecasting model improving inventory accuracy from 72% to 94%</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Key Achievements -->
+      <section>
+        <h2 class="text-[11px] font-bold tracking-[2.5px] uppercase text-blue-600 border-b-2 border-blue-100 pb-2 mb-4">Key Achievements</h2>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-blue-50 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-blue-600">$14M</div>
+            <div class="text-[11px] text-slate-500 mt-1">Annual Cost Savings</div>
+          </div>
+          <div class="bg-blue-50 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-blue-600">99.4%</div>
+            <div class="text-[11px] text-slate-500 mt-1">On-Time Shipment</div>
+          </div>
+          <div class="bg-blue-50 rounded-lg p-4 text-center">
+            <div class="text-2xl font-bold text-blue-600">540+</div>
+            <div class="text-[11px] text-slate-500 mt-1">Team Members Led</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

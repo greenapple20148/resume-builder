@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { toast } from '../components/Toast'
-import styles from './AuthPage.module.css'
+import { useSEO } from '../lib/useSEO'
 
 type AuthMode = 'signup' | 'signin' | 'forgot-password' | 'reset-password'
 
@@ -10,9 +10,7 @@ export default function AuthPage() {
   const [searchParams] = useSearchParams()
   const initialMode = (searchParams.get('mode') || 'signin') as AuthMode
   const [mode, setMode] = useState<AuthMode>(
-    ['signup', 'signin', 'forgot-password', 'reset-password'].includes(initialMode)
-      ? initialMode
-      : 'signin'
+    ['signup', 'signin', 'forgot-password', 'reset-password'].includes(initialMode) ? initialMode : 'signin'
   )
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
@@ -23,14 +21,8 @@ export default function AuthPage() {
   const { signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useStore()
   const navigate = useNavigate()
 
-  // Handle password recovery event from Supabase URL
-  useEffect(() => {
-    if (mode === 'reset-password') {
-      // Supabase redirects here with access_token in URL hash after clicking reset link
-    }
-  }, [mode])
+  useEffect(() => { if (mode === 'reset-password') { /* Supabase redirects here */ } }, [mode])
 
-  // Password strength checks
   const pwChecks = {
     length: form.password.length >= 8,
     upper: /[A-Z]/.test(form.password),
@@ -46,9 +38,7 @@ export default function AuthPage() {
     if (mode === 'signup' && !form.fullName.trim()) errs.fullName = 'Name is required'
     if (mode !== 'reset-password' && !form.email.includes('@')) errs.email = 'Valid email required'
     if (mode === 'signin' && form.password.length < 8) errs.password = 'Password must be 8+ characters'
-    if (mode === 'signup') {
-      if (!pwValid) errs.password = 'Password does not meet all requirements'
-    }
+    if (mode === 'signup') { if (!pwValid) errs.password = 'Password does not meet all requirements' }
     if (mode === 'forgot-password' && !form.email.includes('@')) errs.email = 'Valid email required'
     if (mode === 'reset-password') {
       if (!pwValid) errs.password = 'Password does not meet all requirements'
@@ -65,7 +55,6 @@ export default function AuthPage() {
     try {
       if (mode === 'signup') {
         const result = await signUp(form.email, form.password, form.fullName)
-        // Supabase returns user with empty identities if email is already taken
         if (result?.user && result.user.identities?.length === 0) {
           setErrors({ email: 'This email is already registered' })
           toast.error('An account with this email already exists. Try signing in instead.')
@@ -88,28 +77,18 @@ export default function AuthPage() {
     } catch (err: any) {
       const msg = err.message || ''
       if (msg.includes('sending confirmation email')) {
-        // Email service issue — account was likely created, just email failed
-        toast.info('Account created but confirmation email could not be sent. Check your Supabase SMTP settings or disable email confirmation.')
+        toast.info('Account created but confirmation email could not be sent.')
         navigate('/confirm-email')
       } else if (msg.includes('already registered') || msg.includes('already been registered')) {
         setErrors({ email: 'This email is already registered' })
         toast.error('An account with this email already exists. Try signing in.')
-      } else {
-        toast.error(msg || 'Something went wrong. Try again.')
-      }
-    } finally {
-      setLoading(false)
-    }
+      } else { toast.error(msg || 'Something went wrong. Try again.') }
+    } finally { setLoading(false) }
   }
 
   const handleGoogle = async () => {
     setGoogleLoading(true)
-    try {
-      await signInWithGoogle()
-    } catch (err: any) {
-      toast.error(err.message)
-      setGoogleLoading(false)
-    }
+    try { await signInWithGoogle() } catch (err: any) { toast.error(err.message); setGoogleLoading(false) }
   }
 
   const set = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,92 +96,78 @@ export default function AuthPage() {
     if (errors[field]) setErrors((p) => ({ ...p, [field]: null }))
   }
 
-  const switchMode = (newMode: AuthMode) => {
-    setMode(newMode)
-    setErrors({})
-    setResetSent(false)
+  const switchMode = (newMode: AuthMode) => { setMode(newMode); setErrors({}); setResetSent(false) }
+
+  const headingMap: Record<AuthMode, string> = {
+    signup: 'Create your account', signin: 'Welcome back',
+    'forgot-password': 'Reset your password', 'reset-password': 'Choose new password',
   }
 
-  // Heading & subtext for each mode
-  const headingMap: Record<AuthMode, string> = {
-    signup: 'Create your account',
-    signin: 'Welcome back',
-    'forgot-password': 'Reset your password',
-    'reset-password': 'Choose new password',
+  const seoTitleMap: Record<AuthMode, string> = {
+    signup: 'Create Your Free Account',
+    signin: 'Sign In',
+    'forgot-password': 'Reset Your Password',
+    'reset-password': 'Choose New Password',
   }
+  const seoDescMap: Record<AuthMode, string> = {
+    signup: 'Create a free ResumeBuildIn account and start building beautiful, ATS-optimized resumes in minutes.',
+    signin: 'Sign in to ResumeBuildIn to access your resumes, templates, and career tools.',
+    'forgot-password': 'Reset your ResumeBuildIn password. We\'ll send you a secure link to choose a new one.',
+    'reset-password': 'Choose a new password for your ResumeBuildIn account.',
+  }
+  useSEO({
+    title: seoTitleMap[mode],
+    description: seoDescMap[mode],
+    path: '/auth',
+    noindex: mode === 'reset-password',
+  })
 
   return (
-    <div className={styles.page}>
+    <div className="flex flex-col md:flex-row min-h-screen">
       {/* Left: Brand panel */}
-      <div className={styles.brand}>
-        <Link to="/" className={styles.brandLogo}>
-          <span>◈</span> Resume<em>BuildIn</em>
+      <div className="w-full md:w-[45%] bg-[#0e0d0b] dark:bg-[#0e0d0b] p-6 md:p-10 flex flex-col relative overflow-hidden">
+        <div className="absolute -bottom-[100px] -left-[100px] w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(201,146,60,0.12),transparent_70%)] pointer-events-none" />
+        <Link to="/" className="font-display text-[22px] font-light text-parchment tracking-tight flex items-center gap-1.5 no-underline mb-16">
+          <span className="text-gold">◈</span> Resume<em className="italic text-gold">BuildIn</em>
         </Link>
-        <div className={styles.brandContent}>
-          <h2>Your next job<br /><em>starts here</em></h2>
-          <p>Join 47,000+ professionals who've built their dream resume with ResumeBuildIn.</p>
-          <div className={styles.brandSamples}>
+        <div className="flex-1">
+          <h2 className="text-parchment text-[clamp(32px,4vw,52px)] mb-4">Your next job<br /><em className="italic text-gold-light">starts here</em></h2>
+          <p className="text-[rgba(250,248,243,0.45)] text-[15px] leading-[1.7] mb-10">Join 47,000+ professionals who've built their dream resume with ResumeBuildIn.</p>
+          <div className="hidden md:flex gap-3">
             {['#f5c800', '#2b9db3', '#c9a84c'].map((c, i) => (
-              <div key={i} className={styles.sampleCard} style={{ '--delay': `${i * 0.15}s` } as React.CSSProperties}>
-                <div style={{ height: 32, background: c, opacity: 0.9, borderRadius: '4px 4px 0 0' }} />
-                <div style={{ padding: 10, display: 'flex', flexDirection: 'column', gap: 5 }}>
-                  <div style={{ height: 6, background: 'rgba(255,255,255,0.2)', borderRadius: 2 }} />
-                  <div style={{ height: 6, width: '70%', background: 'rgba(255,255,255,0.15)', borderRadius: 2 }} />
-                  <div style={{ height: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 2 }} />
+              <div key={i} className="flex-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden animate-[fadeUp_0.5s_ease_both]" style={{ animationDelay: `${i * 0.15}s` }}>
+                <div className="h-8 rounded-t" style={{ background: c, opacity: 0.9 }} />
+                <div className="p-2.5 flex flex-col gap-[5px]">
+                  <div className="h-1.5 bg-[rgba(255,255,255,0.2)] rounded-sm" />
+                  <div className="h-1.5 w-[70%] bg-[rgba(255,255,255,0.15)] rounded-sm" />
+                  <div className="h-1.5 bg-[rgba(255,255,255,0.1)] rounded-sm" />
                 </div>
               </div>
             ))}
           </div>
         </div>
-        <div className={styles.brandTestimonial}>
-          <div className={styles.testimonialStars}>★★★★★</div>
-          <p className={styles.testimonialText}>
-            "Got 3 interviews in the first week after switching to ResumeBuildIn."
-          </p>
-          <div className={styles.testimonialAuthor}>— Jamie L., Software Engineer</div>
+        <div className="p-6 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-xl mt-10">
+          <div className="text-gold text-sm mb-2.5 tracking-widest">★★★★★</div>
+          <p className="text-sm text-[rgba(250,248,243,0.7)] italic leading-relaxed mb-2.5">"Got 3 interviews in the first week after switching to ResumeBuildIn."</p>
+          <div className="text-xs text-[rgba(250,248,243,0.35)] font-mono">— Jamie L., Software Engineer</div>
         </div>
       </div>
 
       {/* Right: Form panel */}
-      <div className={styles.formPanel}>
-        <div className={styles.formContainer}>
-          <div className={styles.formHeader}>
-            <h3>{headingMap[mode]}</h3>
-            {mode === 'signup' && (
-              <p>
-                Already have one?{' '}
-                <button className={styles.toggleMode} onClick={() => switchMode('signin')}>
-                  Sign in
-                </button>
-              </p>
-            )}
-            {mode === 'signin' && (
-              <p>
-                Don't have one?{' '}
-                <button className={styles.toggleMode} onClick={() => switchMode('signup')}>
-                  Sign up free
-                </button>
-              </p>
-            )}
-            {mode === 'forgot-password' && (
-              <p>
-                Enter your email and we'll send you a link to reset your password.
-              </p>
-            )}
-            {mode === 'reset-password' && (
-              <p>
-                Enter your new password below.
-              </p>
-            )}
+      <div className="flex-1 bg-parchment flex items-center justify-center p-6 md:p-10">
+        <div className="w-full max-w-[400px]">
+          <div className="mb-7">
+            <h3 className="text-[28px] mb-2">{headingMap[mode]}</h3>
+            {mode === 'signup' && <p className="text-sm text-ink-40">Already have one? <button className="bg-transparent border-none text-gold font-body text-sm cursor-pointer font-medium underline p-0" onClick={() => switchMode('signin')}>Sign in</button></p>}
+            {mode === 'signin' && <p className="text-sm text-ink-40">Don't have one? <button className="bg-transparent border-none text-gold font-body text-sm cursor-pointer font-medium underline p-0" onClick={() => switchMode('signup')}>Sign up free</button></p>}
+            {mode === 'forgot-password' && <p className="text-sm text-ink-40">Enter your email and we'll send you a link to reset your password.</p>}
+            {mode === 'reset-password' && <p className="text-sm text-ink-40">Enter your new password below.</p>}
           </div>
 
-          {/* Google OAuth — only for sign in / sign up */}
           {(mode === 'signup' || mode === 'signin') && (
             <>
-              <button className={styles.googleBtn} onClick={handleGoogle} disabled={googleLoading}>
-                {googleLoading ? (
-                  <div className="spinner" style={{ width: 18, height: 18 }} />
-                ) : (
+              <button className="flex items-center justify-center gap-3 w-full p-3 bg-white dark:bg-ink-05 border-[1.5px] border-ink-10 rounded-lg text-sm font-medium text-ink cursor-pointer transition-all mb-5 hover:border-ink-20 hover:shadow-sm disabled:opacity-70 disabled:cursor-not-allowed" onClick={handleGoogle} disabled={googleLoading}>
+                {googleLoading ? <div className="spinner" style={{ width: 18, height: 18 }} /> : (
                   <svg width="18" height="18" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -216,42 +181,20 @@ export default function AuthPage() {
             </>
           )}
 
-          {/* Forgot password — success state */}
           {mode === 'forgot-password' && resetSent ? (
-            <div className={styles.resetSentCard}>
-              <div className={styles.resetSentIcon}>✉</div>
-              <h4>Check your inbox</h4>
-              <p>
-                We've sent a password reset link to <strong>{form.email}</strong>.
-                Click the link in your email to choose a new password.
-              </p>
-              <p className={styles.resetSentHint}>
-                Didn't receive it? Check your spam folder or{' '}
-                <button className={styles.toggleMode} onClick={() => setResetSent(false)}>
-                  try again
-                </button>
-              </p>
-              <button
-                className="btn btn-outline"
-                style={{ width: '100%', marginTop: 16 }}
-                onClick={() => switchMode('signin')}
-              >
-                ← Back to Sign In
-              </button>
+            <div className="text-center p-8 bg-[var(--white)] border border-ink-10 rounded-xl mt-5">
+              <div className="text-5xl mb-4">✉</div>
+              <h4 className="font-display text-[22px] mb-3 text-ink">Check your inbox</h4>
+              <p className="text-sm leading-relaxed text-ink-40 mb-1">We've sent a password reset link to <strong className="text-ink">{form.email}</strong>. Click the link in your email to choose a new password.</p>
+              <p className="text-xs text-ink-20 mt-3">Didn't receive it? Check your spam folder or <button className="bg-transparent border-none text-gold font-body text-sm cursor-pointer font-medium underline p-0" onClick={() => setResetSent(false)}>try again</button></p>
+              <button className="btn btn-outline w-full mt-4" onClick={() => switchMode('signin')}>← Back to Sign In</button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className={styles.form}>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-5">
               {mode === 'signup' && (
                 <div className="form-group">
                   <label className="form-label">Full Name</label>
-                  <input
-                    type="text"
-                    className={`form-input ${errors.fullName ? 'error' : ''}`}
-                    placeholder="Alex Johnson"
-                    value={form.fullName}
-                    onChange={set('fullName')}
-                    autoFocus
-                  />
+                  <input type="text" className={`form-input ${errors.fullName ? 'error' : ''}`} placeholder="Alex Johnson" value={form.fullName} onChange={set('fullName')} autoFocus />
                   {errors.fullName && <span className="form-error">⚠ {errors.fullName}</span>}
                 </div>
               )}
@@ -259,57 +202,32 @@ export default function AuthPage() {
               {mode !== 'reset-password' && (
                 <div className="form-group">
                   <label className="form-label">Email</label>
-                  <input
-                    type="email"
-                    className={`form-input ${errors.email ? 'error' : ''}`}
-                    placeholder="alex@company.com"
-                    value={form.email}
-                    onChange={set('email')}
-                    autoFocus={mode === 'signin' || mode === 'forgot-password'}
-                  />
+                  <input type="email" className={`form-input ${errors.email ? 'error' : ''}`} placeholder="alex@company.com" value={form.email} onChange={set('email')} autoFocus={mode === 'signin' || mode === 'forgot-password'} />
                   {errors.email && <span className="form-error">⚠ {errors.email}</span>}
                 </div>
               )}
 
               {(mode === 'signin' || mode === 'signup' || mode === 'reset-password') && (
                 <div className="form-group">
-                  <label className="form-label">
-                    {mode === 'reset-password' ? 'New Password' : 'Password'}
-                  </label>
-                  <input
-                    type="password"
-                    className={`form-input ${errors.password ? 'error' : ''}`}
-                    placeholder="8+ characters"
-                    value={form.password}
-                    onChange={set('password')}
-                    autoFocus={mode === 'reset-password'}
-                  />
+                  <label className="form-label">{mode === 'reset-password' ? 'New Password' : 'Password'}</label>
+                  <input type="password" className={`form-input ${errors.password ? 'error' : ''}`} placeholder="8+ characters" value={form.password} onChange={set('password')} autoFocus={mode === 'reset-password'} />
                   {errors.password && <span className="form-error">⚠ {errors.password}</span>}
 
-                  {/* Password strength meter — signup & reset only */}
                   {(mode === 'signup' || mode === 'reset-password') && form.password.length > 0 && (
-                    <div className={styles.pwStrength}>
-                      <div className={styles.pwBars}>
+                    <div className="flex items-center gap-2.5 mt-2.5">
+                      <div className="flex gap-1 flex-1">
                         {[1, 2, 3, 4, 5].map(i => (
-                          <div
-                            key={i}
-                            className={styles.pwBar}
-                            style={{
-                              background: pwStrength >= i
-                                ? pwStrength <= 2 ? '#ef4444' : pwStrength <= 3 ? '#f59e0b' : '#22c55e'
-                                : 'var(--ink-10)'
-                            }}
-                          />
+                          <div key={i} className="h-1 flex-1 rounded-sm transition-colors" style={{ background: pwStrength >= i ? (pwStrength <= 2 ? '#ef4444' : pwStrength <= 3 ? '#f59e0b' : '#22c55e') : 'var(--ink-10)' }} />
                         ))}
                       </div>
-                      <span className={styles.pwLabel}>
+                      <span className="text-[11px] font-semibold font-mono uppercase tracking-wide text-ink-40 whitespace-nowrap">
                         {pwStrength <= 2 ? 'Weak' : pwStrength <= 3 ? 'Fair' : pwStrength <= 4 ? 'Strong' : 'Excellent'}
                       </span>
                     </div>
                   )}
 
                   {(mode === 'signup' || mode === 'reset-password') && form.password.length > 0 && (
-                    <div className={styles.pwChecklist}>
+                    <div className="flex flex-col gap-1 mt-2.5">
                       {[
                         { ok: pwChecks.length, label: 'Min 8 characters' },
                         { ok: pwChecks.upper, label: 'Uppercase letter (A-Z)' },
@@ -317,8 +235,8 @@ export default function AuthPage() {
                         { ok: pwChecks.digit, label: 'Number (0-9)' },
                         { ok: pwChecks.symbol, label: 'Symbol (!@#$…)' },
                       ].map((r, i) => (
-                        <div key={i} className={`${styles.pwCheck} ${r.ok ? styles.pwCheckOk : ''}`}>
-                          <span>{r.ok ? '✓' : '○'}</span> {r.label}
+                        <div key={i} className={`text-xs flex items-center gap-1.5 transition-colors ${r.ok ? 'text-emerald' : 'text-ink-20'}`}>
+                          <span className={`text-[11px] w-3.5 text-center ${r.ok ? 'font-bold' : ''}`}>{r.ok ? '✓' : '○'}</span> {r.label}
                         </div>
                       ))}
                     </div>
@@ -329,71 +247,32 @@ export default function AuthPage() {
               {mode === 'reset-password' && (
                 <div className="form-group">
                   <label className="form-label">Confirm Password</label>
-                  <input
-                    type="password"
-                    className={`form-input ${errors.confirmPassword ? 'error' : ''}`}
-                    placeholder="Re-enter your password"
-                    value={form.confirmPassword}
-                    onChange={set('confirmPassword')}
-                  />
-                  {errors.confirmPassword && (
-                    <span className="form-error">⚠ {errors.confirmPassword}</span>
-                  )}
+                  <input type="password" className={`form-input ${errors.confirmPassword ? 'error' : ''}`} placeholder="Re-enter your password" value={form.confirmPassword} onChange={set('confirmPassword')} />
+                  {errors.confirmPassword && <span className="form-error">⚠ {errors.confirmPassword}</span>}
                 </div>
               )}
 
-              {/* Forgot password link — only on sign in */}
               {mode === 'signin' && (
-                <div className={styles.forgotRow}>
-                  <button
-                    type="button"
-                    className={styles.forgotLink}
-                    onClick={() => switchMode('forgot-password')}
-                  >
+                <div className="flex justify-end -mt-2">
+                  <button type="button" className="bg-transparent border-none text-gold font-body text-[13px] cursor-pointer p-0 underline underline-offset-2 transition-opacity hover:opacity-80" onClick={() => switchMode('forgot-password')}>
                     Forgot your password?
                   </button>
                 </div>
               )}
 
-              <button
-                type="submit"
-                className="btn btn-primary"
-                style={{ width: '100%', padding: 14 }}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <div className="spinner" /> Processing…
-                  </>
-                ) : mode === 'signup' ? (
-                  'Create Account →'
-                ) : mode === 'signin' ? (
-                  'Sign In →'
-                ) : mode === 'forgot-password' ? (
-                  'Send Reset Link →'
-                ) : (
-                  'Update Password →'
-                )}
+              <button type="submit" className="btn btn-primary w-full py-3.5" disabled={loading}>
+                {loading ? <><div className="spinner" /> Processing…</> : mode === 'signup' ? 'Create Account →' : mode === 'signin' ? 'Sign In →' : mode === 'forgot-password' ? 'Send Reset Link →' : 'Update Password →'}
               </button>
 
-              {/* Back to sign in — on forgot & reset password */}
               {(mode === 'forgot-password' || mode === 'reset-password') && (
-                <button
-                  type="button"
-                  className="btn btn-ghost"
-                  style={{ width: '100%' }}
-                  onClick={() => switchMode('signin')}
-                >
-                  ← Back to Sign In
-                </button>
+                <button type="button" className="btn btn-ghost w-full" onClick={() => switchMode('signin')}>← Back to Sign In</button>
               )}
             </form>
           )}
 
           {mode === 'signup' && (
-            <p className={styles.terms}>
-              By signing up you agree to our{' '}
-              <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+            <p className="text-[11px] text-ink-20 text-center mt-3.5 leading-relaxed">
+              By signing up you agree to our <a href="#" className="text-gold underline">Terms of Service</a> and <a href="#" className="text-gold underline">Privacy Policy</a>.
             </p>
           )}
         </div>

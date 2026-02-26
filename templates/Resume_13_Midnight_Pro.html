@@ -5,292 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resume — Victoria Okafor</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0c0f1a;
-    --surface: #141828;
-    --border: #252d45;
-    --gold: #c9a84c;
-    --gold-light: #e8c96e;
-    --text: #e8e4d8;
-    --muted: #8891ab;
-    --dim: #4a5268;
-  }
-
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-  @media print {
-    body { background: #0c0f1a; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .page { box-shadow: none; margin: 0; }
-    @page { margin: 0.4in; size: letter; }
-  }
-
-  body {
-    background: #050710;
-    font-family: 'Outfit', sans-serif;
-    color: var(--text);
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .page {
-    max-width: 860px;
-    margin: 40px auto;
-    background: var(--bg);
-    box-shadow: 0 0 80px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
-    overflow: hidden;
-  }
-
-  /* Gold top bar */
-  .top-bar {
-    height: 3px;
-    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
-  }
-
-  /* Header */
-  header {
-    padding: 48px 56px 40px;
-    border-bottom: 1px solid var(--border);
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: end;
-    gap: 32px;
-  }
-
-  .name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 52px;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1;
-    letter-spacing: -0.5px;
-  }
-
-  .name span {
-    color: var(--gold);
-    font-style: italic;
-    font-weight: 400;
-  }
-
-  .role {
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 12px;
-  }
-
-  .contact-block {
-    text-align: right;
-    font-size: 12.5px;
-    color: var(--muted);
-    line-height: 2;
-  }
-
-  .contact-block a { color: var(--gold); text-decoration: none; }
-
-  /* Body */
-  .body {
-    display: grid;
-    grid-template-columns: 1fr 240px;
-  }
-
-  /* Main */
-  .main {
-    padding: 44px 56px;
-    border-right: 1px solid var(--border);
-  }
-
-  .section { margin-bottom: 40px; }
-
-  .section-title {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 3.5px;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 22px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .summary {
-    font-size: 14px;
-    line-height: 1.85;
-    color: #b0b8cc;
-    font-weight: 300;
-  }
-
-  .entry { margin-bottom: 28px; }
-
-  .entry-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 4px;
-  }
-
-  .entry-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .entry-date {
-    font-size: 11px;
-    color: var(--dim);
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 2px 9px;
-    border-radius: 2px;
-    white-space: nowrap;
-    letter-spacing: 0.5px;
-  }
-
-  .entry-company {
-    font-size: 12.5px;
-    color: var(--gold);
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .entry ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  .entry ul li {
-    font-size: 13px;
-    color: #8891ab;
-    line-height: 1.7;
-    padding-left: 18px;
-    position: relative;
-    margin-bottom: 5px;
-  }
-
-  .entry ul li::before {
-    content: '◆';
-    position: absolute;
-    left: 0;
-    color: var(--gold);
-    font-size: 7px;
-    top: 6px;
-  }
-
-  /* Sidebar */
-  .sidebar {
-    padding: 44px 32px;
-    background: var(--surface);
-  }
-
-  .sidebar .section { margin-bottom: 32px; }
-
-  .sidebar .section-title::after { display: none; }
-
-  .skill-item {
-    font-size: 12.5px;
-    color: #8891ab;
-    line-height: 1.8;
-    padding-left: 12px;
-    position: relative;
-    margin-bottom: 3px;
-  }
-
-  .skill-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 9px;
-    width: 4px;
-    height: 1px;
-    background: var(--gold);
-  }
-
-  .edu-item { margin-bottom: 18px; }
-  .edu-item h4 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 15px;
-    color: var(--text);
-    font-weight: 600;
-  }
-  .edu-item p {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 3px;
-    line-height: 1.5;
-  }
-
-  .cert-item {
-    font-size: 12.5px;
-    color: #8891ab;
-    line-height: 1.7;
-    margin-bottom: 6px;
-    padding: 8px 10px;
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    font-weight: 300;
-  }
-
-  /* Gold ornament */
-  .ornament {
-    text-align: center;
-    color: var(--gold);
-    font-size: 16px;
-    letter-spacing: 8px;
-    opacity: 0.4;
-    margin-top: 8px;
-  }
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+  body { font-family: 'Outfit', sans-serif; }
+  .section-line { display: flex; align-items: center; gap: 12px; }
+  .section-line::after { content: ''; flex: 1; height: 1px; background: #252d45; }
+  .diamond-li li { position: relative; padding-left: 18px; margin-bottom: 5px; }
+  .diamond-li li::before { content: '◆'; position: absolute; left: 0; color: #c9a84c; font-size: 7px; top: 6px; }
+  .dash-item { position: relative; padding-left: 12px; margin-bottom: 3px; }
+  .dash-item::before { content: ''; position: absolute; left: 0; top: 9px; width: 4px; height: 1px; background: #c9a84c; }
 </style>
 </head>
-<body>
-<div class="page">
-  <div class="top-bar"></div>
+<body class="bg-[#050710] min-h-screen py-10">
+<div class="max-w-[860px] mx-auto bg-[#0c0f1a] shadow-[0_0_80px_rgba(0,0,0,0.6),0_0_0_1px_#252d45] overflow-hidden">
 
-  <header>
+  <!-- Gold top bar -->
+  <div class="h-[3px]" style="background:linear-gradient(90deg,#c9a84c,#e8c96e,#c9a84c)"></div>
+
+  <!-- Header -->
+  <header class="px-14 py-12 border-b border-[#252d45] grid grid-cols-[1fr_auto] items-end gap-8">
     <div>
-      <div class="name">Victoria <span>Okafor</span></div>
-      <div class="role">Investment Banking Associate</div>
+      <div class="text-[52px] font-semibold text-[#e8e4d8] leading-none tracking-tight" style="font-family:'Cormorant Garamond',serif">
+        Victoria <span class="text-[#c9a84c] italic font-normal">Okafor</span>
+      </div>
+      <div class="text-[12px] font-medium tracking-[4px] uppercase text-[#8891ab] mt-3">Investment Banking Associate</div>
     </div>
-    <div class="contact-block">
+    <div class="text-right text-[12.5px] text-[#8891ab] leading-loose">
       New York, NY<br>
       (212) 556-0234<br>
-      <a href="#">v.okafor@finance.com</a><br>
-      <a href="#">linkedin.com/in/vokafor</a>
+      <span class="text-[#c9a84c]">v.okafor@finance.com</span><br>
+      <span class="text-[#c9a84c]">linkedin.com/in/vokafor</span>
     </div>
   </header>
 
-  <div class="body">
-    <div class="main">
-      <div class="section">
-        <div class="section-title">Profile</div>
-        <p class="summary">
+  <!-- Body -->
+  <div class="grid grid-cols-[1fr_240px]">
+    <!-- Main -->
+    <div class="px-14 py-11 border-r border-[#252d45]">
+      <div class="mb-10">
+        <div class="section-line text-[10px] font-semibold tracking-[3.5px] uppercase text-[#c9a84c] mb-5">Profile</div>
+        <p class="text-[14px] text-[#b0b8cc] leading-[1.85] font-light">
           Finance professional with 7 years in M&A advisory and capital markets. Expertise in
           complex financial modeling, cross-border deal execution, and client management across
           technology and healthcare sectors. Closed $4.2B in transaction value over career.
         </p>
       </div>
 
-      <div class="section">
-        <div class="section-title">Experience</div>
+      <div class="mb-10">
+        <div class="section-line text-[10px] font-semibold tracking-[3.5px] uppercase text-[#c9a84c] mb-5">Experience</div>
 
-        <div class="entry">
-          <div class="entry-header">
-            <div class="entry-title">Associate, M&A Advisory</div>
-            <div class="entry-date">2021 — Present</div>
+        <div class="mb-7">
+          <div class="flex justify-between items-start mb-1">
+            <div class="text-[18px] font-semibold text-[#e8e4d8]" style="font-family:'Cormorant Garamond',serif">Associate, M&A Advisory</div>
+            <div class="text-[11px] text-[#4a5268] bg-[#141828] border border-[#252d45] px-2 py-0.5 rounded-sm whitespace-nowrap tracking-wide">2021 — Present</div>
           </div>
-          <div class="entry-company">Goldman Sachs · New York</div>
-          <ul>
+          <div class="text-[12.5px] text-[#c9a84c] font-medium tracking-wide uppercase mb-2.5">Goldman Sachs · New York</div>
+          <ul class="diamond-li text-[13px] text-[#8891ab] leading-relaxed">
             <li>Executed 8 M&A transactions totaling $2.1B in deal value across SaaS and healthcare verticals</li>
             <li>Built LBO and DCF models for 14 buy-side and sell-side mandates with senior banker oversight</li>
             <li>Led due diligence workstreams coordinating 40+ advisor teams across 3 jurisdictions</li>
@@ -298,26 +68,26 @@
           </ul>
         </div>
 
-        <div class="entry">
-          <div class="entry-header">
-            <div class="entry-title">Analyst, Technology Investment Banking</div>
-            <div class="entry-date">2019 — 2021</div>
+        <div class="mb-7">
+          <div class="flex justify-between items-start mb-1">
+            <div class="text-[18px] font-semibold text-[#e8e4d8]" style="font-family:'Cormorant Garamond',serif">Analyst, Technology Investment Banking</div>
+            <div class="text-[11px] text-[#4a5268] bg-[#141828] border border-[#252d45] px-2 py-0.5 rounded-sm whitespace-nowrap tracking-wide">2019 — 2021</div>
           </div>
-          <div class="entry-company">JPMorgan Chase · New York</div>
-          <ul>
+          <div class="text-[12.5px] text-[#c9a84c] font-medium tracking-wide uppercase mb-2.5">JPMorgan Chase · New York</div>
+          <ul class="diamond-li text-[13px] text-[#8891ab] leading-relaxed">
             <li>Supported 6 tech sector transactions including 3 IPOs raising $800M+</li>
             <li>Developed 3-statement models and management presentations for C-suite roadshows</li>
             <li>Maintained deal pipeline tracking $6B+ in live mandates across coverage universe</li>
           </ul>
         </div>
 
-        <div class="entry">
-          <div class="entry-header">
-            <div class="entry-title">Summer Analyst</div>
-            <div class="entry-date">Summer 2018</div>
+        <div>
+          <div class="flex justify-between items-start mb-1">
+            <div class="text-[18px] font-semibold text-[#e8e4d8]" style="font-family:'Cormorant Garamond',serif">Summer Analyst</div>
+            <div class="text-[11px] text-[#4a5268] bg-[#141828] border border-[#252d45] px-2 py-0.5 rounded-sm whitespace-nowrap tracking-wide">Summer 2018</div>
           </div>
-          <div class="entry-company">Morgan Stanley · New York</div>
-          <ul>
+          <div class="text-[12.5px] text-[#c9a84c] font-medium tracking-wide uppercase mb-2.5">Morgan Stanley · New York</div>
+          <ul class="diamond-li text-[13px] text-[#8891ab] leading-relaxed">
             <li>Prepared pitch books and industry analyses for 4 live healthcare M&A mandates</li>
             <li>Received return offer with top performance rating in summer class</li>
           </ul>
@@ -325,37 +95,37 @@
       </div>
     </div>
 
-    <div class="sidebar">
-      <div class="section">
-        <div class="section-title">Education</div>
-        <div class="edu-item">
-          <h4>B.S. Economics, Finance</h4>
-          <p>The Wharton School<br>University of Pennsylvania<br>GPA: 3.92 · 2019</p>
-        </div>
+    <!-- Sidebar -->
+    <div class="bg-[#141828] px-8 py-11 space-y-8">
+      <div>
+        <div class="text-[10px] font-semibold tracking-[3.5px] uppercase text-[#c9a84c] mb-5">Education</div>
+        <h4 class="text-[15px] font-semibold text-[#e8e4d8]" style="font-family:'Cormorant Garamond',serif">B.S. Economics, Finance</h4>
+        <p class="text-[12px] text-[#8891ab] mt-0.5 leading-snug">The Wharton School<br>University of Pennsylvania<br>GPA: 3.92 · 2019</p>
       </div>
 
-      <div class="section">
-        <div class="section-title">Skills</div>
-        <div class="skill-item">Financial Modeling (LBO, DCF)</div>
-        <div class="skill-item">M&A Transaction Advisory</div>
-        <div class="skill-item">Capital Markets</div>
-        <div class="skill-item">Valuation Analysis</div>
-        <div class="skill-item">Excel / VBA Automation</div>
-        <div class="skill-item">Bloomberg Terminal</div>
-        <div class="skill-item">FactSet / Capital IQ</div>
-        <div class="skill-item">PowerPoint / Pitch Decks</div>
+      <div>
+        <div class="text-[10px] font-semibold tracking-[3.5px] uppercase text-[#c9a84c] mb-5">Skills</div>
+        <div class="dash-item text-[12.5px] text-[#8891ab]">Financial Modeling (LBO, DCF)</div>
+        <div class="dash-item text-[12.5px] text-[#8891ab]">M&A Transaction Advisory</div>
+        <div class="dash-item text-[12.5px] text-[#8891ab]">Capital Markets</div>
+        <div class="dash-item text-[12.5px] text-[#8891ab]">Valuation Analysis</div>
+        <div class="dash-item text-[12.5px] text-[#8891ab]">Excel / VBA Automation</div>
+        <div class="dash-item text-[12.5px] text-[#8891ab]">Bloomberg Terminal</div>
+        <div class="dash-item text-[12.5px] text-[#8891ab]">FactSet / Capital IQ</div>
+        <div class="dash-item text-[12.5px] text-[#8891ab]">PowerPoint / Pitch Decks</div>
       </div>
 
-      <div class="section">
-        <div class="section-title">Certifications</div>
-        <div class="cert-item">Series 79 — Investment Banking</div>
-        <div class="cert-item">Series 63 — Securities Agent</div>
-        <div class="cert-item">CFA Level II Candidate</div>
+      <div>
+        <div class="text-[10px] font-semibold tracking-[3.5px] uppercase text-[#c9a84c] mb-5">Certifications</div>
+        <div class="text-[12.5px] text-[#8891ab] font-light border border-[#252d45] rounded-sm px-2.5 py-2 mb-2">Series 79 — Investment Banking</div>
+        <div class="text-[12.5px] text-[#8891ab] font-light border border-[#252d45] rounded-sm px-2.5 py-2 mb-2">Series 63 — Securities Agent</div>
+        <div class="text-[12.5px] text-[#8891ab] font-light border border-[#252d45] rounded-sm px-2.5 py-2">CFA Level II Candidate</div>
       </div>
 
-      <div class="ornament">◆ · ◆ · ◆</div>
+      <div class="text-center text-[#c9a84c] text-[16px] tracking-[8px] opacity-40 mt-2">◆ · ◆ · ◆</div>
     </div>
   </div>
+
 </div>
 </body>
 </html>
