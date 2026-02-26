@@ -643,8 +643,12 @@ export function TerminalPreview({ data }: PreviewProps) {
 }
 
 export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
+  const res = useDynamicData(data || {}, 'editorial_luxe')
   const c = { ink: '#1a1a1a', cream: '#f8f5f0', accent: '#c4553a', muted: '#7a7167', rule: '#d4cec5' }
   const sTitle: React.CSSProperties = { fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14 }
+  const nameParts = res.name.split(' ')
+  const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
   return (
     <div style={{ fontFamily: "'Source Sans 3', 'DM Sans', sans-serif", background: c.cream, padding: '60px 64px', position: 'relative', overflow: 'hidden' }}>
       {/* Corner marks */}
@@ -653,34 +657,30 @@ export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
       {/* Header */}
       <header style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'flex-end', gap: 32, paddingBottom: 28, borderBottom: `1px solid ${c.rule}`, marginBottom: 36 }}>
         <div>
-          <h1 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontWeight: 900, fontSize: 52, letterSpacing: -1, lineHeight: 1, color: c.ink }}>Elena <span style={{ color: c.accent, fontStyle: 'italic', fontWeight: 400 }}>Vasquez</span></h1>
-          <div style={{ fontSize: 15, fontWeight: 300, color: c.muted, letterSpacing: 3, textTransform: 'uppercase', marginTop: 10 }}>Senior Product Manager</div>
+          <h1 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontWeight: 900, fontSize: 52, letterSpacing: -1, lineHeight: 1, color: c.ink }}>{firstName} {lastName && <span style={{ color: c.accent, fontStyle: 'italic', fontWeight: 400 }}>{lastName}</span>}</h1>
+          <div style={{ fontSize: 15, fontWeight: 300, color: c.muted, letterSpacing: 3, textTransform: 'uppercase', marginTop: 10 }}>{res.role}</div>
         </div>
         <div style={{ textAlign: 'right', fontSize: 13.5, color: c.muted, lineHeight: 1.8 }}>
-          New York, NY<br />(555) 412-8903<br /><span style={{ color: c.accent }}>elena.vasquez@email.com</span><br /><span style={{ color: c.accent }}>linkedin.com/in/evasquez</span>
+          {res.location}<br />{res.phone}<br /><span style={{ color: c.accent }}>{res.email}</span>
         </div>
       </header>
       {/* Summary */}
       <div style={{ fontSize: 15.5, lineHeight: 1.7, color: '#444', fontWeight: 300, marginBottom: 36, paddingLeft: 20, borderLeft: `3px solid ${c.accent}` }}>
-        Product leader with 9+ years of experience shipping consumer and B2B products at scale. Expert in data-informed decision-making, cross-functional collaboration, and translating complex user needs into elegant solutions. Track record of growing product revenue by 3× and launching features used by 20M+ people.
+        {res.summary}
       </div>
       {/* Content */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 48 }}>
         {/* Main */}
         <main>
           <div style={sTitle}>Experience<span style={{ flex: 1, height: 1, background: c.rule }} /></div>
-          {[
-            { title: 'Senior Product Manager', date: '2021 — Present', co: 'Notion · New York, NY', bullets: ['Led cross-functional team of 14 to launch AI-powered workspace features, driving 40% increase in daily active users', 'Defined product roadmap generating $28M in net-new ARR within first year', 'Established experimentation culture with 120+ A/B tests, improving core funnel conversion by 22%'] },
-            { title: 'Product Manager', date: '2018 — 2021', co: 'Spotify · New York, NY', bullets: ['Owned discovery and personalization features reaching 180M+ monthly listeners', 'Shipped Blend playlists feature from 0→1, achieving 15M monthly active users in 6 months', 'Reduced churn in first-month subscribers by 18% through onboarding flow redesign'] },
-            { title: 'Associate Product Manager', date: '2016 — 2018', co: 'Google · Mountain View, CA', bullets: ['Managed search quality features for Google Maps used by 1B+ monthly users', 'Launched local business review summaries, increasing review engagement by 35%'] },
-          ].map((e, i) => (
+          {res.experience.map((exp, i) => (
             <div key={i} style={{ marginBottom: 26 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-                <h3 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 17, fontWeight: 700, color: c.ink }}>{e.title}</h3>
-                <span style={{ fontSize: 12.5, color: c.muted, whiteSpace: 'nowrap' }}>{e.date}</span>
+                <h3 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 17, fontWeight: 700, color: c.ink }}>{exp.title}</h3>
+                <span style={{ fontSize: 12.5, color: c.muted, whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
               </div>
-              <div style={{ fontSize: 14, color: c.accent, fontWeight: 600, marginBottom: 8 }}>{e.co}</div>
-              {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13.5, color: '#555', lineHeight: 1.6, paddingLeft: 16, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, color: c.accent, fontWeight: 600 }}>—</span>{b}</div>)}
+              <div style={{ fontSize: 14, color: c.accent, fontWeight: 600, marginBottom: 8 }}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</div>
+              {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13.5, color: '#555', lineHeight: 1.6, paddingLeft: 16, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, color: c.accent, fontWeight: 600 }}>—</span>{b.replace(/^[•\-–—]\s*/, '')}</div>)}
             </div>
           ))}
         </main>
@@ -688,26 +688,15 @@ export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
         <aside>
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18 }}>Skills</div>
-            {[['Product', 'Roadmapping, OKRs, PRDs, User Research, A/B Testing, Analytics'], ['Technical', 'SQL, Python, Amplitude, Mixpanel, Figma, Jira'], ['Leadership', 'Cross-functional Team Leadership, Stakeholder Management, Mentoring']].map(([label, items], i) => (
-              <div key={i} style={{ marginBottom: 16 }}>
-                <h4 style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 2, color: c.muted, fontWeight: 600, marginBottom: 6 }}>{label}</h4>
-                <p style={{ fontSize: 13.5, color: '#444', lineHeight: 1.6 }}>{items}</p>
-              </div>
-            ))}
+            <p style={{ fontSize: 13.5, color: '#444', lineHeight: 1.8 }}>{res.skills.join(', ')}</p>
           </div>
           <div style={{ marginBottom: 28 }}>
             <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18 }}>Education</div>
-            {[['MBA, Technology Management', 'Columbia Business School', '2016'], ['B.S. Computer Science', 'Stanford University', '2014']].map(([d, s, y], i) => (
+            {res.education.map((edu, i) => (
               <div key={i} style={{ marginBottom: 14 }}>
-                <h4 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 14.5, fontWeight: 700, color: c.ink }}>{d}</h4>
-                <p style={{ fontSize: 13, color: c.muted, lineHeight: 1.5 }}>{s}<br />{y}</p>
+                <h4 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 14.5, fontWeight: 700, color: c.ink }}>{edu.degree}</h4>
+                <p style={{ fontSize: 13, color: c.muted, lineHeight: 1.5 }}>{edu.school}<br />{edu.endDate}</p>
               </div>
-            ))}
-          </div>
-          <div>
-            <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18 }}>Certifications</div>
-            {['Pragmatic Institute Certified', 'Google Analytics Certified', 'SAFe Product Owner'].map((cert, i) => (
-              <div key={i} style={{ fontSize: 13, color: '#555', lineHeight: 1.8 }}><span style={{ color: c.accent, fontSize: 8, marginRight: 8, verticalAlign: 'middle' }}>◆</span>{cert}</div>
             ))}
           </div>
         </aside>
@@ -717,10 +706,14 @@ export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
 }
 
 export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
+  const res = useDynamicData(data || {}, 'dark_architect')
   const c = { bg: '#0f0f13', surface: '#18181f', surface2: '#1f1f28', border: '#2a2a36', text: '#e4e2de', muted: '#8a8690', accent: '#64ffda', accentDim: 'rgba(100,255,218,0.08)', warm: '#ffd6a0' }
   const mono = "'JetBrains Mono', 'DM Mono', monospace"
   const sLabel: React.CSSProperties = { fontFamily: mono, fontSize: 10, fontWeight: 500, letterSpacing: 3, textTransform: 'uppercase', color: c.muted, marginBottom: 20, paddingBottom: 8, borderBottom: `1px solid ${c.border}` }
   const tag: React.CSSProperties = { fontFamily: mono, fontSize: 11, padding: '4px 10px', borderRadius: 4, background: 'rgba(100,255,218,0.06)', border: '1px solid rgba(100,255,218,0.15)', color: c.accent }
+  const nameParts = res.name.split(' ')
+  const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
   return (
     <div style={{ fontFamily: "'DM Sans', sans-serif", background: c.surface, border: `1px solid ${c.border}`, borderRadius: 16, overflow: 'hidden', color: c.text }}>
       {/* Accent bar */}
@@ -728,36 +721,32 @@ export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
       {/* Header */}
       <header style={{ padding: '48px 56px 36px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'flex-start', borderBottom: `1px solid ${c.border}` }}>
         <div>
-          <h1 style={{ fontSize: 42, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.1, color: c.text }}><span style={{ fontWeight: 300, opacity: 0.7 }}>Marcus</span> Chen</h1>
-          <div style={{ fontFamily: mono, fontSize: 13, color: c.accent, marginTop: 8, letterSpacing: 1 }}><span style={{ opacity: 0.4 }}>{'> '}</span>Staff Software Engineer</div>
+          <h1 style={{ fontSize: 42, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.1, color: c.text }}><span style={{ fontWeight: 300, opacity: 0.7 }}>{firstName}</span> {lastName}</h1>
+          <div style={{ fontFamily: mono, fontSize: 13, color: c.accent, marginTop: 8, letterSpacing: 1 }}><span style={{ opacity: 0.4 }}>{'> '}</span>{res.role}</div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 24px', fontFamily: mono, fontSize: 12, color: c.muted }}>
-          {[['Location', 'Seattle, WA'], ['Phone', '(555) 903-1247'], ['Email', 'm.chen@email.com'], ['GitHub', 'github.com/marcusc']].map(([label, val], i) => (
+          {[['Location', res.location], ['Phone', res.phone], ['Email', res.email]].map(([label, val], i) => (
             <div key={i}><span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1.5, color: c.accent, opacity: 0.6 }}>{label}</span><br />{val}</div>
           ))}
         </div>
       </header>
       {/* Summary */}
       <div style={{ padding: '32px 56px', borderBottom: `1px solid ${c.border}`, background: c.accentDim }}>
-        <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.75, color: c.text, maxWidth: 680 }}>Staff engineer with 10 years building distributed systems and developer platforms at scale. Deep expertise in Golang, Kubernetes, and event-driven architectures. Led platform teams serving 800+ internal developers and processing 2B+ events daily.</p>
+        <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.75, color: c.text, maxWidth: 680 }}>{res.summary}</p>
       </div>
       {/* Body */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px' }}>
         {/* Main */}
         <div style={{ padding: '36px 48px 48px 56px', borderRight: `1px solid ${c.border}` }}>
           <div style={sLabel}>Experience</div>
-          {[
-            { title: 'Staff Software Engineer', date: '2022 — Present', co: 'Datadog', loc: 'Seattle, WA', bullets: ['Designed event ingestion pipeline processing 2.4B events/day with 99.99% uptime', 'Led migration from monolith to microservices, reducing deploy times from 45min to 3min', 'Mentored 8 engineers and established architecture review process for platform org'] },
-            { title: 'Senior Software Engineer', date: '2019 — 2022', co: 'Stripe', loc: 'San Francisco, CA', bullets: ['Built real-time fraud detection service handling 50K+ transactions/second', 'Reduced payment processing latency by 60% through distributed caching layer', 'Designed internal developer SDK used by 200+ engineers across 15 teams'] },
-            { title: 'Software Engineer', date: '2015 — 2019', co: 'Amazon Web Services', loc: 'Seattle, WA', bullets: ['Core contributor to AWS Lambda runtime, optimizing cold start times by 40%', 'Implemented auto-scaling algorithm for DynamoDB adopted across 3 AWS services'] },
-          ].map((e, i) => (
+          {res.experience.map((exp, i) => (
             <div key={i} style={{ marginBottom: 28 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 2 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: c.text }}>{e.title}</h3>
-                <span style={{ fontFamily: mono, fontSize: 11.5, color: c.muted, whiteSpace: 'nowrap' }}>{e.date}</span>
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: c.text }}>{exp.title}</h3>
+                <span style={{ fontFamily: mono, fontSize: 11.5, color: c.muted, whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
               </div>
-              <div style={{ fontSize: 13.5, fontWeight: 500, color: c.accent, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>{e.co}<span style={{ width: 4, height: 4, borderRadius: '50%', background: c.warm }} />{e.loc}</div>
-              {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13.5, fontWeight: 300, color: c.text, opacity: 0.85, lineHeight: 1.6, paddingLeft: 18, position: 'relative', marginBottom: 5 }}><span style={{ position: 'absolute', left: 0, color: c.accent, fontSize: 12 }}>▸</span>{b}</div>)}
+              <div style={{ fontSize: 13.5, fontWeight: 500, color: c.accent, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>{exp.company}{exp.location && <><span style={{ width: 4, height: 4, borderRadius: '50%', background: c.warm }} />{exp.location}</>}</div>
+              {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13.5, fontWeight: 300, color: c.text, opacity: 0.85, lineHeight: 1.6, paddingLeft: 18, position: 'relative', marginBottom: 5 }}><span style={{ position: 'absolute', left: 0, color: c.accent, fontSize: 12 }}>▸</span>{b.replace(/^[•\-–—]\s*/, '')}</div>)}
             </div>
           ))}
         </div>
@@ -765,28 +754,17 @@ export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
         <div style={{ padding: '36px 36px 48px', background: c.surface2 }}>
           <div style={{ marginBottom: 28 }}>
             <div style={sLabel}>Tech Stack</div>
-            {[['Languages', ['Go', 'Rust', 'TypeScript', 'Python']], ['Infrastructure', ['K8s', 'AWS', 'Terraform', 'Kafka']], ['Databases', ['PostgreSQL', 'Redis', 'DynamoDB']]].map(([group, tags], i) => (
-              <div key={i} style={{ marginBottom: 14 }}>
-                <h4 style={{ fontFamily: mono, fontSize: 10, textTransform: 'uppercase', letterSpacing: 1.5, color: c.warm, marginBottom: 8, fontWeight: 400 }}>{group as string}</h4>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {(tags as string[]).map((t, j) => <span key={j} style={tag}>{t}</span>)}
-                </div>
-              </div>
-            ))}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {res.skills.map((s, i) => <span key={i} style={tag}>{s}</span>)}
+            </div>
           </div>
           <div style={{ marginBottom: 28 }}>
             <div style={sLabel}>Education</div>
-            {[['M.S. Computer Science', 'University of Washington', '2015'], ['B.S. Computer Engineering', 'UC San Diego', '2013']].map(([d, s, y], i) => (
+            {res.education.map((edu, i) => (
               <div key={i} style={{ marginBottom: 16 }}>
-                <h4 style={{ fontSize: 14, fontWeight: 600, color: c.text }}>{d}</h4>
-                <p style={{ fontSize: 12.5, color: c.muted, lineHeight: 1.5 }}>{s}<br />{y}</p>
+                <h4 style={{ fontSize: 14, fontWeight: 600, color: c.text }}>{edu.degree}</h4>
+                <p style={{ fontSize: 12.5, color: c.muted, lineHeight: 1.5 }}>{edu.school}<br />{edu.endDate}</p>
               </div>
-            ))}
-          </div>
-          <div>
-            <div style={sLabel}>Open Source</div>
-            {['gRPC-Go maintainer', 'K8s SIG-Scalability', '3.2K GitHub stars'].map((item, i, arr) => (
-              <div key={i} style={{ fontSize: 13, color: c.text, opacity: 0.8, padding: '5px 0', borderBottom: i < arr.length - 1 ? `1px solid ${c.border}` : 'none', fontWeight: 300 }}>{item}</div>
             ))}
           </div>
         </div>
@@ -796,9 +774,10 @@ export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
 }
 
 export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
+  const res = useDynamicData(data || {}, 'bauhaus_geometric')
   const c = { navy: '#0d1b3e', coral: '#e8634a', gold: '#f0c75e', sky: '#4a98d9', cream: '#faf8f4', text: '#2c2c2c', muted: '#6e6e6e', ltBg: '#f2efe8' }
   const sbHead: React.CSSProperties = { fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: c.coral, marginBottom: 12, paddingBottom: 6, borderBottom: '2px solid rgba(255,255,255,0.08)' }
-  const mainHead = (color: string, shape: React.ReactNode): React.CSSProperties & { _shape?: React.ReactNode } => ({ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22, marginTop: 8 } as any)
+  const initials = res.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
   return (
     <div style={{ fontFamily: "'Sora', 'DM Sans', sans-serif", display: 'grid', gridTemplateColumns: '260px 1fr', overflow: 'hidden', borderRadius: 4, background: '#fff', color: c.text }}>
       {/* Sidebar */}
@@ -808,44 +787,30 @@ export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
         {/* Gold circle ornament */}
         <div style={{ position: 'absolute', bottom: 40, left: 28, width: 36, height: 36, border: `3px solid ${c.gold}`, borderRadius: '50%', opacity: 0.4 }} />
         {/* Avatar */}
-        <div style={{ width: 80, height: 80, borderRadius: '50%', background: `linear-gradient(135deg, ${c.coral}, ${c.gold})`, marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, color: '#fff' }}>PN</div>
-        <h1 style={{ fontSize: 26, fontWeight: 800, lineHeight: 1.15, marginBottom: 6 }}>Priya Nair</h1>
-        <div style={{ fontSize: 12, fontWeight: 300, letterSpacing: 2.5, textTransform: 'uppercase', color: c.gold, marginBottom: 32 }}>Data Science Lead</div>
+        <div style={{ width: 80, height: 80, borderRadius: '50%', background: `linear-gradient(135deg, ${c.coral}, ${c.gold})`, marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, color: '#fff' }}>{initials}</div>
+        <h1 style={{ fontSize: 26, fontWeight: 800, lineHeight: 1.15, marginBottom: 6 }}>{res.name}</h1>
+        <div style={{ fontSize: 12, fontWeight: 300, letterSpacing: 2.5, textTransform: 'uppercase', color: c.gold, marginBottom: 32 }}>{res.role}</div>
         {/* Contact */}
         <div style={{ marginBottom: 28 }}>
           <div style={sbHead}>Contact</div>
-          <p style={{ fontSize: 12.5, fontWeight: 300, lineHeight: 2, color: 'rgba(255,255,255,0.8)' }}>Boston, MA<br />(555) 708-2341<br /><span style={{ color: c.gold }}>priya.nair@email.com</span><br /><span style={{ color: c.gold }}>linkedin.com/in/priyanair</span></p>
+          <p style={{ fontSize: 12.5, fontWeight: 300, lineHeight: 2, color: 'rgba(255,255,255,0.8)' }}>{res.location}<br />{res.phone}<br /><span style={{ color: c.gold }}>{res.email}</span></p>
         </div>
         {/* Skills */}
         <div style={{ marginBottom: 28 }}>
           <div style={sbHead}>Expertise</div>
-          {[['Machine Learning', 95], ['Python / PyTorch', 92], ['NLP & LLMs', 88], ['Data Engineering', 80], ['Statistical Analysis', 90]].map(([name, pct], i) => (
-            <div key={i} style={{ marginBottom: 12 }}>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 5 }}>{name as string}</div>
-              <div style={{ height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2, overflow: 'hidden' }}>
-                <div style={{ height: '100%', borderRadius: 2, background: `linear-gradient(90deg, ${c.coral}, ${c.gold})`, width: `${pct}%` }} />
-              </div>
-            </div>
+          {res.skills.map((skill, i) => (
+            <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 8 }}>{skill}</div>
           ))}
         </div>
         {/* Education */}
         <div style={{ marginBottom: 28 }}>
           <div style={sbHead}>Education</div>
-          {[['Ph.D. Computer Science', 'MIT · 2018', 'Focus: Deep Learning & NLP'], ['B.Tech, Computer Science', 'IIT Bombay · 2013', '']].map(([d, s, note], i) => (
+          {res.education.map((edu, i) => (
             <div key={i} style={{ marginBottom: 14 }}>
-              <h4 style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{d}</h4>
-              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>{s}{note ? <><br />{note}</> : null}</p>
+              <h4 style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{edu.degree}</h4>
+              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>{edu.school} · {edu.endDate}</p>
             </div>
           ))}
-        </div>
-        {/* Languages */}
-        <div>
-          <div style={sbHead}>Languages</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {['English', 'Hindi', 'Malayalam', 'French'].map((l, i) => (
-              <span key={i} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 20, background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.1)' }}>{l}</span>
-            ))}
-          </div>
         </div>
       </aside>
       {/* Main */}
@@ -857,21 +822,7 @@ export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
           <span style={{ flex: 1, height: 2, background: c.ltBg }} />
         </div>
         <div style={{ fontFamily: "'IBM Plex Serif', 'Georgia', serif", fontSize: 15, lineHeight: 1.75, color: c.muted, marginBottom: 32, padding: '20px 24px', background: c.cream, borderLeft: `4px solid ${c.coral}`, borderRadius: '0 8px 8px 0' }}>
-          Data science leader with 8+ years building ML systems that drive measurable business impact. Published 12 papers in top-tier venues (NeurIPS, ICML). Expert in NLP, recommendation systems, and deploying models at scale.
-        </div>
-        {/* Impact */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22, marginTop: 8 }}>
-          <svg width="14" height="14" viewBox="0 0 14 14"><polygon fill={c.gold} points="7,0 14,14 0,14" /></svg>
-          <h2 style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.navy }}>Impact</h2>
-          <span style={{ flex: 1, height: 2, background: c.ltBg }} />
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
-          {[['$45M+', 'Annual Revenue from ML Products'], ['12', 'Peer-Reviewed Publications'], ['3B+', 'Daily Predictions Served']].map(([num, label], i) => (
-            <div key={i} style={{ textAlign: 'center', padding: '18px 12px', background: c.cream, borderRadius: 10, border: '1px solid #e8e4dc' }}>
-              <div style={{ fontSize: 28, fontWeight: 800, color: c.navy, lineHeight: 1 }}>{num}</div>
-              <div style={{ fontSize: 11, color: c.muted, marginTop: 4, lineHeight: 1.3 }}>{label}</div>
-            </div>
-          ))}
+          {res.summary}
         </div>
         {/* Experience */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22, marginTop: 8 }}>
@@ -879,19 +830,15 @@ export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
           <h2 style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.navy }}>Experience</h2>
           <span style={{ flex: 1, height: 2, background: c.ltBg }} />
         </div>
-        {[
-          { title: 'Lead Data Scientist', date: '2021 — Present', co: 'Wayfair · Boston, MA', bullets: ['Built visual search recommendation engine increasing product discovery by 38%', 'Led team of 10 scientists deploying models serving 3B+ daily predictions', 'Designed LLM-powered product description generator reducing content creation time by 70%'] },
-          { title: 'Senior Data Scientist', date: '2018 — 2021', co: 'Netflix · Los Gatos, CA', bullets: ['Developed personalization algorithms for 230M+ subscriber content recommendations', 'Built causal inference framework for measuring A/B test impact on retention', 'Published 4 papers on sequential recommendation systems at NeurIPS and RecSys'] },
-          { title: 'Research Scientist Intern', date: '2017', co: 'Google DeepMind · London, UK', bullets: ['Contributed to attention mechanism research that influenced Transformer architecture', 'Co-authored paper on multi-task learning accepted at ICML 2018'] },
-        ].map((e, i) => (
+        {res.experience.map((exp, i) => (
           <div key={i} style={{ marginBottom: 26, paddingLeft: 20, borderLeft: `2px solid ${c.ltBg}`, position: 'relative' }}>
             <div style={{ position: 'absolute', left: -5, top: 6, width: 8, height: 8, background: c.coral, borderRadius: '50%' }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: c.navy }}>{e.title}</h3>
-              <span style={{ fontSize: 12, color: c.muted, whiteSpace: 'nowrap', background: c.cream, padding: '2px 10px', borderRadius: 10 }}>{e.date}</span>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: c.navy }}>{exp.title}</h3>
+              <span style={{ fontSize: 12, color: c.muted, whiteSpace: 'nowrap', background: c.cream, padding: '2px 10px', borderRadius: 10 }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
             </div>
-            <div style={{ fontSize: 13.5, fontWeight: 600, color: c.coral, marginBottom: 8 }}>{e.co}</div>
-            {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13.5, color: '#555', lineHeight: 1.65, paddingLeft: 16, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, top: 9, width: 6, height: 2, background: c.gold }} />{b}</div>)}
+            <div style={{ fontSize: 13.5, fontWeight: 600, color: c.coral, marginBottom: 8 }}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</div>
+            {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13.5, color: '#555', lineHeight: 1.65, paddingLeft: 16, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, top: 9, width: 6, height: 2, background: c.gold }} />{b.replace(/^[•\-–—]\s*/, '')}</div>)}
           </div>
         ))}
       </main>
@@ -900,6 +847,7 @@ export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
 }
 
 export function Resume4SoftPastelPreview({ data }: PreviewProps) {
+  const res = useDynamicData(data || {}, 'soft_pastel')
   const c = { rose: '#d4726a', roseLt: '#f8e8e6', sage: '#7a9e7e', sageLt: '#e4f0e5', lav: '#8e7cc3', lavLt: '#ece8f6', bg: '#fdfbf8', text: '#3a3535', light: '#7d7575', border: '#ede8e3' }
   const divider = (label: string) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16, margin: '36px 0 24px' }}>
@@ -910,14 +858,17 @@ export function Resume4SoftPastelPreview({ data }: PreviewProps) {
   )
   const chipColors = [c.roseLt, c.sageLt, c.lavLt]
   const gradients = [`linear-gradient(90deg, ${c.rose}, ${c.lav})`, `linear-gradient(90deg, ${c.sage}, ${c.rose})`, `linear-gradient(90deg, ${c.lav}, ${c.sage})`]
+  const nameParts = res.name.split(' ')
+  const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
   return (
     <div style={{ fontFamily: "'Outfit', 'DM Sans', sans-serif", background: c.bg, borderRadius: 20, padding: '52px 56px', overflow: 'hidden', color: c.text, lineHeight: 1.5 }}>
       {/* Header */}
       <header style={{ textAlign: 'center', marginBottom: 40 }}>
-        <h1 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 44, fontWeight: 600, color: c.text, letterSpacing: -0.5, marginBottom: 6 }}>Olivia <span style={{ color: c.rose }}>Park</span></h1>
-        <div style={{ fontSize: 15, fontWeight: 500, color: c.sage, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 16 }}>Healthcare UX Researcher</div>
+        <h1 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 44, fontWeight: 600, color: c.text, letterSpacing: -0.5, marginBottom: 6 }}>{firstName} {lastName && <span style={{ color: c.rose }}>{lastName}</span>}</h1>
+        <div style={{ fontSize: 15, fontWeight: 500, color: c.sage, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 16 }}>{res.role}</div>
         <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 10 }}>
-          {[['📍', 'Portland, OR'], ['📱', '(555) 219-4087'], ['✉️', 'olivia.park@email.com'], ['🔗', 'oliviapark.design']].map(([icon, val], i) => (
+          {[['📍', res.location], ['📱', res.phone], ['✉️', res.email]].map(([icon, val], i) => (
             <span key={i} style={{ fontSize: 12.5, padding: '6px 16px', borderRadius: 20, background: '#fff', border: `1px solid ${c.border}`, color: c.light }}><span style={{ marginRight: 6, opacity: 0.6 }}>{icon}</span>{val}</span>
           ))}
         </div>
@@ -925,84 +876,61 @@ export function Resume4SoftPastelPreview({ data }: PreviewProps) {
       {/* About */}
       {divider('About')}
       <p style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 12px', fontSize: 15, fontWeight: 300, lineHeight: 1.8, color: c.light }}>
-        UX researcher specializing in healthcare and digital health products. 7 years of experience conducting mixed-methods research that shapes products used by millions of patients and clinicians. Passionate about designing accessible, equitable experiences that improve health outcomes.
+        {res.summary}
       </p>
       {/* Skills */}
       {divider('Core Skills')}
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10, marginBottom: 8 }}>
-        {['User Interviews', 'Usability Testing', 'Survey Design', 'Journey Mapping', 'Accessibility (WCAG)', 'Quantitative Analysis', 'Figma & Miro', 'HIPAA Compliance', 'Stakeholder Presentations'].map((s, i) => (
+        {res.skills.map((s, i) => (
           <span key={i} style={{ fontSize: 12, fontWeight: 500, padding: '6px 16px', borderRadius: 20, color: c.text, background: chipColors[i % 3] }}>{s}</span>
         ))}
       </div>
       {/* Experience */}
       {divider('Experience')}
-      {[
-        { title: 'Senior UX Researcher', date: '2022 — Present', co: 'Epic Systems · Portland, OR', bullets: ['Lead research for patient-facing MyChart features used by 190M+ activated patients', 'Conducted 200+ user sessions across 15 health systems to redesign medication management', 'Reduced appointment scheduling drop-off by 34% through iterative prototype testing'] },
-        { title: 'UX Researcher', date: '2019 — 2022', co: 'One Medical · San Francisco, CA', bullets: ['Built and scaled research operations from ad-hoc studies to structured program with 40+ studies/year', 'Designed telehealth experience research framework adopted across all product teams', 'Identified accessibility barriers leading to WCAG 2.1 AA compliance across mobile app'] },
-        { title: 'Junior UX Researcher', date: '2017 — 2019', co: 'Kaiser Permanente · Oakland, CA', bullets: ['Conducted ethnographic studies in 8 clinical settings to understand EHR workflows', 'Co-created personas and journey maps used to secure $2M product investment'] },
-      ].map((e, i) => (
+      {res.experience.map((exp, i) => (
         <div key={i} style={{ background: '#fff', border: `1px solid ${c.border}`, borderRadius: 14, padding: '22px 24px', marginBottom: 16, position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: gradients[i] }} />
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: gradients[i % 3] }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 2 }}>
-            <h3 style={{ fontSize: 15.5, fontWeight: 600, color: c.text }}>{e.title}</h3>
-            <span style={{ fontSize: 12, color: c.light, whiteSpace: 'nowrap' }}>{e.date}</span>
+            <h3 style={{ fontSize: 15.5, fontWeight: 600, color: c.text }}>{exp.title}</h3>
+            <span style={{ fontSize: 12, color: c.light, whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
           </div>
-          <div style={{ fontSize: 13, fontWeight: 500, color: c.rose, marginBottom: 10 }}>{e.co}</div>
-          {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13, color: c.light, lineHeight: 1.6, paddingLeft: 14, position: 'relative', marginBottom: 4, fontWeight: 300 }}><span style={{ position: 'absolute', left: 0, top: 8, width: 5, height: 5, borderRadius: '50%', background: c.sage }} />{b}</div>)}
+          <div style={{ fontSize: 13, fontWeight: 500, color: c.rose, marginBottom: 10 }}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</div>
+          {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13, color: c.light, lineHeight: 1.6, paddingLeft: 14, position: 'relative', marginBottom: 4, fontWeight: 300 }}><span style={{ position: 'absolute', left: 0, top: 8, width: 5, height: 5, borderRadius: '50%', background: c.sage }} />{b.replace(/^[•\-–—]\s*/, '')}</div>)}
         </div>
       ))}
-      {/* Education & More */}
-      {divider('Education & More')}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
-        <div>
-          {[['M.S. Human-Computer Interaction', 'Carnegie Mellon University · 2017'], ['B.A. Psychology & Design', 'University of Michigan · 2015']].map(([d, s], i) => (
-            <div key={i} style={{ background: '#fff', border: `1px solid ${c.border}`, borderRadius: 14, padding: '20px 24px', marginBottom: 14 }}>
-              <h3 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 15, fontWeight: 600, color: c.text, marginBottom: 2 }}>{d}</h3>
-              <p style={{ fontSize: 13, color: c.light, fontWeight: 300 }}>{s}</p>
-            </div>
-          ))}
-          <h4 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 13, color: c.rose, letterSpacing: 2, textTransform: 'uppercase', margin: '24px 0 12px' }}>Volunteering</h4>
-          {[['Code for America — UX Lead', 'Redesigned public benefits application for low-income families'], ['AIGA Portland — Mentorship Chair', 'Pair early-career designers with senior mentors in healthcare']].map(([t, d], i) => (
-            <div key={i} style={{ marginBottom: 14 }}>
-              <h4 style={{ fontSize: 14, fontWeight: 600, color: c.text }}>{t}</h4>
-              <p style={{ fontSize: 12.5, color: c.light, fontWeight: 300, lineHeight: 1.5 }}>{d}</p>
-            </div>
-          ))}
-        </div>
-        <div>
-          <h4 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 13, color: c.rose, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 12 }}>Awards & Speaking</h4>
-          {[
-            { dot: c.rose, text: 'UXPA International Best Paper 2023' },
-            { dot: c.sage, text: 'Speaker, HIMSS Conference 2022' },
-            { dot: c.lav, text: 'Fast Company Innovation by Design Finalist' },
-            { dot: c.rose, text: 'Epic Research Excellence Award 2024' },
-            { dot: c.sage, text: 'Keynote, DesignOps Summit 2021' },
-          ].map((a, i, arr) => (
-            <div key={i} style={{ fontSize: 13.5, color: c.text, padding: '10px 0', borderBottom: i < arr.length - 1 ? `1px solid ${c.border}` : 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: a.dot, flexShrink: 0 }} />{a.text}
-            </div>
-          ))}
-        </div>
+      {/* Education */}
+      {divider('Education')}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        {res.education.map((edu, i) => (
+          <div key={i} style={{ background: '#fff', border: `1px solid ${c.border}`, borderRadius: 14, padding: '20px 24px' }}>
+            <h3 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 15, fontWeight: 600, color: c.text, marginBottom: 2 }}>{edu.degree}</h3>
+            <p style={{ fontSize: 13, color: c.light, fontWeight: 300 }}>{edu.school} · {edu.endDate}</p>
+          </div>
+        ))}
       </div>
     </div>
   )
 }
 
 export function Resume5SwissGridPreview({ data }: PreviewProps) {
+  const res = useDynamicData(data || {}, 'swiss_grid')
   const c = { black: '#111', white: '#fff', red: '#d63031', g1: '#f7f7f7', g2: '#e5e5e5', g3: '#999', g4: '#666', type: '#222' }
   const rowLabel: React.CSSProperties = { padding: '28px 24px 28px 52px', borderRight: `1px solid ${c.g2}`, borderBottom: `1px solid ${c.g2}`, background: c.g1 }
   const rowContent: React.CSSProperties = { padding: '28px 52px 28px 32px', borderBottom: `1px solid ${c.g2}` }
   const sLabel: React.CSSProperties = { fontSize: 10, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.red }
+  const nameParts = res.name.split(' ')
+  const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
   return (
     <div style={{ fontFamily: "'Instrument Sans', 'DM Sans', sans-serif", background: c.white, color: c.type, overflow: 'hidden' }}>
       {/* Top Bar */}
       <div style={{ background: c.black, color: c.white, padding: '44px 52px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 32, alignItems: 'flex-end' }}>
         <div>
-          <h1 style={{ fontSize: 48, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>Tobias <span style={{ color: c.red }}>Keller</span></h1>
-          <div style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontSize: 16, fontStyle: 'italic', color: c.g3, marginTop: 8 }}>Strategy &amp; Management Consultant</div>
+          <h1 style={{ fontSize: 48, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>{firstName} <span style={{ color: c.red }}>{lastName}</span></h1>
+          <div style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontSize: 16, fontStyle: 'italic', color: c.g3, marginTop: 8 }}>{res.role}</div>
         </div>
         <div style={{ textAlign: 'right', fontSize: 13, color: c.g3, lineHeight: 1.9 }}>
-          <strong style={{ color: c.white, fontWeight: 500 }}>Chicago, IL</strong><br />(555) 801-3456<br />t.keller@email.com<br />linkedin.com/in/tkeller
+          <strong style={{ color: c.white, fontWeight: 500 }}>{res.location}</strong><br />{res.phone}<br />{res.email}
         </div>
       </div>
       {/* Body Grid */}
@@ -1010,35 +938,28 @@ export function Resume5SwissGridPreview({ data }: PreviewProps) {
         {/* Profile */}
         <div style={rowLabel}><h2 style={sLabel}>Profile</h2></div>
         <div style={rowContent}>
-          <p style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontSize: 16, lineHeight: 1.75, color: c.g4, maxWidth: 580 }}>Management consultant with 10+ years advising Fortune 500 companies on digital transformation, operational efficiency, and growth strategy. Trusted advisor to C-suite leaders across technology, financial services, and healthcare.</p>
+          <p style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontSize: 16, lineHeight: 1.75, color: c.g4, maxWidth: 580 }}>{res.summary}</p>
         </div>
         {/* Experience */}
         <div style={rowLabel}><h2 style={sLabel}>Experience</h2></div>
         <div style={rowContent}>
-          {[
-            { title: 'Principal Consultant', date: '2021 — Present', co: 'McKinsey & Company', loc: 'Chicago, IL', bullets: ['Lead digital transformation engagements for 3 Fortune 100 clients with combined revenue of $85B', 'Designed operating model restructure delivering $120M in annual cost savings for major bank', 'Built and manage team of 12 consultants; promoted 4 to engagement manager within 2 years', 'Authored firm-wide knowledge asset on AI adoption strategy downloaded 2,000+ times internally'] },
-            { title: 'Senior Associate', date: '2018 — 2021', co: 'McKinsey & Company', loc: 'New York, NY', bullets: ['Led workstreams on 15+ engagements across tech, healthcare, and private equity due diligence', 'Developed pricing optimization model increasing client margins by 8 percentage points', "Selected as facilitator for firm's global leadership development program"] },
-            { title: 'Business Analyst', date: '2015 — 2018', co: 'Bain & Company', loc: 'Boston, MA', bullets: ['Supported M&A due diligence on 8 deals totaling $4.2B in transaction value', 'Built customer segmentation framework adopted by $3B consumer goods client'] },
-          ].map((e, i) => (
-            <div key={i} style={{ marginBottom: i < 2 ? 28 : 0 }}>
+          {res.experience.map((exp, i) => (
+            <div key={i} style={{ marginBottom: i < res.experience.length - 1 ? 28 : 0 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'baseline', marginBottom: 4 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 700, color: c.black }}>{e.title}</h3>
-                <span style={{ fontSize: 12, fontWeight: 500, color: c.g3, textTransform: 'uppercase', letterSpacing: 1 }}>{e.date}</span>
+                <h3 style={{ fontSize: 17, fontWeight: 700, color: c.black }}>{exp.title}</h3>
+                <span style={{ fontSize: 12, fontWeight: 500, color: c.g3, textTransform: 'uppercase', letterSpacing: 1 }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: c.red, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>{e.co}<span style={{ width: 20, height: 1, background: c.g2 }} /><span style={{ fontWeight: 400, color: c.g3 }}>{e.loc}</span></div>
-              {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13.5, color: c.g4, lineHeight: 1.65, paddingLeft: 20, position: 'relative', marginBottom: 5 }}><span style={{ position: 'absolute', left: 0, top: 8, width: 8, height: 1, background: c.red }} />{b}</div>)}
+              <div style={{ fontSize: 14, fontWeight: 600, color: c.red, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>{exp.company}{exp.location && <><span style={{ width: 20, height: 1, background: c.g2 }} /><span style={{ fontWeight: 400, color: c.g3 }}>{exp.location}</span></>}</div>
+              {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13.5, color: c.g4, lineHeight: 1.65, paddingLeft: 20, position: 'relative', marginBottom: 5 }}><span style={{ position: 'absolute', left: 0, top: 8, width: 8, height: 1, background: c.red }} />{b.replace(/^[•\-–—]\s*/, '')}</div>)}
             </div>
           ))}
         </div>
         {/* Skills */}
-        <div style={rowLabel}><h2 style={sLabel}>Expertise</h2></div>
+        <div style={rowLabel}><h2 style={sLabel}>Skills</h2></div>
         <div style={rowContent}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-            {[['Strategy', 'Digital Transformation, Growth Strategy, M&A Due Diligence, Market Entry, Operating Model Design'], ['Analytical', 'Financial Modeling, Pricing Optimization, Data Analytics, Competitive Benchmarking, Scenario Planning'], ['Leadership', 'Executive Communication, Team Development, Stakeholder Alignment, Workshop Facilitation, Change Management']].map(([h, p], i) => (
-              <div key={i}>
-                <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, color: c.black, marginBottom: 10, paddingBottom: 6, borderBottom: `2px solid ${c.red}`, display: 'inline-block' }}>{h}</h4>
-                <p style={{ fontSize: 13, color: c.g4, lineHeight: 1.8 }}>{p}</p>
-              </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            {res.skills.map((s, i) => (
+              <span key={i} style={{ fontSize: 12.5, fontWeight: 500, padding: '4px 14px', borderRadius: 4, background: c.g1, border: `1px solid ${c.g2}`, color: c.type }}>{s}</span>
             ))}
           </div>
         </div>
@@ -1046,31 +967,13 @@ export function Resume5SwissGridPreview({ data }: PreviewProps) {
         <div style={rowLabel}><h2 style={sLabel}>Education</h2></div>
         <div style={rowContent}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-            {[['MBA', 'Harvard Business School', '2018 · Baker Scholar'], ['B.A. Economics & Mathematics', 'Williams College', '2015 · Summa Cum Laude']].map(([d, s, y], i) => (
+            {res.education.map((edu, i) => (
               <div key={i}>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: c.black, marginBottom: 2 }}>{d}</h3>
-                <div style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontStyle: 'italic', fontSize: 13.5, color: c.g4 }}>{s}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: c.red, marginTop: 2 }}>{y}</div>
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: c.black, marginBottom: 2 }}>{edu.degree}</h3>
+                <div style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontStyle: 'italic', fontSize: 13.5, color: c.g4 }}>{edu.school}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: c.red, marginTop: 2 }}>{edu.endDate}{edu.gpa ? ` · GPA: ${edu.gpa}` : ''}</div>
               </div>
             ))}
-          </div>
-        </div>
-        {/* More */}
-        <div style={rowLabel}><h2 style={sLabel}>More</h2></div>
-        <div style={rowContent}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-            <div>
-              <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, color: c.black, marginBottom: 10 }}>Publications</h4>
-              {[['HBR:', ' "Rethinking Digital Transformation for the AI Era" (2024)'], ['McKinsey Quarterly:', ' "The CFO\'s Guide to GenAI ROI" (2023)'], ['MIT Sloan Review:', ' "Operating Models for the Platform Economy" (2022)']].map(([b, t], i, arr) => (
-                <div key={i} style={{ fontSize: 13, color: c.g4, lineHeight: 1.7, padding: '6px 0', borderBottom: i < arr.length - 1 ? `1px solid ${c.g1}` : 'none' }}><strong style={{ fontWeight: 600, color: c.type }}>{b}</strong>{t}</div>
-              ))}
-            </div>
-            <div>
-              <h4 style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, color: c.black, marginBottom: 10 }}>Board & Advisory</h4>
-              {[['Board Member', ' — Chicago Digital Health Initiative'], ['Advisor', ' — Two Series-B SaaS startups'], ['CFA Charterholder', '']].map(([b, t], i, arr) => (
-                <div key={i} style={{ fontSize: 13, color: c.g4, lineHeight: 1.7, padding: '6px 0', borderBottom: i < arr.length - 1 ? `1px solid ${c.g1}` : 'none' }}><strong style={{ fontWeight: 600, color: c.type }}>{b}</strong>{t}</div>
-              ))}
-            </div>
           </div>
         </div>
       </div>

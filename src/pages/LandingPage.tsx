@@ -11,10 +11,11 @@ const STATS = [
 ]
 
 const FEATURES = [
-  { icon: '⚡', title: 'Build in Minutes', desc: 'Intuitive editor with live preview. Fill in your details, watch your resume take shape instantly.' },
-  { icon: '✦', title: '25 Stunning Themes', desc: 'From minimalist classics to bold creative layouts — every theme crafted by professional designers.' },
-  { icon: '📄', title: 'Perfect PDF Export', desc: 'Pixel-perfect PDF generation that looks identical to your preview on screen.' },
-  { icon: '🎯', title: 'ATS Optimized', desc: 'All templates pass applicant tracking systems. Get seen by real humans, not filtered by bots.' },
+  { icon: '🎯', title: 'Built to Pass ATS', desc: 'Not just pretty — every resume is engineered to pass applicant tracking systems and reach real humans.' },
+  { icon: '📊', title: 'Job Description Match', desc: 'Paste any job description and instantly see how well your resume matches. Close the gaps before you apply.' },
+  { icon: '📈', title: 'Recruiter Rejection Insights', desc: 'See exactly why recruiters pass on resumes like yours — and fix it before they ever see it.' },
+  { icon: '🧠', title: 'AI-Powered Bullet Points', desc: 'Transform vague descriptions into quantified, metrics-driven achievements that prove your impact.' },
+  { icon: '🏆', title: 'Interview Conversion', desc: 'Designed to get you interviews, not just downloads. Every feature is optimized for real hiring outcomes.' },
 ]
 
 const THEME_PREVIEWS = [
@@ -58,6 +59,19 @@ export default function LandingPage() {
               <Link to="/themes" className="btn btn-outline btn-lg">Browse Themes →</Link>
             </div>
             <p className="text-xs text-ink-20 mt-3.5 font-mono">No credit card required · Free plan forever</p>
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 mt-5">
+              {[
+                { icon: '🔄', text: 'No surprise renewals' },
+                { icon: '👆', text: 'Cancel in 1 click' },
+                { icon: '📧', text: 'Email reminder before renewal' },
+                { icon: '✅', text: '7-day money-back guarantee' },
+              ].map((item, i) => (
+                <span key={i} className="flex items-center gap-1.5 text-[11.5px] text-ink-30 font-medium">
+                  <span className="text-[10px] opacity-60">{item.icon}</span>
+                  {item.text}
+                </span>
+              ))}
+            </div>
           </div>
 
           <div className="relative">
@@ -105,11 +119,11 @@ export default function LandingPage() {
 
         {/* ── FEATURES ─────────────────────────── */}
         <section aria-label="Features" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
-          <div className="text-center max-w-[560px] mx-auto mb-14">
-            <h2 className="mb-3">Everything you need<br /><em className="italic text-gold">to land the job</em></h2>
-            <p className="text-base text-ink-40">Built for job seekers who want results, not a design degree.</p>
+          <div className="text-center max-w-[620px] mx-auto mb-14">
+            <h2 className="mb-3">Built for interviews,<br /><em className="italic text-gold">not just downloads</em></h2>
+            <p className="text-base text-ink-40">Every feature is designed to get you past the ATS, impress recruiters, and land the interview.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             {FEATURES.map((f, i) => (
               <div key={i} className="p-8 sm:p-7 bg-[var(--white)] border border-ink-10 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-gold-pale animate-[fadeUp_0.6s_ease_both]" style={{ animationDelay: `${i * 0.08}s` }}>
                 <div className="text-[28px] mb-4">{f.icon}</div>
@@ -117,6 +131,68 @@ export default function LandingPage() {
                 <p className="text-sm leading-[1.7] text-ink-40">{f.desc}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ── AI INTERVIEW COACH BANNER ──────── */}
+        <section aria-label="AI Interview Coach" className="mx-5 sm:mx-10 my-0">
+          <div className="max-w-[1200px] mx-auto bg-gradient-to-br from-[#0e0d0b] to-[#2a2520] rounded-2xl px-8 sm:px-14 py-12 sm:py-14 flex flex-col lg:flex-row items-center gap-8 lg:gap-16 overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(201,146,60,0.12),transparent_70%)]" />
+            <div className="text-5xl sm:text-6xl flex-shrink-0 relative">🎙️</div>
+            <div className="text-center lg:text-left relative flex-1">
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-3 opacity-80">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold-light animate-pulse" />
+                Coming Soon
+              </div>
+              <h2 className="text-parchment text-[clamp(24px,3.5vw,36px)] leading-[1.2] mb-3 font-display">
+                AI Interview Coach That Analyzes Your Answers<span className="text-gold italic"> — Not Just Asks Questions.</span>
+              </h2>
+              <p className="text-[rgba(250,248,243,0.45)] text-sm leading-[1.7] max-w-[520px] mx-auto lg:mx-0">
+                Practice with an AI that gives real-time feedback on your tone, structure, and content. Get personalized tips to ace every interview.
+              </p>
+            </div>
+            <Link to="/auth?mode=signup" className="btn btn-gold relative whitespace-nowrap flex-shrink-0">Get Notified →</Link>
+          </div>
+        </section>
+
+        {/* ── ADVANCED AI FEATURES ───────────── */}
+        <section aria-label="Advanced AI Features" className="bg-[#0e0d0b] dark:bg-[#0e0d0b] px-5 sm:px-10 py-16 sm:py-24">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="text-center max-w-[620px] mx-auto mb-14">
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-4 opacity-70">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold-light" />
+                Advanced AI
+              </div>
+              <h2 className="text-parchment mb-3">AI that gives you<br /><em className="italic text-gold-light">an unfair advantage</em></h2>
+              <p className="text-[rgba(250,248,243,0.4)] text-base">Powered by intelligence that goes far beyond spell-check. These tools analyze, optimize, and transform your entire job search.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { icon: '🧠', title: 'STAR Answer Detection', desc: 'AI detects if your interview answers follow the Situation-Task-Action-Result framework and coaches you to strengthen weak areas.' },
+                { icon: '📉', title: 'Confidence & Clarity Score', desc: 'Get scored on filler words, hedging language, and answer structure. See exactly where you sound uncertain.' },
+                { icon: '🎙', title: 'Follow-Up Question Simulation', desc: 'AI predicts the follow-up questions interviewers will ask based on your answers — so nothing catches you off guard.' },
+                { icon: '📋', title: 'Resume Weakness Analyzer', desc: 'Scans your resume for gaps, weak verbs, missing metrics, and inconsistencies that make recruiters hit "reject."' },
+                { icon: '🧾', title: 'Resume → LinkedIn Auto-Convert', desc: 'One click transforms your resume into an optimized LinkedIn profile — headline, summary, and experience sections.' },
+                { icon: '🔍', title: 'Missing Keyword Detector', desc: "Compares your resume against the job description and highlights every critical keyword you're missing." },
+              ].map((f, i) => (
+                <div key={i} className="relative p-7 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] backdrop-blur-sm transition-all duration-300 hover:border-[rgba(201,146,60,0.25)] hover:bg-[rgba(255,255,255,0.04)] group overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,146,60,0.3)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-start gap-4">
+                    <div className="text-2xl mt-0.5 flex-shrink-0">{f.icon}</div>
+                    <div>
+                      <div className="flex items-center gap-2.5 mb-2">
+                        <h4 className="text-parchment text-[15px] font-semibold">{f.title}</h4>
+                        <span className="text-[9px] font-mono tracking-[0.15em] uppercase px-2 py-0.5 rounded-full bg-[rgba(201,146,60,0.12)] text-gold-light border border-[rgba(201,146,60,0.15)]">Pro</span>
+                      </div>
+                      <p className="text-[13px] leading-[1.7] text-[rgba(250,248,243,0.4)]">{f.desc}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-10">
+              <Link to="/auth?mode=signup" className="btn btn-gold btn-lg">Unlock AI Features →</Link>
+            </div>
           </div>
         </section>
 

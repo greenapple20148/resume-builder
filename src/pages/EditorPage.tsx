@@ -511,15 +511,39 @@ interface LivePreviewProps {
 
 function LivePreview({ resumeData, themeId }: LivePreviewProps) {
   const PreviewComponent = PREVIEW_MAP[themeId] || PREVIEW_MAP.classic
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(0.5)
+
+  useEffect(() => {
+    const updateScale = () => {
+      if (!containerRef.current) return
+      const containerH = containerRef.current.clientHeight
+      const containerW = containerRef.current.clientWidth
+      // A4 in px at 96dpi: 210mm ≈ 793.7px, 297mm ≈ 1122.5px
+      const pageW = 794
+      const pageH = 1123
+      const padding = 40 // top+bottom padding in scaled space
+      const scaleH = (containerH - padding) / pageH
+      const scaleW = (containerW - padding) / pageW
+      setScale(Math.min(scaleH, scaleW, 1))
+    }
+    updateScale()
+    const observer = new ResizeObserver(updateScale)
+    if (containerRef.current) observer.observe(containerRef.current)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <div style={{ width: '100%', height: '100%', overflow: 'auto', background: 'var(--ink-05)' }}>
+    <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden', background: 'var(--ink-05)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 20 }}>
       <div style={{
         width: '210mm',
         minHeight: '297mm',
-        margin: '40px auto',
         background: '#fff',
         boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-        position: 'relative'
+        position: 'relative',
+        transform: `scale(${scale})`,
+        transformOrigin: 'top center',
+        flexShrink: 0,
       }}>
         <PreviewComponent data={resumeData} />
       </div>
@@ -745,7 +769,7 @@ export default function EditorPage() {
       {/* ── Main Layout ────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <div className="w-[210px] max-md:w-[52px] bg-[var(--white)] border-r border-ink-10 py-4 overflow-y-auto shrink-0 flex flex-col">
+        <div className="w-[180px] max-md:w-[52px] bg-[var(--white)] border-r border-ink-10 py-4 overflow-y-auto shrink-0 flex flex-col">
           <div className="font-mono text-[9px] tracking-[0.15em] uppercase text-ink-20 px-4 mb-2 max-md:hidden">Sections</div>
           <div className="flex-1">
             {SECTIONS.map((sec) => {
@@ -773,7 +797,7 @@ export default function EditorPage() {
 
         {/* Editor Form */}
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-[640px] mx-auto px-8 py-8">
+          <div className="max-w-[560px] mx-auto px-6 py-8">
             {renderSection()}
 
             {/* Section Navigation */}
@@ -797,8 +821,8 @@ export default function EditorPage() {
         </div>
 
         {/* Live Preview */}
-        <div className="w-[540px] max-xl:hidden border-l border-ink-10 flex flex-col shrink-0">
-          <div id="resume-preview-content">
+        <div className="flex-1 max-xl:hidden border-l border-ink-10 flex flex-col min-w-[400px]">
+          <div id="resume-preview-content" className="flex-1">
             <LivePreview resumeData={resumeData} themeId={themeId} />
           </div>
         </div>
