@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useSEO } from '../lib/useSEO'
@@ -26,6 +26,188 @@ const THEME_PREVIEWS = [
   { id: 'blob', label: 'Blob Pastel', accent: '#b87fce', bg: '#ffffff' },
   { id: 'split', label: 'Clean Split', accent: '#888', bg: '#f2f2f0' },
 ]
+
+/* ── Founding Member Launch Offer Component ──────────── */
+const FOUNDING_BENEFITS = [
+  'Unlimited resume downloads',
+  'Premium templates',
+  'ATS optimization',
+  'Cover letter builder',
+  'Cancel anytime',
+]
+
+function FoundingMemberOffer() {
+  const [spotsLeft, setSpotsLeft] = useState(37)
+  const [isVisible, setIsVisible] = useState(false)
+  const sectionRef = React.useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setIsVisible(true) },
+      { threshold: 0.2 },
+    )
+    if (sectionRef.current) observer.observe(sectionRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!isVisible) return
+    const interval = setInterval(() => {
+      setSpotsLeft(prev => {
+        if (prev <= 12) { clearInterval(interval); return prev }
+        return prev - 1
+      })
+    }, 8000 + Math.random() * 12000)
+    return () => clearInterval(interval)
+  }, [isVisible])
+
+  const spotsPercentage = ((100 - spotsLeft) / 100) * 100
+
+  return (
+    <section
+      ref={sectionRef}
+      aria-label="Founding Member Launch Offer"
+      id="founding-offer"
+      className="relative overflow-hidden px-5 sm:px-10 py-16 sm:py-24"
+      style={{ background: 'linear-gradient(165deg, #0c0a06 0%, #1a1408 30%, #0e0d0b 60%, #131008 100%)' }}
+    >
+      {/* Decorative backgrounds */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(201,146,60,0.12),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_80%,rgba(201,146,60,0.06),transparent_50%)]" />
+      <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(201,146,60,0.5) 2px, rgba(201,146,60,0.5) 3px)', backgroundSize: '100% 4px' }} />
+
+      <div className="max-w-[680px] mx-auto relative">
+        {/* Urgency Badge */}
+        <div className="flex justify-center mb-8" style={{ opacity: isVisible ? 1 : 0, transform: isVisible ? 'translateY(0)' : 'translateY(16px)', transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
+          <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full border border-[rgba(201,146,60,0.3)] bg-[rgba(201,146,60,0.08)] backdrop-blur-sm">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-[#f59e0b] opacity-75 animate-ping" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#f59e0b]" />
+            </span>
+            <span className="text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light font-medium">Limited Time · Founding Members Only</span>
+          </div>
+        </div>
+
+        {/* Main Card */}
+        <div className="relative rounded-2xl overflow-hidden" style={{ opacity: isVisible ? 1 : 0, transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(24px) scale(0.97)', transition: 'all 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s' }}>
+          {/* Animated gold border */}
+          <div className="absolute inset-0 rounded-2xl p-px" style={{ background: 'linear-gradient(135deg, rgba(201,146,60,0.5) 0%, rgba(201,146,60,0.1) 25%, rgba(201,146,60,0.4) 50%, rgba(201,146,60,0.1) 75%, rgba(201,146,60,0.5) 100%)', backgroundSize: '400% 400%', animation: 'foundingBorderGlow 6s ease infinite' }} />
+
+          <div className="relative rounded-2xl m-px bg-gradient-to-br from-[#151209] via-[#0e0d0b] to-[#100e08] px-8 sm:px-12 py-10 sm:py-14">
+            {/* Heading */}
+            <div className="text-center mb-10">
+              <h2 className="text-parchment text-[clamp(28px,4vw,42px)] leading-[1.15] mb-4 font-display">
+                Founding Member<br />
+                <em className="italic" style={{ color: '#e8b76a' }}>Launch Offer</em>
+              </h2>
+              <p className="text-[rgba(250,248,243,0.45)] text-[15px] leading-relaxed max-w-[460px] mx-auto">
+                Be one of the first 100 users and lock in exclusive pricing for life.
+              </p>
+            </div>
+
+            {/* Pricing */}
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center gap-3 mb-2">
+                <span className="text-[rgba(250,248,243,0.3)] text-xl line-through font-display">$79/year</span>
+                <span className="px-3 py-1 rounded-full text-[11px] font-mono font-bold tracking-wider uppercase" style={{ background: 'linear-gradient(135deg, rgba(232,183,106,0.2), rgba(201,146,60,0.1))', color: '#e8b76a', border: '1px solid rgba(232,183,106,0.25)' }}>75% Off</span>
+              </div>
+              <div className="flex items-baseline justify-center gap-1.5">
+                <span className="font-display text-[72px] sm:text-[88px] font-light leading-none" style={{ color: '#e8b76a' }}>$19</span>
+                <span className="text-[rgba(250,248,243,0.35)] text-lg font-display">/year</span>
+              </div>
+              <p className="text-[rgba(250,248,243,0.3)] text-xs font-mono mt-2 tracking-wide">PRO PLAN · FIRST YEAR</p>
+            </div>
+
+            {/* Benefits */}
+            <div className="max-w-[340px] mx-auto mb-10">
+              {FOUNDING_BENEFITS.map((benefit, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3.5 py-2.5"
+                  style={{
+                    opacity: isVisible ? 1 : 0,
+                    transform: isVisible ? 'translateX(0)' : 'translateX(-12px)',
+                    transition: `all 0.5s cubic-bezier(0.16, 1, 0.3, 1) ${0.4 + i * 0.08}s`,
+                    borderBottom: i < FOUNDING_BENEFITS.length - 1 ? '1px solid rgba(255,255,255,0.04)' : 'none',
+                  }}
+                >
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(232,183,106,0.2), rgba(201,146,60,0.1))', border: '1px solid rgba(232,183,106,0.2)' }}>
+                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#e8b76a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </span>
+                  <span className="text-[14px] text-[rgba(250,248,243,0.7)] font-medium">{benefit}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Spots Remaining */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="text-[11px] font-mono tracking-wide uppercase text-[rgba(250,248,243,0.35)]">Spots claimed</span>
+                <span className="text-[12px] font-mono font-bold" style={{ color: spotsLeft <= 20 ? '#f87171' : '#e8b76a' }}>{spotsLeft} remaining</span>
+              </div>
+              <div className="h-2 rounded-full bg-[rgba(255,255,255,0.06)] overflow-hidden">
+                <div
+                  className="h-full rounded-full relative overflow-hidden"
+                  style={{
+                    width: isVisible ? `${spotsPercentage}%` : '0%',
+                    background: spotsLeft <= 20 ? 'linear-gradient(90deg, #f59e0b, #ef4444)' : 'linear-gradient(90deg, #c9923c, #e8b76a)',
+                    transition: 'width 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.6s',
+                  }}
+                >
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)', animation: 'foundingShimmer 2s ease-in-out infinite' }} />
+                </div>
+              </div>
+              <p className="text-center text-[11px] text-[rgba(250,248,243,0.25)] font-mono mt-2.5">Only 100 spots available</p>
+            </div>
+
+            {/* CTA */}
+            <div className="text-center">
+              <Link
+                to="/auth?mode=signup"
+                id="founding-offer-cta"
+                className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-xl text-[16px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden group"
+                style={{
+                  background: 'linear-gradient(135deg, #c9923c 0%, #e8b76a 50%, #c9923c 100%)',
+                  backgroundSize: '200% 200%',
+                  animation: 'foundingBtnShimmer 3s ease infinite',
+                  boxShadow: '0 8px 32px rgba(201, 146, 60, 0.35), 0 2px 8px rgba(0,0,0,0.2)',
+                }}
+              >
+                <span className="relative z-10">Claim My Founding Spot</span>
+                <svg className="w-5 h-5 relative z-10 transition-transform group-hover:translate-x-0.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-10 transition-opacity" />
+              </Link>
+              <p className="text-[11px] text-[rgba(250,248,243,0.25)] mt-4 font-mono">Lock in your price — it never goes up.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust indicators */}
+        <div className="flex justify-center gap-6 sm:gap-10 mt-8 flex-wrap" style={{ opacity: isVisible ? 1 : 0, transform: isVisible ? 'translateY(0)' : 'translateY(12px)', transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s' }}>
+          {[
+            { icon: '🔒', text: 'Secure Payment' },
+            { icon: '⚡', text: 'Instant Access' },
+            { icon: '🔄', text: 'Cancel Anytime' },
+            { icon: '🛡', text: 'Money-back Guarantee' },
+          ].map((item, i) => (
+            <span key={i} className="flex items-center gap-1.5 text-[11px] text-[rgba(250,248,243,0.3)]">
+              <span className="text-[10px]">{item.icon}</span>
+              {item.text}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes foundingBorderGlow { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+        @keyframes foundingShimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        @keyframes foundingBtnShimmer { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+      `}</style>
+    </section>
+  )
+}
 
 export default function LandingPage() {
   useSEO({
@@ -270,45 +452,62 @@ export default function LandingPage() {
         </section>
 
         {/* ── EMOTIONAL RELIEF ───────────────── */}
-        <section aria-label="Eliminate resume anxiety" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
-          <div className="text-center max-w-[620px] mx-auto mb-12">
-            <h2 className="mb-3">We get it.<br /><em className="italic text-gold">Job searching is stressful.</em></h2>
-            <p className="text-base text-ink-40">You shouldn't have to wonder if your resume is good enough. We built these tools so you never have to guess again.</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {[
-              { icon: '😰', text: 'Stop Guessing If Your Resume Is Good Enough' },
-              { icon: '💬', text: 'Practice Interviews Before the Real One' },
-              { icon: '🛡', text: 'Eliminate Resume Anxiety' },
-              { icon: '🎤', text: 'Never Freeze in an Interview Again' },
-              { icon: '🚀', text: 'Feel Prepared — Not Panicked' },
-            ].map((item, i) => (
-              <div key={i} className="p-5 bg-[var(--white)] border border-ink-10 rounded-xl text-center transition-all duration-300 hover:shadow-md hover:border-gold-pale hover:-translate-y-1">
-                <div className="text-3xl mb-3">{item.icon}</div>
-                <p className="text-[13px] font-semibold text-ink leading-snug">{item.text}</p>
+        <section aria-label="Eliminate resume anxiety" className="relative overflow-hidden px-5 sm:px-10 py-20 sm:py-28" style={{ background: 'linear-gradient(135deg, #1a1510 0%, #0e0d0b 40%, #12110f 100%)' }}>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(201,146,60,0.08),transparent_60%)]" />
+          <div className="max-w-[1100px] mx-auto relative">
+            <div className="text-center max-w-[620px] mx-auto mb-14">
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-4 opacity-70">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold-light animate-pulse" />
+                Real Talk
               </div>
-            ))}
+              <h2 className="text-parchment mb-4">We get it.<br /><em className="italic text-gold-light">Job searching is stressful.</em></h2>
+              <p className="text-[rgba(250,248,243,0.45)] text-base leading-relaxed">You shouldn't have to wonder if your resume is good enough. We built these tools so you never have to guess again.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {[
+                { icon: '😰', text: 'Stop Guessing If Your Resume Is Good Enough', sub: 'Get an instant score and clear action items' },
+                { icon: '💬', text: 'Practice Interviews Before the Real One', sub: 'AI-powered mock interviews with feedback' },
+                { icon: '🛡', text: 'Eliminate Resume Anxiety', sub: 'Know exactly what recruiters will think' },
+                { icon: '🎤', text: 'Never Freeze in an Interview Again', sub: 'Prep answers using the STAR framework' },
+                { icon: '🚀', text: 'Feel Prepared — Not Panicked', sub: 'Walk in with confidence, every time' },
+              ].map((item, i) => (
+                <div key={i} className="p-5 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)] text-center transition-all duration-300 hover:border-[rgba(201,146,60,0.2)] hover:bg-[rgba(255,255,255,0.05)] hover:-translate-y-1 group">
+                  <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">{item.icon}</div>
+                  <p className="text-[13px] font-semibold text-parchment leading-snug mb-1.5">{item.text}</p>
+                  <p className="text-[11px] text-[rgba(250,248,243,0.3)] leading-snug">{item.sub}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* ── PRODUCT DIFFERENTIATORS ────────── */}
-        <section aria-label="Product experience" className="bg-[#0e0d0b] dark:bg-[#0e0d0b] px-5 sm:px-10 py-16 sm:py-24">
-          <div className="max-w-[1200px] mx-auto">
-            <div className="text-center max-w-[620px] mx-auto mb-12">
-              <h2 className="text-parchment mb-3">An experience<br /><em className="italic text-gold-light">competitors can't match</em></h2>
-              <p className="text-[rgba(250,248,243,0.4)] text-base">Real-time feedback, instant formatting, and unlimited flexibility — all in one editor.</p>
+        <section aria-label="Product experience" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-20 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold mb-4 opacity-70">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+                Product Experience
+              </div>
+              <h2 className="mb-4">An experience<br /><em className="italic text-gold">competitors can't match</em></h2>
+              <p className="text-base text-ink-40 leading-[1.8] mb-8">Real-time feedback, instant formatting, and unlimited flexibility — all in one editor. No lag, no bloat, no gimmicks.</p>
+              <Link to="/auth?mode=signup" className="btn btn-outline">Try It Free →</Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { icon: '⚡', text: 'Build Resume in Under 10 Minutes' },
-                { icon: '📂', text: 'Unlimited Resume Versions' },
-                { icon: '🔄', text: 'Instant Resume Format Switch' },
-                { icon: '📄', text: 'One-Click Clean Formatting' },
-                { icon: '📊', text: 'Live Resume Score as You Edit' },
+                { icon: '⚡', title: 'Under 10 Minutes', desc: 'Build a polished, job-ready resume faster than making coffee.' },
+                { icon: '📂', title: 'Unlimited Versions', desc: 'Tailor a unique resume for every job — no limits, ever.' },
+                { icon: '🔄', title: 'Instant Format Switch', desc: 'Switch between 25 themes without losing a single word.' },
+                { icon: '📄', title: 'One-Click Formatting', desc: 'Clean, consistent formatting applied automatically.' },
+                { icon: '📊', title: 'Live Resume Score', desc: 'See your score update in real-time as you edit.' },
+                { icon: '🎯', title: 'ATS Compliance Check', desc: 'Every export is tested for applicant tracking systems.' },
               ].map((item, i) => (
-                <div key={i} className="p-5 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] text-center transition-all duration-300 hover:border-[rgba(201,146,60,0.2)] hover:bg-[rgba(255,255,255,0.04)] group">
-                  <div className="text-2xl mb-2.5 group-hover:scale-110 transition-transform">{item.icon}</div>
-                  <p className="text-[12px] text-[rgba(250,248,243,0.6)] font-medium leading-snug">{item.text}</p>
+                <div key={i} className="flex items-start gap-3.5 p-4 rounded-xl bg-ink-05 border border-ink-10 transition-all duration-300 hover:border-gold-pale hover:shadow-sm">
+                  <span className="text-xl mt-0.5 flex-shrink-0">{item.icon}</span>
+                  <div>
+                    <h4 className="text-[13px] font-semibold mb-0.5">{item.title}</h4>
+                    <p className="text-[11px] text-ink-30 leading-relaxed">{item.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -316,32 +515,39 @@ export default function LandingPage() {
         </section>
 
         {/* ── FOUNDER ANGLE ──────────────────── */}
-        <section aria-label="About us" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
-          <div className="max-w-[760px] mx-auto text-center">
-            <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold mb-4 opacity-70">
-              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-              From Our Founders
-            </div>
-            <h2 className="mb-6">Built by engineers,<br /><em className="italic text-gold">not marketing teams.</em></h2>
-            <p className="text-base text-ink-40 leading-[1.8] mb-10 max-w-[560px] mx-auto">
-              We got tired of resume builders that looked like they were designed in 2010. So we built one ourselves — with real AI, real design, and obsessive attention to what actually gets people hired.
-            </p>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                { icon: '👨‍💻', title: 'Built by Engineers', desc: 'Product-obsessed founders who ship weekly' },
-                { icon: '📈', title: 'Constantly Improving AI', desc: 'Models retrained on real hiring data' },
-                { icon: '🧪', title: 'Founder-Led Product', desc: 'Every feature decision made by builders' },
-                { icon: '💡', title: 'We Listen to Members', desc: 'Founding members shape the roadmap' },
-              ].map((item, i) => (
-                <div key={i} className="p-5 bg-ink-05 border border-ink-10 rounded-xl text-center">
-                  <div className="text-2xl mb-2.5">{item.icon}</div>
-                  <h4 className="text-[13px] font-semibold mb-1">{item.title}</h4>
-                  <p className="text-[11px] text-ink-30 leading-relaxed">{item.desc}</p>
+        <section aria-label="About us" className="mx-5 sm:mx-10 mb-0">
+          <div className="max-w-[1200px] mx-auto rounded-2xl overflow-hidden" style={{ background: 'linear-gradient(135deg, #f8f3eb 0%, #f0e8d8 100%)' }}>
+            <div className="px-8 sm:px-16 py-14 sm:py-20">
+              <div className="max-w-[760px] mx-auto text-center">
+                <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase mb-4 opacity-60" style={{ color: '#8b6914' }}>
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#8b6914' }} />
+                  From Our Founders
                 </div>
-              ))}
+                <h2 className="text-[#1a1510] mb-5">Built by engineers,<br /><em className="italic" style={{ color: '#8b6914' }}>not marketing teams.</em></h2>
+                <p className="text-[15px] leading-[1.8] mb-12 max-w-[560px] mx-auto" style={{ color: 'rgba(26,21,16,0.5)' }}>
+                  We got tired of resume builders that looked like they were designed in 2010. So we built one ourselves — with real AI, real design, and obsessive attention to what actually gets people hired.
+                </p>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  {[
+                    { icon: '👨‍💻', title: 'Built by Engineers', desc: 'Product-obsessed founders who ship weekly' },
+                    { icon: '📈', title: 'Constantly Improving AI', desc: 'Models retrained on real hiring data' },
+                    { icon: '🧪', title: 'Founder-Led Product', desc: 'Every feature decision made by builders' },
+                    { icon: '💡', title: 'We Listen to Members', desc: 'Founding members shape the roadmap' },
+                  ].map((item, i) => (
+                    <div key={i} className="p-4 rounded-xl text-center border transition-all duration-200 hover:-translate-y-0.5" style={{ background: 'rgba(255,255,255,0.6)', borderColor: 'rgba(139,105,20,0.1)' }}>
+                      <div className="text-2xl mb-2">{item.icon}</div>
+                      <h4 className="text-[12px] font-semibold mb-0.5" style={{ color: '#1a1510' }}>{item.title}</h4>
+                      <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(26,21,16,0.4)' }}>{item.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>
+
+        {/* ── FOUNDING MEMBER LAUNCH OFFER ──────── */}
+        <FoundingMemberOffer />
 
         {/* ── CTA BANNER ───────────────────────── */}
         <section aria-label="Call to action" className="bg-gradient-to-br from-[#0e0d0b] to-[#3a3830] dark:from-[#0e0d0b] dark:to-[#3a3830] px-10 py-24 text-center relative overflow-hidden">

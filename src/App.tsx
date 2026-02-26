@@ -32,6 +32,7 @@ import NotFoundPage from './pages/NotFoundPage'
 
 // Components
 import { Toast } from './components/Toast'
+import SupportAgent from './components/SupportAgent'
 
 interface RouteProps {
   children: React.ReactNode
@@ -105,6 +106,7 @@ export default function App() {
         <Route path="/welcome" element={<ProtectedRoute><WelcomePage /></ProtectedRoute>} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      <SupportAgent />
       <Analytics />
     </BrowserRouter>
   )
