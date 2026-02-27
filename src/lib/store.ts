@@ -87,8 +87,33 @@ export const useStore = create<StoreState>((set, get) => ({
       .eq('id', userId)
       .single()
 
-    if (!error && data) set({ profile: data as Profile })
-    return data as Profile
+    if (!error && data) {
+      set({ profile: data as Profile })
+      return data as Profile
+    }
+
+    // Profile doesn't exist — auto-create it (trigger may have failed)
+    if (error?.code === 'PGRST116') {
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (authUser) {
+        const { data: newProfile } = await supabase
+          .from('profiles')
+          .upsert({
+            id: userId,
+            email: authUser.email || '',
+            full_name: authUser.user_metadata?.full_name || '',
+            plan: 'free',
+          }, { onConflict: 'id' })
+          .select()
+          .single()
+
+        if (newProfile) {
+          set({ profile: newProfile as Profile })
+          return newProfile as Profile
+        }
+      }
+    }
+    return null
   },
 
   updateProfile: async (updates) => {
@@ -199,14 +224,19 @@ export const useStore = create<StoreState>((set, get) => ({
     return (result && 'data' in result ? result.data : get().resumes) as Resume[]
   },
 
-  createResume: async (themeId = 'classic', initialData = null) => {
+  createResume: async (themeId = 'editorial_luxe', initialData = null) => {
     const { user } = get()
     if (!user) throw new Error('Not authenticated')
 
-    const { data: canCreate } = await supabase.rpc('can_create_resume', {
-      user_uuid: user.id,
-    })
-    if (!canCreate) throw new Error('LIMIT_REACHED')
+    // Check resume limit with a simple count instead of RPC
+    const { count, error: countError } = await supabase
+      .from('resumes')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+
+    if (!countError && count !== null && count >= 10) {
+      throw new Error('LIMIT_REACHED')
+    }
 
     const defaultData = initialData || {
       personal: {
@@ -227,6 +257,7 @@ export const useStore = create<StoreState>((set, get) => ({
       projects: [],
     }
 
+    console.log('[store] Step 3: Inserting resume...')
     const { data, error } = await supabase
       .from('resumes')
       .insert({
@@ -238,6 +269,7 @@ export const useStore = create<StoreState>((set, get) => ({
       .select()
       .single()
 
+    console.log('[store] Step 4: Insert result:', { data, error })
     if (error) throw error
     const newResume = data as Resume
     set((state) => ({ resumes: [newResume, ...state.resumes], currentResume: newResume }))
@@ -266,8 +298,19 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   deleteResume: async (id) => {
-    const { error } = await supabase.from('resumes').delete().eq('id', id)
-    if (error) throw error
+    const { user } = get()
+    if (!user) throw new Error('Not authenticated')
+    console.log('[store] Deleting resume:', id)
+    const { error } = await supabase
+      .from('resumes')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id)
+    if (error) {
+      console.error('[store] Delete error:', error)
+      throw error
+    }
+    console.log('[store] Delete successful')
     set((state) => ({
       resumes: state.resumes.filter((r) => r.id !== id),
       currentResume: state.currentResume?.id === id ? null : state.currentResume,

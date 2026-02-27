@@ -83,7 +83,6 @@ function ResumeCard({ resume, onEdit, onDelete, onDuplicate, onDownload }: Resum
 
 function ResumeThumb({ theme, data }: { theme: string; data: any }) {
   const themes: Record<string, { bg: string; accent: string; sidebar: boolean; gradient?: boolean }> = {
-    classic: { bg: '#fff', accent: '#1a1a1a', sidebar: false }, minimalist: { bg: '#fafaf8', accent: '#111', sidebar: false },
     editorial_luxe: { bg: '#fdfbf9', accent: '#dca47d', sidebar: false },
     dark_architect: { bg: '#18181f', accent: '#64ffda', sidebar: true },
     bauhaus_geometric: { bg: '#0d1b3e', accent: '#e8634a', sidebar: true },
@@ -115,7 +114,7 @@ function ResumeThumb({ theme, data }: { theme: string; data: any }) {
     neon_cyber: { bg: '#04080f', accent: '#00fff7', sidebar: true },
     origami_zen: { bg: '#fdfcfa', accent: '#b03030', sidebar: false },
   }
-  const t = themes[theme] || themes.classic
+  const t = themes[theme] || themes.editorial_luxe
   return (
     <div style={{ width: '100%', height: '100%', background: t.bg, display: 'flex', overflow: 'hidden' }}>
       {t.sidebar && <div style={{ width: '35%', background: t.accent === '#f5c800' ? '#1a1a1a' : t.accent, opacity: 0.9 }} />}
@@ -147,7 +146,7 @@ export default function DashboardPage() {
   const handleCreate = async (initialData: any = null) => {
     try {
       const dataToPass = initialData?.nativeEvent ? null : initialData
-      const resume = await createResume('classic', dataToPass)
+      const resume = await createResume('editorial_luxe', dataToPass)
       navigate(`/editor/${resume.id}`)
     } catch (err: any) {
       if (err.message === 'LIMIT_REACHED') { toast.error('Resume limit reached. Upgrade your plan to create more.'); navigate('/pricing') }

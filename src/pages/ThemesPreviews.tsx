@@ -60,32 +60,7 @@ export const SAMPLE_PERSONAS: Record<string, {
     ],
     skills: ['Machine Learning', 'Python', 'LLMs', 'NLP', 'TensorFlow', 'PyTorch', 'SQL', 'Spark'], summary: 'Data science leader with 8+ years building ML systems that drive measurable business impact. Expert in recommendation systems, NLP, and scaling models from research to production.'
   },
-  classic: {
-    name: 'James Whitfield', role: 'Senior Software Engineer', email: 'james@whitfield.io', phone: '(415) 320-8891', location: 'San Francisco, CA',
-    experience: [
-      { id: 1, title: 'Senior Software Engineer', company: 'Airbnb', location: 'San Francisco, CA', startDate: '2021', endDate: 'Present', current: true, description: 'Architected microservices handling 2M+ daily requests. Led migration from monolith to service-oriented architecture. Mentored 5 junior engineers through technical growth plans.' },
-      { id: 2, title: 'Software Engineer', company: 'Shopify', location: 'Ottawa, ON', startDate: '2018', endDate: '2021', current: false, description: 'Built real-time inventory management system processing 50K orders/minute. Designed GraphQL API layer adopted by 200+ merchant integrations. Reduced page load times by 40% through performance optimization.' },
-      { id: 3, title: 'Junior Software Engineer', company: 'Stripe', location: 'San Francisco, CA', startDate: '2016', endDate: '2018', current: false, description: 'Developed payment processing features for international expansion. Built automated testing framework improving code coverage from 65% to 92%.' }
-    ],
-    education: [
-      { id: 1, degree: 'B.S. Computer Science', school: 'Stanford University', location: 'Stanford, CA', startDate: '2014', endDate: '2018', gpa: '3.8', notes: '' },
-      { id: 2, degree: 'Minor in Mathematics', school: 'Stanford University', location: 'Stanford, CA', startDate: '2014', endDate: '2018', gpa: '', notes: '' }
-    ],
-    skills: ['TypeScript', 'React', 'AWS', 'System Design', 'Node.js', 'PostgreSQL', 'Docker', 'GraphQL'], summary: 'Full-stack engineer with 8+ years building scalable web applications at high-growth startups. Passionate about clean architecture, developer experience, and shipping products that matter.'
-  },
-  minimalist: {
-    name: 'Lena Hartmann', role: 'UX Designer', email: 'lena@hartmann.design', phone: '(212) 555-0147', location: 'Berlin, Germany',
-    experience: [
-      { id: 1, title: 'Lead UX Designer', company: 'Spotify', location: 'Stockholm, SE', startDate: '2022', endDate: 'Present', current: true, description: 'Redesigned the discovery experience for 450M users. Led design system overhaul reducing component inconsistencies by 60%. Managed team of 4 designers across mobile and web platforms.' },
-      { id: 2, title: 'UX Designer', company: 'Figma', location: 'San Francisco, CA', startDate: '2019', endDate: '2022', current: false, description: 'Designed collaborative editing features used by 4M+ teams. Conducted 200+ user research sessions informing product roadmap. Created accessibility guidelines adopted company-wide.' },
-      { id: 3, title: 'Junior UX Designer', company: 'IDEO', location: 'London, UK', startDate: '2017', endDate: '2019', current: false, description: 'Designed healthcare and fintech products through human-centered design methodology. Facilitated co-creation workshops with clients and end users.' }
-    ],
-    education: [
-      { id: 1, degree: 'M.A. Interaction Design', school: 'Royal College of Art', location: 'London, UK', startDate: '2017', endDate: '2019', gpa: '', notes: '' },
-      { id: 2, degree: 'B.A. Visual Communication', school: 'Berlin University of the Arts', location: 'Berlin, DE', startDate: '2013', endDate: '2017', gpa: '', notes: '' }
-    ],
-    skills: ['Figma', 'User Research', 'Prototyping', 'Design Systems', 'Accessibility', 'Usability Testing', 'Sketch', 'Motion Design'], summary: 'Human-centered designer crafting intuitive digital experiences for global products. Expert in design systems, accessibility, and bridging user research with product strategy.'
-  },
+
   sidebar: {
     name: 'Marcus Chen', role: 'Data Scientist', email: 'marcus.chen@ml.dev', phone: '(650) 200-3419', location: 'Seattle, WA',
     experience: [
@@ -393,27 +368,37 @@ export function useDynamicData(data: Partial<ResumeData>, themeId?: string) {
 
   // Use persona-specific defaults based on themeId
   const persona = themeId ? SAMPLE_PERSONAS[themeId] : undefined
-  const fallback = persona || SAMPLE_PERSONAS.classic
+  const fallback = persona || SAMPLE_PERSONAS.editorial_luxe
 
   const hiddenSections = d.hiddenSections || []
   const isHidden = (s: string) => hiddenSections.includes(s)
 
   // For hidden sections, return empty data so templates naturally skip rendering them
-  const experience = isHidden('experience') ? [] : (d.experience && d.experience.length > 0 ? d.experience : fallback.experience)
-  const education = isHidden('education') ? [] : (d.education && d.education.length > 0 ? d.education : fallback.education)
-  const skills = isHidden('skills') ? [] : (d.skills && d.skills.length > 0 ? d.skills : fallback.skills)
+  const experience = isHidden('experience') ? [] : (Array.isArray(d.experience) && d.experience.length > 0 ? d.experience : fallback.experience)
+  const education = isHidden('education') ? [] : (Array.isArray(d.education) && d.education.length > 0 ? d.education : fallback.education)
+  const skills = isHidden('skills') ? [] : (Array.isArray(d.skills) && d.skills.length > 0 ? d.skills : fallback.skills)
   const summary = isHidden('summary') ? '' : (d.summary || fallback.summary)
+  const languages = isHidden('languages') ? [] : (Array.isArray(d.languages) && d.languages.length > 0 ? d.languages : [])
+  const certifications = isHidden('certifications') ? [] : (Array.isArray(d.certifications) && d.certifications.length > 0 ? d.certifications : [])
+  const projects = isHidden('projects') ? [] : (Array.isArray(d.projects) && d.projects.length > 0 ? d.projects : [])
 
   return {
-    name: p.fullName || fallback.name,
-    role: p.jobTitle || fallback.role,
-    email: p.email || fallback.email,
-    phone: (p.phone || fallback.phone).replace(/\D/g, '').length > 0 ? (p.phone || fallback.phone) : fallback.phone,
-    location: p.location || fallback.location,
+    name: (p.fullName || '').trim() || fallback.name,
+    role: (p.jobTitle || '').trim() || fallback.role,
+    email: (p.email || '').trim() || fallback.email,
+    phone: ((p.phone || '').replace(/\D/g, '').length > 0 ? p.phone : fallback.phone) || fallback.phone,
+    location: (p.location || '').trim() || fallback.location,
+    website: p.website || '',
+    photo: p.photo || '',
+    customFont: d.customFont || '',
+    customColor: d.customColor || '',
     experience,
     education,
     skills,
     summary,
+    languages,
+    certifications,
+    projects,
     hiddenSections,
     show: (section: string) => !isHidden(section),
   }
@@ -423,104 +408,8 @@ interface PreviewProps {
   data?: Partial<ResumeData>
 }
 
-// ─── THEMES 1-17 (In ThemesPreviews.css) ─────────────────────
+// ─── THEMES (In ThemesPreviews.css) ─────────────────────
 
-export function ClassicPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'classic')
-  return (
-    <div className="classic-resume">
-      <div className="cr-name">{res.name}</div>
-      <div className="cr-contact">✉ {res.email} · ☎ {res.phone} · {res.location}</div>
-      {res.show('summary') && (
-        <div className="cr-section">
-          <div className="cr-section-title">Summary</div>
-          <div className="cr-job-desc">{res.summary}</div>
-        </div>
-      )}
-      {res.show('experience') && (
-        <div className="cr-section">
-          <div className="cr-section-title">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="cr-job">
-              <div className="cr-job-title">{exp.title}</div>
-              <div className="cr-job-company">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              <div className="cr-job-desc">{exp.description}</div>
-            </div>
-          ))}
-        </div>
-      )}
-      {res.show('education') && (
-        <div className="cr-section">
-          <div className="cr-section-title">Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} className="cr-job">
-              <div className="cr-job-title">{edu.degree}</div>
-              <div className="cr-job-company">{edu.school} · {edu.startDate} – {edu.endDate}{edu.gpa ? ` · GPA: ${edu.gpa}` : ''}</div>
-            </div>
-          ))}
-        </div>
-      )}
-      {res.show('skills') && (
-        <div className="cr-section">
-          <div className="cr-section-title">Skills</div>
-          <div className="cr-skills">{res.skills.map((s, i) => <span key={i} className="cr-skill">{s}</span>)}</div>
-        </div>
-      )}
-    </div>
-  )
-}
-
-export function MinimalistPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'minimalist')
-  return (
-    <div className="minimal-resume">
-      <div className="mr-name">{res.name}</div>
-      <div className="mr-role">{res.role}</div>
-      <div className="mr-divider" />
-      {res.show('summary') && (
-        <div className="mr-section">
-          <div className="mr-label">Summary</div>
-          <div style={{ fontSize: '10px', color: '#555', lineHeight: 1.6, marginBottom: 10 }}>{res.summary}</div>
-        </div>
-      )}
-      {res.show('experience') && (
-        <div className="mr-section">
-          <div className="mr-label">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="mr-item">
-              <div className="mr-item-left">
-                <div className="title">{exp.title}</div>
-                <div className="sub">{exp.company}</div>
-                <div style={{ fontSize: '9px', color: '#888', marginTop: 2 }}>{exp.description}</div>
-              </div>
-              <div className="mr-item-right">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-            </div>
-          ))}
-        </div>
-      )}
-      {res.show('education') && (
-        <div className="mr-section">
-          <div className="mr-label">Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} className="mr-item">
-              <div className="mr-item-left">
-                <div className="title">{edu.degree}</div>
-                <div className="sub">{edu.school}</div>
-              </div>
-              <div className="mr-item-right">{edu.startDate} – {edu.endDate}</div>
-            </div>
-          ))}
-        </div>
-      )}
-      {res.show('skills') && (
-        <div className="mr-section">
-          <div className="mr-label">Skills</div>
-          <div className="mr-skills">{res.skills.map((s, i) => <span key={i} className="mr-skill">{s}</span>)}</div>
-        </div>
-      )}
-    </div>
-  )
-}
 
 export function DarkPreview({ data }: PreviewProps) {
   const res = useDynamicData(data || {}, 'dark')
@@ -679,7 +568,7 @@ export function TerminalPreview({ data }: PreviewProps) {
 
 export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
   const res = useDynamicData(data || {}, 'editorial_luxe')
-  const c = { ink: '#1a1a1a', cream: '#f8f5f0', accent: '#c4553a', muted: '#7a7167', rule: '#d4cec5' }
+  const c = { ink: '#1a1a1a', cream: '#f8f5f0', accent: res.customColor || '#c4553a', muted: '#7a7167', rule: '#d4cec5' }
   const sTitle: React.CSSProperties = { fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14 }
   const nameParts = res.name.split(' ')
   const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
@@ -690,7 +579,8 @@ export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
       <span style={{ position: 'absolute', top: 28, left: 28, width: 24, height: 24, borderTop: `2px solid ${c.accent}`, borderLeft: `2px solid ${c.accent}`, opacity: 0.4 }} />
       <span style={{ position: 'absolute', bottom: 28, right: 28, width: 24, height: 24, borderBottom: `2px solid ${c.accent}`, borderRight: `2px solid ${c.accent}`, opacity: 0.4 }} />
       {/* Header */}
-      <header style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'flex-end', gap: 32, paddingBottom: 28, borderBottom: `1px solid ${c.rule}`, marginBottom: 36 }}>
+      <header style={{ display: 'grid', gridTemplateColumns: res.photo ? 'auto 1fr auto' : '1fr auto', alignItems: 'flex-end', gap: 24, paddingBottom: 28, borderBottom: `1px solid ${c.rule}`, marginBottom: 36 }}>
+        {res.photo && <img src={res.photo} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${c.accent}`, boxShadow: '0 2px 8px rgba(0,0,0,0.1)', flexShrink: 0 }} />}
         <div>
           <h1 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontWeight: 900, fontSize: 52, letterSpacing: -1, lineHeight: 1, color: c.ink }}>{firstName} {lastName && <span style={{ color: c.accent, fontStyle: 'italic', fontWeight: 400 }}>{lastName}</span>}</h1>
           <div style={{ fontSize: 15, fontWeight: 300, color: c.muted, letterSpacing: 3, textTransform: 'uppercase', marginTop: 10 }}>{res.role}</div>
@@ -742,7 +632,7 @@ export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
 
 export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
   const res = useDynamicData(data || {}, 'dark_architect')
-  const c = { bg: '#0f0f13', surface: '#18181f', surface2: '#1f1f28', border: '#2a2a36', text: '#e4e2de', muted: '#8a8690', accent: '#64ffda', accentDim: 'rgba(100,255,218,0.08)', warm: '#ffd6a0' }
+  const c = { bg: '#0f0f13', surface: '#18181f', surface2: '#1f1f28', border: '#2a2a36', text: '#e4e2de', muted: '#8a8690', accent: res.customColor || '#64ffda', accentDim: 'rgba(100,255,218,0.08)', warm: '#ffd6a0' }
   const mono = "'JetBrains Mono', 'DM Mono', monospace"
   const sLabel: React.CSSProperties = { fontFamily: mono, fontSize: 10, fontWeight: 500, letterSpacing: 3, textTransform: 'uppercase', color: c.muted, marginBottom: 20, paddingBottom: 8, borderBottom: `1px solid ${c.border}` }
   const tag: React.CSSProperties = { fontFamily: mono, fontSize: 11, padding: '4px 10px', borderRadius: 4, background: 'rgba(100,255,218,0.06)', border: '1px solid rgba(100,255,218,0.15)', color: c.accent }
@@ -810,7 +700,7 @@ export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
 
 export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
   const res = useDynamicData(data || {}, 'bauhaus_geometric')
-  const c = { navy: '#0d1b3e', coral: '#e8634a', gold: '#f0c75e', sky: '#4a98d9', cream: '#faf8f4', text: '#2c2c2c', muted: '#6e6e6e', ltBg: '#f2efe8' }
+  const c = { navy: '#0d1b3e', coral: res.customColor || '#e8634a', gold: '#f0c75e', sky: '#4a98d9', cream: '#faf8f4', text: '#2c2c2c', muted: '#6e6e6e', ltBg: '#f2efe8' }
   const sbHead: React.CSSProperties = { fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: c.coral, marginBottom: 12, paddingBottom: 6, borderBottom: '2px solid rgba(255,255,255,0.08)' }
   const initials = res.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
   return (
@@ -883,7 +773,7 @@ export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
 
 export function Resume4SoftPastelPreview({ data }: PreviewProps) {
   const res = useDynamicData(data || {}, 'soft_pastel')
-  const c = { rose: '#d4726a', roseLt: '#f8e8e6', sage: '#7a9e7e', sageLt: '#e4f0e5', lav: '#8e7cc3', lavLt: '#ece8f6', bg: '#fdfbf8', text: '#3a3535', light: '#7d7575', border: '#ede8e3' }
+  const c = { rose: res.customColor || '#d4726a', roseLt: '#f8e8e6', sage: '#7a9e7e', sageLt: '#e4f0e5', lav: '#8e7cc3', lavLt: '#ece8f6', bg: '#fdfbf8', text: '#3a3535', light: '#7d7575', border: '#ede8e3' }
   const divider = (label: string) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16, margin: '36px 0 24px' }}>
       <span style={{ flex: 1, height: 1, background: c.border }} />
@@ -949,7 +839,7 @@ export function Resume4SoftPastelPreview({ data }: PreviewProps) {
 
 export function Resume5SwissGridPreview({ data }: PreviewProps) {
   const res = useDynamicData(data || {}, 'swiss_grid')
-  const c = { black: '#111', white: '#fff', red: '#d63031', g1: '#f7f7f7', g2: '#e5e5e5', g3: '#999', g4: '#666', type: '#222' }
+  const c = { black: '#111', white: '#fff', red: res.customColor || '#d63031', g1: '#f7f7f7', g2: '#e5e5e5', g3: '#999', g4: '#666', type: '#222' }
   const rowLabel: React.CSSProperties = { padding: '28px 24px 28px 52px', borderRight: `1px solid ${c.g2}`, borderBottom: `1px solid ${c.g2}`, background: c.g1 }
   const rowContent: React.CSSProperties = { padding: '28px 52px 28px 32px', borderBottom: `1px solid ${c.g2}` }
   const sLabel: React.CSSProperties = { fontSize: 10, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.red }
@@ -1322,8 +1212,6 @@ export const PREVIEW_MAP: Record<string, React.FC<PreviewProps>> = {
 
   phd: PhdResumePreview,
 
-  classic: ClassicPreview,
-  minimalist: MinimalistPreview,
   dark: DarkPreview,
 
   terminal: TerminalPreview,

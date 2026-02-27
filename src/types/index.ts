@@ -66,6 +66,20 @@ export interface ProjectEntry {
     tech: string
 }
 
+export interface CustomSectionEntry {
+    id: number
+    title: string
+    subtitle: string
+    date: string
+    description: string
+}
+
+export interface CustomSection {
+    id: number
+    title: string
+    entries: CustomSectionEntry[]
+}
+
 export interface ResumeData {
     personal: PersonalInfo
     summary: string
@@ -75,7 +89,10 @@ export interface ResumeData {
     languages: LanguageEntry[]
     certifications: CertificationEntry[]
     projects: ProjectEntry[]
+    customSections?: CustomSection[]
     hiddenSections?: string[]
+    customFont?: string
+    customColor?: string
 }
 
 export interface Resume {

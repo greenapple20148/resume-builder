@@ -2,13 +2,12 @@ import { Document, Packer, Paragraph, TextRun, AlignmentType, Footer, BorderStyl
 import { saveAs } from "file-saver";
 import { ResumeData } from "../types";
 
-export async function exportToDocx(resumeData: ResumeData, themeId = 'classic', plan = 'free') {
+export async function exportToDocx(resumeData: ResumeData, themeId = 'editorial_luxe', plan = 'free') {
     const d = resumeData || {};
     const personal = d.personal || {};
 
     const themeColors: Record<string, string> = {
-        classic: "1a2744",
-        minimalist: "333333",
+        editorial_luxe: "dca47d",
         sidebar: "1e3a5f",
         creative: "ee5a24",
         obsidian: "c69b6b",

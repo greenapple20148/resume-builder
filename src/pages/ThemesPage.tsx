@@ -18,8 +18,7 @@ interface Theme {
 }
 
 const THEMES: Theme[] = [
-  { id: 'classic', name: 'Classic', category: 'minimal', desc: 'Clean traditional layout', accent: '#1a1a1a', bg: '#ffffff' },
-  { id: 'minimalist', name: 'Minimalist', category: 'minimal', desc: 'Simple and elegant', accent: '#111', bg: '#fafaf8' },
+
   { id: 'editorial_luxe', name: 'Editorial Luxe', category: 'creative', desc: 'Luxe editorial layout', accent: '#dca47d', bg: '#fdfbf9', premium: true },
   { id: 'dark_architect', name: 'Dark Architect', category: 'dark', desc: 'Dark tech aesthetic', accent: '#f5c800', bg: '#121212', premium: true },
   { id: 'bauhaus_geometric', name: 'Bauhaus Geometric', category: 'creative', desc: 'Geometric design', accent: '#005bb5', bg: '#fafafa', premium: true },
@@ -67,7 +66,7 @@ function ThemePreview({ theme, data }: { theme: Theme; data: Partial<ResumeData>
 
 export default function ThemesPage() {
   const [filter, setFilter] = useState('all')
-  const [selectedThemeId, setSelectedThemeId] = useState('classic')
+  const [selectedThemeId, setSelectedThemeId] = useState('editorial_luxe')
   const { user, createResume, currentResume } = useStore()
   const navigate = useNavigate()
   const visible = THEMES.filter((t) => filter === 'all' || t.category === filter)
@@ -86,10 +85,12 @@ export default function ThemesPage() {
     if (!user) { navigate('/auth?mode=signup'); return }
     setUseThemeLoading(true)
     try {
-      const timeoutPromise = new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Request timed out. Please try again.')), 15000))
-      const resume = await Promise.race([createResume(theme.id), timeoutPromise])
+      console.log('[ThemesPage] Creating resume with theme:', theme.id, 'user:', user.id)
+      const resume = await createResume(theme.id)
+      console.log('[ThemesPage] Resume created:', resume.id)
       navigate(`/editor/${resume.id}`)
     } catch (err: any) {
+      console.error('[ThemesPage] Error creating resume:', err)
       if (err.message === 'LIMIT_REACHED') { toast.error('Resume limit reached.'); navigate('/pricing') }
       else toast.error(err.message || 'Could not create resume.')
     } finally {

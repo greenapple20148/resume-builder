@@ -4,7 +4,7 @@ import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { toast } from '../components/Toast'
 import { PREVIEW_MAP } from './ThemesPreviews'
-import type { ResumeData, PersonalInfo, ExperienceEntry, EducationEntry, LanguageEntry, CertificationEntry, ProjectEntry } from '../types'
+import type { ResumeData, PersonalInfo, ExperienceEntry, EducationEntry, LanguageEntry, CertificationEntry, ProjectEntry, CustomSection, CustomSectionEntry } from '../types'
 import { useSEO } from '../lib/useSEO'
 import { useTheme } from '../lib/useTheme'
 
@@ -17,12 +17,13 @@ const SECTIONS = [
   { id: 'languages', label: 'Languages', icon: '◇' },
   { id: 'certifications', label: 'Certifications', icon: '●' },
   { id: 'projects', label: 'Projects', icon: '◑' },
+  { id: 'custom', label: 'Custom', icon: '✚' },
 ] as const
 
 type SectionId = typeof SECTIONS[number]['id']
 
 // Sections that can be hidden (personal is always visible)
-const HIDEABLE_SECTIONS = ['summary', 'experience', 'education', 'skills', 'languages', 'certifications', 'projects']
+const HIDEABLE_SECTIONS = ['summary', 'experience', 'education', 'skills', 'languages', 'certifications', 'projects', 'custom']
 
 // ─── Auto-save hook ──────────────────────────────────────────
 function useAutoSave(resumeId: string | undefined, data: any, delay = 1500) {
@@ -365,10 +366,199 @@ interface SectionProps<T> {
 
 function PersonalSection({ data, onChange }: SectionProps<PersonalInfo>) {
   const set = (field: keyof PersonalInfo) => (val: string) => onChange({ ...data, [field]: val })
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [showCamera, setShowCamera] = useState(false)
+  const [stream, setStream] = useState<MediaStream | null>(null)
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 2 * 1024 * 1024) { toast.error('Image must be under 2MB'); return }
+    if (!file.type.startsWith('image/')) { toast.error('Please select an image file'); return }
+    const reader = new FileReader()
+    reader.onload = () => {
+      const img = new Image()
+      img.onload = () => {
+        // Resize to max 400px for storage efficiency
+        const max = 400
+        const scale = Math.min(max / img.width, max / img.height, 1)
+        const canvas = document.createElement('canvas')
+        canvas.width = img.width * scale
+        canvas.height = img.height * scale
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        onChange({ ...data, photo: canvas.toDataURL('image/jpeg', 0.85) })
+        toast.success('Photo added!')
+      }
+      img.src = reader.result as string
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 400, height: 400 } })
+      setStream(mediaStream)
+      setShowCamera(true)
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream
+          videoRef.current.play()
+        }
+      }, 100)
+    } catch {
+      toast.error('Could not access camera. Please check permissions.')
+    }
+  }
+
+  const capturePhoto = () => {
+    if (!videoRef.current) return
+    const video = videoRef.current
+    const size = Math.min(video.videoWidth, video.videoHeight)
+    const canvas = document.createElement('canvas')
+    canvas.width = 400
+    canvas.height = 400
+    const ctx = canvas.getContext('2d')!
+    // Center-crop to square
+    const sx = (video.videoWidth - size) / 2
+    const sy = (video.videoHeight - size) / 2
+    ctx.drawImage(video, sx, sy, size, size, 0, 0, 400, 400)
+    onChange({ ...data, photo: canvas.toDataURL('image/jpeg', 0.85) })
+    stopCamera()
+    toast.success('Photo captured!')
+  }
+
+  const stopCamera = () => {
+    stream?.getTracks().forEach(t => t.stop())
+    setStream(null)
+    setShowCamera(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
+    if (!file || !file.type.startsWith('image/')) return
+    if (file.size > 2 * 1024 * 1024) { toast.error('Image must be under 2MB'); return }
+    const reader = new FileReader()
+    reader.onload = () => {
+      const img = new Image()
+      img.onload = () => {
+        const max = 400
+        const scale = Math.min(max / img.width, max / img.height, 1)
+        const canvas = document.createElement('canvas')
+        canvas.width = img.width * scale
+        canvas.height = img.height * scale
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        onChange({ ...data, photo: canvas.toDataURL('image/jpeg', 0.85) })
+        toast.success('Photo added!')
+      }
+      img.src = reader.result as string
+    }
+    reader.readAsDataURL(file)
+  }
+
   return (
     <>
       <SectionHeader icon="●" title="Personal Information" subtitle="Your contact details and basic info. This appears at the top of your resume." />
       <div className="flex flex-col gap-4">
+        {/* Photo Upload */}
+        <div className="form-group">
+          <label className="form-label">Profile Photo <span className="text-ink-20 font-normal">(optional)</span></label>
+          <div className="flex items-start gap-4">
+            {data.photo ? (
+              <div className="relative group">
+                <img
+                  src={data.photo}
+                  alt="Profile"
+                  className="w-[80px] h-[80px] rounded-full object-cover border-2 border-ink-10 shadow-sm"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-0 flex items-center justify-center rounded-full bg-[rgba(0,0,0,0.5)] opacity-0 group-hover:opacity-100 transition-opacity border-none cursor-pointer"
+                  onClick={() => onChange({ ...data, photo: '' })}
+                  title="Remove photo"
+                >
+                  <span className="text-white text-lg">✕</span>
+                </button>
+              </div>
+            ) : (
+              <div
+                className="w-[80px] h-[80px] rounded-full border-2 border-dashed border-ink-15 flex items-center justify-center text-ink-20 text-2xl cursor-pointer hover:border-gold hover:text-gold transition-colors bg-ink-05"
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}
+                title="Click or drag to add photo"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="14" rx="2" /><circle cx="12" cy="13" r="4" /><path d="M6 6V4a1 1 0 011-1h4a1 1 0 011 1v2" /></svg>
+              </div>
+            )}
+            <div className="flex flex-col gap-1.5 pt-1">
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
+              <button
+                type="button"
+                className="text-[12px] px-3 py-1.5 rounded-lg bg-ink-05 border-none cursor-pointer text-ink-40 hover:bg-ink-10 hover:text-ink transition-all font-[inherit] text-left"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><path d="M14 2v6h6" /><path d="M12 18v-6" /><path d="M9 15h6" /></svg>Upload File
+              </button>
+              <button
+                type="button"
+                className="text-[12px] px-3 py-1.5 rounded-lg bg-ink-05 border-none cursor-pointer text-ink-40 hover:bg-ink-10 hover:text-ink transition-all font-[inherit] text-left"
+                onClick={startCamera}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }}><rect x="2" y="6" width="20" height="14" rx="2" /><circle cx="12" cy="13" r="3" /><path d="M6 6V4a1 1 0 011-1h4a1 1 0 011 1v2" /></svg>Take Photo
+              </button>
+              {data.photo && (
+                <button
+                  type="button"
+                  className="text-[12px] px-3 py-1.5 rounded-lg bg-transparent border-none cursor-pointer text-rose hover:bg-[rgba(239,68,68,0.05)] transition-all font-[inherit] text-left"
+                  onClick={() => onChange({ ...data, photo: '' })}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }}><path d="M3 6h18" /><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" /></svg>Remove
+                </button>
+              )}
+            </div>
+          </div>
+
+          <p className="text-[10px] text-ink-20 mt-1.5 font-mono">JPG, PNG · Max 2MB · Resized to 400×400px</p>
+        </div>
+
+        {/* Camera Modal */}
+        {showCamera && (
+          <div className="modal-overlay" onClick={stopCamera}>
+            <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440, padding: 0, overflow: 'hidden' }}>
+              <div className="p-4 border-b border-ink-10 flex items-center justify-between">
+                <h3 className="text-sm font-semibold m-0">Take Photo</h3>
+                <button className="text-ink-30 bg-transparent border-none cursor-pointer text-lg" onClick={stopCamera}>✕</button>
+              </div>
+              <div className="relative bg-black flex items-center justify-center" style={{ aspectRatio: '1/1' }}>
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                  style={{ transform: 'scaleX(-1)' }}
+                />
+                <div className="absolute inset-0 rounded-full border-[3px] border-white/30 m-8 pointer-events-none" />
+              </div>
+              <div className="p-4 flex justify-center gap-3 bg-ink-05">
+                <button
+                  type="button"
+                  className="btn btn-gold px-6"
+                  onClick={capturePhoto}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ display: 'inline', verticalAlign: 'middle', marginRight: 6 }}><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="3" /></svg>Capture
+                </button>
+                <button type="button" className="btn btn-outline" onClick={stopCamera}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="form-row">
           <Field label="Full Name" value={data.fullName} onChange={set('fullName')} placeholder="Alex Johnson" />
           <Field label="Job Title" value={data.jobTitle} onChange={set('jobTitle')} placeholder="Senior Product Manager" />
@@ -736,6 +926,104 @@ function ProjectsSection({ data = [], onChange }: SectionProps<ProjectEntry[]>) 
   )
 }
 
+function CustomSectionsSection({ data = [], onChange }: SectionProps<CustomSection[]>) {
+  const [expandedSection, setExpandedSection] = useState<number | null>(data.length > 0 ? 0 : null)
+  const [expandedEntry, setExpandedEntry] = useState<number | null>(null)
+
+  const addSection = () => {
+    const newSection: CustomSection = { id: Date.now(), title: '', entries: [] }
+    onChange([...data, newSection])
+    setExpandedSection(data.length)
+    setExpandedEntry(null)
+  }
+  const removeSection = (idx: number) => {
+    onChange(data.filter((_, i) => i !== idx))
+    setExpandedSection(null)
+  }
+  const updateSectionTitle = (idx: number, title: string) => {
+    const next = [...data]; next[idx] = { ...next[idx], title }; onChange(next)
+  }
+  const addEntry = (sIdx: number) => {
+    const next = [...data]
+    const entry: CustomSectionEntry = { id: Date.now(), title: '', subtitle: '', date: '', description: '' }
+    next[sIdx] = { ...next[sIdx], entries: [...next[sIdx].entries, entry] }
+    onChange(next)
+    setExpandedEntry(next[sIdx].entries.length - 1)
+  }
+  const removeEntry = (sIdx: number, eIdx: number) => {
+    const next = [...data]
+    next[sIdx] = { ...next[sIdx], entries: next[sIdx].entries.filter((_, i) => i !== eIdx) }
+    onChange(next)
+    setExpandedEntry(null)
+  }
+  const updateEntry = (sIdx: number, eIdx: number, field: keyof CustomSectionEntry, val: string) => {
+    const next = [...data]
+    const entries = [...next[sIdx].entries]
+    entries[eIdx] = { ...entries[eIdx], [field]: val }
+    next[sIdx] = { ...next[sIdx], entries }
+    onChange(next)
+  }
+
+  return (
+    <>
+      <SectionHeader icon="✚" title="Custom Sections" subtitle="Add any extra sections like Awards, Volunteering, Publications, etc." />
+      <div className="flex flex-col gap-4">
+        {data.map((section, sIdx) => (
+          <div key={section.id || sIdx} className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden">
+            <button
+              className="flex items-center justify-between w-full px-5 py-3.5 bg-transparent border-none cursor-pointer text-left transition-colors hover:bg-ink-05"
+              onClick={() => setExpandedSection(expandedSection === sIdx ? null : sIdx)}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <span className={`w-2 h-2 rounded-full shrink-0 ${section.title ? 'bg-emerald' : 'bg-ink-10'}`} />
+                <div className="text-[13px] font-semibold text-ink truncate">{section.title || `Section ${sIdx + 1}`}</div>
+                <span className="text-[11px] text-ink-30 shrink-0">{section.entries.length} {section.entries.length === 1 ? 'entry' : 'entries'}</span>
+              </div>
+              <span className={`text-ink-20 text-xs transition-transform shrink-0 ml-2 ${expandedSection === sIdx ? 'rotate-180' : ''}`}>▼</span>
+            </button>
+            {expandedSection === sIdx && (
+              <div className="px-5 pb-5 pt-2 border-t border-ink-10 flex flex-col gap-3" style={{ animation: 'fadeUp 0.2s ease both' }}>
+                <Field label="Section Title" value={section.title} onChange={(v) => updateSectionTitle(sIdx, v)} placeholder="e.g. Awards, Volunteering, Publications" />
+                <div className="flex flex-col gap-2 mt-1">
+                  {section.entries.map((entry, eIdx) => (
+                    <div key={entry.id || eIdx} className="border border-ink-10 rounded-lg overflow-hidden">
+                      <button
+                        className="flex items-center justify-between w-full px-4 py-2.5 bg-ink-05 border-none cursor-pointer text-left transition-colors hover:bg-ink-10 text-xs"
+                        onClick={() => setExpandedEntry(expandedEntry === eIdx ? null : eIdx)}
+                      >
+                        <span className="font-medium text-ink truncate">{entry.title || `Entry ${eIdx + 1}`}</span>
+                        <span className={`text-ink-20 transition-transform ${expandedEntry === eIdx ? 'rotate-180' : ''}`}>▼</span>
+                      </button>
+                      {expandedEntry === eIdx && (
+                        <div className="px-4 pb-4 pt-2 flex flex-col gap-2.5">
+                          <div className="form-row">
+                            <Field label="Title" value={entry.title} onChange={(v) => updateEntry(sIdx, eIdx, 'title', v)} placeholder="e.g. Dean's List, Volunteer Coordinator" />
+                            <Field label="Subtitle" value={entry.subtitle} onChange={(v) => updateEntry(sIdx, eIdx, 'subtitle', v)} placeholder="e.g. Organization name" />
+                          </div>
+                          <Field label="Date" value={entry.date} onChange={(v) => updateEntry(sIdx, eIdx, 'date', v)} placeholder="e.g. 2023 — Present" />
+                          <TextArea label="Description" value={entry.description} onChange={(v) => updateEntry(sIdx, eIdx, 'description', v)} placeholder="Details..." rows={2} />
+                          <div className="flex justify-end">
+                            <button className="btn btn-danger btn-sm" style={{ fontSize: 11 }} onClick={() => removeEntry(sIdx, eIdx)}>Remove Entry</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  <AddButton label="Add Entry" onClick={() => addEntry(sIdx)} />
+                </div>
+                <div className="flex justify-end mt-1">
+                  <button className="btn btn-danger btn-sm" style={{ fontSize: 11 }} onClick={() => removeSection(sIdx)}>Remove Section</button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+        <AddButton label="Add Custom Section" onClick={addSection} />
+      </div>
+    </>
+  )
+}
+
 // ─── Live Preview ─────────────────────────────────────────────
 interface LivePreviewProps {
   resumeData: Partial<ResumeData>
@@ -743,7 +1031,7 @@ interface LivePreviewProps {
 }
 
 function LivePreview({ resumeData, themeId }: LivePreviewProps) {
-  const PreviewComponent = PREVIEW_MAP[themeId] || PREVIEW_MAP.classic
+  const PreviewComponent = PREVIEW_MAP[themeId] || PREVIEW_MAP.editorial_luxe
   const containerRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0.5)
 
@@ -766,19 +1054,109 @@ function LivePreview({ resumeData, themeId }: LivePreviewProps) {
     return () => observer.disconnect()
   }, [])
 
+  const hiddenSections = resumeData.hiddenSections || []
+  const isHidden = (s: string) => hiddenSections.includes(s)
+  const accent = resumeData.customColor || '#1a2744'
+  const languages = Array.isArray(resumeData.languages) ? resumeData.languages : []
+  const certifications = Array.isArray(resumeData.certifications) ? resumeData.certifications : []
+  const projects = Array.isArray(resumeData.projects) ? resumeData.projects : []
+  const customSections = Array.isArray(resumeData.customSections) ? resumeData.customSections : []
+  const hasExtras = (!isHidden('languages') && languages.length > 0) || (!isHidden('certifications') && certifications.length > 0) || (!isHidden('projects') && projects.length > 0) || (!isHidden('custom') && customSections.length > 0)
+
   return (
     <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden', background: 'var(--ink-05)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 20 }}>
-      <div style={{
-        width: '210mm',
-        minHeight: '297mm',
-        background: '#fff',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-        position: 'relative',
-        transform: `scale(${scale})`,
-        transformOrigin: 'top center',
-        flexShrink: 0,
-      }}>
+      <div
+        className="live-preview-page"
+        style={{
+          width: '210mm',
+          minHeight: '297mm',
+          background: '#fff',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+          position: 'relative',
+          transform: `scale(${scale})`,
+          transformOrigin: 'top center',
+          flexShrink: 0,
+        }}
+        id="resume-preview-root"
+      >
+        {resumeData.customFont && (
+          <style>{`
+            #resume-preview-root,
+            #resume-preview-root * {
+              font-family: ${resumeData.customFont} !important;
+            }
+          `}</style>
+        )}
+        {resumeData.customColor && (
+          <style>{`
+            .live-preview-page [style*="color"] {
+              --user-accent: ${resumeData.customColor};
+            }
+          `}</style>
+        )}
         <PreviewComponent data={resumeData} />
+        {hasExtras && (
+          <div style={{ padding: '0 48px 40px', fontFamily: "'Inter', 'DM Sans', sans-serif" }}>
+            {!isHidden('languages') && languages.length > 0 && (
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Languages</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {languages.map((l, i) => (
+                    <span key={i} style={{ fontSize: 12, color: '#2a2a2a', background: '#f5f5f5', padding: '4px 12px', borderRadius: 4, border: '1px solid #e8e8e8' }}>
+                      {l.language}{l.level ? <span style={{ color: '#888', marginLeft: 6, fontSize: 11 }}>· {l.level}</span> : ''}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {!isHidden('certifications') && certifications.length > 0 && (
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Certifications</div>
+                {certifications.map((c, i) => (
+                  <div key={i} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                    <div>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{c.name}</span>
+                      {c.issuer && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {c.issuer}</span>}
+                    </div>
+                    {c.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{c.date}</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+            {!isHidden('projects') && projects.length > 0 && (
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Projects</div>
+                {projects.map((proj, i) => (
+                  <div key={i} style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{proj.name}</div>
+                    {proj.tech && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.tech}</div>}
+                    {proj.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 4 }}>{proj.description}</div>}
+                    {proj.url && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.url}</div>}
+                  </div>
+                ))}
+              </div>
+            )}
+            {!isHidden('custom') && customSections.map((section, sIdx) => (
+              section.title && section.entries.length > 0 ? (
+                <div key={sIdx} style={{ marginBottom: 20 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>{section.title}</div>
+                  {section.entries.map((entry, eIdx) => (
+                    <div key={eIdx} style={{ marginBottom: 10 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                        <div>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{entry.title}</span>
+                          {entry.subtitle && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {entry.subtitle}</span>}
+                        </div>
+                        {entry.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{entry.date}</span>}
+                      </div>
+                      {entry.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 3 }}>{entry.description}</div>}
+                    </div>
+                  ))}
+                </div>
+              ) : null
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -800,6 +1178,7 @@ function getSectionStatus(data: Partial<ResumeData>, sectionId: string): 'empty'
     case 'languages': return (data.languages?.length || 0) > 0 ? 'complete' : 'empty'
     case 'certifications': return (data.certifications?.length || 0) > 0 ? 'complete' : 'empty'
     case 'projects': return (data.projects?.length || 0) > 0 ? 'complete' : 'empty'
+    case 'custom': return (data.customSections?.length || 0) > 0 ? 'complete' : 'empty'
     default: return 'empty'
   }
 }
@@ -813,7 +1192,7 @@ export default function EditorPage() {
 
   const [resumeData, setResumeData] = useState<Partial<ResumeData>>({})
   const [title, setTitle] = useState('My Resume')
-  const [themeId, setThemeId] = useState('classic')
+  const [themeId, setThemeId] = useState('editorial_luxe')
 
   const [activeSection, setActiveSection] = useState<SectionId>('personal')
   const [loading, setLoading] = useState(true)
@@ -884,9 +1263,18 @@ export default function EditorPage() {
         const resume = allResumes?.find((r) => r.id === id)
         if (resume) {
           setCurrentResume(resume)
-          setResumeData(resume.data || {})
+          // Handle data that might be a string or null
+          let parsedData: Partial<ResumeData> = {}
+          if (resume.data) {
+            if (typeof resume.data === 'string') {
+              try { parsedData = JSON.parse(resume.data) } catch { parsedData = {} }
+            } else {
+              parsedData = resume.data as Partial<ResumeData>
+            }
+          }
+          setResumeData(parsedData)
           setTitle(resume.title || 'My Resume')
-          setThemeId(resume.theme_id || 'classic')
+          setThemeId(resume.theme_id || 'editorial_luxe')
         } else {
           setError('Resume not found or access denied.')
         }
@@ -1026,6 +1414,7 @@ export default function EditorPage() {
       case 'languages': return <LanguagesSection data={s.languages || []} onChange={handleSectionData('languages')} />
       case 'certifications': return <CertificationsSection data={s.certifications || []} onChange={handleSectionData('certifications')} />
       case 'projects': return <ProjectsSection data={s.projects || []} onChange={handleSectionData('projects')} />
+      case 'custom': return <CustomSectionsSection data={s.customSections || []} onChange={handleSectionData('customSections')} />
       default: return null
     }
   }
@@ -1122,6 +1511,85 @@ export default function EditorPage() {
               )
             })}
           </div>
+
+          {/* Style Controls */}
+          <div className="px-3 pt-3 border-t border-ink-10 max-md:hidden">
+            <div className="font-mono text-[9px] tracking-[0.15em] uppercase text-ink-20 px-1 mb-2">Style</div>
+
+            {/* Font Face */}
+            <div className="mb-3">
+              <label className="text-[10px] text-ink-30 block mb-1 px-1">Font</label>
+              <select
+                className="w-full text-[11px] px-2 py-1.5 rounded-lg border border-ink-10 bg-[var(--white)] text-ink cursor-pointer outline-none focus:border-gold transition-colors"
+                value={resumeData.customFont || ''}
+                onChange={(e) => setResumeData(prev => ({ ...prev, customFont: e.target.value || undefined }))}
+                style={{ fontFamily: resumeData.customFont || 'inherit' }}
+              >
+                <option value="">Theme Default</option>
+                <optgroup label="Modern Sans-Serif">
+                  <option value="Calibri, sans-serif" style={{ fontFamily: 'Calibri' }}>Calibri</option>
+                  <option value="Arial, sans-serif" style={{ fontFamily: 'Arial' }}>Arial</option>
+                  <option value="Helvetica, Arial, sans-serif" style={{ fontFamily: 'Helvetica' }}>Helvetica</option>
+                  <option value="Roboto, sans-serif" style={{ fontFamily: 'Roboto' }}>Roboto</option>
+                  <option value="'Open Sans', sans-serif" style={{ fontFamily: 'Open Sans' }}>Open Sans</option>
+                </optgroup>
+                <optgroup label="Classic Serif">
+                  <option value="Georgia, serif" style={{ fontFamily: 'Georgia' }}>Georgia</option>
+                  <option value="Garamond, 'EB Garamond', serif" style={{ fontFamily: 'Garamond' }}>Garamond</option>
+                  <option value="Cambria, serif" style={{ fontFamily: 'Cambria' }}>Cambria</option>
+                </optgroup>
+              </select>
+            </div>
+
+            {/* Accent Color */}
+            <div className="mb-2">
+              <label className="text-[10px] text-ink-30 block mb-1.5 px-1">Accent Color</label>
+              <div className="flex items-center gap-1.5 flex-wrap px-0.5">
+                {[
+                  { color: '', label: 'Default' },
+                  { color: '#1a1a1a', label: 'Black' },
+                  { color: '#1e3a5f', label: 'Navy' },
+                  { color: '#1a4e8a', label: 'Blue' },
+                  { color: '#0d9488', label: 'Teal' },
+                  { color: '#16a34a', label: 'Green' },
+                  { color: '#c4553a', label: 'Rust' },
+                  { color: '#8b5cf6', label: 'Violet' },
+                  { color: '#c9923c', label: 'Gold' },
+                  { color: '#e84118', label: 'Red' },
+                ].map(c => (
+                  <button
+                    key={c.color || 'default'}
+                    type="button"
+                    title={c.label}
+                    className="border-none cursor-pointer p-0 transition-all"
+                    style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: '50%',
+                      background: c.color || 'conic-gradient(#1a1a1a, #1e3a5f, #0d9488, #c4553a, #1a1a1a)',
+                      border: (resumeData.customColor || '') === c.color ? '2px solid var(--gold)' : '2px solid var(--ink-10, #ddd)',
+                      transform: (resumeData.customColor || '') === c.color ? 'scale(1.2)' : 'scale(1)',
+                    }}
+                    onClick={() => setResumeData(prev => ({ ...prev, customColor: c.color || undefined }))}
+                  />
+                ))}
+                <label
+                  title="Custom color"
+                  className="relative cursor-pointer"
+                  style={{ width: 18, height: 18, borderRadius: '50%', overflow: 'hidden', border: '2px solid var(--ink-10, #ddd)' }}
+                >
+                  <div style={{ width: '100%', height: '100%', background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)', borderRadius: '50%' }} />
+                  <input
+                    type="color"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    value={resumeData.customColor || '#1a1a1a'}
+                    onChange={(e) => setResumeData(prev => ({ ...prev, customColor: e.target.value }))}
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+
           {/* Progress */}
           <div className="px-4 pt-3 mt-auto border-t border-ink-10 max-md:hidden">
             <div className="text-[10px] font-mono text-ink-20 mb-2">{completedCount}/{SECTIONS.length} sections</div>

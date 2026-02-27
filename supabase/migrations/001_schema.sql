@@ -34,14 +34,21 @@ BEGIN
   INSERT INTO profiles (id, email, full_name, avatar_url)
   VALUES (
     NEW.id,
-    NEW.email,
-    NEW.raw_user_meta_data->>'full_name',
+    COALESCE(NEW.email, ''),
+    COALESCE(NEW.raw_user_meta_data->>'full_name', ''),
     NEW.raw_user_meta_data->>'avatar_url'
-  );
+  )
+  ON CONFLICT (id) DO UPDATE SET
+    email = COALESCE(EXCLUDED.email, profiles.email),
+    full_name = COALESCE(EXCLUDED.full_name, profiles.full_name);
+  RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+  RAISE LOG 'handle_new_user failed for %: %', NEW.id, SQLERRM;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
@@ -66,7 +73,7 @@ CREATE TABLE resumes (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   title TEXT NOT NULL DEFAULT 'Untitled Resume',
-  theme_id TEXT NOT NULL DEFAULT 'classic',
+  theme_id TEXT NOT NULL DEFAULT 'editorial_luxe',
   data JSONB NOT NULL DEFAULT '{}',
   is_public BOOLEAN DEFAULT FALSE,
   public_slug TEXT UNIQUE,
@@ -129,6 +136,10 @@ CREATE POLICY "Users can view own profile"
   ON profiles FOR SELECT
   USING (auth.uid() = id);
 
+CREATE POLICY "Users can insert own profile"
+  ON profiles FOR INSERT
+  WITH CHECK (auth.uid() = id);
+
 CREATE POLICY "Users can update own profile"
   ON profiles FOR UPDATE
   USING (auth.uid() = id);
@@ -179,7 +190,8 @@ CREATE POLICY "Users can delete own cover letters"
 
 -- Thumbnails bucket (public)
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('thumbnails', 'thumbnails', true);
+VALUES ('thumbnails', 'thumbnails', true)
+ON CONFLICT (id) DO NOTHING;
 
 CREATE POLICY "Anyone can view thumbnails"
   ON storage.objects FOR SELECT

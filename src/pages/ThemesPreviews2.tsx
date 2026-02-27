@@ -1161,9 +1161,12 @@ export const EmeraldFreshPreview: React.FC<PreviewProps> = ({ data }) => {
 /* ═══ Resume 16 — Sunset Warm ═══ */
 export const SunsetWarmPreview: React.FC<PreviewProps> = ({ data }) => {
     const res = useDynamicData(data || {}, 'sunset_warm')
-    const c = { amber: '#c97c2a', amberLt: '#f5d4a0', amberPale: '#fdf6ec', rust: '#9c4a1a', warm: '#f7efe3', text: '#2a1f14', muted: '#6b5040', light: '#a08060', rule: '#e8d4bb' }
+    const c = { amber: res.customColor || '#c97c2a', amberLt: '#f5d4a0', amberPale: '#fdf6ec', rust: '#9c4a1a', warm: '#f7efe3', text: '#2a1f14', muted: '#6b5040', light: '#a08060', rule: '#e8d4bb' }
     const sTitle = { fontFamily: "'Fraunces', 'EB Garamond', serif", fontSize: 19, fontWeight: 600, color: c.amber, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12 }
     const datePill = { fontSize: 11.5, fontWeight: 600, color: c.amber, background: c.amberLt, padding: '2px 9px', borderRadius: 3, whiteSpace: 'nowrap' as const }
+    const nameParts = res.name.split(' ')
+    const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
+    const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
     return (
         <div style={{ fontFamily: "'Nunito', 'DM Sans', sans-serif", background: c.warm, overflow: 'hidden' }}>
             {/* Header */}
@@ -1172,11 +1175,11 @@ export const SunsetWarmPreview: React.FC<PreviewProps> = ({ data }) => {
                 <div style={{ position: 'absolute', top: -50, left: 200, width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
                 <div style={{ position: 'relative', zIndex: 1, display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'flex-end', gap: 40 }}>
                     <div>
-                        <div style={{ fontFamily: "'Fraunces', 'EB Garamond', serif", fontSize: 48, fontWeight: 700, color: '#fff', lineHeight: 1.1, letterSpacing: -0.5 }}>Sofia <em style={{ fontWeight: 300, opacity: 0.85 }}>Reyes</em></div>
-                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', letterSpacing: 3, textTransform: 'uppercase', marginTop: 10 }}>Brand Strategist & Creative Director</div>
+                        <div style={{ fontFamily: "'Fraunces', 'EB Garamond', serif", fontSize: 48, fontWeight: 700, color: '#fff', lineHeight: 1.1, letterSpacing: -0.5 }}>{firstName} <em style={{ fontWeight: 300, opacity: 0.85 }}>{lastName}</em></div>
+                        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)', letterSpacing: 3, textTransform: 'uppercase', marginTop: 10 }}>{res.role}</div>
                     </div>
                     <div style={{ textAlign: 'right', fontSize: 12.5, color: 'rgba(255,255,255,0.8)', lineHeight: 2.1 }}>
-                        Los Angeles, CA<br />(323) 887-1240<br /><span style={{ color: 'rgba(255,255,255,0.95)' }}>sofia@reyescreative.com</span><br /><span style={{ color: 'rgba(255,255,255,0.95)' }}>reyescreative.com</span>
+                        {res.location}<br />{res.phone}<br /><span style={{ color: 'rgba(255,255,255,0.95)' }}>{res.email}</span>{res.website && <><br /><span style={{ color: 'rgba(255,255,255,0.95)' }}>{res.website}</span></>}
                     </div>
                 </div>
             </header>
@@ -1184,54 +1187,51 @@ export const SunsetWarmPreview: React.FC<PreviewProps> = ({ data }) => {
             <div style={{ padding: '40px 60px 56px', display: 'grid', gridTemplateColumns: '1fr 230px', gap: 52 }}>
                 {/* Main */}
                 <main>
-                    <div style={{ marginBottom: 36 }}>
-                        <div style={sTitle}>About<span style={{ flex: 1, height: 1, background: c.rule }} /></div>
-                        <p style={{ fontSize: 14, color: c.muted, lineHeight: 1.85 }}>Creative director and brand strategist with 10 years building iconic identities for consumer brands. Led campaigns reaching 200M+ people for clients including Nike, Patagonia, and Oatly. Equal parts right-brain visionary and left-brain strategist.</p>
-                    </div>
-                    <div>
-                        <div style={sTitle}>Experience<span style={{ flex: 1, height: 1, background: c.rule }} /></div>
-                        {[
-                            { title: 'Creative Director', date: '2021 — Present', co: 'Wieden+Kennedy · Los Angeles', bullets: ['Directed Nike\'s "Just Tomorrow" global campaign seen by 180M people across 42 markets', "Led rebrand of Patagonia's digital presence increasing direct-to-consumer revenue 38%", 'Built and managed a 12-person creative team across design, copy, and strategy', 'Won Cannes Lions Grand Prix 2023 and Clio Award 2024'] },
-                            { title: 'Senior Art Director', date: '2018 — 2021', co: '72andSunny · Los Angeles', bullets: ['Led visual identity refresh for Snapchat reaching 300M daily active users', "Produced Oatly's US market launch campaign growing brand awareness from 12% to 58%", 'Mentored 6 junior designers and led weekly creative feedback sessions'] },
-                            { title: 'Art Director', date: '2015 — 2018', co: 'TBWA\\Chiat\\Day · New York', bullets: ['Conceptualized and produced campaigns for Apple, Gatorade, and Airbnb', 'Recognized in Communication Arts Young Guns award list 2017'] },
-                        ].map((e, i) => (
-                            <div key={i} style={{ marginBottom: 26 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                                    <div style={{ fontSize: 15, fontWeight: 700, color: c.text }}>{e.title}</div>
-                                    <div style={datePill}>{e.date}</div>
+                    {res.show('summary') && res.summary && (
+                        <div style={{ marginBottom: 36 }}>
+                            <div style={sTitle}>About<span style={{ flex: 1, height: 1, background: c.rule }} /></div>
+                            <p style={{ fontSize: 14, color: c.muted, lineHeight: 1.85 }}>{res.summary}</p>
+                        </div>
+                    )}
+                    {res.show('experience') && res.experience.length > 0 && (
+                        <div>
+                            <div style={sTitle}>Experience<span style={{ flex: 1, height: 1, background: c.rule }} /></div>
+                            {res.experience.map((e, i) => (
+                                <div key={i} style={{ marginBottom: 26 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                                        <div style={{ fontSize: 15, fontWeight: 700, color: c.text }}>{e.title}</div>
+                                        <div style={datePill}>{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</div>
+                                    </div>
+                                    <div style={{ fontSize: 13, color: c.rust, fontWeight: 600, marginBottom: 10 }}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>
+                                    {e.description && <div style={{ fontSize: 13, color: c.muted, lineHeight: 1.7, paddingLeft: 18, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: c.amber, fontSize: 10, top: 3 }}>◈</span>{e.description}</div>}
                                 </div>
-                                <div style={{ fontSize: 13, color: c.rust, fontWeight: 600, marginBottom: 10 }}>{e.co}</div>
-                                {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13, color: c.muted, lineHeight: 1.7, marginBottom: 4, paddingLeft: 18, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: c.amber, fontSize: 10, top: 3 }}>◈</span>{b}</div>)}
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </main>
                 {/* Sidebar */}
                 <aside>
-                    <div style={{ marginBottom: 36 }}>
-                        <div style={{ fontFamily: "'Fraunces', 'EB Garamond', serif", fontSize: 15, fontWeight: 600, color: c.amber, marginBottom: 18 }}>Core Skills</div>
-                        {[['Brand Strategy', 5], ['Art Direction', 5], ['Copywriting', 4], ['Motion Design', 3], ['Team Leadership', 4]].map(([name, filled], i) => (
-                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, fontSize: 13 }}>
-                                <span style={{ color: c.text, fontWeight: 500 }}>{name as string}</span>
-                                <div style={{ display: 'flex', gap: 4 }}>
-                                    {[1, 2, 3, 4, 5].map(n => <div key={n} style={{ width: 8, height: 8, borderRadius: '50%', background: n <= (filled as number) ? c.amber : c.rule }} />)}
-                                </div>
+                    {res.show('skills') && res.skills.length > 0 && (
+                        <div style={{ marginBottom: 36 }}>
+                            <div style={{ fontFamily: "'Fraunces', 'EB Garamond', serif", fontSize: 15, fontWeight: 600, color: c.amber, marginBottom: 18 }}>Skills</div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                                {res.skills.map((s, i) => (
+                                    <span key={i} style={{ fontSize: 12, color: c.amber, border: `1px solid ${c.amberLt}`, background: c.amberPale, padding: '4px 10px', borderRadius: 4, fontWeight: 500 }}>{s}</span>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                    <div style={{ marginBottom: 36 }}>
-                        <div style={{ fontFamily: "'Fraunces', 'EB Garamond', serif", fontSize: 15, fontWeight: 600, color: c.amber, marginBottom: 18 }}>Education</div>
-                        <h4 style={{ fontSize: 13.5, fontWeight: 700, color: c.text, lineHeight: 1.3 }}>B.F.A. Graphic Design</h4>
-                        <p style={{ fontSize: 12, color: c.light, marginTop: 3, lineHeight: 1.5 }}>Rhode Island School of Design<br />2015</p>
-                    </div>
-                    <div>
-                        <div style={{ fontFamily: "'Fraunces', 'EB Garamond', serif", fontSize: 15, fontWeight: 600, color: c.amber, marginBottom: 18 }}>Tools</div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                            {['Figma', 'After Effects', 'Photoshop', 'Illustrator', 'Cinema 4D', 'Premiere'].map((t, i) => (
-                                <span key={i} style={{ fontSize: 12, color: c.amber, border: `1px solid ${c.amberLt}`, background: c.amberPale, padding: '4px 10px', borderRadius: 4, fontWeight: 500 }}>{t}</span>
+                        </div>
+                    )}
+                    {res.show('education') && res.education.length > 0 && (
+                        <div style={{ marginBottom: 36 }}>
+                            <div style={{ fontFamily: "'Fraunces', 'EB Garamond', serif", fontSize: 15, fontWeight: 600, color: c.amber, marginBottom: 18 }}>Education</div>
+                            {res.education.map((e, i) => (
+                                <div key={i} style={{ marginBottom: 14 }}>
+                                    <h4 style={{ fontSize: 13.5, fontWeight: 700, color: c.text, lineHeight: 1.3 }}>{e.degree}</h4>
+                                    <p style={{ fontSize: 12, color: c.light, marginTop: 3, lineHeight: 1.5 }}>{e.school}<br />{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</p>
+                                </div>
                             ))}
                         </div>
-                    </div>
+                    )}
                 </aside>
             </div>
         </div>
@@ -1241,85 +1241,78 @@ export const SunsetWarmPreview: React.FC<PreviewProps> = ({ data }) => {
 /* ═══ Resume 17 — Newspaper Classic ═══ */
 export const NewspaperClassicPreview: React.FC<PreviewProps> = ({ data }) => {
     const res = useDynamicData(data || {}, 'newspaper_classic')
-    const c = { ink: '#1a1410', mid: '#4a3f34', muted: '#7a6e64', rule: '#c8bfb4', cream: '#f7f3ee', paper: '#faf7f3', red: '#8b1a1a' }
+    const c = { ink: '#1a1410', mid: '#4a3f34', muted: '#7a6e64', rule: '#c8bfb4', cream: '#f7f3ee', paper: '#faf7f3', red: res.customColor || '#8b1a1a' }
     const colTitle = { fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase' as const, color: c.red, borderBottom: `1px solid ${c.red}`, paddingBottom: 5, marginBottom: 14 }
     const entryTitle = { fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 14, fontWeight: 700, color: c.ink, lineHeight: 1.3, marginBottom: 2 }
     const entryMeta = { fontSize: 11, color: c.red, fontWeight: 600, marginBottom: 2, letterSpacing: 0.3 }
     const entryDate = { fontSize: 11, color: c.muted, fontStyle: 'italic' as const, marginBottom: 6, fontFamily: "'IM Fell English', 'Georgia', serif" }
     const entryP = { fontSize: 12.5, color: c.mid, lineHeight: 1.75, fontWeight: 300 }
     const skillItem = { fontSize: 12.5, color: c.mid, lineHeight: 1.8, paddingBottom: 5, borderBottom: `1px dotted ${c.rule}`, marginBottom: 5, fontWeight: 300 }
+    const nameParts = res.name.split(' ')
+    const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
+    const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
     return (
         <div style={{ fontFamily: "'Source Sans 3', 'DM Sans', sans-serif", background: c.paper, padding: '52px 60px', overflow: 'hidden' }}>
             {/* Masthead */}
             <div style={{ textAlign: 'center', borderTop: `3px double ${c.ink}`, borderBottom: `3px double ${c.ink}`, padding: '16px 0', marginBottom: 8 }}>
                 <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 10, letterSpacing: 5, textTransform: 'uppercase', color: c.muted, marginBottom: 6 }}>Curriculum Vitae</div>
-                <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 56, fontWeight: 900, color: c.ink, letterSpacing: -1, lineHeight: 1 }}>William <em style={{ fontWeight: 400 }}>Crawford</em></div>
+                <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 56, fontWeight: 900, color: c.ink, letterSpacing: -1, lineHeight: 1 }}>{firstName} <em style={{ fontWeight: 400 }}>{lastName}</em></div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, paddingTop: 6, borderTop: `1px solid ${c.rule}`, fontSize: 11, color: c.muted }}>
-                    <span>San Francisco, CA · (415) 777-2093 · w.crawford@law.com</span>
-                    <span style={{ fontFamily: "'IM Fell English', 'Georgia', serif", fontStyle: 'italic', fontSize: 13 }}>Counselor · Litigator · Advisor</span>
-                    <span>linkedin.com/in/wcrawford</span>
+                    <span>{res.location} · {res.phone} · {res.email}</span>
+                    <span style={{ fontFamily: "'IM Fell English', 'Georgia', serif", fontStyle: 'italic', fontSize: 13 }}>{res.role}</span>
+                    <span>{res.website || ''}</span>
                 </div>
             </div>
             {/* Lede */}
-            <p style={{ fontFamily: "'IM Fell English', 'Georgia', serif", fontSize: 16, lineHeight: 1.75, color: c.mid, textAlign: 'center', margin: '22px 0 28px', padding: '0 40px', fontStyle: 'italic' }}>Senior litigation attorney with 14 years representing Fortune 100 companies in complex commercial disputes, securities litigation, and regulatory investigations. Track record of favorable outcomes in 87% of matters reaching trial.</p>
+            {res.show('summary') && res.summary && (
+                <p style={{ fontFamily: "'IM Fell English', 'Georgia', serif", fontSize: 16, lineHeight: 1.75, color: c.mid, textAlign: 'center', margin: '22px 0 28px', padding: '0 40px', fontStyle: 'italic' }}>{res.summary}</p>
+            )}
             {/* 3-Column */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 2px 1fr 2px 1fr', gap: '0 28px', borderTop: `1px solid ${c.rule}`, paddingTop: 28 }}>
                 {/* Col 1: Experience */}
                 <div>
-                    <div style={colTitle}>Legal Experience</div>
-                    {[
-                        { title: 'Partner, Litigation', meta: 'Skadden, Arps · San Francisco', date: '2020 — Present', p: 'Lead counsel for NASDAQ-listed companies in securities class actions and SEC enforcement matters. Successfully resolved $1.2B shareholder derivative suit via negotiated settlement.' },
-                        { title: 'Senior Associate', meta: 'Quinn Emanuel · Los Angeles', date: '2015 — 2020', p: 'Managed trial teams of 6 attorneys on high-stakes IP and commercial litigation. Won summary judgment in landmark patent case establishing industry precedent.' },
-                        { title: 'Associate Attorney', meta: 'Gibson, Dunn & Crutcher · New York', date: '2012 — 2015', p: 'Defended financial institutions in post-2008 regulatory investigations. Managed document review teams of 40+ contract attorneys.' },
-                    ].map((e, i) => (
-                        <div key={i} style={{ marginBottom: 18 }}>
-                            <div style={entryTitle}>{e.title}</div>
-                            <div style={entryMeta}>{e.meta}</div>
-                            <div style={entryDate}>{e.date}</div>
-                            <p style={entryP}>{e.p}</p>
-                        </div>
-                    ))}
+                    {res.show('experience') && res.experience.length > 0 && (
+                        <>
+                            <div style={colTitle}>Experience</div>
+                            {res.experience.map((e, i) => (
+                                <div key={i} style={{ marginBottom: 18 }}>
+                                    <div style={entryTitle}>{e.title}</div>
+                                    <div style={entryMeta}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>
+                                    <div style={entryDate}>{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</div>
+                                    {e.description && <p style={entryP}>{e.description}</p>}
+                                </div>
+                            ))}
+                        </>
+                    )}
                 </div>
                 <div style={{ background: c.rule }} />
-                {/* Col 2: Education + Clerkship + Bar */}
+                {/* Col 2: Education */}
                 <div>
-                    <div style={colTitle}>Education</div>
-                    {[
-                        { title: 'J.D., magna cum laude', meta: 'Yale Law School', date: '2012', p: 'Order of the Coif. Yale Law Journal, Senior Editor. Moot Court Board Champion, 2011.' },
-                        { title: 'B.A. Political Science, Philosophy', meta: 'Princeton University', date: '2009 — Summa Cum Laude', p: 'Phi Beta Kappa. Senior thesis on constitutional standing doctrine awarded departmental prize.' },
-                    ].map((e, i) => (
-                        <div key={i} style={{ marginBottom: 18 }}>
-                            <div style={entryTitle}>{e.title}</div>
-                            <div style={entryMeta}>{e.meta}</div>
-                            <div style={entryDate}>{e.date}</div>
-                            <p style={entryP}>{e.p}</p>
-                        </div>
-                    ))}
-                    <div style={{ ...colTitle, marginTop: 24 }}>Clerkship</div>
-                    <div style={{ marginBottom: 18 }}>
-                        <div style={entryTitle}>Judicial Clerk</div>
-                        <div style={entryMeta}>Hon. Richard Posner, 7th Circuit</div>
-                        <div style={entryDate}>2012 — 2013</div>
-                        <p style={entryP}>Researched and drafted opinions in 40+ appellate matters. Assisted in three published decisions cited in subsequent circuit rulings.</p>
-                    </div>
-                    <div style={{ ...colTitle, marginTop: 24 }}>Bar Admissions</div>
-                    <p style={entryP}>California State Bar<br />New York State Bar<br />U.S. District Court, N.D. Cal.<br />U.S. Court of Appeals, 9th Cir.</p>
+                    {res.show('education') && res.education.length > 0 && (
+                        <>
+                            <div style={colTitle}>Education</div>
+                            {res.education.map((e, i) => (
+                                <div key={i} style={{ marginBottom: 18 }}>
+                                    <div style={entryTitle}>{e.degree}</div>
+                                    <div style={entryMeta}>{e.school}{e.location ? ` · ${e.location}` : ''}</div>
+                                    <div style={entryDate}>{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</div>
+                                    {(e.gpa || e.notes) && <p style={entryP}>{e.gpa ? `GPA: ${e.gpa}` : ''}{e.gpa && e.notes ? '. ' : ''}{e.notes}</p>}
+                                </div>
+                            ))}
+                        </>
+                    )}
                 </div>
                 <div style={{ background: c.rule }} />
-                {/* Col 3: Practice Areas + Recognition + Publications */}
+                {/* Col 3: Skills */}
                 <div>
-                    <div style={colTitle}>Practice Areas</div>
-                    {[['Securities Litigation', 'Class actions, SEC enforcement'], ['Commercial Disputes', 'Breach of contract, fraud'], ['Intellectual Property', 'Patent, trade secrets'], ['Regulatory Defense', 'DOJ, FTC investigations'], ['Appellate Practice', 'Circuit court briefing'], ['Arbitration', 'AAA, JAMS, ICC panels']].map(([t, d], i) => (
-                        <div key={i} style={skillItem}><strong style={{ fontWeight: 600, color: c.ink, fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 12 }}>{t}</strong> — {d}</div>
-                    ))}
-                    <div style={{ ...colTitle, marginTop: 24 }}>Recognition</div>
-                    {[['Super Lawyers', '2020–2024'], ['Best Lawyers in America', 'Commercial Litigation 2022'], ['Chambers USA', 'Band 1, Securities Litigation'], ['Law360 Rising Star', 'Litigation 2018']].map(([t, d], i) => (
-                        <div key={i} style={skillItem}><strong style={{ fontWeight: 600, color: c.ink, fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 12 }}>{t}</strong> — {d}</div>
-                    ))}
-                    <div style={{ ...colTitle, marginTop: 24 }}>Publications</div>
-                    {[['Yale L.J.', '"Standing in Digital Markets" (2024)'], ['Stanford L. Rev.', '"Securities Fraud & AI" (2023)']].map(([t, d], i) => (
-                        <div key={i} style={skillItem}><strong style={{ fontWeight: 600, color: c.ink, fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 12 }}>{t}</strong> — {d}</div>
-                    ))}
+                    {res.show('skills') && res.skills.length > 0 && (
+                        <>
+                            <div style={colTitle}>Expertise</div>
+                            {res.skills.map((s, i) => (
+                                <div key={i} style={skillItem}>{s}</div>
+                            ))}
+                        </>
+                    )}
                 </div>
             </div>
             {/* Footer */}
@@ -1333,9 +1326,13 @@ export const NewspaperClassicPreview: React.FC<PreviewProps> = ({ data }) => {
 /* ═══ Resume 18 — Ivory Marble ═══ */
 export const IvoryMarblePreview: React.FC<PreviewProps> = ({ data }) => {
     const res = useDynamicData(data || {}, 'ivory_marble')
-    const c = { ivory: '#f9f6f0', marble: '#e8e0d4', veins: '#c8bfb0', navy: '#1a2640', gold: '#b8963c', goldLt: '#d4af6a', text: '#2a1e14', muted: '#6a5a48', light: '#9a8a78' }
+    const c = { ivory: '#f9f6f0', marble: '#e8e0d4', veins: '#c8bfb0', navy: '#1a2640', gold: res.customColor || '#b8963c', goldLt: '#d4af6a', text: '#2a1e14', muted: '#6a5a48', light: '#9a8a78' }
     const sTitle = { fontSize: 9, textTransform: 'uppercase' as const, letterSpacing: 3, color: c.gold, fontWeight: 600, marginBottom: 14 }
     const goldDiv = { height: 1, background: `linear-gradient(90deg, ${c.gold}, transparent)`, margin: '22px 0', opacity: 0.4 }
+    const nameParts = res.name.split(' ')
+    const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
+    const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
+    const initials = (firstName[0] || '') + (lastName[0] || '')
     return (
         <div style={{ fontFamily: "'Raleway', 'DM Sans', sans-serif", background: c.ivory, overflow: 'hidden' }}>
             {/* Gold line */}
@@ -1343,62 +1340,63 @@ export const IvoryMarblePreview: React.FC<PreviewProps> = ({ data }) => {
             <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr' }}>
                 {/* Sidebar */}
                 <div style={{ background: c.navy, padding: '52px 32px', position: 'relative', overflow: 'hidden' }}>
-                    {/* Marble veining */}
                     <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(-45deg, transparent, transparent 60px, rgba(255,255,255,0.02) 60px, rgba(255,255,255,0.02) 61px)', pointerEvents: 'none' }} />
                     <div style={{ position: 'relative', zIndex: 1 }}>
-                        {/* Monogram */}
                         <div style={{ width: 70, height: 70, border: '1px solid rgba(184,150,60,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, position: 'relative' }}>
-                            <span style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 28, fontWeight: 700, color: c.gold, letterSpacing: 2 }}>IF</span>
-                            <span style={{ position: 'absolute', top: -2, left: -2, width: 8, height: 8, borderTop: `1px solid ${c.gold}`, borderLeft: `1px solid ${c.gold}`, opacity: 0.5 }} />
-                            <span style={{ position: 'absolute', bottom: -2, right: -2, width: 8, height: 8, borderBottom: `1px solid ${c.gold}`, borderRight: `1px solid ${c.gold}`, opacity: 0.5 }} />
+                            <span style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 28, fontWeight: 700, color: c.gold, letterSpacing: 2 }}>{initials}</span>
                         </div>
-                        <div style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 26, fontWeight: 300, color: '#fff', lineHeight: 1.2, letterSpacing: 1, marginBottom: 4 }}><strong style={{ fontWeight: 600, display: 'block' }}>Isabelle</strong>Fontaine</div>
-                        <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 3, color: c.gold, fontWeight: 500, marginBottom: 28 }}>Chief Marketing Officer</div>
+                        <div style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 26, fontWeight: 300, color: '#fff', lineHeight: 1.2, letterSpacing: 1, marginBottom: 4 }}><strong style={{ fontWeight: 600, display: 'block' }}>{firstName}</strong>{lastName}</div>
+                        <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 3, color: c.gold, fontWeight: 500, marginBottom: 28 }}>{res.role}</div>
                         <div style={goldDiv} />
                         <div style={sTitle}>Contact</div>
-                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.9, fontWeight: 300 }}>Paris, France<br />+33 6 12 34 56 78<br />isabelle@fontaine.co<br />linkedin.com/in/ifontaine</div>
-                        <div style={goldDiv} />
-                        <div style={sTitle}>Expertise</div>
-                        {['Brand Architecture', 'Growth Strategy', 'Digital Marketing', 'P&L Management', 'Consumer Insights', 'Retail & E-commerce', 'Global Team Leadership', 'Agency Management'].map((s, i) => (
-                            <div key={i} style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.8, paddingLeft: 12, position: 'relative', marginBottom: 2, fontWeight: 300 }}><span style={{ position: 'absolute', left: 0, top: 9, width: 5, height: 1, background: c.gold }} />{s}</div>
-                        ))}
-                        <div style={goldDiv} />
-                        <div style={sTitle}>Education</div>
-                        {[['MBA, Marketing', 'INSEAD', 'Fontainebleau · 2008'], ['B.A. Communication', 'Sciences Po Paris', '2006']].map(([d, s, s2], i) => (
-                            <div key={i} style={{ marginBottom: 16 }}>
-                                <h4 style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.9)', lineHeight: 1.3 }}>{d}</h4>
-                                <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)', marginTop: 3, lineHeight: 1.5 }}>{s}<br />{s2}</p>
-                            </div>
-                        ))}
-                        <div style={goldDiv} />
-                        <div style={sTitle}>Languages</div>
-                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.9, fontWeight: 300 }}>French — Native<br />English — Fluent<br />Spanish — Professional<br />Italian — Conversational</div>
+                        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.6)', lineHeight: 1.9, fontWeight: 300 }}>{res.location}<br />{res.phone}<br />{res.email}{res.website && <><br />{res.website}</>}</div>
+                        {res.show('skills') && res.skills.length > 0 && (
+                            <>
+                                <div style={goldDiv} />
+                                <div style={sTitle}>Expertise</div>
+                                {res.skills.map((s, i) => (
+                                    <div key={i} style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)', lineHeight: 1.8, paddingLeft: 12, position: 'relative', marginBottom: 2, fontWeight: 300 }}><span style={{ position: 'absolute', left: 0, top: 9, width: 5, height: 1, background: c.gold }} />{s}</div>
+                                ))}
+                            </>
+                        )}
+                        {res.show('education') && res.education.length > 0 && (
+                            <>
+                                <div style={goldDiv} />
+                                <div style={sTitle}>Education</div>
+                                {res.education.map((e, i) => (
+                                    <div key={i} style={{ marginBottom: 16 }}>
+                                        <h4 style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.9)', lineHeight: 1.3 }}>{e.degree}</h4>
+                                        <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.45)', marginTop: 3, lineHeight: 1.5 }}>{e.school}<br />{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</p>
+                                    </div>
+                                ))}
+                            </>
+                        )}
                     </div>
                 </div>
                 {/* Main */}
                 <div style={{ padding: '52px 48px' }}>
-                    <div style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 50, fontWeight: 300, color: c.navy, lineHeight: 1.05, letterSpacing: -0.5, marginBottom: 28 }}>Isabelle<br /><em style={{ fontWeight: 600, color: c.gold }}>Fontaine</em></div>
-                    <div style={{ marginBottom: 36 }}>
-                        <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase', color: c.navy, marginBottom: 18, paddingBottom: 8, borderBottom: `1px solid ${c.marble}`, display: 'flex', alignItems: 'center', gap: 10 }}><span style={{ width: 16, height: 1, background: c.gold }} />Profile</div>
-                        <p style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 16, fontStyle: 'italic', fontWeight: 300, color: c.muted, lineHeight: 1.85 }}>Luxury brand executive with 16 years building category-defining marketing organizations across fashion, beauty, and lifestyle. Proven record growing premium brands from regional presence to global icons.</p>
-                    </div>
-                    <div>
-                        <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase', color: c.navy, marginBottom: 18, paddingBottom: 8, borderBottom: `1px solid ${c.marble}`, display: 'flex', alignItems: 'center', gap: 10 }}><span style={{ width: 16, height: 1, background: c.gold }} />Experience</div>
-                        {[
-                            { title: 'Chief Marketing Officer', date: '2021 — Present', co: 'Chloé · Paris, France', bullets: ['Repositioned Chloé as sustainability-led luxury brand, growing brand equity score 42 points', 'Led €140M integrated marketing budget across 62 markets with team of 85 globally', 'Launched "Chloé Unlimited" campaign earning 4 Cannes Lions and 28% DTC revenue growth', 'Expanded brand into Gen-Z segment increasing under-35 customer acquisition by 55%'] },
-                            { title: 'VP, Global Brand Marketing', date: '2016 — 2021', co: "L'Oréal Luxe · Paris, France", bullets: ['Oversaw global brand strategy for Lancôme, Giorgio Armani Beauty, and YSL Beauté', 'Led digital transformation doubling e-commerce penetration from 18% to 36%', 'Managed €80M agency ecosystem renegotiating contracts saving €12M annually'] },
-                            { title: 'Brand Director', date: '2012 — 2016', co: 'LVMH / Dior · Paris, France', bullets: ["Directed Dior Beauty's Asia-Pacific expansion across 14 new markets", 'Orchestrated 360° launch of "Rouge Dior" franchise generating €180M in first-year sales'] },
-                        ].map((e, i) => (
-                            <div key={i} style={{ marginBottom: 26 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                                    <div style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 18, fontWeight: 600, color: c.navy }}>{e.title}</div>
-                                    <div style={{ fontSize: 11, color: c.light, letterSpacing: 1, fontWeight: 500, whiteSpace: 'nowrap' }}>{e.date}</div>
+                    <div style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 50, fontWeight: 300, color: c.navy, lineHeight: 1.05, letterSpacing: -0.5, marginBottom: 28 }}>{firstName}<br /><em style={{ fontWeight: 600, color: c.gold }}>{lastName}</em></div>
+                    {res.show('summary') && res.summary && (
+                        <div style={{ marginBottom: 36 }}>
+                            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase', color: c.navy, marginBottom: 18, paddingBottom: 8, borderBottom: `1px solid ${c.marble}`, display: 'flex', alignItems: 'center', gap: 10 }}><span style={{ width: 16, height: 1, background: c.gold }} />Profile</div>
+                            <p style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 16, fontStyle: 'italic', fontWeight: 300, color: c.muted, lineHeight: 1.85 }}>{res.summary}</p>
+                        </div>
+                    )}
+                    {res.show('experience') && res.experience.length > 0 && (
+                        <div>
+                            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase', color: c.navy, marginBottom: 18, paddingBottom: 8, borderBottom: `1px solid ${c.marble}`, display: 'flex', alignItems: 'center', gap: 10 }}><span style={{ width: 16, height: 1, background: c.gold }} />Experience</div>
+                            {res.experience.map((e, i) => (
+                                <div key={i} style={{ marginBottom: 26 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                                        <div style={{ fontFamily: "'Cormorant', 'EB Garamond', serif", fontSize: 18, fontWeight: 600, color: c.navy }}>{e.title}</div>
+                                        <div style={{ fontSize: 11, color: c.light, letterSpacing: 1, fontWeight: 500, whiteSpace: 'nowrap' }}>{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</div>
+                                    </div>
+                                    <div style={{ fontSize: 12.5, color: c.gold, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>
+                                    {e.description && <div style={{ fontSize: 13, color: c.muted, lineHeight: 1.75, paddingLeft: 18, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: c.gold, fontSize: 9, top: 4 }}>◇</span>{e.description}</div>}
                                 </div>
-                                <div style={{ fontSize: 12.5, color: c.gold, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>{e.co}</div>
-                                {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13, color: c.muted, lineHeight: 1.75, marginBottom: 4, paddingLeft: 18, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: c.gold, fontSize: 9, top: 4 }}>◇</span>{b}</div>)}
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -1408,10 +1406,13 @@ export const IvoryMarblePreview: React.FC<PreviewProps> = ({ data }) => {
 /* ═══ Resume 19 — Neon Cyber ═══ */
 export const NeonCyberPreview: React.FC<PreviewProps> = ({ data }) => {
     const res = useDynamicData(data || {}, 'neon_cyber')
-    const c = { bg: '#04080f', surface: '#080e18', neon: '#00fff7', neon2: '#b44fff', text: '#c0e8f0', muted: '#5a8090', border: 'rgba(0,255,247,0.15)', dimNeon: 'rgba(0,255,247,0.15)' }
+    const c = { bg: '#04080f', surface: '#080e18', neon: res.customColor || '#00fff7', neon2: '#b44fff', text: '#c0e8f0', muted: '#5a8090', border: 'rgba(0,255,247,0.15)', dimNeon: 'rgba(0,255,247,0.15)' }
     const mono = "'Rajdhani', 'DM Sans', sans-serif"
     const sHead = { fontFamily: mono, fontSize: 13, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase' as const, color: c.neon, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }
     const datePill = { fontFamily: mono, fontSize: 11, color: c.neon, background: c.dimNeon, border: `1px solid ${c.border}`, padding: '2px 8px', letterSpacing: 1, whiteSpace: 'nowrap' as const }
+    const nameParts = res.name.toUpperCase().split(' ')
+    const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
+    const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
     return (
         <div style={{ fontFamily: "'Exo 2', 'DM Sans', sans-serif", background: c.bg, overflow: 'hidden', border: `1px solid ${c.border}` }}>
             {/* Header */}
@@ -1419,77 +1420,68 @@ export const NeonCyberPreview: React.FC<PreviewProps> = ({ data }) => {
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${c.neon}, ${c.neon2}, transparent)` }} />
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'flex-end', gap: 32 }}>
                     <div>
-                        <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: 3, color: c.muted, marginBottom: 12, textTransform: 'uppercase' }}>SYS_ID: <span style={{ color: c.neon }}>KN-2025 // ACTIVE</span></div>
+                        <div style={{ fontFamily: mono, fontSize: 10, letterSpacing: 3, color: c.muted, marginBottom: 12, textTransform: 'uppercase' }}>SYS_ID: <span style={{ color: c.neon }}>ACTIVE</span></div>
                         <div style={{ fontFamily: mono, fontSize: 52, fontWeight: 700, lineHeight: 0.95, textTransform: 'uppercase', letterSpacing: -1 }}>
-                            <div style={{ color: c.neon }}>KAI</div>
-                            <div style={{ color: '#fff' }}>NAKAMURA</div>
+                            <div style={{ color: c.neon }}>{firstName}</div>
+                            <div style={{ color: '#fff' }}>{lastName}</div>
                         </div>
-                        <div style={{ fontSize: 12, color: c.muted, letterSpacing: 3, textTransform: 'uppercase', marginTop: 12 }}>// <span style={{ color: c.neon2 }}>CYBERSECURITY</span> ENGINEER</div>
+                        <div style={{ fontSize: 12, color: c.muted, letterSpacing: 3, textTransform: 'uppercase', marginTop: 12 }}>// <span style={{ color: c.neon2 }}>{res.role}</span></div>
                     </div>
                     <div style={{ border: `1px solid ${c.border}`, padding: '14px 18px', fontFamily: mono, fontSize: 12, color: c.muted, lineHeight: 2, letterSpacing: 0.5, background: 'rgba(0,255,247,0.02)' }}>
-                        LOC: <span style={{ color: c.text }}>Austin, TX</span><br />
-                        MAIL: <span style={{ color: c.text }}>kai@nakamura.sec</span><br />
-                        NET: <span style={{ color: c.text }}>(512) 408-2934</span><br />
-                        WEB: <span style={{ color: c.text }}>kainakamura.dev</span>
+                        LOC: <span style={{ color: c.text }}>{res.location}</span><br />
+                        MAIL: <span style={{ color: c.text }}>{res.email}</span><br />
+                        NET: <span style={{ color: c.text }}>{res.phone}</span>
+                        {res.website && <><br />WEB: <span style={{ color: c.text }}>{res.website}</span></>}
                     </div>
                 </div>
             </header>
-            {/* Stats strip */}
-            <div style={{ display: 'flex', borderBottom: `1px solid ${c.border}`, background: c.surface }}>
-                {[['9+', 'Years Exp.'], ['340+', 'CVEs Reported'], ['12', 'Certs Held'], ['$2M+', 'Bug Bounties']].map(([num, label], i, arr) => (
-                    <div key={i} style={{ flex: 1, padding: '16px 24px', borderRight: i < arr.length - 1 ? `1px solid ${c.border}` : 'none', textAlign: 'center' }}>
-                        <div style={{ fontFamily: mono, fontSize: 26, fontWeight: 700, color: c.neon, lineHeight: 1 }}>{num}</div>
-                        <div style={{ fontSize: 10, color: c.muted, letterSpacing: 1.5, textTransform: 'uppercase', marginTop: 4 }}>{label}</div>
-                    </div>
-                ))}
-            </div>
             {/* Body */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 220px' }}>
                 {/* Main */}
                 <div style={{ padding: '40px 48px', borderRight: `1px solid ${c.border}` }}>
-                    <div style={{ marginBottom: 38 }}>
-                        <div style={sHead}><span style={{ color: c.neon2 }}>{'>'}</span>Profile<span style={{ flex: 1, height: 1, background: c.border }} /></div>
-                        <p style={{ fontSize: 13.5, color: '#7a9aa8', lineHeight: 1.85, fontWeight: 300, borderLeft: `2px solid ${c.neon}`, paddingLeft: 16 }}>Offensive security engineer specializing in red team operations, exploit development, and security architecture for critical infrastructure. Top-ranked on HackTheBox and CVE author with 340+ disclosed vulnerabilities.</p>
-                    </div>
-                    <div>
-                        <div style={sHead}><span style={{ color: c.neon2 }}>{'>'}</span>Experience<span style={{ flex: 1, height: 1, background: c.border }} /></div>
-                        {[
-                            { title: 'Principal Red Team Engineer', date: '2022 — PRESENT', co: '// CROWDSTRIKE · AUSTIN, TX', bullets: ['Lead red team operations against Fortune 100 clients identifying critical attack chains', 'Developed proprietary C2 framework used across 80+ engagements with zero detection', 'Authored 45+ TTPs mapped to MITRE ATT&CK enhancing detection coverage by 22%', 'Mentored 4 junior red teamers; promoted to principal within 18 months'] },
-                            { title: 'Senior Security Researcher', date: '2019 — 2022', co: '// GOOGLE PROJECT ZERO · REMOTE', bullets: ['Discovered and disclosed 148 zero-day vulnerabilities in Chrome, Android, and Windows', 'Developed fuzzing infrastructure covering 1.2M code paths per day', 'Published 8 security research papers at Black Hat, DEF CON, and Usenix'] },
-                            { title: 'Security Engineer', date: '2016 — 2019', co: '// DARPA CONTRACTOR · WASHINGTON, DC', bullets: ['Developed autonomous vulnerability detection systems for critical infrastructure', 'Held TS/SCI clearance; participated in national cyber defense exercises'] },
-                        ].map((e, i) => (
-                            <div key={i} style={{ marginBottom: 28 }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                                    <div style={{ fontFamily: mono, fontSize: 17, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: 0.5 }}>{e.title}</div>
-                                    <div style={datePill}>{e.date}</div>
+                    {res.show('summary') && res.summary && (
+                        <div style={{ marginBottom: 38 }}>
+                            <div style={sHead}><span style={{ color: c.neon2 }}>{'>'}</span>Profile<span style={{ flex: 1, height: 1, background: c.border }} /></div>
+                            <p style={{ fontSize: 13.5, color: '#7a9aa8', lineHeight: 1.85, fontWeight: 300, borderLeft: `2px solid ${c.neon}`, paddingLeft: 16 }}>{res.summary}</p>
+                        </div>
+                    )}
+                    {res.show('experience') && res.experience.length > 0 && (
+                        <div>
+                            <div style={sHead}><span style={{ color: c.neon2 }}>{'>'}</span>Experience<span style={{ flex: 1, height: 1, background: c.border }} /></div>
+                            {res.experience.map((e, i) => (
+                                <div key={i} style={{ marginBottom: 28 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                                        <div style={{ fontFamily: mono, fontSize: 17, fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: 0.5 }}>{e.title}</div>
+                                        <div style={datePill}>{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</div>
+                                    </div>
+                                    <div style={{ fontSize: 12, color: c.neon2, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>// {e.company}{e.location ? ` · ${e.location}` : ''}</div>
+                                    {e.description && <div style={{ fontSize: 13, color: '#7a9aa8', lineHeight: 1.7, paddingLeft: 20, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: c.neon, fontFamily: mono, fontSize: 10, top: 4, fontWeight: 700 }}>//</span>{e.description}</div>}
                                 </div>
-                                <div style={{ fontSize: 12, color: c.neon2, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>{e.co}</div>
-                                {e.bullets.map((b, j) => <div key={j} style={{ fontSize: 13, color: '#7a9aa8', lineHeight: 1.7, marginBottom: 4, paddingLeft: 20, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: c.neon, fontFamily: mono, fontSize: 10, top: 4, fontWeight: 700 }}>//</span>{b}</div>)}
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
                 {/* Sidebar */}
                 <div style={{ padding: '40px 28px', background: c.surface }}>
-                    <div style={{ marginBottom: 38 }}>
-                        <div style={{ fontFamily: mono, fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: c.neon, marginBottom: 20 }}><span style={{ color: c.neon2 }}>{'>'}</span> Tech Stack</div>
-                        {[['Python', 'EXPERT'], ['C / C++', 'EXPERT'], ['Assembly (x86/ARM)', 'ADVANCED'], ['Rust', 'ADVANCED'], ['Metasploit / Cobalt Strike', 'EXPERT'], ['Burp Suite', 'EXPERT']].map(([name, lvl], i) => (
-                            <div key={i} style={{ fontSize: 12.5, color: c.text, padding: '6px 10px', border: `1px solid ${c.border}`, marginBottom: 6, display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0,255,247,0.02)' }}>
-                                {name}<span style={{ fontFamily: mono, fontSize: 10, color: c.neon, letterSpacing: 1 }}>{lvl}</span>
-                            </div>
-                        ))}
-                    </div>
-                    <div style={{ marginBottom: 38 }}>
-                        <div style={{ fontFamily: mono, fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: c.neon, marginBottom: 20 }}><span style={{ color: c.neon2 }}>{'>'}</span> Education</div>
-                        <h4 style={{ fontFamily: mono, fontSize: 14, fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: 0.5, lineHeight: 1.3 }}>B.S. Computer Science</h4>
-                        <p style={{ fontSize: 11, color: c.muted, marginTop: 3, lineHeight: 1.6, letterSpacing: 0.5 }}>Carnegie Mellon<br />Pittsburgh, PA · 2016</p>
-                    </div>
-                    <div>
-                        <div style={{ fontFamily: mono, fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: c.neon, marginBottom: 20 }}><span style={{ color: c.neon2 }}>{'>'}</span> Certs</div>
-                        {['OSCE3', 'OSCP', 'CISSP', 'GREM (GIAC)', 'CEH', 'CKA'].map((cert, i) => (
-                            <span key={i} style={{ display: 'block', fontSize: 11, color: c.neon, border: `1px solid ${c.border}`, padding: '5px 10px', marginBottom: 5, fontFamily: mono, letterSpacing: 1, background: c.dimNeon }}>{cert}</span>
-                        ))}
-                    </div>
+                    {res.show('skills') && res.skills.length > 0 && (
+                        <div style={{ marginBottom: 38 }}>
+                            <div style={{ fontFamily: mono, fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: c.neon, marginBottom: 20 }}><span style={{ color: c.neon2 }}>{'>'}</span> Tech Stack</div>
+                            {res.skills.map((s, i) => (
+                                <div key={i} style={{ fontSize: 12.5, color: c.text, padding: '6px 10px', border: `1px solid ${c.border}`, marginBottom: 6, background: 'rgba(0,255,247,0.02)' }}>{s}</div>
+                            ))}
+                        </div>
+                    )}
+                    {res.show('education') && res.education.length > 0 && (
+                        <div style={{ marginBottom: 38 }}>
+                            <div style={{ fontFamily: mono, fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: c.neon, marginBottom: 20 }}><span style={{ color: c.neon2 }}>{'>'}</span> Education</div>
+                            {res.education.map((e, i) => (
+                                <div key={i} style={{ marginBottom: 14 }}>
+                                    <h4 style={{ fontFamily: mono, fontSize: 14, fontWeight: 600, color: '#fff', textTransform: 'uppercase', letterSpacing: 0.5, lineHeight: 1.3 }}>{e.degree}</h4>
+                                    <p style={{ fontSize: 11, color: c.muted, marginTop: 3, lineHeight: 1.6, letterSpacing: 0.5 }}>{e.school}<br />{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
