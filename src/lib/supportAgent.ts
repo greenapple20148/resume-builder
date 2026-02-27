@@ -85,12 +85,12 @@ export interface QuickReply {
 }
 
 export const INITIAL_QUICK_REPLIES: QuickReply[] = [
-    { label: '🎨 Browse Templates', message: 'How do I browse and pick a resume template?' },
-    { label: '📄 Export Resume', message: 'How can I export my resume as PDF or DOCX?' },
-    { label: '🤖 AI Features', message: 'What AI tools are available on resumebuildin?' },
-    { label: '💰 Pricing Plans', message: 'What are the different pricing plans?' },
-    { label: '🔑 Account Help', message: "I'm having trouble with my account" },
-    { label: '🎯 Interview Prep', message: 'Tell me about the mock interview feature' },
+    { label: 'Browse Templates', message: 'How do I browse and pick a resume template?' },
+    { label: 'Export Resume', message: 'How can I export my resume as PDF or DOCX?' },
+    { label: 'AI Features', message: 'What AI tools are available on resumebuildin?' },
+    { label: 'Pricing Plans', message: 'What are the different pricing plans?' },
+    { label: 'Account Help', message: "I'm having trouble with my account" },
+    { label: 'Interview Prep', message: 'Tell me about the mock interview feature' },
 ]
 
 export const FOLLOW_UP_SUGGESTIONS: Record<string, QuickReply[]> = {
@@ -152,7 +152,7 @@ export async function sendSupportMessage(
         },
         {
             role: 'model',
-            parts: [{ text: "Hi there! 👋 I'm **Craft**, your resumebuildin support assistant. How can I help you today?" }],
+            parts: [{ text: "Hi there! I'm **Craft**, your resumebuildin support assistant. How can I help you today?" }],
         },
     ]
 
@@ -244,7 +244,7 @@ export function createWelcomeMessage(): SupportMessage {
     return {
         id: generateId(),
         role: 'assistant',
-        content: "Hi there! 👋 I'm **Craft**, your resumebuildin AI assistant. I can help you with templates, exporting, AI tools, account questions, and more. What can I help you with?",
+        content: "Hi there! I'm **Craft**, your resumebuildin AI assistant. I can help you with templates, exporting, AI tools, account questions, and more. What can I help you with?",
         timestamp: Date.now(),
         status: 'done',
     }

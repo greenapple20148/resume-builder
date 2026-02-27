@@ -134,22 +134,22 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                   </Link>
                   {(profile?.plan === 'pro' || profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
                     <Link to="/tools/cover-letter" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
-                      ✉️ Cover Letters
+                      Cover Letters
                     </Link>
                   )}
                   {(profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
                     <>
                       <Link to="/tools/linkedin" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
-                        🔗 LinkedIn Toolkit
+                        LinkedIn Toolkit
                       </Link>
                       <Link to="/tools/interview" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
-                        🎤 Interview Toolkit
+                        Interview Toolkit
                       </Link>
                       <Link to="/tools/mock-interview" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
-                        🤖 AI Mock Interview
+                        AI Mock Interview
                       </Link>
                       <Link to="/tools/ai" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
-                        🧠 AI Tools
+                        AI Tools
                       </Link>
                     </>
                   )}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useStore } from '../lib/store'
 import { verifySubscription } from '../lib/stripe'
+import { LandingIcon } from '../components/LandingIcons'
 
 
 // ── Role-specific interview questions database ──────
@@ -545,12 +546,12 @@ const AVAILABLE_ROLES = Object.keys(ROLE_QUESTIONS)
 
 // ── Interview tips database ─────────────────────────
 const INTERVIEW_TIPS = [
-    { icon: '🎯', title: 'Use the STAR Method', desc: 'Structure behavioral answers with Situation, Task, Action, and Result for clear, compelling stories.' },
-    { icon: '⏱️', title: 'Keep Answers Under 2 Minutes', desc: 'Practice concise answers. Use the timer below to build muscle memory for the right length.' },
-    { icon: '🔄', title: 'Prepare 5-8 Core Stories', desc: 'Most behavioral questions can be answered with 5-8 well-prepared stories from your experience.' },
-    { icon: '🪞', title: 'Mirror Their Language', desc: 'Use terminology from the job description in your answers to show alignment with the role.' },
-    { icon: '📊', title: 'Quantify Everything', desc: 'Numbers make stories memorable. "Improved by 34%" beats "made things better" every time.' },
-    { icon: '❓', title: 'Ask Smart Questions', desc: 'Prepare 3-5 thoughtful questions about the team, challenges, and success metrics for the role.' },
+    { icon: 'target', title: 'Use the STAR Method', desc: 'Structure behavioral answers with Situation, Task, Action, and Result for clear, compelling stories.' },
+    { icon: 'zap', title: 'Keep Answers Under 2 Minutes', desc: 'Practice concise answers. Use the timer below to build muscle memory for the right length.' },
+    { icon: 'refresh', title: 'Prepare 5-8 Core Stories', desc: 'Most behavioral questions can be answered with 5-8 well-prepared stories from your experience.' },
+    { icon: 'search', title: 'Mirror Their Language', desc: 'Use terminology from the job description in your answers to show alignment with the role.' },
+    { icon: 'bar-chart', title: 'Quantify Everything', desc: 'Numbers make stories memorable. "Improved by 34%" beats "made things better" every time.' },
+    { icon: 'lightbulb', title: 'Ask Smart Questions', desc: 'Prepare 3-5 thoughtful questions about the team, challenges, and success metrics for the role.' },
 ]
 
 // ── STAR Builder ─────────────────────────────────────
@@ -659,13 +660,13 @@ function MockInterview({ role }: { role: string }) {
                     Next Question →
                 </button>
                 <button className={`px-4 py-2.5 text-sm font-medium rounded-full border cursor-pointer transition-all ${showTip ? 'border-gold bg-[rgba(201,146,60,0.08)] text-gold' : 'border-ink-10 text-ink-40 hover:border-ink-20'}`} onClick={() => setShowTip(!showTip)}>
-                    💡 {showTip ? 'Hide Tip' : 'Show Tip'}
+                    {showTip ? 'Hide Tip' : 'Show Tip'}
                 </button>
             </div>
 
             {showTip && (
                 <div className="bg-ink-05 border border-ink-10 rounded-xl px-5 py-4 text-left max-w-[480px] text-[13px] text-ink-70 leading-relaxed" style={{ animation: 'fadeUp 0.3s ease both' }}>
-                    <strong className="text-ink text-xs font-mono uppercase tracking-wider block mb-2">💡 Answer Framework</strong>
+                    <strong className="text-ink text-xs font-mono uppercase tracking-wider block mb-2">Answer Framework</strong>
                     <ol className="list-decimal pl-4 flex flex-col gap-1.5 m-0">
                         <li><strong>Set context</strong> — briefly describe the situation (10 sec)</li>
                         <li><strong>Explain your role</strong> — what was YOUR specific responsibility</li>
@@ -774,7 +775,7 @@ export default function InterviewToolkitPage() {
         `BULLET: ${s.bullet}\n\nSITUATION: ${s.situation}\n\nTASK: ${s.task}\n\nACTION: ${s.action}\n\nRESULT: ${s.result}`
 
     const STAR_STEPS = [
-        { icon: '📌', label: 'Resume Bullet', key: 'bullet' as const, type: 'input', hint: 'Which achievement do you want to turn into a story?', placeholder: 'e.g. "Reduced cart abandonment by 34% through checkout redesign"' },
+        { icon: '•', label: 'Resume Bullet', key: 'bullet' as const, type: 'input', hint: 'Which achievement do you want to turn into a story?', placeholder: 'e.g. "Reduced cart abandonment by 34% through checkout redesign"' },
         { icon: 'S', label: 'Situation', key: 'situation' as const, type: 'textarea', hint: 'What was the context? Describe the environment, team, and challenge.', placeholder: 'Our e-commerce checkout had a 67% abandonment rate...' },
         { icon: 'T', label: 'Task', key: 'task' as const, type: 'textarea', hint: 'What was YOUR specific responsibility?', placeholder: 'I was tasked with leading the checkout redesign...' },
         { icon: 'A', label: 'Action', key: 'action' as const, type: 'textarea', hint: 'What did you DO? Be specific about your contribution.', placeholder: 'I ran 12 user interviews and identified 3 key friction points...' },
@@ -787,18 +788,18 @@ export default function InterviewToolkitPage() {
             <div className="min-h-screen">
                 <Navbar />
                 <div className="max-w-[560px] mx-auto px-10 py-20 text-center">
-                    <div className="text-[56px] mb-5">🎤</div>
+                    <div className="flex justify-center mb-5 text-gold"><LandingIcon name="mic" size={48} /></div>
                     <h1>Interview Toolkit</h1>
                     <p className="text-base text-ink-40 mb-10 leading-relaxed">Prepare for interviews with role-specific questions and the STAR story builder.</p>
                     <div className="flex flex-col gap-4 text-left mb-10">
                         {[
-                            { icon: '❓', title: '20 Questions by Role', desc: 'Curated behavioral, technical, and leadership questions for 14 roles' },
-                            { icon: '⭐', title: 'STAR Story Builder', desc: 'Guided step-by-step framework: Situation → Task → Action → Result' },
-                            { icon: '🎯', title: 'Mock Interview Mode', desc: 'Random questions with answer frameworks and a 2-minute practice timer' },
-                            { icon: '🔖', title: 'Bookmark & Practice', desc: 'Save your toughest questions and review them before your interview' },
+                            { icon: 'lightbulb', title: '20 Questions by Role', desc: 'Curated behavioral, technical, and leadership questions for 14 roles' },
+                            { icon: 'star', title: 'STAR Story Builder', desc: 'Guided step-by-step framework: Situation → Task → Action → Result' },
+                            { icon: 'target', title: 'Mock Interview Mode', desc: 'Random questions with answer frameworks and a 2-minute practice timer' },
+                            { icon: 'flag', title: 'Bookmark & Practice', desc: 'Save your toughest questions and review them before your interview' },
                         ].map((f, i) => (
                             <div key={i} className="flex gap-4 items-start p-5 bg-[var(--white)] border border-ink-10 rounded-xl">
-                                <span className="text-2xl shrink-0 mt-0.5">{f.icon}</span>
+                                <span className="shrink-0 mt-0.5 text-gold"><LandingIcon name={f.icon} size={22} /></span>
                                 <div><strong className="text-[15px] block mb-1">{f.title}</strong><p className="text-[13px] text-ink-40 m-0 leading-relaxed">{f.desc}</p></div>
                             </div>
                         ))}
@@ -834,7 +835,7 @@ export default function InterviewToolkitPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {INTERVIEW_TIPS.map((tip, i) => (
                             <div key={i} className="flex gap-3 items-start p-4 bg-[var(--white)] border border-ink-10 rounded-xl transition-all hover:border-gold-pale hover:shadow-sm" style={{ animation: `fadeUp 0.4s ease ${i * 0.06}s both` }}>
-                                <span className="text-xl shrink-0">{tip.icon}</span>
+                                <span className="shrink-0 text-gold"><LandingIcon name={tip.icon} size={20} /></span>
                                 <div>
                                     <strong className="text-[13px] block mb-0.5 text-ink">{tip.title}</strong>
                                     <p className="text-[11.5px] text-ink-40 m-0 leading-[1.6]">{tip.desc}</p>
@@ -854,7 +855,7 @@ export default function InterviewToolkitPage() {
                         </div>
                         {bookmarks.size > 0 && (
                             <button className={`shrink-0 px-3.5 py-1.5 text-xs font-semibold rounded-full border cursor-pointer transition-all ${showBookmarksOnly ? 'border-gold bg-[rgba(201,146,60,0.08)] text-gold' : 'border-ink-10 text-ink-40 hover:border-gold-pale'}`} onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}>
-                                🔖 {bookmarks.size} saved
+                                {bookmarks.size} saved
                             </button>
                         )}
                     </div>
@@ -872,7 +873,7 @@ export default function InterviewToolkitPage() {
                             <>
                                 {/* Tab switcher */}
                                 <div className="flex gap-1 p-1 bg-ink-05 rounded-lg mb-6 w-fit">
-                                    {([['questions', '📋 Questions'], ['mock', '🎯 Mock Interview']] as const).map(([key, label]) => (
+                                    {([['questions', 'Questions'], ['mock', 'Mock Interview']] as const).map(([key, label]) => (
                                         <button key={key} className={`px-4 py-2 text-[13px] font-medium rounded-md cursor-pointer transition-all border-none ${activeTab === key ? 'bg-[var(--white)] text-ink shadow-sm font-semibold' : 'bg-transparent text-ink-40 hover:text-ink'}`} onClick={() => setActiveTab(key)}>
                                             {label}
                                         </button>

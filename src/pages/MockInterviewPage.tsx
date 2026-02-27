@@ -14,6 +14,7 @@ import {
     InterviewSummary,
     PracticeHistoryEntry,
 } from '../lib/ai'
+import { LandingIcon } from '../components/LandingIcons'
 
 type Phase = 'select' | 'configure' | 'interview' | 'summary'
 
@@ -59,7 +60,7 @@ export default function MockInterviewPage() {
             <div className="min-h-screen">
                 <Navbar />
                 <div className="max-w-[560px] mx-auto px-10 py-20 text-center">
-                    <div className="text-[56px] mb-5">🤖</div>
+                    <div className="flex justify-center mb-5 text-gold"><LandingIcon name="brain" size={48} /></div>
                     <h1>AI Mock Interview</h1>
                     <p className="text-base text-ink-40 mb-10 leading-relaxed">Practice with an AI interviewer that adapts to your role, evaluates your answers in real-time, and gives actionable feedback.</p>
                     <div className="flex flex-col gap-4 text-left mb-10">
@@ -205,7 +206,7 @@ export default function MockInterviewPage() {
                                 )}
                                 {practiceHistory.length > 0 && (
                                     <button className="bg-[var(--bg)] border border-ink-10 text-ink-60 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-all hover:border-gold hover:text-gold" onClick={() => setShowHistory(!showHistory)}>
-                                        📊 {showHistory ? 'Hide' : 'View'} History ({practiceHistory.length})
+                                        {showHistory ? 'Hide' : 'View'} History ({practiceHistory.length})
                                     </button>
                                 )}
                             </div>
@@ -221,7 +222,7 @@ export default function MockInterviewPage() {
                                         return (
                                             <div key={entry.id} className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl p-4 transition-colors hover:border-gold">
                                                 <div className="flex items-center gap-2.5 mb-2.5">
-                                                    <span className="text-2xl">{typeData?.icon || '🎯'}</span>
+                                                    <span className="text-gold"><LandingIcon name={typeData?.icon || 'target'} size={22} /></span>
                                                     <div>
                                                         <div className="text-[13px] font-bold text-ink">{typeData?.name || entry.interview_type}</div>
                                                         <div className="text-[11px] text-ink-40">{entry.role} · {entry.difficulty}</div>
@@ -231,9 +232,9 @@ export default function MockInterviewPage() {
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-2.5 flex-wrap text-[11px] text-ink-40 mb-1.5">
-                                                    <span>🎯 Clarity: {entry.clarity_avg}/10</span>
-                                                    <span>💪 Confidence: {entry.confidence_avg}/10</span>
-                                                    <span>🔑 Keywords: {entry.keyword_relevance_avg}/10</span>
+                                                    <span>Clarity: {entry.clarity_avg}/10</span>
+                                                    <span>Confidence: {entry.confidence_avg}/10</span>
+                                                    <span>Keywords: {entry.keyword_relevance_avg}/10</span>
                                                 </div>
                                                 <div className="text-[11px] text-ink-20">
                                                     {new Date(entry.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
@@ -251,7 +252,7 @@ export default function MockInterviewPage() {
                         <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 mb-8">
                             {Object.entries(INTERVIEW_TYPES).map(([id, type]) => (
                                 <div key={id} className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-2xl p-6 cursor-pointer transition-all text-left hover:border-gold hover:-translate-y-0.5 hover:shadow-xl" onClick={() => handleTypeSelect(id)}>
-                                    <span className="text-[32px] mb-3 block">{type.icon}</span>
+                                    <span className="text-gold mb-3 block"><LandingIcon name={type.icon} size={30} /></span>
                                     <div className="font-bold text-base text-ink mb-1.5">{type.name}</div>
                                     <div className="text-[13px] text-ink-40 leading-relaxed">{type.description}</div>
                                     <div className="mt-2.5 text-[11px] text-ink-20 uppercase tracking-wide font-semibold">{type.defaultQuestions} questions</div>
@@ -264,7 +265,7 @@ export default function MockInterviewPage() {
                 {/* ── CONFIGURE ───────────────────────────── */}
                 {phase === 'configure' && typeInfo && (
                     <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-2xl p-8 mb-6">
-                        <div className="text-lg font-bold text-ink mb-1">{typeInfo.icon} {typeInfo.name}</div>
+                        <div className="text-lg font-bold text-ink mb-1">{typeInfo.name}</div>
                         <div className="text-[13px] text-ink-40 mb-6">{typeInfo.description}</div>
 
                         <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-5 mb-6">
@@ -288,7 +289,7 @@ export default function MockInterviewPage() {
                             <div className="flex gap-2">
                                 {(['easy', 'medium', 'hard'] as const).map(d => (
                                     <button key={d} className={`px-4 py-2 rounded-lg border text-[13px] cursor-pointer transition-all ${config.difficulty === d ? 'bg-gradient-to-br from-gold to-gold-light text-black border-gold font-semibold' : 'border-ink-10 bg-[var(--bg)] text-ink-60 hover:border-gold'}`} onClick={() => setConfig(prev => ({ ...prev, difficulty: d }))}>
-                                        {d === 'easy' ? '🟢 Easy' : d === 'medium' ? '🟡 Medium' : '🔴 Hard'}
+                                        {d === 'easy' ? 'Easy' : d === 'medium' ? 'Medium' : 'Hard'}
                                     </button>
                                 ))}
                             </div>
@@ -329,7 +330,7 @@ export default function MockInterviewPage() {
                         {!isLoading && currentQuestion && (
                             <>
                                 <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-2xl p-7 mb-5">
-                                    <div className="text-[11px] uppercase tracking-wide font-bold text-gold mb-2.5">{typeInfo?.icon} Question {currentIndex + 1}</div>
+                                    <div className="text-[11px] uppercase tracking-wide font-bold text-gold mb-2.5">Question {currentIndex + 1}</div>
                                     <div className="text-[17px] font-semibold text-ink leading-relaxed">{currentQuestion}</div>
                                 </div>
 
@@ -348,10 +349,10 @@ export default function MockInterviewPage() {
                                             <button className="btn btn-ghost btn-sm" onClick={handleReset}>End Interview</button>
                                         </div>
                                         <div className="text-xs text-ink-20 mt-2">
-                                            {config.type === 'behavioral' && '💡 Tip: Use the STAR method (Situation → Task → Action → Result)'}
-                                            {config.type === 'system_design' && '💡 Tip: Start with requirements, then high-level design, then deep-dive'}
-                                            {config.type === 'technical' && '💡 Tip: Explain your thought process, not just the solution'}
-                                            {config.type === 'salary' && '💡 Tip: Back your ask with market data and specific achievements'}
+                                            {config.type === 'behavioral' && 'Tip: Use the STAR method (Situation → Task → Action → Result)'}
+                                            {config.type === 'system_design' && 'Tip: Start with requirements, then high-level design, then deep-dive'}
+                                            {config.type === 'technical' && 'Tip: Explain your thought process, not just the solution'}
+                                            {config.type === 'salary' && 'Tip: Back your ask with market data and specific achievements'}
                                         </div>
                                     </div>
                                 )}
@@ -376,18 +377,18 @@ export default function MockInterviewPage() {
 
                                         {/* Metric gauges */}
                                         <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3 mb-4">
-                                            <ScoreGauge label="🎯 Clarity" value={currentEvaluation.clarity_score} />
-                                            <ScoreGauge label="💪 Confidence" value={currentEvaluation.confidence_score} />
-                                            <ScoreGauge label="🔑 Keywords" value={currentEvaluation.keyword_relevance} />
+                                            <ScoreGauge label="Clarity" value={currentEvaluation.clarity_score} />
+                                            <ScoreGauge label="Confidence" value={currentEvaluation.confidence_score} />
+                                            <ScoreGauge label="Keywords" value={currentEvaluation.keyword_relevance} />
                                             {currentEvaluation.technical_accuracy !== undefined && (
-                                                <ScoreGauge label="⚙️ Tech Accuracy" value={currentEvaluation.technical_accuracy} />
+                                                <ScoreGauge label="Tech Accuracy" value={currentEvaluation.technical_accuracy} />
                                             )}
                                         </div>
 
                                         {/* STAR Detection */}
                                         {currentEvaluation.star_detected && currentEvaluation.star_breakdown && (
                                             <div className="mb-4">
-                                                <div className="text-xs font-bold text-gold mb-2">⭐ STAR Structure Detected</div>
+                                                <div className="text-xs font-bold text-gold mb-2">STAR Structure Detected</div>
                                                 <div className="grid grid-cols-4 gap-2 mb-4">
                                                     {Object.entries(currentEvaluation.star_breakdown).map(([key, val]) => (
                                                         <div key={key} className="text-center py-2.5 px-1.5 bg-[var(--bg)] rounded-lg border border-ink-10">
@@ -400,7 +401,7 @@ export default function MockInterviewPage() {
                                         )}
                                         {currentEvaluation.star_detected === false && config.type === 'behavioral' && (
                                             <div className="px-3.5 py-2.5 bg-amber-500/[0.08] border border-amber-500/20 rounded-lg text-xs text-amber-500 mb-4">
-                                                ⚠️ No STAR structure detected. Try structuring with Situation → Task → Action → Result.
+                                                No STAR structure detected. Try structuring with Situation → Task → Action → Result.
                                             </div>
                                         )}
 
@@ -409,7 +410,7 @@ export default function MockInterviewPage() {
                                             <div className="mb-4 p-3 bg-[var(--bg)] rounded-xl border border-ink-10">
                                                 {currentEvaluation.keywords_found?.length > 0 && (
                                                     <div className="mb-2 last:mb-0">
-                                                        <span className="block text-[11px] font-semibold text-green-500 mb-1">✅ Keywords used:</span>
+                                                        <span className="block text-[11px] font-semibold text-green-500 mb-1">Keywords used:</span>
                                                         <div className="flex flex-wrap gap-1">
                                                             {currentEvaluation.keywords_found.map((k, i) => (
                                                                 <span key={i} className="inline-block px-2 py-0.5 rounded text-[11px] bg-green-500/10 text-green-500 border border-green-500/20">{k}</span>
@@ -419,7 +420,7 @@ export default function MockInterviewPage() {
                                                 )}
                                                 {currentEvaluation.keywords_missing?.length > 0 && (
                                                     <div className="mb-2 last:mb-0">
-                                                        <span className="block text-[11px] font-semibold text-amber-500 mb-1">⚠️ Missing keywords:</span>
+                                                        <span className="block text-[11px] font-semibold text-amber-500 mb-1">Missing keywords:</span>
                                                         <div className="flex flex-wrap gap-1">
                                                             {currentEvaluation.keywords_missing.map((k, i) => (
                                                                 <span key={i} className="inline-block px-2 py-0.5 rounded text-[11px] bg-amber-500/10 text-amber-500 border border-amber-500/20">{k}</span>
@@ -452,7 +453,7 @@ export default function MockInterviewPage() {
                                         {/* Improved answer */}
                                         {currentEvaluation.improved_answer && (
                                             <div className="mt-4 p-3.5 bg-gradient-to-br from-gold/[0.06] to-gold/[0.02] rounded-xl border border-gold/20">
-                                                <div className="text-[11px] uppercase tracking-wide font-bold text-gold mb-1.5">✨ Suggested Improved Answer</div>
+                                                <div className="text-[11px] uppercase tracking-wide font-bold text-gold mb-1.5">Suggested Improved Answer</div>
                                                 <div className="text-[13px] text-ink-60 leading-relaxed">{currentEvaluation.improved_answer}</div>
                                             </div>
                                         )}
@@ -460,7 +461,7 @@ export default function MockInterviewPage() {
                                         {/* Ideal answer */}
                                         {currentEvaluation.sample_answer && (
                                             <div className="mt-3 p-3.5 bg-[var(--bg)] rounded-xl border border-ink-10">
-                                                <div className="text-[11px] uppercase tracking-wide font-bold text-ink-40 mb-1.5">💎 Ideal Answer</div>
+                                                <div className="text-[11px] uppercase tracking-wide font-bold text-ink-40 mb-1.5">Ideal Answer</div>
                                                 <div className="text-[13px] text-ink-60 leading-relaxed">{currentEvaluation.sample_answer}</div>
                                             </div>
                                         )}
@@ -485,7 +486,7 @@ export default function MockInterviewPage() {
                                 {summary.overall_score}
                             </div>
                             <div className="text-lg font-bold text-ink mb-1">{summary.verdict}</div>
-                            <div className="text-[13px] text-ink-40">{typeInfo?.icon} {typeInfo?.name} · {config.role} · {config.difficulty}</div>
+                            <div className="text-[13px] text-ink-40">{typeInfo?.name} · {config.role} · {config.difficulty}</div>
                         </div>
 
                         {isLoading && (
@@ -532,13 +533,13 @@ export default function MockInterviewPage() {
 
                         {summary.final_offer && (
                             <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl p-5 mb-4">
-                                <h4 className="text-sm font-bold text-ink mb-2">💰 Estimated Final Offer</h4>
+                                <h4 className="text-sm font-bold text-ink mb-2">Estimated Final Offer</h4>
                                 <p className="text-[13px] text-ink-60 leading-relaxed">{summary.final_offer}</p>
                             </div>
                         )}
 
                         <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl p-5 mb-6">
-                            <h4 className="text-sm font-bold text-ink mb-2">📋 Recommendation</h4>
+                            <h4 className="text-sm font-bold text-ink mb-2">Recommendation</h4>
                             <p className="text-[13px] text-ink-60 leading-relaxed">{summary.recommendation}</p>
                         </div>
 
@@ -565,10 +566,10 @@ export default function MockInterviewPage() {
                                         <div className="px-5 py-4 border-t border-ink-10 text-[13px] text-ink-60 leading-relaxed">
                                             <p><strong>Your answer:</strong> {q.answer}</p>
                                             {q.evaluation.improved_answer && (
-                                                <p className="mt-2 text-gold"><strong>✨ Improved:</strong> {q.evaluation.improved_answer}</p>
+                                                <p className="mt-2 text-gold"><strong>Improved:</strong> {q.evaluation.improved_answer}</p>
                                             )}
                                             {q.evaluation.sample_answer && (
-                                                <p className="mt-2"><strong>💎 Ideal:</strong> {q.evaluation.sample_answer}</p>
+                                                <p className="mt-2"><strong>Ideal:</strong> {q.evaluation.sample_answer}</p>
                                             )}
                                         </div>
                                     )}

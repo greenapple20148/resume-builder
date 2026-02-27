@@ -9,11 +9,17 @@ import {
     sendSupportMessage,
     getFollowUpSuggestions,
 } from '../lib/supportAgent'
+import { sanitizeHtml, escapeHtml } from '../lib/sanitize'
 import '../styles/support-agent.css'
 
 /* ── Simple markdown-to-HTML for chat bubbles ──────────── */
-function renderMarkdown(text: string): string {
-    return text
+function renderMarkdown(text: string, role: 'user' | 'assistant' | 'system'): string {
+    // Escape user messages first to prevent XSS, then apply markdown
+    // Assistant messages come from our own system so we escape them too for safety
+    let safe = escapeHtml(text)
+
+    // Apply markdown transformations on the escaped text
+    safe = safe
         // Bold
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         // Italic
@@ -34,6 +40,9 @@ function renderMarkdown(text: string): string {
             return `<p>${block.replace(/\n/g, '<br/>')}</p>`
         })
         .join('')
+
+    // Final sanitization pass — only allow safe tags
+    return sanitizeHtml(safe)
 }
 
 function formatTime(timestamp: number): string {
@@ -223,7 +232,7 @@ export default function SupportAgent() {
                 <div className={`support-window ${isClosing ? 'closing' : ''}`} id="support-agent-window">
                     {/* Header */}
                     <div className="support-header">
-                        <div className="support-avatar">🤖</div>
+                        <div className="support-avatar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" /><rect x="4" y="14" width="16" height="8" rx="2" /><line x1="9" y1="18" x2="9" y2="18.01" /><line x1="15" y1="18" x2="15" y2="18.01" /></svg></div>
                         <div className="support-header-info">
                             <div className="support-header-name">Craft AI Support</div>
                             <div className="support-header-status">
@@ -261,7 +270,7 @@ export default function SupportAgent() {
                             <div key={msg.id}>
                                 <div className={`support-msg ${msg.role}`}>
                                     <div className="support-msg-avatar">
-                                        {msg.role === 'assistant' ? '🤖' : '👤'}
+                                        {msg.role === 'assistant' ? '◈' : '○'}
                                     </div>
                                     <div>
                                         <div
@@ -270,7 +279,7 @@ export default function SupportAgent() {
                                                 __html:
                                                     msg.status === 'streaming' && !msg.content
                                                         ? '<div class="support-typing"><div class="support-typing-dot"></div><div class="support-typing-dot"></div><div class="support-typing-dot"></div></div>'
-                                                        : renderMarkdown(msg.content),
+                                                        : renderMarkdown(msg.content, msg.role),
                                             }}
                                         />
                                         <div className="support-msg-time">{formatTime(msg.timestamp)}</div>
@@ -331,7 +340,7 @@ export default function SupportAgent() {
 
                     {/* Powered By */}
                     <div className="support-powered">
-                        Powered by Gemini AI ✦ resumebuildin
+                        Powered by Gemini AI · resumebuildin
                     </div>
                 </div>
             )}

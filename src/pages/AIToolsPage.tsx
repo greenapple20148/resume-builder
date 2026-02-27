@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useStore } from '../lib/store'
 import { useSEO } from '../lib/useSEO'
+import { LandingIcon } from '../components/LandingIcons'
 
 // ── Helper: extract text from resume ────────────────
 function getResumeText(resume: any): string {
@@ -51,15 +52,15 @@ function analyzeSTAR(text: string): { scores: Record<string, number>; overall: n
         const score = Math.min(100, Math.round((found.length / 3) * 100))
         scores[component] = score
         total += score
-        if (score < 40) feedback.push(`⚠️ Weak ${component.charAt(0).toUpperCase() + component.slice(1)}: Try adding context about ${component === 'situation' ? 'the background and challenge' : component === 'task' ? 'your specific responsibility' : component === 'action' ? 'the concrete steps you took' : 'measurable outcomes and impact'}.`)
+        if (score < 40) feedback.push(`[!] Weak ${component.charAt(0).toUpperCase() + component.slice(1)}: Try adding context about ${component === 'situation' ? 'the background and challenge' : component === 'task' ? 'your specific responsibility' : component === 'action' ? 'the concrete steps you took' : 'measurable outcomes and impact'}.`)
     }
 
     const overall = Math.round(total / 4)
     const detected = overall > 40
 
-    if (overall > 75) feedback.unshift('✅ Strong STAR format detected! Your answer clearly follows the Situation-Task-Action-Result framework.')
-    else if (overall > 50) feedback.unshift('🟡 Partial STAR format detected. Strengthen the weaker components for a more compelling answer.')
-    else feedback.unshift('🔴 STAR format is weak or absent. Restructure your answer using the Situation → Task → Action → Result framework.')
+    if (overall > 75) feedback.unshift('Strong STAR format detected! Your answer clearly follows the Situation-Task-Action-Result framework.')
+    else if (overall > 50) feedback.unshift('Partial STAR format detected. Strengthen the weaker components for a more compelling answer.')
+    else feedback.unshift('STAR format is weak or absent. Restructure your answer using the Situation → Task → Action → Result framework.')
 
     return { scores, overall, feedback, detected }
 }
@@ -103,13 +104,13 @@ function analyzeConfidence(text: string): { confidenceScore: number; clarityScor
     const clarityScore = Math.max(0, Math.min(100, 85 - lengthPenalty - tooShort + (powerCount > 0 ? 10 : 0)))
 
     const feedback: string[] = []
-    if (fillerCount > 0) feedback.push(`🗣️ Found ${fillerCount} filler word${fillerCount > 1 ? 's' : ''} — remove these for a more authoritative tone.`)
-    if (hedgeCount > 0) feedback.push(`🤔 Found ${hedgeCount} hedging phrase${hedgeCount > 1 ? 's' : ''} — replace "I think" with definitive statements.`)
-    if (powerCount > 0) feedback.push(`💪 Great! Used ${powerCount} power word${powerCount > 1 ? 's' : ''} that convey impact.`)
-    if (avgSentenceLength > 25) feedback.push(`📏 Average sentence length is ${avgSentenceLength} words — aim for 15-20 for clarity.`)
-    if (confidenceScore > 70) feedback.push('✅ Your tone sounds confident and assertive.')
-    else if (confidenceScore > 45) feedback.push('🟡 Your confidence level is moderate — try being more direct and specific.')
-    else feedback.push('🔴 Your answer sounds uncertain. Remove filler words and state your achievements directly.')
+    if (fillerCount > 0) feedback.push(`Found ${fillerCount} filler word${fillerCount > 1 ? 's' : ''} — remove these for a more authoritative tone.`)
+    if (hedgeCount > 0) feedback.push(`Found ${hedgeCount} hedging phrase${hedgeCount > 1 ? 's' : ''} — replace "I think" with definitive statements.`)
+    if (powerCount > 0) feedback.push(`Great! Used ${powerCount} power word${powerCount > 1 ? 's' : ''} that convey impact.`)
+    if (avgSentenceLength > 25) feedback.push(`Average sentence length is ${avgSentenceLength} words — aim for 15-20 for clarity.`)
+    if (confidenceScore > 70) feedback.push('Your tone sounds confident and assertive.')
+    else if (confidenceScore > 45) feedback.push('Your confidence level is moderate — try being more direct and specific.')
+    else feedback.push('Your answer sounds uncertain. Remove filler words and state your achievements directly.')
 
     return { confidenceScore, clarityScore, fillerCount, hedgeCount, powerCount, sentenceCount: sentences.length, avgSentenceLength, feedback }
 }
@@ -230,15 +231,15 @@ function convertToLinkedIn(resume: any): { headline: string; about: string; expe
         aboutParts.push(`\n\nWith ${years}+ years of professional experience, I bring expertise in ${skills.slice(0, 5).join(', ')}.`)
     }
     if (skills.length > 0) {
-        aboutParts.push(`\n\n🔧 Core Skills: ${skills.join(' | ')}`)
+        aboutParts.push(`\n\nCore Skills: ${skills.join(' | ')}`)
     }
-    aboutParts.push('\n\n📩 Open to connecting — feel free to reach out!')
+    aboutParts.push('\n\nOpen to connecting — feel free to reach out!')
     const about = aboutParts.join('')
 
     // Experience
     const experience = (d.experience || []).map((e: any) => {
         const lines = [`**${e.title || 'Position'}** at **${e.company || 'Company'}**`]
-        if (e.startDate) lines.push(`📅 ${e.startDate} — ${e.current ? 'Present' : e.endDate || 'Present'}`)
+        if (e.startDate) lines.push(`${e.startDate} — ${e.current ? 'Present' : e.endDate || 'Present'}`)
         if (e.description) {
             const bullets = e.description.split('\n').filter((l: string) => l.trim())
             lines.push(...bullets.map((b: string) => `• ${b.replace(/^[•\-–—]\s*/, '')}`))
@@ -294,12 +295,12 @@ function findMissingKeywords(resumeText: string, jobDescription: string): { foun
 type ToolId = 'star' | 'confidence' | 'followup' | 'weakness' | 'linkedin' | 'keywords'
 
 const TOOLS: { id: ToolId; icon: string; title: string; desc: string }[] = [
-    { id: 'star', icon: '🧠', title: 'STAR Answer Detection', desc: 'Check if your interview answers follow the STAR framework' },
-    { id: 'confidence', icon: '📉', title: 'Confidence & Clarity Score', desc: 'Analyze tone, filler words, and assertiveness' },
-    { id: 'followup', icon: '🎙', title: 'Follow-Up Question Sim', desc: 'Predict what interviewers will ask next' },
-    { id: 'weakness', icon: '📋', title: 'Resume Weakness Analyzer', desc: 'Find gaps, weak verbs, and missing metrics' },
-    { id: 'linkedin', icon: '🧾', title: 'Resume → LinkedIn', desc: 'Auto-convert your resume to a LinkedIn profile' },
-    { id: 'keywords', icon: '🔍', title: 'Missing Keyword Detector', desc: 'Compare your resume against any job description' },
+    { id: 'star', icon: 'brain', title: 'STAR Answer Detection', desc: 'Check if your interview answers follow the STAR framework' },
+    { id: 'confidence', icon: 'trend-down', title: 'Confidence & Clarity Score', desc: 'Analyze tone, filler words, and assertiveness' },
+    { id: 'followup', icon: 'mic', title: 'Follow-Up Question Sim', desc: 'Predict what interviewers will ask next' },
+    { id: 'weakness', icon: 'clipboard', title: 'Resume Weakness Analyzer', desc: 'Find gaps, weak verbs, and missing metrics' },
+    { id: 'linkedin', icon: 'linkedin', title: 'Resume → LinkedIn', desc: 'Auto-convert your resume to a LinkedIn profile' },
+    { id: 'keywords', icon: 'search', title: 'Missing Keyword Detector', desc: 'Compare your resume against any job description' },
 ]
 
 // ── Score Bar Component ─────────────────────────────
@@ -378,7 +379,7 @@ export default function AIToolsPage() {
 
     const signUpPrompt = (
         <div className="text-center py-14">
-            <div className="text-5xl mb-4">🔒</div>
+            <div className="flex justify-center mb-4 text-ink-20"><LandingIcon name="lock" size={48} /></div>
             <h3 className="text-xl font-semibold mb-2">Sign up to analyze your resume</h3>
             <p className="text-sm text-ink-40 mb-6 max-w-[400px] mx-auto leading-relaxed">Create a free account and build your resume to unlock this tool. It only takes a minute.</p>
             <div className="flex gap-3 justify-center">
@@ -394,7 +395,7 @@ export default function AIToolsPage() {
             case 'star':
                 return (
                     <div>
-                        <h3 className="text-xl font-semibold mb-1">🧠 STAR Answer Detection</h3>
+                        <h3 className="text-xl font-semibold mb-1">STAR Answer Detection</h3>
                         <p className="text-sm text-ink-40 mb-5">Paste an interview answer to check if it follows the Situation → Task → Action → Result framework.</p>
                         <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Paste your interview answer here... e.g. &quot;When I was working at Google, our team faced a challenge with...&quot;" className="w-full h-40 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors" />
                         {starResult && (
@@ -422,7 +423,7 @@ export default function AIToolsPage() {
             case 'confidence':
                 return (
                     <div>
-                        <h3 className="text-xl font-semibold mb-1">📉 Confidence & Clarity Score</h3>
+                        <h3 className="text-xl font-semibold mb-1">Confidence & Clarity Score</h3>
                         <p className="text-sm text-ink-40 mb-5">Paste your answer to detect filler words, hedging language, and assess overall assertiveness.</p>
                         <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Paste your interview answer here..." className="w-full h-40 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors" />
                         {confResult && (
@@ -457,7 +458,7 @@ export default function AIToolsPage() {
             case 'followup':
                 return (
                     <div>
-                        <h3 className="text-xl font-semibold mb-1">🎙 Follow-Up Question Simulation</h3>
+                        <h3 className="text-xl font-semibold mb-1">Follow-Up Question Simulation</h3>
                         <p className="text-sm text-ink-40 mb-5">Paste your interview answer and see which follow-up questions an interviewer is likely to ask.</p>
                         <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Paste your interview answer here..." className="w-full h-40 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors" />
                         {followUps.length > 0 && (
@@ -472,7 +473,7 @@ export default function AIToolsPage() {
                                     ))}
                                 </div>
                                 <div className="mt-4 p-4 bg-[rgba(201,146,60,0.06)] border border-gold-pale rounded-xl">
-                                    <div className="text-xs font-mono uppercase tracking-widest text-gold mb-2">💡 Pro Tip</div>
+                                    <div className="text-xs font-mono uppercase tracking-widest text-gold mb-2">Pro Tip</div>
                                     <p className="text-sm text-ink-50 leading-relaxed">Prepare answers for each of these follow-ups. Interviewers probe deeper when they sense expertise or ambiguity. Having prepared responses shows depth.</p>
                                 </div>
                             </div>
@@ -485,7 +486,7 @@ export default function AIToolsPage() {
                 if (!isLoggedIn) return signUpPrompt
                 return (
                     <div>
-                        <h3 className="text-xl font-semibold mb-1">📋 Resume Weakness Analyzer</h3>
+                        <h3 className="text-xl font-semibold mb-1">Resume Weakness Analyzer</h3>
                         <p className="text-sm text-ink-40 mb-5">Scans your resume for gaps, weak verbs, missing metrics, and red flags that make recruiters reject.</p>
                         {resumes.length > 0 && (
                             <select value={selectedResume} onChange={e => setSelectedResume(e.target.value)} className="w-full p-3 bg-[var(--white)] border border-ink-10 rounded-xl text-sm mb-5 focus:outline-none focus:border-gold">
@@ -511,7 +512,7 @@ export default function AIToolsPage() {
                                 </div>
                                 {weaknessResult.issues.length === 0 ? (
                                     <div className="text-center py-10 text-ink-30">
-                                        <div className="text-4xl mb-2">✅</div>
+                                        <div className="flex justify-center mb-2 text-green-500"><LandingIcon name="check-circle" size={36} /></div>
                                         <p className="font-medium">Your resume looks strong! No critical issues found.</p>
                                     </div>
                                 ) : (
@@ -524,7 +525,7 @@ export default function AIToolsPage() {
                                                     </span>
                                                     <span className="text-sm font-semibold text-ink">{issue.message}</span>
                                                 </div>
-                                                <p className="text-xs text-ink-40 mt-1">💡 {issue.fix}</p>
+                                                <p className="text-xs text-ink-40 mt-1">Tip: {issue.fix}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -539,7 +540,7 @@ export default function AIToolsPage() {
                 if (!isLoggedIn) return signUpPrompt
                 return (
                     <div>
-                        <h3 className="text-xl font-semibold mb-1">🧾 Resume → LinkedIn Auto-Convert</h3>
+                        <h3 className="text-xl font-semibold mb-1">Resume → LinkedIn Auto-Convert</h3>
                         <p className="text-sm text-ink-40 mb-5">One-click conversion of your resume into an optimized LinkedIn headline, about section, and experience.</p>
                         {resumes.length > 0 && (
                             <select value={selectedResume} onChange={e => setSelectedResume(e.target.value)} className="w-full p-3 bg-[var(--white)] border border-ink-10 rounded-xl text-sm mb-5 focus:outline-none focus:border-gold">
@@ -588,7 +589,7 @@ export default function AIToolsPage() {
                 if (!isLoggedIn) return signUpPrompt
                 return (
                     <div>
-                        <h3 className="text-xl font-semibold mb-1">🔍 Missing Keyword Detector</h3>
+                        <h3 className="text-xl font-semibold mb-1">Missing Keyword Detector</h3>
                         <p className="text-sm text-ink-40 mb-5">Paste a job description to find critical keywords missing from your resume.</p>
                         {resumes.length > 0 && (
                             <select value={selectedResume} onChange={e => setSelectedResume(e.target.value)} className="w-full p-3 bg-[var(--white)] border border-ink-10 rounded-xl text-sm mb-3 focus:outline-none focus:border-gold">
@@ -614,7 +615,7 @@ export default function AIToolsPage() {
                                 {/* Missing */}
                                 {keywordResult.missing.length > 0 && (
                                     <div className="mb-4">
-                                        <div className="text-xs font-mono uppercase tracking-widest text-red-500 mb-2.5">⚠️ Missing Keywords — Add These</div>
+                                        <div className="text-xs font-mono uppercase tracking-widest text-red-500 mb-2.5">Missing Keywords — Add These</div>
                                         <div className="flex flex-wrap gap-2">
                                             {keywordResult.missing.map((kw, i) => (
                                                 <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-red-50 text-red-600 border border-red-100 font-medium">{kw}</span>
@@ -625,7 +626,7 @@ export default function AIToolsPage() {
                                 {/* Found */}
                                 {keywordResult.found.length > 0 && (
                                     <div>
-                                        <div className="text-xs font-mono uppercase tracking-widest text-green-600 mb-2.5">✅ Keywords Found</div>
+                                        <div className="text-xs font-mono uppercase tracking-widest text-green-600 mb-2.5">Keywords Found</div>
                                         <div className="flex flex-wrap gap-2">
                                             {keywordResult.found.map((kw, i) => (
                                                 <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-green-50 text-green-600 border border-green-100 font-medium">{kw}</span>
@@ -665,7 +666,7 @@ export default function AIToolsPage() {
                                         }`}
                                 >
                                     <div className="flex items-center gap-3">
-                                        <span className="text-lg">{tool.icon}</span>
+                                        <span className="text-gold"><LandingIcon name={tool.icon} size={18} /></span>
                                         <div>
                                             <div className={`text-sm font-semibold ${activeTool === tool.id ? 'text-gold-dark' : 'text-ink'}`}>{tool.title}</div>
                                             <div className="text-[11px] text-ink-30 leading-snug mt-0.5">{tool.desc}</div>

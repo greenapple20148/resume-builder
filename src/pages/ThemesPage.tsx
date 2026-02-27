@@ -18,18 +18,15 @@ interface Theme {
 }
 
 const THEMES: Theme[] = [
-  { id: 'editorial_luxe', name: 'Editorial Luxe', category: 'creative', desc: 'Luxe editorial layout', accent: '#dca47d', bg: '#fdfbf9' },
-  { id: 'dark_architect', name: 'Dark Architect', category: 'dark', desc: 'Dark tech aesthetic', accent: '#f5c800', bg: '#121212' },
-  { id: 'bauhaus_geometric', name: 'Bauhaus Geometric', category: 'creative', desc: 'Geometric design', accent: '#005bb5', bg: '#fafafa' },
+  { id: 'editorial_luxe', name: 'Editorial Luxe', category: 'creative', desc: 'Luxe editorial layout', accent: '#dca47d', bg: '#fdfbf9', premium: true },
+  { id: 'dark_architect', name: 'Dark Architect', category: 'dark', desc: 'Dark tech aesthetic', accent: '#f5c800', bg: '#121212', premium: true },
+  { id: 'bauhaus_geometric', name: 'Bauhaus Geometric', category: 'creative', desc: 'Geometric design', accent: '#005bb5', bg: '#fafafa', premium: true },
   { id: 'soft_pastel', name: 'Soft Pastel', category: 'creative', desc: 'Pastel aesthetic', accent: '#a29bfe', bg: '#fbf9fc' },
   { id: 'swiss_grid', name: 'Swiss Grid', category: 'minimal', desc: 'Clean grid system', accent: '#e84118', bg: '#ffffff' },
 
   { id: 'phd', name: 'PhD Academic', category: 'professional', desc: 'Academic focus', accent: '#1a4e8a', bg: '#ffffff' },
 
   { id: 'dark', name: 'Dark Elegant', category: 'dark', desc: 'Gold accents on dark', accent: '#c9a84c', bg: '#0f0f14', premium: true },
-
-
-
 
 
 
@@ -47,16 +44,16 @@ const THEMES: Theme[] = [
   { id: 'carbon_noir', name: 'Carbon Noir', category: 'dark', desc: 'Dark zinc panels with slash bullets', accent: '#ffffff', bg: '#18181b', new: true },
   { id: 'sand_dune', name: 'Sand Dune', category: 'creative', desc: 'Warm amber gradient with serif accents', accent: '#d97706', bg: '#fafaf9', new: true },
   { id: 'indigo_sharp', name: 'Indigo Sharp', category: 'professional', desc: 'Bold indigo border with diamond markers', accent: '#4f46e5', bg: '#ffffff', new: true },
-  { id: 'platinum_elite', name: 'Platinum Elite', category: 'professional', desc: 'Executive two-panel with KPI bar', accent: '#94a3b8', bg: '#ffffff', new: true },
+  { id: 'platinum_elite', name: 'Platinum Elite', category: 'professional', desc: 'Executive two-panel with KPI bar', accent: '#94a3b8', bg: '#ffffff', new: true, premium: true },
   { id: 'cascade_blue', name: 'Cascade Blue', category: 'professional', desc: 'Navy sidebar with gradient skill bars', accent: '#1a6fb5', bg: '#0f2a4a', new: true },
   { id: 'nordic_minimal', name: 'Nordic Minimal', category: 'minimal', desc: 'Clean Scandinavian design with serif accents', accent: '#2d6a4f', bg: '#fafafa', new: true },
-  { id: 'midnight_pro', name: 'Midnight Pro', category: 'dark', desc: 'Luxurious dark with gold accents', accent: '#c9a84c', bg: '#0c0f1a', new: true },
-  { id: 'blueprint', name: 'Blueprint', category: 'dark', desc: 'Engineering blueprint with grid overlay', accent: '#4a9eff', bg: '#0a1628', new: true },
+  { id: 'midnight_pro', name: 'Midnight Pro', category: 'dark', desc: 'Luxurious dark with gold accents', accent: '#c9a84c', bg: '#0c0f1a', new: true, premium: true },
+  { id: 'blueprint', name: 'Blueprint', category: 'dark', desc: 'Engineering blueprint with grid overlay', accent: '#4a9eff', bg: '#0a1628', new: true, premium: true },
   { id: 'emerald_fresh', name: 'Emerald Fresh', category: 'creative', desc: 'Green header with triangle bullets', accent: '#1a7a4a', bg: '#ffffff', new: true },
   { id: 'sunset_warm', name: 'Sunset Warm', category: 'creative', desc: 'Amber sunset gradient with dot ratings', accent: '#c97c2a', bg: '#f7efe3', new: true },
   { id: 'newspaper_classic', name: 'Newspaper Classic', category: 'minimal', desc: 'Editorial 3-column newspaper layout', accent: '#8b1a1a', bg: '#faf7f3', new: true },
-  { id: 'ivory_marble', name: 'Ivory Marble', category: 'professional', desc: 'Luxury navy sidebar with gold accents', accent: '#b8963c', bg: '#f9f6f0', new: true },
-  { id: 'neon_cyber', name: 'Neon Cyber', category: 'dark', desc: 'Cyberpunk neon with stats strip', accent: '#00fff7', bg: '#04080f', new: true },
+  { id: 'ivory_marble', name: 'Ivory Marble', category: 'professional', desc: 'Luxury navy sidebar with gold accents', accent: '#b8963c', bg: '#f9f6f0', new: true, premium: true },
+  { id: 'neon_cyber', name: 'Neon Cyber', category: 'dark', desc: 'Cyberpunk neon with stats strip', accent: '#00fff7', bg: '#04080f', new: true, premium: true },
   { id: 'origami_zen', name: 'Origami Zen', category: 'minimal', desc: 'Japanese-inspired with fold marks', accent: '#b03030', bg: '#fdfcfa', new: true },
 ]
 

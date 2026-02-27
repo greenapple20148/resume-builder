@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useSEO } from '../lib/useSEO'
 import { toast } from '../components/Toast'
 import { supabase } from '../lib/supabase'
+import { LandingIcon } from '../components/LandingIcons'
 
 export default function ContactPage() {
     useSEO({ title: 'Contact Us', description: 'Get in touch with the ResumeBuildIn team. We\'d love to hear from you.', path: '/contact' })
@@ -44,12 +45,12 @@ export default function ContactPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
                     {[
-                        { icon: '✉️', title: 'Email', detail: 'hello@resumebuildin.com', sub: 'We reply within 24 hours' },
-                        { icon: '💬', title: 'Live Chat', detail: 'Available 9am–6pm EST', sub: 'Mon – Fri' },
-                        { icon: '🐦', title: 'Twitter / X', detail: '@resumebuildin', sub: 'DMs open' },
+                        { icon: 'mail', title: 'Email', detail: 'hello@resumebuildin.com', sub: 'We reply within 24 hours' },
+                        { icon: 'message-circle', title: 'Live Chat', detail: 'Available 9am–6pm EST', sub: 'Mon – Fri' },
+                        { icon: 'twitter', title: 'Twitter / X', detail: '@resumebuildin', sub: 'DMs open' },
                     ].map(c => (
                         <div key={c.title} className="bg-[var(--white)] dark:bg-[rgba(250,248,243,0.03)] border border-ink-10 rounded-xl p-5 text-center">
-                            <div className="text-2xl mb-2">{c.icon}</div>
+                            <div className="mb-2 flex justify-center text-gold"><LandingIcon name={c.icon} size={24} /></div>
                             <div className="text-sm font-semibold text-ink dark:text-parchment mb-1">{c.title}</div>
                             <div className="text-[13px] text-gold font-medium">{c.detail}</div>
                             <div className="text-[11px] text-ink-20 mt-1">{c.sub}</div>

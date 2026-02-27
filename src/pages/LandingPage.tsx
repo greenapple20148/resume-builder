@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useSEO } from '../lib/useSEO'
+import { LandingIcon } from '../components/LandingIcons'
 
 const STATS = [
   { num: '47,000+', label: 'Resumes Created' },
@@ -11,11 +12,11 @@ const STATS = [
 ]
 
 const FEATURES = [
-  { icon: '🎯', title: 'Built to Pass ATS', desc: 'Not just pretty — every resume is engineered to pass applicant tracking systems and reach real humans.' },
-  { icon: '📊', title: 'Job Description Match', desc: 'Paste any job description and instantly see how well your resume matches. Close the gaps before you apply.' },
-  { icon: '📈', title: 'Recruiter Rejection Insights', desc: 'See exactly why recruiters pass on resumes like yours — and fix it before they ever see it.' },
-  { icon: '🧠', title: 'AI-Powered Bullet Points', desc: 'Transform vague descriptions into quantified, metrics-driven achievements that prove your impact.' },
-  { icon: '🏆', title: 'Interview Conversion', desc: 'Designed to get you interviews, not just downloads. Every feature is optimized for real hiring outcomes.' },
+  { icon: 'target', title: 'Built to Pass ATS', desc: 'Not just pretty — every resume is engineered to pass applicant tracking systems and reach real humans.' },
+  { icon: 'bar-chart', title: 'Job Description Match', desc: 'Paste any job description and instantly see how well your resume matches. Close the gaps before you apply.' },
+  { icon: 'trend-up', title: 'Recruiter Rejection Insights', desc: 'See exactly why recruiters pass on resumes like yours — and fix it before they ever see it.' },
+  { icon: 'brain', title: 'AI-Powered Bullet Points', desc: 'Transform vague descriptions into quantified, metrics-driven achievements that prove your impact.' },
+  { icon: 'trophy', title: 'Interview Conversion', desc: 'Designed to get you interviews, not just downloads. Every feature is optimized for real hiring outcomes.' },
 ]
 
 const THEME_PREVIEWS = [
@@ -96,7 +97,7 @@ function FoundingMemberOffer() {
           <div className="relative rounded-2xl m-px bg-gradient-to-br from-[#151209] via-[#0e0d0b] to-[#100e08] px-8 sm:px-12 py-10 sm:py-14">
             {/* Heading */}
             <div className="text-center mb-10">
-              <h2 className="text-parchment text-[clamp(28px,4vw,42px)] leading-[1.15] mb-4 font-display">
+              <h2 className="text-parchment dark:text-[#e8e6e0] text-[clamp(28px,4vw,42px)] leading-[1.15] mb-4 font-display">
                 Founding Member<br />
                 <em className="italic" style={{ color: '#e8b76a' }}>Launch Offer</em>
               </h2>
@@ -187,13 +188,13 @@ function FoundingMemberOffer() {
         {/* Trust indicators */}
         <div className="flex justify-center gap-6 sm:gap-10 mt-8 flex-wrap" style={{ opacity: isVisible ? 1 : 0, transform: isVisible ? 'translateY(0)' : 'translateY(12px)', transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.8s' }}>
           {[
-            { icon: '🔒', text: 'Secure Payment' },
-            { icon: '⚡', text: 'Instant Access' },
-            { icon: '🔄', text: 'Cancel Anytime' },
-            { icon: '🛡', text: 'Money-back Guarantee' },
+            { icon: 'lock', text: 'Secure Payment' },
+            { icon: 'zap', text: 'Instant Access' },
+            { icon: 'refresh', text: 'Cancel Anytime' },
+            { icon: 'shield', text: 'Money-back Guarantee' },
           ].map((item, i) => (
             <span key={i} className="flex items-center gap-1.5 text-[11px] text-[rgba(250,248,243,0.3)]">
-              <span className="text-[10px]">{item.icon}</span>
+              <LandingIcon name={item.icon} size={12} />
               {item.text}
             </span>
           ))}
@@ -243,13 +244,13 @@ export default function LandingPage() {
             <p className="text-xs text-ink-20 mt-3.5 font-mono">No credit card required · Free plan forever</p>
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-5 gap-y-2 mt-5">
               {[
-                { icon: '🔄', text: 'No surprise renewals' },
-                { icon: '👆', text: 'Cancel in 1 click' },
-                { icon: '📧', text: 'Email reminder before renewal' },
-                { icon: '✅', text: '7-day money-back guarantee' },
+                { icon: 'refresh', text: 'No surprise renewals' },
+                { icon: 'cursor', text: 'Cancel in 1 click' },
+                { icon: 'mail', text: 'Email reminder before renewal' },
+                { icon: 'check', text: '7-day money-back guarantee' },
               ].map((item, i) => (
                 <span key={i} className="flex items-center gap-1.5 text-[11.5px] text-ink-30 font-medium">
-                  <span className="text-[10px] opacity-60">{item.icon}</span>
+                  <LandingIcon name={item.icon} size={12} className="opacity-60" />
                   {item.text}
                 </span>
               ))}
@@ -308,7 +309,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             {FEATURES.map((f, i) => (
               <div key={i} className="p-8 sm:p-7 bg-[var(--white)] border border-ink-10 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-gold-pale animate-[fadeUp_0.6s_ease_both]" style={{ animationDelay: `${i * 0.08}s` }}>
-                <div className="text-[28px] mb-4">{f.icon}</div>
+                <div className="mb-4 text-gold"><LandingIcon name={f.icon} size={28} /></div>
                 <h4 className="text-lg mb-2.5">{f.title}</h4>
                 <p className="text-sm leading-[1.7] text-ink-40">{f.desc}</p>
               </div>
@@ -320,13 +321,13 @@ export default function LandingPage() {
         <section aria-label="AI Interview Coach" className="mx-5 sm:mx-10 my-0">
           <div className="max-w-[1200px] mx-auto bg-gradient-to-br from-[#0e0d0b] to-[#2a2520] rounded-2xl px-8 sm:px-14 py-12 sm:py-14 flex flex-col lg:flex-row items-center gap-8 lg:gap-16 overflow-hidden relative">
             <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(201,146,60,0.12),transparent_70%)]" />
-            <div className="text-5xl sm:text-6xl flex-shrink-0 relative">🎙️</div>
+            <div className="flex-shrink-0 relative text-gold-light"><LandingIcon name="mic" size={56} /></div>
             <div className="text-center lg:text-left relative flex-1">
               <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-3 opacity-80">
                 <span className="w-1.5 h-1.5 rounded-full bg-gold-light animate-pulse" />
                 Coming Soon
               </div>
-              <h2 className="text-parchment text-[clamp(24px,3.5vw,36px)] leading-[1.2] mb-3 font-display">
+              <h2 className="text-parchment dark:text-[#e8e6e0] text-[clamp(24px,3.5vw,36px)] leading-[1.2] mb-3 font-display">
                 AI Interview Coach That Analyzes Your Answers<span className="text-gold italic"> — Not Just Asks Questions.</span>
               </h2>
               <p className="text-[rgba(250,248,243,0.45)] text-sm leading-[1.7] max-w-[520px] mx-auto lg:mx-0">
@@ -345,25 +346,25 @@ export default function LandingPage() {
                 <span className="w-1.5 h-1.5 rounded-full bg-gold-light" />
                 Advanced AI
               </div>
-              <h2 className="text-parchment mb-3">AI that gives you<br /><em className="italic text-gold-light">an unfair advantage</em></h2>
+              <h2 className="text-parchment dark:text-[#e8e6e0] mb-3">AI that gives you<br /><em className="italic text-gold-light">an unfair advantage</em></h2>
               <p className="text-[rgba(250,248,243,0.4)] text-base">Powered by intelligence that goes far beyond spell-check. These tools analyze, optimize, and transform your entire job search.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { icon: '🧠', title: 'STAR Answer Detection', desc: 'AI detects if your interview answers follow the Situation-Task-Action-Result framework and coaches you to strengthen weak areas.' },
-                { icon: '📉', title: 'Confidence & Clarity Score', desc: 'Get scored on filler words, hedging language, and answer structure. See exactly where you sound uncertain.' },
-                { icon: '🎙', title: 'Follow-Up Question Simulation', desc: 'AI predicts the follow-up questions interviewers will ask based on your answers — so nothing catches you off guard.' },
-                { icon: '📋', title: 'Resume Weakness Analyzer', desc: 'Scans your resume for gaps, weak verbs, missing metrics, and inconsistencies that make recruiters hit "reject."' },
-                { icon: '🧾', title: 'Resume → LinkedIn Auto-Convert', desc: 'One click transforms your resume into an optimized LinkedIn profile — headline, summary, and experience sections.' },
-                { icon: '🔍', title: 'Missing Keyword Detector', desc: "Compares your resume against the job description and highlights every critical keyword you're missing." },
+                { icon: 'brain', title: 'STAR Answer Detection', desc: 'AI detects if your interview answers follow the Situation-Task-Action-Result framework and coaches you to strengthen weak areas.' },
+                { icon: 'trend-down', title: 'Confidence & Clarity Score', desc: 'Get scored on filler words, hedging language, and answer structure. See exactly where you sound uncertain.' },
+                { icon: 'mic', title: 'Follow-Up Question Simulation', desc: 'AI predicts the follow-up questions interviewers will ask based on your answers — so nothing catches you off guard.' },
+                { icon: 'clipboard', title: 'Resume Weakness Analyzer', desc: 'Scans your resume for gaps, weak verbs, missing metrics, and inconsistencies that make recruiters hit "reject."' },
+                { icon: 'linkedin', title: 'Resume → LinkedIn Auto-Convert', desc: 'One click transforms your resume into an optimized LinkedIn profile — headline, summary, and experience sections.' },
+                { icon: 'search', title: 'Missing Keyword Detector', desc: "Compares your resume against the job description and highlights every critical keyword you're missing." },
               ].map((f, i) => (
                 <div key={i} className="relative p-7 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] backdrop-blur-sm transition-all duration-300 hover:border-[rgba(201,146,60,0.25)] hover:bg-[rgba(255,255,255,0.04)] group overflow-hidden">
                   <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,146,60,0.3)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="flex items-start gap-4">
-                    <div className="text-2xl mt-0.5 flex-shrink-0">{f.icon}</div>
+                    <div className="mt-0.5 flex-shrink-0 text-gold"><LandingIcon name={f.icon} size={22} /></div>
                     <div>
                       <div className="flex items-center gap-2.5 mb-2">
-                        <h4 className="text-parchment text-[15px] font-semibold">{f.title}</h4>
+                        <h4 className="text-parchment dark:text-[#e8e6e0] text-[15px] font-semibold">{f.title}</h4>
                         <span className="text-[9px] font-mono tracking-[0.15em] uppercase px-2 py-0.5 rounded-full bg-[rgba(201,146,60,0.12)] text-gold-light border border-[rgba(201,146,60,0.15)]">Pro</span>
                       </div>
                       <p className="text-[13px] leading-[1.7] text-[rgba(250,248,243,0.4)]">{f.desc}</p>
@@ -435,14 +436,14 @@ export default function LandingPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {[
-                { icon: '💻', title: 'Built for Tech Professionals', desc: 'Optimized for SWE, PM, Data, DevOps, and Design roles with industry-specific formatting.' },
-                { icon: '🔄', title: 'Built for Career Switchers', desc: 'Highlight transferable skills and reframe experience for a completely new industry.' },
-                { icon: '📈', title: 'Built for Promotion-Ready Employees', desc: 'Showcase internal impact, leadership growth, and metrics that justify your next level.' },
-                { icon: '🇺🇸', title: 'Built for US Job Market', desc: 'Follows US resume conventions — no photo, no DOB, ATS-compliant formatting.' },
-                { icon: '🏢', title: 'Built for Fortune 500 ATS', desc: 'Tested against Workday, Greenhouse, Lever, and iCIMS parsing systems.' },
+                { icon: 'laptop', title: 'Built for Tech Professionals', desc: 'Optimized for SWE, PM, Data, DevOps, and Design roles with industry-specific formatting.' },
+                { icon: 'refresh', title: 'Built for Career Switchers', desc: 'Highlight transferable skills and reframe experience for a completely new industry.' },
+                { icon: 'arrow-up', title: 'Built for Promotion-Ready Employees', desc: 'Showcase internal impact, leadership growth, and metrics that justify your next level.' },
+                { icon: 'flag', title: 'Built for US Job Market', desc: 'Follows US resume conventions — no photo, no DOB, ATS-compliant formatting.' },
+                { icon: 'building', title: 'Built for Fortune 500 ATS', desc: 'Tested against Workday, Greenhouse, Lever, and iCIMS parsing systems.' },
               ].map((item, i) => (
                 <div key={i} className="p-6 bg-[var(--white)] border border-ink-10 rounded-xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-md hover:border-gold-pale">
-                  <div className="text-3xl mb-3">{item.icon}</div>
+                  <div className="mb-3 text-gold flex justify-center"><LandingIcon name={item.icon} size={28} /></div>
                   <h4 className="text-[14px] font-semibold mb-2 leading-snug">{item.title}</h4>
                   <p className="text-[12px] text-ink-40 leading-relaxed">{item.desc}</p>
                 </div>
@@ -460,20 +461,20 @@ export default function LandingPage() {
                 <span className="w-1.5 h-1.5 rounded-full bg-gold-light animate-pulse" />
                 Real Talk
               </div>
-              <h2 className="text-parchment mb-4">We get it.<br /><em className="italic text-gold-light">Job searching is stressful.</em></h2>
+              <h2 className="text-parchment dark:text-[#e8e6e0] mb-4">We get it.<br /><em className="italic text-gold-light">Job searching is stressful.</em></h2>
               <p className="text-[rgba(250,248,243,0.45)] text-base leading-relaxed">You shouldn't have to wonder if your resume is good enough. We built these tools so you never have to guess again.</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               {[
-                { icon: '😰', text: 'Stop Guessing If Your Resume Is Good Enough', sub: 'Get an instant score and clear action items' },
-                { icon: '💬', text: 'Practice Interviews Before the Real One', sub: 'AI-powered mock interviews with feedback' },
-                { icon: '🛡', text: 'Eliminate Resume Anxiety', sub: 'Know exactly what recruiters will think' },
-                { icon: '🎤', text: 'Never Freeze in an Interview Again', sub: 'Prep answers using the STAR framework' },
-                { icon: '🚀', text: 'Feel Prepared — Not Panicked', sub: 'Walk in with confidence, every time' },
+                { icon: 'heart-pulse', text: 'Stop Guessing If Your Resume Is Good Enough', sub: 'Get an instant score and clear action items' },
+                { icon: 'message-circle', text: 'Practice Interviews Before the Real One', sub: 'AI-powered mock interviews with feedback' },
+                { icon: 'shield', text: 'Eliminate Resume Anxiety', sub: 'Know exactly what recruiters will think' },
+                { icon: 'mic', text: 'Never Freeze in an Interview Again', sub: 'Prep answers using the STAR framework' },
+                { icon: 'rocket', text: 'Feel Prepared — Not Panicked', sub: 'Walk in with confidence, every time' },
               ].map((item, i) => (
                 <div key={i} className="p-5 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.03)] text-center transition-all duration-300 hover:border-[rgba(201,146,60,0.2)] hover:bg-[rgba(255,255,255,0.05)] hover:-translate-y-1 group">
-                  <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">{item.icon}</div>
-                  <p className="text-[13px] font-semibold text-parchment leading-snug mb-1.5">{item.text}</p>
+                  <div className="mb-3 text-gold-light flex justify-center group-hover:scale-110 transition-transform"><LandingIcon name={item.icon} size={28} /></div>
+                  <p className="text-[13px] font-semibold text-parchment dark:text-[#e8e6e0] leading-snug mb-1.5">{item.text}</p>
                   <p className="text-[11px] text-[rgba(250,248,243,0.3)] leading-snug">{item.sub}</p>
                 </div>
               ))}
@@ -495,15 +496,15 @@ export default function LandingPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
-                { icon: '⚡', title: 'Under 10 Minutes', desc: 'Build a polished, job-ready resume faster than making coffee.' },
-                { icon: '📂', title: 'Unlimited Versions', desc: 'Tailor a unique resume for every job — no limits, ever.' },
-                { icon: '🔄', title: 'Instant Format Switch', desc: 'Switch between 25 themes without losing a single word.' },
-                { icon: '📄', title: 'One-Click Formatting', desc: 'Clean, consistent formatting applied automatically.' },
-                { icon: '📊', title: 'Live Resume Score', desc: 'See your score update in real-time as you edit.' },
-                { icon: '🎯', title: 'ATS Compliance Check', desc: 'Every export is tested for applicant tracking systems.' },
+                { icon: 'zap', title: 'Under 10 Minutes', desc: 'Build a polished, job-ready resume faster than making coffee.' },
+                { icon: 'folders', title: 'Unlimited Versions', desc: 'Tailor a unique resume for every job — no limits, ever.' },
+                { icon: 'layers', title: 'Instant Format Switch', desc: 'Switch between 25 themes without losing a single word.' },
+                { icon: 'file-text', title: 'One-Click Formatting', desc: 'Clean, consistent formatting applied automatically.' },
+                { icon: 'bar-chart', title: 'Live Resume Score', desc: 'See your score update in real-time as you edit.' },
+                { icon: 'target', title: 'ATS Compliance Check', desc: 'Every export is tested for applicant tracking systems.' },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3.5 p-4 rounded-xl bg-ink-05 border border-ink-10 transition-all duration-300 hover:border-gold-pale hover:shadow-sm">
-                  <span className="text-xl mt-0.5 flex-shrink-0">{item.icon}</span>
+                  <span className="mt-0.5 flex-shrink-0 text-gold"><LandingIcon name={item.icon} size={20} /></span>
                   <div>
                     <h4 className="text-[13px] font-semibold mb-0.5">{item.title}</h4>
                     <p className="text-[11px] text-ink-30 leading-relaxed">{item.desc}</p>
@@ -529,13 +530,13 @@ export default function LandingPage() {
                 </p>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                   {[
-                    { icon: '👨‍💻', title: 'Built by Engineers', desc: 'Product-obsessed founders who ship weekly' },
-                    { icon: '📈', title: 'Constantly Improving AI', desc: 'Models retrained on real hiring data' },
-                    { icon: '🧪', title: 'Founder-Led Product', desc: 'Every feature decision made by builders' },
-                    { icon: '💡', title: 'We Listen to Members', desc: 'Founding members shape the roadmap' },
+                    { icon: 'code', title: 'Built by Engineers', desc: 'Product-obsessed founders who ship weekly' },
+                    { icon: 'sparkles', title: 'Constantly Improving AI', desc: 'Models retrained on real hiring data' },
+                    { icon: 'flask', title: 'Founder-Led Product', desc: 'Every feature decision made by builders' },
+                    { icon: 'lightbulb', title: 'We Listen to Members', desc: 'Founding members shape the roadmap' },
                   ].map((item, i) => (
                     <div key={i} className="p-4 rounded-xl text-center border transition-all duration-200 hover:-translate-y-0.5" style={{ background: 'rgba(255,255,255,0.6)', borderColor: 'rgba(139,105,20,0.1)' }}>
-                      <div className="text-2xl mb-2">{item.icon}</div>
+                      <div className="mb-2 flex justify-center" style={{ color: '#8b6914' }}><LandingIcon name={item.icon} size={22} /></div>
                       <h4 className="text-[12px] font-semibold mb-0.5" style={{ color: '#1a1510' }}>{item.title}</h4>
                       <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(26,21,16,0.4)' }}>{item.desc}</p>
                     </div>
@@ -552,7 +553,7 @@ export default function LandingPage() {
         {/* ── CTA BANNER ───────────────────────── */}
         <section aria-label="Call to action" className="bg-gradient-to-br from-[#0e0d0b] to-[#3a3830] dark:from-[#0e0d0b] dark:to-[#3a3830] px-10 py-24 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(201,146,60,0.15),transparent_70%)]" />
-          <h2 className="text-parchment relative mb-3">Start building<br /><em className="italic text-gold-light">for free today</em></h2>
+          <h2 className="text-parchment dark:text-[#e8e6e0] relative mb-3">Start building<br /><em className="italic text-gold-light">for free today</em></h2>
           <p className="text-[rgba(250,248,243,0.5)] relative text-base">Join 47,000+ professionals who've landed jobs with ResumeBuildIn.</p>
           <Link to="/auth?mode=signup" className="btn btn-gold btn-lg mt-6 relative">Create Your Resume →</Link>
         </section>
@@ -560,11 +561,11 @@ export default function LandingPage() {
       </main>
 
       {/* ── FOOTER ───────────────────────────── */}
-      <footer className="bg-[#1a1916] dark:bg-[#1a1916] px-5 sm:px-10 pt-16 text-[rgba(250,248,243,0.6)]" role="contentinfo">
-        <div className="max-w-[1200px] mx-auto flex flex-col sm:flex-row gap-10 sm:gap-20 pb-12 border-b border-[rgba(255,255,255,0.06)]">
+      <footer className="bg-[#1a1916] dark:bg-[#0d0d0c] px-5 sm:px-10 pt-16 text-[rgba(250,248,243,0.6)]" role="contentinfo">
+        <div className="max-w-[1200px] mx-auto flex flex-col sm:flex-row gap-10 sm:gap-20 pb-12 border-b border-[rgba(255,255,255,0.06)] dark:border-[rgba(255,255,255,0.1)]">
           <div className="flex-[1.5]">
-            <div className="font-display text-2xl font-light text-parchment mb-3 tracking-tight">◈ Resume<em className="italic text-gold">BuildIn</em></div>
-            <p className="text-[13px] text-[rgba(250,248,243,0.4)]">Beautiful resumes that get you hired.</p>
+            <div className="font-display text-2xl font-light text-parchment dark:text-[#e8e6e0] mb-3 tracking-tight">◈ Resume<em className="italic text-gold">BuildIn</em></div>
+            <p className="text-[13px] text-[rgba(250,248,243,0.4)] dark:text-[rgba(250,248,243,0.5)]">Beautiful resumes that get you hired.</p>
           </div>
           <nav aria-label="Footer navigation" className="flex gap-8 sm:gap-16 flex-wrap">
             {[
@@ -573,17 +574,17 @@ export default function LandingPage() {
               { title: 'Legal', links: [{ to: '/privacy', text: 'Privacy' }, { to: '/terms', text: 'Terms' }, { to: '/cookies', text: 'Cookies' }] },
             ].map((col) => (
               <div key={col.title} className="flex flex-col gap-2.5">
-                <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[rgba(250,248,243,0.25)] mb-1">{col.title}</div>
+                <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[rgba(250,248,243,0.25)] dark:text-[rgba(250,248,243,0.4)] mb-1">{col.title}</div>
                 {col.links.map((l) => (
-                  <Link key={l.text} to={l.to} className="text-sm text-[rgba(250,248,243,0.5)] no-underline transition-colors hover:text-parchment">{l.text}</Link>
+                  <Link key={l.text} to={l.to} className="text-sm text-[rgba(250,248,243,0.5)] dark:text-[rgba(250,248,243,0.6)] no-underline transition-colors hover:text-parchment dark:hover:text-[#e8e6e0]">{l.text}</Link>
                 ))}
               </div>
             ))}
           </nav>
         </div>
-        <div className="max-w-[1200px] mx-auto py-6 flex flex-col sm:flex-row justify-between text-xs text-[rgba(250,248,243,0.25)] font-mono gap-2">
+        <div className="max-w-[1200px] mx-auto py-6 flex flex-col sm:flex-row justify-between text-xs text-[rgba(250,248,243,0.25)] dark:text-[rgba(250,248,243,0.4)] font-mono gap-2">
           <span>© 2026 ResumeBuildIn. All rights reserved.</span>
-          <span>Resume BuildIn is operated by RZeal Solutions, VA, United States.</span>
+          <span>Resume BuildIn is operated by RZeal Solutions,  United States.</span>
         </div>
       </footer>
     </div>

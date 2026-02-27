@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
+import type { WeaknessAnalysis } from '../lib/ai'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { toast } from '../components/Toast'
 import { PREVIEW_MAP } from './ThemesPreviews'
-import type { ResumeData, PersonalInfo, ExperienceEntry, EducationEntry, LanguageEntry, CertificationEntry, ProjectEntry } from '../types/resume'
+import type { ResumeData, PersonalInfo, ExperienceEntry, EducationEntry, LanguageEntry, CertificationEntry, ProjectEntry } from '../types'
 import { useSEO } from '../lib/useSEO'
+import { useTheme } from '../lib/useTheme'
 
 const SECTIONS = [
   { id: 'personal', label: 'Personal Info', icon: '●' },
@@ -18,6 +20,9 @@ const SECTIONS = [
 ] as const
 
 type SectionId = typeof SECTIONS[number]['id']
+
+// Sections that can be hidden (personal is always visible)
+const HIDEABLE_SECTIONS = ['summary', 'experience', 'education', 'skills', 'languages', 'certifications', 'projects']
 
 // ─── Auto-save hook ──────────────────────────────────────────
 function useAutoSave(resumeId: string | undefined, data: any, delay = 1500) {
@@ -185,9 +190,9 @@ function SummarySection({ data, onChange }: SectionProps<string>) {
           rows={5}
         />
         <div className="flex justify-between items-center">
-          <p className="text-[11.5px] text-ink-20 leading-relaxed italic m-0">💡 Tip: Highlight your biggest strengths and what makes you unique.</p>
+          <p className="text-[11.5px] text-ink-20 leading-relaxed italic m-0">Tip: Highlight your biggest strengths and what makes you unique.</p>
           <button className="btn btn-ghost btn-sm text-gold" style={{ fontSize: 12 }} onClick={handleAi} disabled={isAiLoading || !data}>
-            {isAiLoading ? '✨ Rewriting…' : '✨ AI Rewrite'}
+            {isAiLoading ? 'Rewriting…' : 'AI Rewrite'}
           </button>
         </div>
       </div>
@@ -273,7 +278,7 @@ function ExperienceSection({ data = [], onChange }: SectionProps<ExperienceEntry
                 <div className="flex justify-between items-center mt-[-4px]">
                   <button className="btn btn-danger btn-sm" style={{ fontSize: 11 }} onClick={() => remove(idx)}>Remove</button>
                   <button className="btn btn-ghost btn-sm text-gold" style={{ fontSize: 11 }} onClick={() => handleAi(idx, exp.description)} disabled={aiLoadingIdx === idx || !exp.description}>
-                    {aiLoadingIdx === idx ? '✨ Rewriting…' : '✨ AI Rewrite'}
+                    {aiLoadingIdx === idx ? 'Rewriting…' : 'AI Rewrite'}
                   </button>
                 </div>
               </div>
@@ -593,6 +598,29 @@ export default function EditorPage() {
   const saveStatus = useAutoSave(id, resumeData, 2000)
   const [error, setError] = useState<string | null>(null)
 
+  // Weakness Analyzer state
+  const { theme, toggleTheme } = useTheme()
+  const isDark = theme === 'dark'
+  const [analyzerOpen, setAnalyzerOpen] = useState(false)
+  const [analyzerLoading, setAnalyzerLoading] = useState(false)
+  const [analysis, setAnalysis] = useState<WeaknessAnalysis | null>(null)
+
+  const runAnalysis = async () => {
+    setAnalyzerOpen(true)
+    setAnalyzerLoading(true)
+    setAnalysis(null)
+    try {
+      const { analyzeResumeWeaknesses } = await import('../lib/ai')
+      const result = await analyzeResumeWeaknesses(resumeData as Record<string, any>)
+      setAnalysis(result)
+    } catch (err: any) {
+      toast.error(err.message || 'Analysis failed')
+      console.error(err)
+    } finally {
+      setAnalyzerLoading(false)
+    }
+  }
+
   useEffect(() => {
     let isMounted = true
     const loadResume = async () => {
@@ -631,8 +659,25 @@ export default function EditorPage() {
   }, [loading, searchParams])
 
   const handleSectionData = useCallback((section: keyof ResumeData) => (value: any) => {
-    setResumeData((prev) => ({ ...prev, [section]: value }))
+    setResumeData((prev: Partial<ResumeData>) => ({ ...prev, [section]: value }))
   }, [])
+
+  const toggleSection = useCallback((sectionId: string) => {
+    setResumeData((prev: Partial<ResumeData>) => {
+      const hidden = prev.hiddenSections || []
+      const isHidden = hidden.includes(sectionId)
+      return {
+        ...prev,
+        hiddenSections: isHidden
+          ? hidden.filter((s: string) => s !== sectionId)
+          : [...hidden, sectionId]
+      }
+    })
+  }, [])
+
+  const isSectionHidden = useCallback((sectionId: string) => {
+    return (resumeData.hiddenSections || []).includes(sectionId)
+  }, [resumeData.hiddenSections])
 
   const handleTitleSave = async () => {
     setEditingTitle(false)
@@ -754,15 +799,38 @@ export default function EditorPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <button
+            className="btn btn-sm flex items-center gap-1.5"
+            style={{ background: 'var(--gold)', color: '#fff', border: 'none', fontSize: 12, fontWeight: 600, letterSpacing: 0.3, padding: '6px 14px' }}
+            onClick={runAnalysis}
+            disabled={analyzerLoading}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg>
+            {analyzerLoading ? 'Analyzing…' : 'Analyze'}
+          </button>
+          <div className="w-px h-5 bg-ink-10" />
+          <button
+            className="w-[34px] h-[34px] rounded-full bg-ink-05 border border-ink-10 cursor-pointer flex items-center justify-center transition-all duration-200 text-ink-40 shrink-0 hover:bg-ink-10 hover:text-gold hover:border-gold hover:rotate-[15deg]"
+            onClick={toggleTheme}
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={isDark ? 'Light mode' : 'Dark mode'}
+          >
+            {isDark ? (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>
+            ) : (
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+            )}
+          </button>
+          <div className="w-px h-5 bg-ink-10" />
           <input type="file" ref={fileInputRef} accept=".pdf,.docx" className="hidden" onChange={handleImport} />
           <button className="btn btn-ghost btn-sm" onClick={() => fileInputRef.current?.click()} disabled={importing}>
-            {importing ? '⏳ Importing…' : '📥 Import'}
+            {importing ? 'Importing…' : 'Import'}
           </button>
           <div className="w-px h-5 bg-ink-10" />
           <button className="btn btn-outline btn-sm" onClick={handleDownload} disabled={downloading}>
-            {downloading ? 'Generating…' : '📄 PDF'}
+            {downloading ? 'Generating…' : 'PDF'}
           </button>
-          <button className="btn btn-outline btn-sm" onClick={handleDocxDownload}>📝 DOCX</button>
+          <button className="btn btn-outline btn-sm" onClick={handleDocxDownload}>DOCX</button>
         </div>
       </div>
 
@@ -774,15 +842,31 @@ export default function EditorPage() {
           <div className="flex-1">
             {SECTIONS.map((sec) => {
               const status = getSectionStatus(resumeData, sec.id)
+              const hidden = isSectionHidden(sec.id)
+              const canHide = HIDEABLE_SECTIONS.includes(sec.id)
               return (
-                <button
-                  key={sec.id}
-                  onClick={() => setActiveSection(sec.id as SectionId)}
-                  className={`group flex items-center gap-2.5 w-full px-4 py-2.5 text-[13px] bg-transparent border-none border-l-[3px] cursor-pointer text-left transition-all ${activeSection === sec.id ? '!bg-gold-pale !text-gold border-l-gold font-semibold' : 'text-ink-40 border-l-transparent hover:bg-ink-05 hover:text-ink'}`}
-                >
-                  <span className={`w-[7px] h-[7px] rounded-full shrink-0 transition-colors ${status === 'complete' ? 'bg-emerald' : status === 'partial' ? 'bg-gold' : 'bg-ink-10'}`} />
-                  <span className="max-md:hidden">{sec.label}</span>
-                </button>
+                <div key={sec.id} className="flex items-center group/row">
+                  <button
+                    onClick={() => setActiveSection(sec.id as SectionId)}
+                    className={`flex items-center gap-2.5 flex-1 px-4 py-2.5 text-[13px] bg-transparent border-none border-l-[3px] cursor-pointer text-left transition-all ${hidden ? 'opacity-40' : ''} ${activeSection === sec.id ? '!bg-gold-pale !text-gold border-l-gold font-semibold' : 'text-ink-40 border-l-transparent hover:bg-ink-05 hover:text-ink'}`}
+                  >
+                    <span className={`w-[7px] h-[7px] rounded-full shrink-0 transition-colors ${hidden ? 'bg-ink-10' : status === 'complete' ? 'bg-emerald' : status === 'partial' ? 'bg-gold' : 'bg-ink-10'}`} />
+                    <span className={`max-md:hidden ${hidden ? 'line-through' : ''}`}>{sec.label}</span>
+                  </button>
+                  {canHide && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); toggleSection(sec.id) }}
+                      className="w-7 h-7 flex items-center justify-center bg-transparent border-none cursor-pointer text-ink-20 hover:text-ink transition-colors opacity-0 group-hover/row:opacity-100 shrink-0 mr-1"
+                      title={hidden ? `Show ${sec.label} in preview` : `Hide ${sec.label} from preview`}
+                    >
+                      {hidden ? (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><line x1="1" y1="1" x2="23" y2="23" /></svg>
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                      )}
+                    </button>
+                  )}
+                </div>
               )
             })}
           </div>
@@ -798,6 +882,17 @@ export default function EditorPage() {
         {/* Editor Form */}
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-[560px] mx-auto px-6 py-8">
+            {isSectionHidden(activeSection) && HIDEABLE_SECTIONS.includes(activeSection) && (
+              <div className="flex items-center gap-3 px-4 py-3 mb-6 rounded-xl border border-amber-200 bg-amber-50 text-amber-800 text-[13px]" style={{ background: 'rgba(201,146,60,0.08)', borderColor: 'rgba(201,146,60,0.2)' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, opacity: 0.7 }}><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" /><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" /><line x1="1" y1="1" x2="23" y2="23" /></svg>
+                <span style={{ flex: 1, color: 'var(--ink-60, #6a5a48)' }}>This section is <strong>hidden</strong> from the resume preview.</span>
+                <button
+                  onClick={() => toggleSection(activeSection)}
+                  className="text-[12px] font-semibold px-3 py-1.5 rounded-lg bg-transparent border-none cursor-pointer transition-colors hover:bg-[rgba(201,146,60,0.12)]"
+                  style={{ color: 'var(--gold, #c9923c)', whiteSpace: 'nowrap' }}
+                >Show in preview</button>
+              </div>
+            )}
             {renderSection()}
 
             {/* Section Navigation */}
@@ -813,7 +908,7 @@ export default function EditorPage() {
                 </button>
               ) : (
                 <button className="btn btn-gold btn-sm" onClick={handleDownload} disabled={downloading}>
-                  📄 Download PDF
+                  Download PDF
                 </button>
               )}
             </div>
@@ -827,6 +922,161 @@ export default function EditorPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Weakness Analyzer Drawer ────────────── */}
+      {analyzerOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setAnalyzerOpen(false)}>
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+          <div
+            className="relative w-[440px] max-w-[90vw] h-full bg-[var(--white)] shadow-2xl overflow-y-auto"
+            style={{ animation: 'slideInRight 0.25s ease-out' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer Header */}
+            <div className="sticky top-0 z-10 bg-[var(--white)] border-b border-ink-10 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg>
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-ink">Resume Analyzer</div>
+                  <div className="text-[11px] text-ink-30 font-mono">AI-powered weakness detection</div>
+                </div>
+              </div>
+              <button onClick={() => setAnalyzerOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-transparent border-none cursor-pointer text-ink-30 hover:bg-ink-05 hover:text-ink transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+            </div>
+
+            {/* Loading State */}
+            {analyzerLoading && (
+              <div className="flex flex-col items-center justify-center py-20 gap-4">
+                <div style={{ width: 48, height: 48, border: '3px solid #e5e7eb', borderTopColor: 'var(--gold)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <div className="text-sm text-ink-40 font-medium">Analyzing your resume…</div>
+                <div className="text-[11px] text-ink-20">This takes a few seconds</div>
+              </div>
+            )}
+
+            {/* Results */}
+            {analysis && !analyzerLoading && (
+              <div className="px-6 py-5">
+                {/* Score Ring */}
+                <div className="flex items-center gap-5 mb-6">
+                  <div style={{ position: 'relative', width: 80, height: 80, flexShrink: 0 }}>
+                    <svg width="80" height="80" viewBox="0 0 80 80" style={{ transform: 'rotate(-90deg)' }}>
+                      <circle cx="40" cy="40" r="34" fill="none" stroke="#f0f0f0" strokeWidth="6" />
+                      <circle
+                        cx="40" cy="40" r="34" fill="none"
+                        stroke={analysis.overallScore >= 70 ? '#10b981' : analysis.overallScore >= 45 ? '#f59e0b' : '#ef4444'}
+                        strokeWidth="6" strokeLinecap="round"
+                        strokeDasharray={`${(analysis.overallScore / 100) * 213.6} 213.6`}
+                        style={{ transition: 'stroke-dasharray 1s ease-out' }}
+                      />
+                    </svg>
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--ink)', lineHeight: 1 }}>{analysis.overallScore}</span>
+                      <span style={{ fontSize: 9, color: 'var(--ink-30)', fontWeight: 500, letterSpacing: 0.5 }}>/100</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] text-ink-60 leading-relaxed mb-2">{analysis.summary}</div>
+                    <div className="text-[11px] text-emerald-600 font-medium flex items-center gap-1.5">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                      {analysis.topStrength}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section Scores */}
+                <div className="mb-6">
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-ink-20 mb-3">Section Breakdown</div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {analysis.sectionScores.map((ss, i) => (
+                      <div key={i} className="rounded-lg border border-ink-10 px-3 py-2.5 bg-[var(--parchment)]">
+                        <div className="text-[10px] text-ink-30 font-medium mb-1">{ss.section}</div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[15px] font-bold" style={{ color: ss.score >= 70 ? '#10b981' : ss.score >= 45 ? '#f59e0b' : '#ef4444' }}>{ss.score}</span>
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded" style={{
+                            background: ss.score >= 70 ? 'rgba(16,185,129,0.1)' : ss.score >= 45 ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)',
+                            color: ss.score >= 70 ? '#059669' : ss.score >= 45 ? '#d97706' : '#dc2626',
+                          }}>{ss.label}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Findings */}
+                <div>
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-ink-20 mb-3">
+                    Findings ({analysis.findings.length})
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    {analysis.findings.map((f, i) => {
+                      const severityStyles = {
+                        critical: {
+                          bg: 'rgba(239,68,68,0.06)', border: 'rgba(239,68,68,0.15)', color: '#dc2626',
+                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="#dc2626" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+                        },
+                        warning: {
+                          bg: 'rgba(245,158,11,0.06)', border: 'rgba(245,158,11,0.15)', color: '#d97706',
+                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                        },
+                        tip: {
+                          bg: 'rgba(99,102,241,0.06)', border: 'rgba(99,102,241,0.15)', color: '#6366f1',
+                          icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+                        },
+                      }
+                      const s = severityStyles[f.severity]
+                      return (
+                        <div key={i} className="rounded-xl p-4" style={{ background: s.bg, border: `1px solid ${s.border}` }}>
+                          <div className="flex items-start gap-2 mb-1.5">
+                            <span className="mt-0.5 shrink-0">{s.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <span className="text-[13px] font-semibold text-ink">{f.title}</span>
+                                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-md" style={{ background: s.border, color: s.color }}>{f.section}</span>
+                              </div>
+                              <div className="text-[12px] text-ink-50 leading-relaxed mb-2">{f.description}</div>
+                              <div className="text-[11.5px] leading-relaxed px-3 py-2 rounded-lg" style={{ background: 'rgba(0,0,0,0.03)', color: 'var(--ink-60)' }}>
+                                <strong style={{ color: 'var(--ink)', fontWeight: 600 }}>Fix:</strong> {f.suggestion}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Re-analyze button */}
+                <div className="mt-6 pt-4 border-t border-ink-10">
+                  <button
+                    className="btn btn-sm w-full flex items-center justify-center gap-2"
+                    style={{ background: 'var(--gold)', color: '#fff', border: 'none', padding: '10px 16px' }}
+                    onClick={runAnalysis}
+                    disabled={analyzerLoading}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
+                    Re-analyze Resume
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Drawer animation */}
+      <style>{`
+        @keyframes slideInRight {
+          from { transform: translateX(100%); }
+          to { transform: translateX(0); }
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   )
 }

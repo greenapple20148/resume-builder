@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useStore } from '../lib/store'
 import { verifySubscription } from '../lib/stripe'
+import { LandingIcon } from '../components/LandingIcons'
 
 
 // ── Headline templates ──────────────────────────────
@@ -118,13 +119,13 @@ export default function LinkedInToolkitPage() {
             <div className="min-h-screen">
                 <Navbar />
                 <div className="max-w-[560px] mx-auto px-10 py-20 text-center">
-                    <div className="text-[56px] mb-5">🔗</div>
+                    <div className="flex justify-center mb-5 text-gold"><LandingIcon name="link" size={48} /></div>
                     <h1>LinkedIn Toolkit</h1>
                     <p className="text-base text-ink-40 mb-10 leading-relaxed">Generate optimized LinkedIn headlines, about sections, and experience rewrites from your resume data.</p>
                     <div className="flex flex-col gap-4 text-left mb-10">
-                        {[{ icon: '💡', title: 'Headline Generator', desc: '5 headline variations optimized for recruiter search' }, { icon: '📝', title: 'About Section Writer', desc: '3 tone options: Professional, Storytelling, Results-driven' }, { icon: '🔄', title: 'Experience Rewrite', desc: 'Transform resume bullets into LinkedIn-ready narratives' }].map((f, i) => (
+                        {[{ icon: 'lightbulb', title: 'Headline Generator', desc: '5 headline variations optimized for recruiter search' }, { icon: 'edit', title: 'About Section Writer', desc: '3 tone options: Professional, Storytelling, Results-driven' }, { icon: 'refresh', title: 'Experience Rewrite', desc: 'Transform resume bullets into LinkedIn-ready narratives' }].map((f, i) => (
                             <div key={i} className="flex gap-4 items-start p-5 bg-[var(--white)] border border-ink-10 rounded-xl">
-                                <span className="text-2xl shrink-0 mt-0.5">{f.icon}</span>
+                                <span className="shrink-0 mt-0.5 text-gold"><LandingIcon name={f.icon} size={22} /></span>
                                 <div><strong className="text-[15px] block mb-1">{f.title}</strong><p className="text-[13px] text-ink-40 m-0 leading-relaxed">{f.desc}</p></div>
                             </div>
                         ))}
@@ -149,7 +150,7 @@ export default function LinkedInToolkitPage() {
                 {/* ── HEADLINE GENERATOR ──────────────────────── */}
                 <section className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden mb-6">
                     <div className="flex items-start gap-4 px-7 py-6 bg-ink-05 border-b border-ink-10">
-                        <span className="text-[28px] shrink-0 mt-0.5">💡</span>
+                        <span className="shrink-0 mt-0.5 text-gold"><LandingIcon name="lightbulb" size={26} /></span>
                         <div><h2 className="text-xl mb-1">Headline Generator</h2><p className="text-[13px] text-ink-40 m-0">Generate 5 recruiter-optimized headline variations.</p></div>
                     </div>
                     <div className="p-7">
@@ -175,7 +176,7 @@ export default function LinkedInToolkitPage() {
                 {/* ── ABOUT SECTION GENERATOR ─────────────────── */}
                 <section className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden mb-6">
                     <div className="flex items-start gap-4 px-7 py-6 bg-ink-05 border-b border-ink-10">
-                        <span className="text-[28px] shrink-0 mt-0.5">📝</span>
+                        <span className="shrink-0 mt-0.5 text-gold"><LandingIcon name="edit" size={26} /></span>
                         <div><h2 className="text-xl mb-1">About Section Generator</h2><p className="text-[13px] text-ink-40 m-0">Create a compelling LinkedIn summary in your preferred tone.</p></div>
                     </div>
                     <div className="p-7">
@@ -188,7 +189,7 @@ export default function LinkedInToolkitPage() {
                         <div className="flex items-center gap-2 mb-5 flex-wrap">
                             <label className="text-xs font-semibold font-mono uppercase tracking-wide text-ink-40 mr-1">Tone:</label>
                             {(['professional', 'storytelling', 'results'] as const).map(tone => (
-                                <button key={tone} className={`px-4 py-1.5 text-[13px] border rounded-full cursor-pointer transition-all ${aboutTone === tone ? 'border-gold bg-[rgba(201,146,60,0.08)] text-gold font-semibold' : 'border-ink-10 bg-[var(--white)] text-ink-70 hover:border-gold-pale'}`} onClick={() => setAboutTone(tone)}>{tone === 'professional' ? '🏢 Professional' : tone === 'storytelling' ? '📖 Storytelling' : '🎯 Results-Driven'}</button>
+                                <button key={tone} className={`px-4 py-1.5 text-[13px] border rounded-full cursor-pointer transition-all ${aboutTone === tone ? 'border-gold bg-[rgba(201,146,60,0.08)] text-gold font-semibold' : 'border-ink-10 bg-[var(--white)] text-ink-70 hover:border-gold-pale'}`} onClick={() => setAboutTone(tone)}>{tone === 'professional' ? 'Professional' : tone === 'storytelling' ? 'Storytelling' : 'Results-Driven'}</button>
                             ))}
                         </div>
                         <button className="btn btn-gold" onClick={generateAbout} disabled={!aboutName || !aboutRole || !aboutSkills || !aboutSummary}>Generate About Section</button>
@@ -206,7 +207,7 @@ export default function LinkedInToolkitPage() {
                 {/* ── EXPERIENCE REWRITE ──────────────────────── */}
                 <section className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden mb-6">
                     <div className="flex items-start gap-4 px-7 py-6 bg-ink-05 border-b border-ink-10">
-                        <span className="text-[28px] shrink-0 mt-0.5">🔄</span>
+                        <span className="shrink-0 mt-0.5 text-gold"><LandingIcon name="refresh" size={26} /></span>
                         <div><h2 className="text-xl mb-1">Experience → LinkedIn Rewrite</h2><p className="text-[13px] text-ink-40 m-0">Convert resume bullet points into LinkedIn-style narratives.</p></div>
                     </div>
                     <div className="p-7">

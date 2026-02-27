@@ -57,7 +57,7 @@ function buildAutoReplyHtml(name: string): string {
         <hr style="border: none; border-top: 1px solid #e8e3d8; margin: 24px 0;" />
         <p style="font-size: 12px; color: #999; margin: 0;">
           This is an automated confirmation. Please do not reply to this email.<br/>
-          Resume BuildIn is operated by RZeal Solutions, VA, United States.
+          Resume BuildIn is operated by RZeal Solutions, United States.
         </p>
       </div>
     </div>

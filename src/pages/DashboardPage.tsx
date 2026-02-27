@@ -7,6 +7,7 @@ import { useSEO } from '../lib/useSEO'
 import { PLANS, openCustomerPortal, verifySubscription } from '../lib/stripe'
 import { Resume } from '../types'
 import { getResumeScore } from '../lib/resumeScore'
+import { LandingIcon } from '../components/LandingIcons'
 
 interface ResumeCardProps {
   resume: Resume
@@ -64,7 +65,7 @@ function ResumeCard({ resume, onEdit, onDelete, onDuplicate, onDownload }: Resum
           <div className="mx-3 mb-3 p-2.5 rounded-lg" style={{ background: bg }}>
             <div className="flex items-center justify-between mb-1.5">
               <div className="flex items-center gap-1.5">
-                <span className="text-[10px]" style={{ color }}>{score > 70 ? '✅' : score > 45 ? '⚠️' : '🔴'}</span>
+                <span className="text-[10px]" style={{ color }}>{score > 70 ? '●' : score > 45 ? '▲' : '●'}</span>
                 <span className="text-[11px] font-semibold" style={{ color }}>{label}</span>
               </div>
               <span className="text-[11px] font-mono font-bold" style={{ color }}>{score}/100</span>
@@ -137,7 +138,7 @@ export default function DashboardPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
 
-  useEffect(() => { fetchResumes(); if (searchParams.get('upgraded') === 'true') toast.success('🎉 Welcome to Pro! All features unlocked.') }, [fetchResumes, searchParams])
+  useEffect(() => { fetchResumes(); if (searchParams.get('upgraded') === 'true') toast.success('Welcome to Pro! All features unlocked.') }, [fetchResumes, searchParams])
   const { user, fetchProfile } = useStore()
   useEffect(() => { if (user) verifySubscription().then(() => fetchProfile(user.id)).catch(() => { }) }, [user?.id])
 
@@ -180,27 +181,27 @@ export default function DashboardPage() {
           <div className="mb-6">
             <div className="font-mono text-[9px] tracking-[0.15em] uppercase text-ink-20 mb-2 px-3">Navigation</div>
             <Link to="/dashboard" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink font-medium rounded-lg bg-[var(--white)] border-l-2 border-gold shadow-sm no-underline mb-0.5">
-              <span>◈</span> My Resumes
+              <span className="text-gold"><LandingIcon name="file-text" size={14} /></span> My Resumes
             </Link>
             <Link to="/themes" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5">
-              <span>✦</span> Templates
+              <span className="text-ink-30"><LandingIcon name="layers" size={14} /></span> Templates
             </Link>
             <Link to="/pricing" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5">
-              <span>$</span> Billing
+              <span className="text-ink-30"><LandingIcon name="star" size={14} /></span> Billing
             </Link>
             {(profile?.plan === 'pro' || profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
               <Link to="/tools/cover-letter" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5">
-                <span>✉️</span> Cover Letters
+                <span className="text-ink-30"><LandingIcon name="mail" size={14} /></span> Cover Letters
               </Link>
             )}
             {(profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
               <>
-                <Link to="/tools/linkedin" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span>🔗</span> LinkedIn Toolkit</Link>
-                <Link to="/tools/interview" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span>🎤</span> Interview Toolkit</Link>
-                <Link to="/tools/mock-interview" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span>🤖</span> AI Mock Interview</Link>
+                <Link to="/tools/linkedin" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span className="text-ink-30"><LandingIcon name="linkedin" size={14} /></span> LinkedIn Toolkit</Link>
+                <Link to="/tools/interview" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span className="text-ink-30"><LandingIcon name="mic" size={14} /></span> Interview Toolkit</Link>
+                <Link to="/tools/mock-interview" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span className="text-ink-30"><LandingIcon name="brain" size={14} /></span> AI Mock Interview</Link>
               </>
             )}
-            <Link to="/tools/ai" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span>🧠</span> AI Tools</Link>
+            <Link to="/tools/ai" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span className="text-ink-30"><LandingIcon name="sparkles" size={14} /></span> AI Tools</Link>
           </div>
 
           <div className="bg-[var(--white)] border border-ink-10 rounded-xl p-4 mt-4">

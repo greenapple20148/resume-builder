@@ -197,14 +197,71 @@ export async function getPracticeHistory(): Promise<PracticeHistoryEntry[]> {
 export async function enhanceTextWithAI(text: string): Promise<string> {
     if (!text.trim()) return text
 
-    // Simulate a short async delay for UX
-    await new Promise(r => setTimeout(r, 600))
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+    if (!apiKey) {
+        throw new Error('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your .env file.')
+    }
 
+    try {
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `You are a professional resume writer. Rewrite the following resume text to make it more impactful and professional.
+
+Rules:
+- Use strong action verbs (Led, Spearheaded, Architected, Delivered, Optimized, Streamlined, etc.)
+- Add quantified results where reasonable (%, $, numbers)
+- Keep the same meaning and facts, but make it more compelling
+- Use concise, achievement-oriented language
+- Remove filler words and passive voice
+- Keep roughly the same length (don't make it much longer)
+- Return ONLY the improved text, no explanations or labels
+- Preserve bullet point format if present
+- Do NOT add markdown formatting
+
+Text to improve:
+${text}`
+                        }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 1024,
+                    }
+                })
+            }
+        )
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}))
+            throw new Error(errorData?.error?.message || `Gemini API error: ${response.status}`)
+        }
+
+        const data = await response.json()
+        const result = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
+
+        if (!result) {
+            throw new Error('No response from AI')
+        }
+
+        return result
+    } catch (err: any) {
+        console.error('AI rewrite failed, falling back to local enhancement:', err)
+        // Fallback to local rule-based enhancement
+        return enhanceTextLocal(text)
+    }
+}
+
+/** Local rule-based fallback for when AI API is unavailable */
+function enhanceTextLocal(text: string): string {
     const lines = text.split('\n').map(line => {
         let l = line.trim()
         if (!l) return ''
 
-        // Remove leading bullet characters for processing
         const bulletMatch = l.match(/^([•\-–—]\s*)(.*)/)
         let prefix = ''
         let content = l
@@ -213,10 +270,8 @@ export async function enhanceTextWithAI(text: string): Promise<string> {
             content = bulletMatch[2]
         }
 
-        // Capitalize first letter
         content = content.charAt(0).toUpperCase() + content.slice(1)
 
-        // Replace weak verbs with strong action verbs
         const verbMap: Record<string, string> = {
             'helped with': 'Contributed to',
             'worked on': 'Developed',
@@ -233,7 +288,6 @@ export async function enhanceTextWithAI(text: string): Promise<string> {
             'set up': 'Established',
             'looked into': 'Investigated',
             'got better at': 'Improved',
-            'used': 'Leveraged',
         }
         for (const [weak, strong] of Object.entries(verbMap)) {
             const regex = new RegExp(`\\b${weak}\\b`, 'gi')
@@ -242,7 +296,6 @@ export async function enhanceTextWithAI(text: string): Promise<string> {
             }
         }
 
-        // Add period if missing
         if (content.length > 10 && !/[.!?]$/.test(content)) {
             content += '.'
         }
@@ -251,6 +304,160 @@ export async function enhanceTextWithAI(text: string): Promise<string> {
     })
 
     return lines.filter(l => l !== undefined).join('\n')
+}
+
+// ─────────────── Resume Weakness Analyzer ───────────────
+
+export interface WeaknessFinding {
+    section: string
+    severity: 'critical' | 'warning' | 'tip'
+    title: string
+    description: string
+    suggestion: string
+}
+
+export interface WeaknessAnalysis {
+    overallScore: number
+    findings: WeaknessFinding[]
+    sectionScores: { section: string; score: number; label: string }[]
+    topStrength: string
+    summary: string
+}
+
+export async function analyzeResumeWeaknesses(resumeData: Record<string, any>): Promise<WeaknessAnalysis> {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+    if (!apiKey) {
+        throw new Error('Gemini API key not configured.')
+    }
+
+    // Build a text representation of the resume
+    const personal = resumeData.personal || {}
+    const sections: string[] = []
+    sections.push(`NAME: ${personal.fullName || '(empty)'}`)
+    sections.push(`JOB TITLE: ${personal.jobTitle || '(empty)'}`)
+    sections.push(`EMAIL: ${personal.email || '(empty)'}`)
+    sections.push(`PHONE: ${personal.phone || '(empty)'}`)
+    sections.push(`LOCATION: ${personal.location || '(empty)'}`)
+    sections.push(`WEBSITE: ${personal.website || '(empty)'}`)
+    sections.push(`\nSUMMARY:\n${resumeData.summary || '(empty)'}`)
+
+    const exp = resumeData.experience || []
+    sections.push(`\nEXPERIENCE (${exp.length} entries):`)
+    exp.forEach((e: any, i: number) => {
+        sections.push(`  ${i + 1}. ${e.title || '?'} at ${e.company || '?'} (${e.startDate || '?'} - ${e.current ? 'Present' : e.endDate || '?'})`)
+        sections.push(`     Description: ${e.description || '(empty)'}`)
+    })
+
+    const edu = resumeData.education || []
+    sections.push(`\nEDUCATION (${edu.length} entries):`)
+    edu.forEach((e: any, i: number) => {
+        sections.push(`  ${i + 1}. ${e.degree || '?'} at ${e.school || '?'} (${e.startDate || '?'} - ${e.endDate || '?'})${e.gpa ? ` GPA: ${e.gpa}` : ''}`)
+    })
+
+    const skills = resumeData.skills || []
+    sections.push(`\nSKILLS (${skills.length}): ${skills.join(', ') || '(empty)'}`)
+
+    const langs = resumeData.languages || []
+    sections.push(`\nLANGUAGES (${langs.length}): ${langs.map((l: any) => `${l.language} (${l.proficiency})`).join(', ') || '(empty)'}`)
+
+    const certs = resumeData.certifications || []
+    sections.push(`\nCERTIFICATIONS (${certs.length}): ${certs.map((c: any) => `${c.name} - ${c.issuer}`).join(', ') || '(empty)'}`)
+
+    const projects = resumeData.projects || []
+    sections.push(`\nPROJECTS (${projects.length}):`)
+    projects.forEach((p: any, i: number) => {
+        sections.push(`  ${i + 1}. ${p.name || '?'}: ${p.description || '(empty)'}`)
+    })
+
+    const resumeText = sections.join('\n')
+
+    const prompt = `You are an expert resume reviewer and career coach. Analyze this resume and provide a comprehensive weakness analysis.
+
+RESUME:
+${resumeText}
+
+Respond with ONLY valid JSON (no markdown, no code fences) in this exact format:
+{
+  "overallScore": <number 0-100>,
+  "summary": "<one sentence overall assessment>",
+  "topStrength": "<the single best thing about this resume>",
+  "sectionScores": [
+    {"section": "Contact Info", "score": <0-100>, "label": "<one-word: Strong/Good/Weak/Missing>"},
+    {"section": "Summary", "score": <0-100>, "label": "<one-word>"},
+    {"section": "Experience", "score": <0-100>, "label": "<one-word>"},
+    {"section": "Education", "score": <0-100>, "label": "<one-word>"},
+    {"section": "Skills", "score": <0-100>, "label": "<one-word>"},
+    {"section": "Overall Impact", "score": <0-100>, "label": "<one-word>"}
+  ],
+  "findings": [
+    {
+      "section": "<section name>",
+      "severity": "<critical|warning|tip>",
+      "title": "<short issue title>",
+      "description": "<what's wrong and why it matters, 1-2 sentences>",
+      "suggestion": "<specific actionable fix, 1-2 sentences>"
+    }
+  ]
+}
+
+Rules for analysis:
+- Score harshly but fairly. Most resumes score 40-70.
+- Include 5-10 findings covering different sections.
+- "critical" = will likely get the resume rejected (missing key info, major gaps)
+- "warning" = reduces competitiveness (weak language, missing metrics, formatting)
+- "tip" = nice improvement (optimization, ATS keywords, modern best practices)
+- Be specific - reference actual content from the resume, not generic advice.
+- Empty or minimal sections should be flagged as critical.
+- Check for: quantified achievements, action verbs, ATS keywords, length, completeness, consistency.`
+
+    const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    temperature: 0.4,
+                    maxOutputTokens: 2048,
+                }
+            })
+        }
+    )
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData?.error?.message || `Gemini API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    const resultText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
+
+    if (!resultText) {
+        throw new Error('No response from AI')
+    }
+
+    // Parse JSON, stripping markdown fences if present
+    const cleaned = resultText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    try {
+        const parsed = JSON.parse(cleaned)
+        return {
+            overallScore: parsed.overallScore ?? 50,
+            summary: parsed.summary ?? 'Analysis complete.',
+            topStrength: parsed.topStrength ?? 'Resume submitted for review.',
+            sectionScores: parsed.sectionScores ?? [],
+            findings: (parsed.findings ?? []).map((f: any) => ({
+                section: f.section ?? 'General',
+                severity: (['critical', 'warning', 'tip'].includes(f.severity) ? f.severity : 'tip') as 'critical' | 'warning' | 'tip',
+                title: f.title ?? 'Finding',
+                description: f.description ?? '',
+                suggestion: f.suggestion ?? '',
+            })),
+        }
+    } catch {
+        console.error('Failed to parse weakness analysis:', resultText)
+        throw new Error('Failed to parse AI response. Please try again.')
+    }
 }
 
 /**
@@ -365,35 +572,35 @@ export const INTERVIEW_TYPES = {
     general: {
         id: 'general',
         name: 'Role Interview',
-        icon: '🎯',
+        icon: 'target',
         description: 'Full mock interview tailored to your target role',
         defaultQuestions: 8,
     },
     system_design: {
         id: 'system_design',
         name: 'System Design',
-        icon: '🏗️',
+        icon: 'layers',
         description: 'Architecture challenges & scalability deep-dives',
         defaultQuestions: 5,
     },
     behavioral: {
         id: 'behavioral',
         name: 'Behavioral Mastery',
-        icon: '🧠',
+        icon: 'brain',
         description: 'STAR method behavioral questions with detailed scoring',
         defaultQuestions: 6,
     },
     salary: {
         id: 'salary',
         name: 'Salary Negotiation',
-        icon: '💰',
+        icon: 'briefcase',
         description: 'Interactive negotiation roleplay with an HR rep',
         defaultQuestions: 6,
     },
     technical: {
         id: 'technical',
         name: 'Technical Coding',
-        icon: '💻',
+        icon: 'hash',
         description: 'Explain algorithms, code, and technical decisions',
         defaultQuestions: 5,
     },

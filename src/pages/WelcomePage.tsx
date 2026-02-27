@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useStore } from '../lib/store'
 import { PLANS, verifySubscription } from '../lib/stripe'
+import { LandingIcon } from '../components/LandingIcons'
 
 const CONFETTI_COLORS = ['#c9923c', '#d4b96a', '#e8d5a3', '#4caf7a', '#64b5f6', '#f87171', '#a78bfa']
 
@@ -50,7 +51,7 @@ export default function WelcomePage() {
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                     </div>
                 </div>
-                <h1 className="text-4xl mb-3 animate-[fadeUp_0.5s_ease_0.5s_both]">Welcome to <em className="italic text-gold">{plan.name}</em>! 🎉</h1>
+                <h1 className="text-4xl mb-3 animate-[fadeUp_0.5s_ease_0.5s_both]">Welcome to <em className="italic text-gold">{plan.name}</em>!</h1>
                 <p className="text-[17px] text-ink-40 mb-9 leading-relaxed animate-[fadeUp_0.5s_ease_0.6s_both]">Your payment was successful. You now have full access to all {plan.name} features.</p>
 
                 <div className="bg-[var(--white)] border-[1.5px] border-gold-pale rounded-xl px-7 py-6 mb-9 text-left animate-[fadeUp_0.5s_ease_0.7s_both]">
@@ -72,15 +73,15 @@ export default function WelcomePage() {
                     <h2 className="text-lg mb-4 text-left">Get started</h2>
                     <div className="flex flex-col gap-2.5">
                         {[
-                            { to: '/editor/new', icon: '📄', title: 'Create a Resume', desc: `Start building with all ${plan.name} templates` },
-                            { to: '/themes', icon: '🎨', title: 'Browse Themes', desc: `Preview all ${plan.themeLimit === Infinity ? '' : plan.themeLimit} premium templates` },
+                            { to: '/editor/new', icon: 'file-text', title: 'Create a Resume', desc: `Start building with all ${plan.name} templates` },
+                            { to: '/themes', icon: 'layers', title: 'Browse Themes', desc: `Preview all ${plan.themeLimit === Infinity ? '' : plan.themeLimit} premium templates` },
                             ...(isPremium ? [
-                                { to: '/tools/linkedin', icon: '🔗', title: 'LinkedIn Toolkit', desc: 'Generate headlines, about sections & rewrites' },
-                                { to: '/tools/interview', icon: '🎤', title: 'Interview Toolkit', desc: 'Practice with role-specific questions & STAR stories' },
+                                { to: '/tools/linkedin', icon: 'linkedin', title: 'LinkedIn Toolkit', desc: 'Generate headlines, about sections & rewrites' },
+                                { to: '/tools/interview', icon: 'mic', title: 'Interview Toolkit', desc: 'Practice with role-specific questions & STAR stories' },
                             ] : []),
                         ].map((a) => (
                             <Link key={a.to} to={a.to} className="group flex items-center gap-4 px-5 py-4 bg-[var(--white)] border border-ink-10 rounded-xl no-underline text-ink transition-all hover:border-gold-pale hover:shadow-md hover:translate-x-1">
-                                <div className="text-[28px] shrink-0">{a.icon}</div>
+                                <div className="shrink-0 text-gold"><LandingIcon name={a.icon} size={26} /></div>
                                 <div className="flex-1 text-left">
                                     <strong className="block text-[15px] mb-0.5">{a.title}</strong>
                                     <p className="text-[13px] text-ink-40 m-0">{a.desc}</p>

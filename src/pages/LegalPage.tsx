@@ -99,7 +99,7 @@ export default function LegalPage() {
                         <a href="mailto:legal@resumebuildin.com" className="text-gold underline">legal@resumebuildin.com</a>.
                     </p>
                     <p className="text-[13px] text-ink-20 leading-relaxed mt-3">
-                        Resume BuildIn is operated by RZeal Solutions, VA, United States.
+                        Resume BuildIn is operated by RZeal Solutions, United States.
                     </p>
                 </div>
             </main>

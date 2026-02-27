@@ -15,7 +15,7 @@ import '../styles/new-templates-extra3.css'
 import { OrigamiZenPreview, CorporateSlatePreview, TealWavePreview, PurpleDuskPreview, CoralBrightPreview, OceanDeepPreview, SageProPreview, CarbonNoirPreview, SandDunePreview, IndigoSharpPreview, PlatinumElitePreview, CascadeBluePreview, NordicMinimalPreview, MidnightProPreview, BlueprintPreview, EmeraldFreshPreview, SunsetWarmPreview, NewspaperClassicPreview, IvoryMarblePreview, NeonCyberPreview } from './ThemesPreviews2'
 import { ResumeData } from '../types'
 
-const SAMPLE_PERSONAS: Record<string, {
+export const SAMPLE_PERSONAS: Record<string, {
   name: string, role: string, email: string, phone: string, location: string,
   experience: { id: number, title: string, company: string, location: string, startDate: string, endDate: string, current: boolean, description: string }[],
   education: { id: number, degree: string, school: string, location: string, startDate: string, endDate: string, gpa: string, notes: string }[],
@@ -387,7 +387,7 @@ const SAMPLE_PERSONAS: Record<string, {
   },
 }
 
-function useDynamicData(data: Partial<ResumeData>, themeId?: string) {
+export function useDynamicData(data: Partial<ResumeData>, themeId?: string) {
   const d = data || {}
   const p = d.personal || { fullName: '', jobTitle: '', email: '', phone: '', location: '', website: '', summary: '', photo: '' }
 
@@ -395,16 +395,27 @@ function useDynamicData(data: Partial<ResumeData>, themeId?: string) {
   const persona = themeId ? SAMPLE_PERSONAS[themeId] : undefined
   const fallback = persona || SAMPLE_PERSONAS.classic
 
+  const hiddenSections = d.hiddenSections || []
+  const isHidden = (s: string) => hiddenSections.includes(s)
+
+  // For hidden sections, return empty data so templates naturally skip rendering them
+  const experience = isHidden('experience') ? [] : (d.experience && d.experience.length > 0 ? d.experience : fallback.experience)
+  const education = isHidden('education') ? [] : (d.education && d.education.length > 0 ? d.education : fallback.education)
+  const skills = isHidden('skills') ? [] : (d.skills && d.skills.length > 0 ? d.skills : fallback.skills)
+  const summary = isHidden('summary') ? '' : (d.summary || fallback.summary)
+
   return {
     name: p.fullName || fallback.name,
     role: p.jobTitle || fallback.role,
     email: p.email || fallback.email,
     phone: (p.phone || fallback.phone).replace(/\D/g, '').length > 0 ? (p.phone || fallback.phone) : fallback.phone,
     location: p.location || fallback.location,
-    experience: d.experience && d.experience.length > 0 ? d.experience : fallback.experience,
-    education: d.education && d.education.length > 0 ? d.education : fallback.education,
-    skills: d.skills && d.skills.length > 0 ? d.skills : fallback.skills,
-    summary: d.summary || fallback.summary,
+    experience,
+    education,
+    skills,
+    summary,
+    hiddenSections,
+    show: (section: string) => !isHidden(section),
   }
 }
 
@@ -420,33 +431,41 @@ export function ClassicPreview({ data }: PreviewProps) {
     <div className="classic-resume">
       <div className="cr-name">{res.name}</div>
       <div className="cr-contact">✉ {res.email} · ☎ {res.phone} · {res.location}</div>
-      <div className="cr-section">
-        <div className="cr-section-title">Summary</div>
-        <div className="cr-job-desc">{res.summary}</div>
-      </div>
-      <div className="cr-section">
-        <div className="cr-section-title">Experience</div>
-        {res.experience.map((exp, i) => (
-          <div key={i} className="cr-job">
-            <div className="cr-job-title">{exp.title}</div>
-            <div className="cr-job-company">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-            <div className="cr-job-desc">{exp.description}</div>
-          </div>
-        ))}
-      </div>
-      <div className="cr-section">
-        <div className="cr-section-title">Education</div>
-        {res.education.map((edu, i) => (
-          <div key={i} className="cr-job">
-            <div className="cr-job-title">{edu.degree}</div>
-            <div className="cr-job-company">{edu.school} · {edu.startDate} – {edu.endDate}{edu.gpa ? ` · GPA: ${edu.gpa}` : ''}</div>
-          </div>
-        ))}
-      </div>
-      <div className="cr-section">
-        <div className="cr-section-title">Skills</div>
-        <div className="cr-skills">{res.skills.map((s, i) => <span key={i} className="cr-skill">{s}</span>)}</div>
-      </div>
+      {res.show('summary') && (
+        <div className="cr-section">
+          <div className="cr-section-title">Summary</div>
+          <div className="cr-job-desc">{res.summary}</div>
+        </div>
+      )}
+      {res.show('experience') && (
+        <div className="cr-section">
+          <div className="cr-section-title">Experience</div>
+          {res.experience.map((exp, i) => (
+            <div key={i} className="cr-job">
+              <div className="cr-job-title">{exp.title}</div>
+              <div className="cr-job-company">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
+              <div className="cr-job-desc">{exp.description}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {res.show('education') && (
+        <div className="cr-section">
+          <div className="cr-section-title">Education</div>
+          {res.education.map((edu, i) => (
+            <div key={i} className="cr-job">
+              <div className="cr-job-title">{edu.degree}</div>
+              <div className="cr-job-company">{edu.school} · {edu.startDate} – {edu.endDate}{edu.gpa ? ` · GPA: ${edu.gpa}` : ''}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {res.show('skills') && (
+        <div className="cr-section">
+          <div className="cr-section-title">Skills</div>
+          <div className="cr-skills">{res.skills.map((s, i) => <span key={i} className="cr-skill">{s}</span>)}</div>
+        </div>
+      )}
     </div>
   )
 }
@@ -458,39 +477,47 @@ export function MinimalistPreview({ data }: PreviewProps) {
       <div className="mr-name">{res.name}</div>
       <div className="mr-role">{res.role}</div>
       <div className="mr-divider" />
-      <div className="mr-section">
-        <div className="mr-label">Summary</div>
-        <div style={{ fontSize: '10px', color: '#555', lineHeight: 1.6, marginBottom: 10 }}>{res.summary}</div>
-      </div>
-      <div className="mr-section">
-        <div className="mr-label">Experience</div>
-        {res.experience.map((exp, i) => (
-          <div key={i} className="mr-item">
-            <div className="mr-item-left">
-              <div className="title">{exp.title}</div>
-              <div className="sub">{exp.company}</div>
-              <div style={{ fontSize: '9px', color: '#888', marginTop: 2 }}>{exp.description}</div>
+      {res.show('summary') && (
+        <div className="mr-section">
+          <div className="mr-label">Summary</div>
+          <div style={{ fontSize: '10px', color: '#555', lineHeight: 1.6, marginBottom: 10 }}>{res.summary}</div>
+        </div>
+      )}
+      {res.show('experience') && (
+        <div className="mr-section">
+          <div className="mr-label">Experience</div>
+          {res.experience.map((exp, i) => (
+            <div key={i} className="mr-item">
+              <div className="mr-item-left">
+                <div className="title">{exp.title}</div>
+                <div className="sub">{exp.company}</div>
+                <div style={{ fontSize: '9px', color: '#888', marginTop: 2 }}>{exp.description}</div>
+              </div>
+              <div className="mr-item-right">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
             </div>
-            <div className="mr-item-right">{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-          </div>
-        ))}
-      </div>
-      <div className="mr-section">
-        <div className="mr-label">Education</div>
-        {res.education.map((edu, i) => (
-          <div key={i} className="mr-item">
-            <div className="mr-item-left">
-              <div className="title">{edu.degree}</div>
-              <div className="sub">{edu.school}</div>
+          ))}
+        </div>
+      )}
+      {res.show('education') && (
+        <div className="mr-section">
+          <div className="mr-label">Education</div>
+          {res.education.map((edu, i) => (
+            <div key={i} className="mr-item">
+              <div className="mr-item-left">
+                <div className="title">{edu.degree}</div>
+                <div className="sub">{edu.school}</div>
+              </div>
+              <div className="mr-item-right">{edu.startDate} – {edu.endDate}</div>
             </div>
-            <div className="mr-item-right">{edu.startDate} – {edu.endDate}</div>
-          </div>
-        ))}
-      </div>
-      <div className="mr-section">
-        <div className="mr-label">Skills</div>
-        <div className="mr-skills">{res.skills.map((s, i) => <span key={i} className="mr-skill">{s}</span>)}</div>
-      </div>
+          ))}
+        </div>
+      )}
+      {res.show('skills') && (
+        <div className="mr-section">
+          <div className="mr-label">Skills</div>
+          <div className="mr-skills">{res.skills.map((s, i) => <span key={i} className="mr-skill">{s}</span>)}</div>
+        </div>
+      )}
     </div>
   )
 }
@@ -503,33 +530,41 @@ export function DarkPreview({ data }: PreviewProps) {
       <div className="dr-name">{res.name}</div>
       <div className="dr-role">{res.role}</div>
       <div className="dr-divider"></div>
-      <div className="dr-section">
-        <div className="dr-section-title">Summary</div>
-        <div className="dr-job-desc">{res.summary}</div>
-      </div>
-      <div className="dr-section">
-        <div className="dr-section-title">Experience</div>
-        {res.experience.map((exp, i) => (
-          <div key={i} className="dr-job">
-            <div className="dr-job-title">{exp.title}</div>
-            <div className="dr-job-meta">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-            <div className="dr-job-desc">{exp.description}</div>
-          </div>
-        ))}
-      </div>
-      <div className="dr-section">
-        <div className="dr-section-title">Education</div>
-        {res.education.map((edu, i) => (
-          <div key={i} className="dr-job">
-            <div className="dr-job-title">{edu.degree}</div>
-            <div className="dr-job-meta">{edu.school} · {edu.startDate} – {edu.endDate}</div>
-          </div>
-        ))}
-      </div>
-      <div className="dr-section">
-        <div className="dr-section-title">Skills</div>
-        <div className="dr-skills">{res.skills.map((s, i) => <span key={i} className="dr-skill">{s}</span>)}</div>
-      </div>
+      {res.show('summary') && (
+        <div className="dr-section">
+          <div className="dr-section-title">Summary</div>
+          <div className="dr-job-desc">{res.summary}</div>
+        </div>
+      )}
+      {res.show('experience') && (
+        <div className="dr-section">
+          <div className="dr-section-title">Experience</div>
+          {res.experience.map((exp, i) => (
+            <div key={i} className="dr-job">
+              <div className="dr-job-title">{exp.title}</div>
+              <div className="dr-job-meta">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
+              <div className="dr-job-desc">{exp.description}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {res.show('education') && (
+        <div className="dr-section">
+          <div className="dr-section-title">Education</div>
+          {res.education.map((edu, i) => (
+            <div key={i} className="dr-job">
+              <div className="dr-job-title">{edu.degree}</div>
+              <div className="dr-job-meta">{edu.school} · {edu.startDate} – {edu.endDate}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {res.show('skills') && (
+        <div className="dr-section">
+          <div className="dr-section-title">Skills</div>
+          <div className="dr-skills">{res.skills.map((s, i) => <span key={i} className="dr-skill">{s}</span>)}</div>
+        </div>
+      )}
       <div className="dr-section">
         <div className="dr-section-title">Selected Projects</div>
         {[

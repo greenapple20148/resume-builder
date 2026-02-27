@@ -5,6 +5,7 @@ import { useStore } from '../lib/store'
 import { toast } from '../components/Toast'
 import { PLANS, openCustomerPortal } from '../lib/stripe'
 import { supabase } from '../lib/supabase'
+import { LandingIcon } from '../components/LandingIcons'
 
 export default function ProfilePage() {
     const { user, profile, signOut, updateProfile, resetPassword, fetchResumes, resumes } = useStore()
@@ -99,9 +100,9 @@ export default function ProfilePage() {
                         <span className={`badge ${profile?.plan === 'pro' || profile?.plan === 'premium' ? 'badge-gold' : 'badge-dark'} mt-2 inline-block`}>{profile?.plan?.toUpperCase() || 'FREE'}</span>
                     </div>
                     <div className="flex flex-row md:flex-col gap-0.5 overflow-x-auto">
-                        <button className={tab === 'general' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('general')}><span>👤</span> General</button>
-                        <button className={tab === 'security' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('security')}><span>🔒</span> Security</button>
-                        <button className={tab === 'invite' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('invite')}><span>💌</span> Invite a Friend</button>
+                        <button className={tab === 'general' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('general')}><span className="text-ink-40"><LandingIcon name="user" size={14} /></span> General</button>
+                        <button className={tab === 'security' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('security')}><span className="text-ink-40"><LandingIcon name="lock" size={14} /></span> Security</button>
+                        <button className={tab === 'invite' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('invite')}><span className="text-ink-40"><LandingIcon name="gift" size={14} /></span> Invite a Friend</button>
                     </div>
                     <div className="mt-auto flex flex-row md:flex-col gap-0.5 border-t border-ink-10 pt-4 justify-center md:justify-start">
                         <Link to="/dashboard" className={sidebarItemBase}><span>◈</span> Dashboard</Link>
@@ -166,7 +167,7 @@ export default function ProfilePage() {
                             <div className="mb-1"><h2 className="text-[clamp(24px,3vw,32px)] mb-1.5">Invite a Friend</h2><p className="text-[15px] text-ink-40">Share ResumeBuildIn with friends and help them land their dream job.</p></div>
                             <div className="bg-gradient-to-br from-ink to-[#2a2820] rounded-xl px-8 py-10 text-center relative overflow-hidden">
                                 <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_30%_70%,rgba(201,146,60,0.1)_0%,transparent_50%)] pointer-events-none" />
-                                <div className="text-5xl mb-4 relative z-10">🎁</div>
+                                <div className="flex justify-center mb-4 relative z-10 text-gold"><LandingIcon name="gift" size={40} /></div>
                                 <h3 className="font-display text-2xl font-light text-parchment mb-2.5 relative z-10">Give the gift of a great resume</h3>
                                 <p className="text-sm text-[rgba(250,248,243,0.5)] leading-relaxed max-w-[400px] mx-auto relative z-10">Know someone who's job hunting? Share ResumeBuildIn with them and help them put their best foot forward.</p>
                             </div>
@@ -183,7 +184,7 @@ export default function ProfilePage() {
                                 <p className="text-sm text-ink-40 leading-relaxed mb-4">Copy your personal referral link and share it anywhere — email, social media, or text.</p>
                                 <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
                                     <input type="text" className="form-input flex-1 font-mono text-xs" value={`${window.location.origin}/auth?mode=signup&ref=${user?.id || ''}`} readOnly />
-                                    <button type="button" className="btn btn-outline btn-sm" onClick={handleCopyLink}>📋 Copy</button>
+                                    <button type="button" className="btn btn-outline btn-sm" onClick={handleCopyLink}>Copy</button>
                                 </div>
                             </div>
                         </div>

@@ -75,6 +75,7 @@ export interface ResumeData {
     languages: LanguageEntry[]
     certifications: CertificationEntry[]
     projects: ProjectEntry[]
+    hiddenSections?: string[]
 }
 
 export interface Resume {

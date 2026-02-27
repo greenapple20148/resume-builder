@@ -5,6 +5,7 @@ import { toast } from '../components/Toast'
 import { PLANS, ADD_ONS, createCheckoutSession, openCustomerPortal } from '../lib/stripe'
 import { useStore } from '../lib/store'
 import { useSEO } from '../lib/useSEO'
+import { LandingIcon } from '../components/LandingIcons'
 
 export default function PricingPage() {
   const [annual, setAnnual] = useState(true)
@@ -208,7 +209,7 @@ export default function PricingPage() {
           <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
             {ADD_ONS.map(addon => (
               <div key={addon.id} className="bg-surface border border-border rounded-[14px] p-5 flex flex-col gap-2">
-                <div className="text-[28px]">{addon.icon}</div>
+                <div className="text-gold"><LandingIcon name={addon.icon} size={26} /></div>
                 <div className="font-bold text-sm text-ink">{addon.name}</div>
                 <div className="text-xs text-ink-40 leading-relaxed flex-1">{addon.description}</div>
                 <div className="text-xl font-extrabold text-gold">${addon.price}</div>

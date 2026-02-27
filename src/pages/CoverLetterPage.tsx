@@ -4,13 +4,14 @@ import Navbar from '../components/Navbar'
 import { useStore } from '../lib/store'
 import { toast } from '../components/Toast'
 import { CoverLetter } from '../types'
+import { sanitizeHtml, escapeHtml } from '../lib/sanitize'
 
 type Phase = 'list' | 'editor'
 
 const TONE_OPTIONS = [
-    { id: 'professional' as const, label: '💼 Professional', desc: 'Formal and polished' },
-    { id: 'conversational' as const, label: '💬 Conversational', desc: 'Warm and personable' },
-    { id: 'enthusiastic' as const, label: '🚀 Enthusiastic', desc: 'Energetic and passionate' },
+    { id: 'professional' as const, label: 'Professional', desc: 'Formal and polished' },
+    { id: 'conversational' as const, label: 'Conversational', desc: 'Warm and personable' },
+    { id: 'enthusiastic' as const, label: 'Enthusiastic', desc: 'Energetic and passionate' },
 ]
 
 export default function CoverLetterPage() {
@@ -99,8 +100,10 @@ export default function CoverLetterPage() {
         if (!printDiv) return
         const win = window.open('', '_blank')
         if (!win) return
-        win.document.write(`<html><head><title>Cover Letter - ${activeCL.company_name}</title>
-      <style>body{font-family:Georgia,'Times New Roman',serif;padding:60px;color:#1a1a1a;line-height:1.8;max-width:700px;margin:0 auto}.date{font-size:13px;color:#666;margin-bottom:20px}.recipient{font-size:14px;color:#333;margin-bottom:20px;line-height:1.6}.salutation{font-size:14px;font-weight:600;margin-bottom:16px}.body{font-size:14px;line-height:1.85;color:#333;white-space:pre-wrap}.closing{margin-top:28px;font-size:14px;color:#333}.name{font-weight:700;margin-top:4px}.contact{font-size:12px;color:#888;margin-top:2px}</style></head><body>${printDiv.innerHTML}</body></html>`)
+        const safeTitle = escapeHtml(activeCL.company_name || 'Cover Letter')
+        const safeContent = sanitizeHtml(printDiv.innerHTML)
+        win.document.write(`<html><head><title>Cover Letter - ${safeTitle}</title>
+      <style>body{font-family:Georgia,'Times New Roman',serif;padding:60px;color:#1a1a1a;line-height:1.8;max-width:700px;margin:0 auto}.date{font-size:13px;color:#666;margin-bottom:20px}.recipient{font-size:14px;color:#333;margin-bottom:20px;line-height:1.6}.salutation{font-size:14px;font-weight:600;margin-bottom:16px}.body{font-size:14px;line-height:1.85;color:#333;white-space:pre-wrap}.closing{margin-top:28px;font-size:14px;color:#333}.name{font-weight:700;margin-top:4px}.contact{font-size:12px;color:#888;margin-top:2px}</style></head><body>${safeContent}</body></html>`)
         win.document.close()
         setTimeout(() => { win.print(); win.close() }, 300)
     }
@@ -196,8 +199,8 @@ export default function CoverLetterPage() {
             <div className="max-w-[1200px] mx-auto px-6 pt-8 pb-20">
                 <div className="flex items-center gap-2.5 mb-2">
                     <button className="btn btn-ghost btn-sm" onClick={() => setPhase('list')}>← Back</button>
-                    <button className="btn btn-outline btn-sm" onClick={handleDownload}>📄 Download TXT</button>
-                    <button className="btn btn-outline btn-sm" onClick={handleDownloadPDF}>🖨️ Print / PDF</button>
+                    <button className="btn btn-outline btn-sm" onClick={handleDownload}>Download TXT</button>
+                    <button className="btn btn-outline btn-sm" onClick={handleDownloadPDF}>Print / PDF</button>
                     <span className={`text-xs ml-auto ${saveStatus === 'saving' ? 'text-gold' : saveStatus === 'error' ? 'text-rose' : 'text-ink-20'}`}>
                         {saveStatus === 'saving' ? 'Saving…' : saveStatus === 'error' ? 'Error saving' : '✓ Saved'}
                     </span>
@@ -207,7 +210,7 @@ export default function CoverLetterPage() {
                     {/* Left: Form */}
                     <div className="flex flex-col gap-4">
                         <div className="bg-surface border border-border rounded-2xl p-6">
-                            <div className="text-sm font-bold text-ink mb-4 flex items-center gap-2">🏢 Company Details</div>
+                            <div className="text-sm font-bold text-ink mb-4 flex items-center gap-2">Company Details</div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                 <div className="flex flex-col gap-1">
                                     <label className="text-[11px] font-semibold text-ink-40 uppercase tracking-wide">Company Name</label>
@@ -229,7 +232,7 @@ export default function CoverLetterPage() {
                         </div>
 
                         <div className="bg-surface border border-border rounded-2xl p-6">
-                            <div className="text-sm font-bold text-ink mb-4 flex items-center gap-2">🎨 Tone & Style</div>
+                            <div className="text-sm font-bold text-ink mb-4 flex items-center gap-2">Tone & Style</div>
                             <div className="flex gap-2">
                                 {TONE_OPTIONS.map(t => (
                                     <button key={t.id} className={`px-3.5 py-2 rounded-lg border text-[13px] cursor-pointer transition-all ${activeCL?.tone === t.id ? 'bg-gradient-to-br from-gold to-gold-light text-black border-gold font-semibold' : 'border-border bg-bg text-ink-70 hover:border-gold'}`} onClick={() => autoSave('tone', t.id)}>
@@ -250,17 +253,17 @@ export default function CoverLetterPage() {
 
                         {(plan === 'premium' || plan === 'career_plus') && (
                             <div className="bg-gradient-to-br from-[rgba(201,168,76,0.06)] to-[rgba(201,168,76,0.02)] border border-[rgba(201,168,76,0.2)] rounded-[14px] p-5">
-                                <div className="text-[13px] font-bold text-gold mb-2 flex items-center gap-1.5">✨ AI Cover Letter Writer</div>
+                                <div className="text-[13px] font-bold text-gold mb-2 flex items-center gap-1.5">AI Cover Letter Writer</div>
                                 <div className="text-xs text-ink-40 mb-3 leading-relaxed">Paste the job description below and we'll generate a tailored cover letter from your resume.</div>
                                 <textarea className="w-full min-h-[80px] p-3 border border-[rgba(201,168,76,0.2)] rounded-[10px] bg-bg text-ink text-[13px] leading-relaxed resize-y mb-2.5 focus:outline-none focus:border-gold" placeholder="Paste the job description here (optional but recommended)…" value={jdText} onChange={e => setJdText(e.target.value)} />
                                 <button className="btn btn-gold w-full" onClick={handleAIGenerate} disabled={aiLoading}>
-                                    {aiLoading ? <>Generating…</> : '✨ Generate Cover Letter'}
+                                    {aiLoading ? <>Generating…</> : 'Generate Cover Letter'}
                                 </button>
                             </div>
                         )}
 
                         <div className="bg-surface border border-border rounded-2xl p-6">
-                            <div className="text-sm font-bold text-ink mb-4 flex items-center gap-2">📝 Cover Letter Body</div>
+                            <div className="text-sm font-bold text-ink mb-4 flex items-center gap-2">Cover Letter Body</div>
                             <textarea className="w-full min-h-[320px] p-[18px] border border-border rounded-xl bg-bg text-ink text-sm leading-[1.75] resize-y transition-colors focus:outline-none focus:border-gold" placeholder={"Write your cover letter body here…\n\nParagraph 1: Express interest in the role and company.\n\nParagraph 2: Highlight relevant experience and skills.\n\nParagraph 3: Connect your achievements to the company's needs.\n\nParagraph 4: Express enthusiasm and call to action."} value={activeCL?.body || ''} onChange={e => autoSave('body', e.target.value)} />
                             <div className="text-[11px] text-ink-20 text-right mt-1">{(activeCL?.body || '').split(/\s+/).filter(Boolean).length} words</div>
                         </div>

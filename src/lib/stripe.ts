@@ -289,7 +289,7 @@ export const ADD_ONS: AddOn[] = [
     name: '3 Interview Mock Pack',
     price: 12.99,
     description: '3 AI-powered mock interview sessions. Use anytime, never expires.',
-    icon: '🎤',
+    icon: 'mic',
     stripePriceId: import.meta.env.VITE_STRIPE_MOCK_PACK_PRICE_ID,
   },
   {
@@ -297,7 +297,7 @@ export const ADD_ONS: AddOn[] = [
     name: 'Resume Human Review',
     price: 49,
     description: 'Expert human review with personalized feedback within 48 hours.',
-    icon: '👁️',
+    icon: 'search',
     stripePriceId: import.meta.env.VITE_STRIPE_HUMAN_REVIEW_PRICE_ID,
   },
   {
@@ -305,7 +305,7 @@ export const ADD_ONS: AddOn[] = [
     name: 'LinkedIn Profile Overhaul',
     price: 99,
     description: 'Complete LinkedIn profile rewrite by a career branding expert.',
-    icon: '🔗',
+    icon: 'linkedin',
     stripePriceId: import.meta.env.VITE_STRIPE_LINKEDIN_OVERHAUL_PRICE_ID,
   },
   {
@@ -313,7 +313,7 @@ export const ADD_ONS: AddOn[] = [
     name: 'Express 24h Unlock',
     price: 9.99,
     description: '24-hour full Pro access. Download unlimited resumes, no watermark.',
-    icon: '⚡',
+    icon: 'zap',
     stripePriceId: import.meta.env.VITE_STRIPE_EXPRESS_UNLOCK_PRICE_ID,
   },
 ]
