@@ -410,20 +410,34 @@ Rules for analysis:
 - Empty or minimal sections should be flagged as critical.
 - Check for: quantified achievements, action verbs, ATS keywords, length, completeness, consistency.`
 
-    const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: {
-                    temperature: 0.4,
-                    maxOutputTokens: 2048,
-                }
-            })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 20000)
+
+    let response: Response
+    try {
+        response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                signal: controller.signal,
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        temperature: 0.4,
+                        maxOutputTokens: 2048,
+                    }
+                })
+            }
+        )
+    } catch (fetchErr: any) {
+        clearTimeout(timeoutId)
+        if (fetchErr.name === 'AbortError') {
+            throw new Error('Analysis timed out. Please try again.')
         }
-    )
+        throw new Error('Network error — check your connection and try again.')
+    }
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))

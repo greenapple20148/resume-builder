@@ -79,7 +79,7 @@ export default function ThemesPage() {
 
   useSEO({
     title: 'Resume Themes & Templates',
-    description: 'Browse 25+ ATS-optimized, professionally designed resume themes. From minimalist to creative to dark — find the perfect template for your next job application.',
+    description: 'Browse 30+ ATS-optimized, professionally designed resume themes. From minimalist to creative to dark — find the perfect template for your next job application.',
     path: '/themes',
   })
 

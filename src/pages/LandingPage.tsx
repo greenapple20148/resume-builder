@@ -227,7 +227,7 @@ export default function LandingPage() {
           <div className="text-center lg:text-left">
             <div className="inline-flex items-center gap-2.5 text-[13px] text-ink-40 mb-6 font-mono">
               <span className="badge badge-gold">New</span>
-              25 themes just dropped
+              30 themes just dropped
             </div>
             <h1 className="text-[clamp(48px,7vw,88px)] leading-[1.0] mb-5">
               Resumes that<br />
@@ -281,7 +281,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="absolute right-[-20px] top-1/2 -translate-y-1/2 flex-col gap-2.5 hidden lg:flex">
-              {['✓ ATS Friendly', '⚡ Instant PDF', '✦ 25 Themes'].map((text, i) => (
+              {['✓ ATS Friendly', '⚡ Instant PDF', '✦ 30 Themes'].map((text, i) => (
                 <div key={i} className="bg-[var(--white)] border border-ink-10 rounded-full px-3.5 py-2 text-xs font-medium text-ink shadow-md whitespace-nowrap animate-[slideInRight_0.6s_ease_both]" style={{ animationDelay: `${i * 0.3}s` }}>
                   {text}
                 </div>
@@ -382,7 +382,7 @@ export default function LandingPage() {
         {/* ── THEME SHOWCASE ───────────────────── */}
         <section aria-label="Theme showcase" className="bg-ink-05 px-5 sm:px-10 py-16 sm:py-24">
           <div className="text-center max-w-[560px] mx-auto mb-14">
-            <h2 className="mb-3">25 themes.<br /><em className="italic text-gold">One perfect fit.</em></h2>
+            <h2 className="mb-3">30 themes.<br /><em className="italic text-gold">One perfect fit.</em></h2>
             <p className="text-base text-ink-40">From minimalist to bold — every style has its place.</p>
           </div>
           <div className="flex gap-3.5 max-w-[1200px] mx-auto overflow-x-auto pb-2">
@@ -403,7 +403,7 @@ export default function LandingPage() {
             ))}
           </div>
           <div className="text-center mt-8">
-            <Link to="/themes" className="btn btn-outline btn-lg">View All 25 Themes →</Link>
+            <Link to="/themes" className="btn btn-outline btn-lg">View All 30 Themes →</Link>
           </div>
         </section>
 
@@ -498,7 +498,7 @@ export default function LandingPage() {
               {[
                 { icon: 'zap', title: 'Under 10 Minutes', desc: 'Build a polished, job-ready resume faster than making coffee.' },
                 { icon: 'folders', title: 'Unlimited Versions', desc: 'Tailor a unique resume for every job — no limits, ever.' },
-                { icon: 'layers', title: 'Instant Format Switch', desc: 'Switch between 25 themes without losing a single word.' },
+                { icon: 'layers', title: 'Instant Format Switch', desc: 'Switch between 30 themes without losing a single word.' },
                 { icon: 'file-text', title: 'One-Click Formatting', desc: 'Clean, consistent formatting applied automatically.' },
                 { icon: 'bar-chart', title: 'Live Resume Score', desc: 'See your score update in real-time as you edit.' },
                 { icon: 'target', title: 'ATS Compliance Check', desc: 'Every export is tested for applicant tracking systems.' },

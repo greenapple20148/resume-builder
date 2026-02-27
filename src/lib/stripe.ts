@@ -376,3 +376,27 @@ export async function verifySubscription(): Promise<{ plan: string; synced: bool
   if (error) throw error
   return data as { plan: string; synced: boolean }
 }
+
+export async function cancelSubscription(): Promise<{ success: boolean; message: string }> {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) throw new Error('Not authenticated')
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15000)
+
+  try {
+    const { data, error } = await supabase.functions.invoke('cancel-subscription', {
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    })
+    if (error) {
+      // If the edge function doesn't exist, fall back to customer portal
+      await openCustomerPortal()
+      return { success: true, message: 'Redirecting to billing portal...' }
+    }
+    return data as { success: boolean; message: string }
+  } finally {
+    clearTimeout(timeout)
+  }
+}

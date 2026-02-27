@@ -181,15 +181,22 @@ export const useStore = create<StoreState>((set, get) => ({
     if (!user) return
 
     set({ resumesLoading: true })
-    const { data, error } = await supabase
+
+    // Race against a timeout so loading never hangs forever
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 10000))
+    const query = supabase
       .from('resumes')
       .select('*')
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false })
 
-    if (!error) set({ resumes: (data as Resume[]) || [] })
+    const result = await Promise.race([query, timeout])
+
+    if (result && 'data' in result && !result.error) {
+      set({ resumes: (result.data as Resume[]) || [] })
+    }
     set({ resumesLoading: false })
-    return data as Resume[]
+    return (result && 'data' in result ? result.data : get().resumes) as Resume[]
   },
 
   createResume: async (themeId = 'classic', initialData = null) => {

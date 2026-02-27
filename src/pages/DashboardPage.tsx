@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar'
 import { toast } from '../components/Toast'
 import { useStore } from '../lib/store'
 import { useSEO } from '../lib/useSEO'
-import { PLANS, openCustomerPortal, verifySubscription } from '../lib/stripe'
+import { PLANS, openCustomerPortal, verifySubscription, cancelSubscription } from '../lib/stripe'
 import { Resume } from '../types'
 import { getResumeScore } from '../lib/resumeScore'
 import { LandingIcon } from '../components/LandingIcons'
@@ -137,6 +137,8 @@ export default function DashboardPage() {
   const navigate = useNavigate()
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
+  const [cancelConfirm, setCancelConfirm] = useState(false)
+  const [cancelLoading, setCancelLoading] = useState(false)
 
   useEffect(() => { fetchResumes(); if (searchParams.get('upgraded') === 'true') toast.success('Welcome to Pro! All features unlocked.') }, [fetchResumes, searchParams])
   const { user, fetchProfile } = useStore()
@@ -217,7 +219,17 @@ export default function DashboardPage() {
               </div>
             </div>
             {profile?.plan === 'free' && <Link to="/pricing" className="btn btn-gold w-full mt-3 text-[13px]">Upgrade to Pro →</Link>}
-            {profile?.plan !== 'free' && <button className="btn btn-ghost btn-sm w-full mt-2" onClick={handleBilling} disabled={portalLoading}>{portalLoading ? 'Opening…' : 'Manage Billing'}</button>}
+            {profile?.plan !== 'free' && (
+              <>
+                <button className="btn btn-ghost btn-sm w-full mt-2" onClick={handleBilling} disabled={portalLoading}>{portalLoading ? 'Opening…' : 'Manage Billing'}</button>
+                <button
+                  className="w-full mt-1.5 text-[11px] text-ink-20 bg-transparent border-none cursor-pointer py-1.5 rounded-md transition-colors hover:text-rose hover:bg-[rgba(239,68,68,0.05)] font-[inherit]"
+                  onClick={() => setCancelConfirm(true)}
+                >
+                  Cancel Subscription
+                </button>
+              </>
+            )}
           </div>
         </aside>
 
@@ -233,7 +245,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {resumesLoading ? (
+          {resumesLoading && resumes.length === 0 ? (
             <div className="flex items-center justify-center h-[300px]"><div className="spinner" style={{ color: 'var(--gold)' }} /></div>
           ) : resumes.length === 0 ? (
             <div className="text-center py-20 px-10">
@@ -266,6 +278,40 @@ export default function DashboardPage() {
             <div className="flex gap-2.5">
               <button className="btn btn-danger flex-1" onClick={() => handleDelete(deleteConfirm)}>Delete</button>
               <button className="btn btn-outline flex-1" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {cancelConfirm && (
+        <div className="modal-overlay" onClick={() => setCancelConfirm(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
+            <h3 className="mb-2">Cancel Subscription?</h3>
+            <p className="text-sm text-ink-40 mb-2">Your subscription will be cancelled at the end of the current billing period. You'll keep access until then.</p>
+            <p className="text-[12px] text-ink-30 mb-6">After cancellation, your plan will revert to Free with limited features.</p>
+            <div className="flex gap-2.5">
+              <button
+                className="btn btn-danger flex-1"
+                disabled={cancelLoading}
+                onClick={async () => {
+                  setCancelLoading(true)
+                  try {
+                    const result = await cancelSubscription()
+                    if (result.success) {
+                      toast.success(result.message || 'Subscription cancelled. You\'ll keep access until the billing period ends.')
+                      setCancelConfirm(false)
+                      if (user) fetchProfile(user.id)
+                    }
+                  } catch (err: any) {
+                    toast.error(err.message || 'Could not cancel subscription.')
+                  } finally {
+                    setCancelLoading(false)
+                  }
+                }}
+              >
+                {cancelLoading ? 'Cancelling…' : 'Yes, Cancel'}
+              </button>
+              <button className="btn btn-outline flex-1" onClick={() => setCancelConfirm(false)}>Keep Plan</button>
             </div>
           </div>
         </div>

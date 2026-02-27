@@ -604,20 +604,44 @@ export default function EditorPage() {
   const [analyzerOpen, setAnalyzerOpen] = useState(false)
   const [analyzerLoading, setAnalyzerLoading] = useState(false)
   const [analysis, setAnalysis] = useState<WeaknessAnalysis | null>(null)
+  const [analyzerError, setAnalyzerError] = useState<string | null>(null)
+  const analyzerAbortRef = useRef<AbortController | null>(null)
+
+  const cancelAnalysis = () => {
+    if (analyzerAbortRef.current) {
+      analyzerAbortRef.current.abort()
+      analyzerAbortRef.current = null
+    }
+    setAnalyzerLoading(false)
+    setAnalyzerOpen(false)
+  }
 
   const runAnalysis = async () => {
+    // Abort any previous request
+    if (analyzerAbortRef.current) analyzerAbortRef.current.abort()
+    const controller = new AbortController()
+    analyzerAbortRef.current = controller
+
     setAnalyzerOpen(true)
     setAnalyzerLoading(true)
     setAnalysis(null)
+    setAnalyzerError(null)
     try {
       const { analyzeResumeWeaknesses } = await import('../lib/ai')
       const result = await analyzeResumeWeaknesses(resumeData as Record<string, any>)
-      setAnalysis(result)
+      if (!controller.signal.aborted) {
+        setAnalysis(result)
+      }
     } catch (err: any) {
-      toast.error(err.message || 'Analysis failed')
+      if (controller.signal.aborted) return // user cancelled, don't show error
+      const msg = err.message || 'Analysis failed'
+      setAnalyzerError(msg)
+      toast.error(msg)
       console.error(err)
     } finally {
-      setAnalyzerLoading(false)
+      if (!controller.signal.aborted) {
+        setAnalyzerLoading(false)
+      }
     }
   }
 
@@ -925,7 +949,7 @@ export default function EditorPage() {
 
       {/* ── Weakness Analyzer Drawer ────────────── */}
       {analyzerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setAnalyzerOpen(false)}>
+        <div className="fixed inset-0 z-50 flex justify-end" onClick={cancelAnalysis}>
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
           <div
             className="relative w-[440px] max-w-[90vw] h-full bg-[var(--white)] shadow-2xl overflow-y-auto"
@@ -943,7 +967,7 @@ export default function EditorPage() {
                   <div className="text-[11px] text-ink-30 font-mono">AI-powered weakness detection</div>
                 </div>
               </div>
-              <button onClick={() => setAnalyzerOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-transparent border-none cursor-pointer text-ink-30 hover:bg-ink-05 hover:text-ink transition-colors">
+              <button onClick={cancelAnalysis} className="w-8 h-8 flex items-center justify-center rounded-lg bg-transparent border-none cursor-pointer text-ink-30 hover:bg-ink-05 hover:text-ink transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
               </button>
             </div>
@@ -954,6 +978,32 @@ export default function EditorPage() {
                 <div style={{ width: 48, height: 48, border: '3px solid #e5e7eb', borderTopColor: 'var(--gold)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                 <div className="text-sm text-ink-40 font-medium">Analyzing your resume…</div>
                 <div className="text-[11px] text-ink-20">This takes a few seconds</div>
+                <button
+                  className="btn btn-outline btn-sm mt-2"
+                  style={{ fontSize: 12, padding: '6px 20px' }}
+                  onClick={cancelAnalysis}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+
+            {/* Error State */}
+            {analyzerError && !analyzerLoading && (
+              <div className="flex flex-col items-center justify-center py-16 px-6 gap-4 text-center">
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(239,68,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" /></svg>
+                </div>
+                <div className="text-sm text-ink font-medium">Analysis Failed</div>
+                <div className="text-[12px] text-ink-40 leading-relaxed max-w-[280px]">{analyzerError}</div>
+                <button
+                  className="btn btn-sm flex items-center gap-2 mt-2"
+                  style={{ background: 'var(--gold)', color: '#fff', border: 'none', padding: '8px 20px' }}
+                  onClick={runAnalysis}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" /></svg>
+                  Try Again
+                </button>
               </div>
             )}
 
@@ -1065,7 +1115,8 @@ export default function EditorPage() {
             )}
           </div>
         </div>
-      )}
+      )
+      }
 
       {/* Drawer animation */}
       <style>{`
@@ -1077,6 +1128,6 @@ export default function EditorPage() {
           to { transform: rotate(360deg); }
         }
       `}</style>
-    </div>
+    </div >
   )
 }
