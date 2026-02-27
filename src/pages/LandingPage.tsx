@@ -6,7 +6,7 @@ import { LandingIcon } from '../components/LandingIcons'
 
 const STATS = [
   { num: '47,000+', label: 'Resumes Created' },
-  { num: '25', label: 'Professional Themes' },
+  { num: '30', label: 'Professional Themes' },
   { num: '94%', label: 'Interview Rate' },
   { num: '180+', label: 'Countries' },
 ]
@@ -37,8 +37,7 @@ const FOUNDING_BENEFITS = [
   'Cancel anytime',
 ]
 
-function FoundingMemberOffer() {
-  const [spotsLeft, setSpotsLeft] = useState(37)
+function FoundingMemberOffer({ spotsLeft, setSpotsLeft }: { spotsLeft: number; setSpotsLeft: React.Dispatch<React.SetStateAction<number>> }) {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = React.useRef<HTMLElement>(null)
 
@@ -50,17 +49,6 @@ function FoundingMemberOffer() {
     if (sectionRef.current) observer.observe(sectionRef.current)
     return () => observer.disconnect()
   }, [])
-
-  useEffect(() => {
-    if (!isVisible) return
-    const interval = setInterval(() => {
-      setSpotsLeft(prev => {
-        if (prev <= 12) { clearInterval(interval); return prev }
-        return prev - 1
-      })
-    }, 8000 + Math.random() * 12000)
-    return () => clearInterval(interval)
-  }, [isVisible])
 
   const spotsPercentage = ((100 - spotsLeft) / 100) * 100
 
@@ -102,21 +90,22 @@ function FoundingMemberOffer() {
                 <em className="italic" style={{ color: '#e8b76a' }}>Launch Offer</em>
               </h2>
               <p className="text-[rgba(250,248,243,0.45)] text-[15px] leading-relaxed max-w-[460px] mx-auto">
-                Be one of the first 100 users and lock in exclusive pricing for life.
+                Be one of the first 100 users and get exclusive pricing for your first year.
               </p>
             </div>
 
             {/* Pricing */}
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-3 mb-2">
-                <span className="text-[rgba(250,248,243,0.3)] text-xl line-through font-display">$79/year</span>
-                <span className="px-3 py-1 rounded-full text-[11px] font-mono font-bold tracking-wider uppercase" style={{ background: 'linear-gradient(135deg, rgba(232,183,106,0.2), rgba(201,146,60,0.1))', color: '#e8b76a', border: '1px solid rgba(232,183,106,0.25)' }}>75% Off</span>
+                <span className="text-[rgba(250,248,243,0.4)] text-sm font-mono">Normally</span>
+                <span className="text-[rgba(250,248,243,0.5)] text-xl line-through font-display">$79/year</span>
+                <span className="px-3 py-1 rounded-full text-[11px] font-mono font-bold tracking-wider uppercase" style={{ background: 'linear-gradient(135deg, rgba(232,183,106,0.2), rgba(201,146,60,0.1))', color: '#e8b76a', border: '1px solid rgba(232,183,106,0.25)' }}>SAVE $60</span>
               </div>
               <div className="flex items-baseline justify-center gap-1.5">
                 <span className="font-display text-[72px] sm:text-[88px] font-light leading-none" style={{ color: '#e8b76a' }}>$19</span>
                 <span className="text-[rgba(250,248,243,0.35)] text-lg font-display">/year</span>
               </div>
-              <p className="text-[rgba(250,248,243,0.3)] text-xs font-mono mt-2 tracking-wide">PRO PLAN · FIRST YEAR</p>
+              <p className="text-[rgba(250,248,243,0.35)] text-xs font-mono mt-2 tracking-wide">PRO PLAN · FIRST YEAR · THEN $79/YR</p>
             </div>
 
             {/* Benefits */}
@@ -180,7 +169,7 @@ function FoundingMemberOffer() {
                 </svg>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-10 transition-opacity" />
               </Link>
-              <p className="text-[11px] text-[rgba(250,248,243,0.25)] mt-4 font-mono">Lock in your price — it never goes up.</p>
+              <p className="text-[11px] text-[rgba(250,248,243,0.25)] mt-4 font-mono">75% off your first year — limited spots.</p>
             </div>
           </div>
         </div>
@@ -213,9 +202,26 @@ function FoundingMemberOffer() {
 export default function LandingPage() {
   useSEO({
     title: 'ResumeBuildIn — Build Resumes That Get You Hired',
-    description: 'Build beautiful, ATS-optimized resumes in minutes. Choose from 25 professional themes, use the live editor, and download perfect PDFs instantly. Free forever.',
+    description: 'Build beautiful, ATS-optimized resumes in minutes. Choose from 30 professional themes, use the live editor, and download perfect PDFs instantly. Free forever.',
     path: '/',
   })
+
+  const [spotsLeft, setSpotsLeft] = useState(50)
+
+  // Real-time countdown — starts immediately on page load
+  useEffect(() => {
+    const tick = () => {
+      setSpotsLeft(prev => {
+        if (prev <= 12) return prev
+        return prev - 1
+      })
+    }
+    // First tick after a short random delay
+    const firstTimeout = setTimeout(tick, 3000 + Math.random() * 5000)
+    // Then tick every 8-20 seconds
+    const interval = setInterval(tick, 8000 + Math.random() * 12000)
+    return () => { clearTimeout(firstTimeout); clearInterval(interval) }
+  }, [])
 
   return (
     <div className="min-h-screen">
@@ -234,7 +240,7 @@ export default function LandingPage() {
               <em className="italic text-gold">get you hired</em>
             </h1>
             <p className="text-[17px] text-ink-40 leading-[1.7] max-w-[500px] mb-8 mx-auto lg:mx-0">
-              Build a stunning, ATS-friendly resume in minutes. Choose from 25
+              Build a stunning, ATS-friendly resume in minutes. Choose from 30
               professionally designed themes, fill in your details, download instantly.
             </p>
             <div className="flex gap-3 flex-wrap justify-center lg:justify-start">
@@ -255,6 +261,43 @@ export default function LandingPage() {
                 </span>
               ))}
             </div>
+
+            {/* ── Founding Member Mini Banner ── */}
+            <a
+              href="#founding-offer"
+              className="mt-6 block max-w-[480px] mx-auto lg:mx-0 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg no-underline group bg-ink-05 dark:bg-[rgba(26,20,8,0.6)]"
+              style={{ border: '1px solid var(--gold-pale, rgba(201,146,60,0.25))' }}
+            >
+              <div className="px-5 py-3.5 flex items-center gap-4">
+                <div className="flex-shrink-0">
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-display text-[28px] font-light leading-none text-gold">$19</span>
+                    <span className="text-[11px] text-ink-30 font-mono">/yr</span>
+                  </div>
+                  <span className="text-[9px] font-mono text-ink-20"><span className="line-through">$79</span> → $19/yr</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[12px] font-semibold text-ink leading-tight mb-0.5">Founding Member Offer</div>
+                  <div className="text-[10px] text-ink-40 font-mono">75% off Pro — first year</div>
+                </div>
+                <div className="flex-shrink-0 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all group-hover:scale-105" style={{ background: 'linear-gradient(135deg, #c9923c, #e8b76a)', color: '#fff' }}>
+                  Claim →
+                </div>
+              </div>
+              <div className="px-5 pb-2.5 flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-[10px] font-mono text-ink-30">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-gold opacity-75 animate-ping" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-gold" />
+                  </span>
+                  {100 - spotsLeft}/100 spots claimed
+                </span>
+                <span className="text-[10px] font-mono font-semibold text-gold">{spotsLeft} left</span>
+              </div>
+              <div className="h-1 bg-ink-10">
+                <div className="h-full rounded-full" style={{ width: `${100 - spotsLeft}%`, background: 'linear-gradient(90deg, #c9923c, #e8b76a)' }} />
+              </div>
+            </a>
           </div>
 
           <div className="relative">
@@ -414,7 +457,7 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
             {[
-              { n: '01', title: 'Pick a theme', desc: 'Browse 25 professional designs and select the one that matches your style and industry.' },
+              { n: '01', title: 'Pick a theme', desc: 'Browse 30 professional designs and select the one that matches your style and industry.' },
               { n: '02', title: 'Fill in your details', desc: 'Our smart editor guides you through each section. Add experience, skills, education and more.' },
               { n: '03', title: 'Download & apply', desc: 'Export a pixel-perfect PDF instantly. Share your public link or send the file directly.' },
             ].map((step, i) => (
@@ -548,7 +591,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── FOUNDING MEMBER LAUNCH OFFER ──────── */}
-        <FoundingMemberOffer />
+        <FoundingMemberOffer spotsLeft={spotsLeft} setSpotsLeft={setSpotsLeft} />
 
         {/* ── CTA BANNER ───────────────────────── */}
         <section aria-label="Call to action" className="bg-gradient-to-br from-[#0e0d0b] to-[#3a3830] dark:from-[#0e0d0b] dark:to-[#3a3830] px-10 py-24 text-center relative overflow-hidden">

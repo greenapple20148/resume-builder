@@ -18,6 +18,8 @@ interface Theme {
 }
 
 const THEMES: Theme[] = [
+  { id: 'classic', name: 'Classic', category: 'minimal', desc: 'Clean traditional layout', accent: '#1a1a1a', bg: '#ffffff' },
+  { id: 'minimalist', name: 'Minimalist', category: 'minimal', desc: 'Simple and elegant', accent: '#111', bg: '#fafaf8' },
   { id: 'editorial_luxe', name: 'Editorial Luxe', category: 'creative', desc: 'Luxe editorial layout', accent: '#dca47d', bg: '#fdfbf9', premium: true },
   { id: 'dark_architect', name: 'Dark Architect', category: 'dark', desc: 'Dark tech aesthetic', accent: '#f5c800', bg: '#121212', premium: true },
   { id: 'bauhaus_geometric', name: 'Bauhaus Geometric', category: 'creative', desc: 'Geometric design', accent: '#005bb5', bg: '#fafafa', premium: true },
@@ -28,12 +30,7 @@ const THEMES: Theme[] = [
 
   { id: 'dark', name: 'Dark Elegant', category: 'dark', desc: 'Gold accents on dark', accent: '#c9a84c', bg: '#0f0f14', premium: true },
 
-
-
-
-
   { id: 'terminal', name: 'Terminal', category: 'creative', desc: 'Retro hacker aesthetic', accent: '#7ee787', bg: '#0a0e14', new: true },
-
 
   { id: 'corporate_slate', name: 'Corporate Slate', category: 'professional', desc: 'Slate sidebar with blue accents', accent: '#3b82f6', bg: '#1e293b', new: true },
   { id: 'teal_wave', name: 'Teal Wave', category: 'professional', desc: 'Teal gradient header with rounded cards', accent: '#0d9488', bg: '#ffffff', new: true },
@@ -83,10 +80,21 @@ export default function ThemesPage() {
     path: '/themes',
   })
 
+  const [useThemeLoading, setUseThemeLoading] = useState(false)
+
   const handleUseTheme = async (theme: Theme) => {
     if (!user) { navigate('/auth?mode=signup'); return }
-    try { const resume = await createResume(theme.id); navigate(`/editor/${resume.id}`) }
-    catch (err: any) { if (err.message === 'LIMIT_REACHED') { toast.error('Resume limit reached.'); navigate('/pricing') } else toast.error(err.message || 'Could not create resume.') }
+    setUseThemeLoading(true)
+    try {
+      const timeoutPromise = new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Request timed out. Please try again.')), 15000))
+      const resume = await Promise.race([createResume(theme.id), timeoutPromise])
+      navigate(`/editor/${resume.id}`)
+    } catch (err: any) {
+      if (err.message === 'LIMIT_REACHED') { toast.error('Resume limit reached.'); navigate('/pricing') }
+      else toast.error(err.message || 'Could not create resume.')
+    } finally {
+      setUseThemeLoading(false)
+    }
   }
 
   return (
@@ -135,7 +143,7 @@ export default function ThemesPage() {
                 <p className="text-xs text-ink-40 m-0">{selectedTheme.desc}</p>
                 <div className="inline-block text-[9px] font-mono uppercase tracking-widest text-gold bg-[rgba(197,165,114,0.1)] border border-[rgba(197,165,114,0.2)] rounded-full px-2.5 py-0.5 mt-1">{selectedTheme.category}</div>
               </div>
-              <button className="btn btn-gold" onClick={() => handleUseTheme(selectedTheme)}>Use This Theme →</button>
+              <button className="btn btn-gold" onClick={() => handleUseTheme(selectedTheme)} disabled={useThemeLoading}>{useThemeLoading ? 'Creating…' : 'Use This Theme →'}</button>
             </div>
             <div className="flex-1 min-h-0 flex items-start justify-center px-8 py-7 overflow-hidden relative">
               <div className="w-[816px] h-[1200px] bg-white rounded shrink-0 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.06),0_12px_36px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_4px_12px_rgba(0,0,0,0.2),0_12px_36px_rgba(0,0,0,0.3)] preview-fill" style={{ zoom: 0.65, transformOrigin: 'top center' }} key={selectedTheme.id}>

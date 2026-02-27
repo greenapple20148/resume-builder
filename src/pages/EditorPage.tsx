@@ -114,16 +114,242 @@ interface TextAreaProps {
   onChange: (val: string) => void
   placeholder?: string
   rows?: number
+  showToolbar?: boolean
+  toolbarVariant?: 'full' | 'compact'
 }
 
-function TextArea({ label, value, onChange, placeholder = '', rows = 3 }: TextAreaProps) {
+const BULLET_STYLES = [
+  { id: 'bullet', symbol: '•', label: 'Bullet' },
+  { id: 'dash', symbol: '–', label: 'Dash' },
+  { id: 'arrow', symbol: '▸', label: 'Arrow' },
+  { id: 'number', symbol: '1.', label: '1. 2. 3.' },
+  { id: 'alpha', symbol: 'a.', label: 'a. b. c.' },
+  { id: 'none', symbol: '⊘', label: 'None' },
+] as const
+
+function applyBulletStyle(text: string, styleId: string): string {
+  const lines = text.split('\n').filter(l => l.trim())
+  return lines.map((line, i) => {
+    // Strip existing bullet/number prefix
+    const clean = line.replace(/^[\s]*[•\-–—▸►▹◆◇●○■□▪▫→⟶❯❱✦✧\d]+[.):\s]*/u, '').replace(/^[a-z][.)]\s*/i, '').trim()
+    if (!clean) return ''
+    switch (styleId) {
+      case 'bullet': return `• ${clean}`
+      case 'dash': return `– ${clean}`
+      case 'arrow': return `▸ ${clean}`
+      case 'number': return `${i + 1}. ${clean}`
+      case 'alpha': return `${String.fromCharCode(97 + (i % 26))}. ${clean}`
+      case 'none': return clean
+      default: return `• ${clean}`
+    }
+  }).join('\n')
+}
+
+function TextArea({ label, value, onChange, placeholder = '', rows = 3, showToolbar = false, toolbarVariant = 'full' }: TextAreaProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [activeBullet, setActiveBullet] = useState<string | null>(null)
+
+  const CYCLE_STYLES = ['number', 'alpha', 'arrow', 'dash'] as const
+
+  // Detect current bullet style from value
+  useEffect(() => {
+    if (!value) { setActiveBullet(null); return }
+    const firstLine = value.split('\n').find(l => l.trim())
+    if (!firstLine) return
+    if (/^\d+[.)]/.test(firstLine.trim())) setActiveBullet('number')
+    else if (/^[a-z][.)]/.test(firstLine.trim())) setActiveBullet('alpha')
+    else if (firstLine.trim().startsWith('•')) setActiveBullet('bullet')
+    else if (firstLine.trim().startsWith('–') || firstLine.trim().startsWith('-')) setActiveBullet('dash')
+    else if (firstLine.trim().startsWith('▸')) setActiveBullet('arrow')
+    else setActiveBullet(null)
+  }, [value])
+
+  const handleBulletClick = (styleId: string) => {
+    const current = value || ''
+    if (!current.trim()) {
+      // Start with a bullet prefix on an empty field
+      const style = BULLET_STYLES.find(s => s.id === styleId)
+      if (style && styleId !== 'none') {
+        const prefix = styleId === 'number' ? '1. ' : styleId === 'alpha' ? 'a. ' : `${style.symbol} `
+        onChange(prefix)
+        setTimeout(() => textareaRef.current?.focus(), 0)
+      }
+      return
+    }
+    onChange(applyBulletStyle(current, styleId))
+  }
+
+  const insertWrap = (before: string, after: string) => {
+    const ta = textareaRef.current
+    if (!ta) return
+    const start = ta.selectionStart
+    const end = ta.selectionEnd
+    const text = value || ''
+    const selected = text.substring(start, end)
+    const newText = text.substring(0, start) + before + selected + after + text.substring(end)
+    onChange(newText)
+    setTimeout(() => {
+      ta.focus()
+      ta.setSelectionRange(start + before.length, end + before.length)
+    }, 0)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Auto-continue bullet on Enter
+    if (e.key === 'Enter' && !e.shiftKey && value) {
+      const ta = textareaRef.current
+      if (!ta) return
+      const cursor = ta.selectionStart
+      const lines = value.substring(0, cursor).split('\n')
+      const currentLine = lines[lines.length - 1]
+
+      let prefix = ''
+      const bulletMatch = currentLine.match(/^(\s*[•–▸]\s*)/)
+      const numberMatch = currentLine.match(/^(\s*)(\d+)([.)]\s*)/)
+      const alphaMatch = currentLine.match(/^(\s*)([a-z])([.)]\s*)/i)
+
+      if (bulletMatch) {
+        // If current line is just the bullet with no text, clear it
+        if (currentLine.trim().length <= 2) {
+          e.preventDefault()
+          const before = value.substring(0, cursor - currentLine.length)
+          const after = value.substring(cursor)
+          onChange(before + '\n' + after)
+          return
+        }
+        prefix = bulletMatch[1]
+      } else if (numberMatch) {
+        if (currentLine.replace(numberMatch[0], '').trim() === '') {
+          e.preventDefault()
+          const before = value.substring(0, cursor - currentLine.length)
+          const after = value.substring(cursor)
+          onChange(before + '\n' + after)
+          return
+        }
+        prefix = `${numberMatch[1]}${parseInt(numberMatch[2]) + 1}${numberMatch[3]}`
+      } else if (alphaMatch) {
+        if (currentLine.replace(alphaMatch[0], '').trim() === '') {
+          e.preventDefault()
+          const before = value.substring(0, cursor - currentLine.length)
+          const after = value.substring(cursor)
+          onChange(before + '\n' + after)
+          return
+        }
+        const next = String.fromCharCode(alphaMatch[2].charCodeAt(0) + 1)
+        prefix = `${alphaMatch[1]}${next}${alphaMatch[3]}`
+      }
+
+      if (prefix) {
+        e.preventDefault()
+        const before = value.substring(0, cursor)
+        const after = value.substring(cursor)
+        const newValue = before + '\n' + prefix + after
+        onChange(newValue)
+        setTimeout(() => {
+          ta.setSelectionRange(cursor + 1 + prefix.length, cursor + 1 + prefix.length)
+        }, 0)
+      }
+    }
+  }
+
   return (
     <div className="form-group">
       <label className="form-label">{label}</label>
+      {showToolbar && toolbarVariant === 'full' && (
+        <div className="flex items-center gap-1 mb-1.5 flex-wrap">
+          <div className="flex items-center bg-ink-05 rounded-lg p-0.5 gap-0.5">
+            {BULLET_STYLES.map(style => (
+              <button
+                key={style.id}
+                type="button"
+                title={style.label}
+                className={`px-2 py-1 rounded-md text-[11px] font-mono border-none cursor-pointer transition-all ${activeBullet === style.id
+                  ? 'bg-gold text-white shadow-sm'
+                  : 'bg-transparent text-ink-40 hover:bg-ink-10 hover:text-ink'
+                  }`}
+                onClick={() => handleBulletClick(style.id)}
+              >
+                {style.symbol}
+              </button>
+            ))}
+          </div>
+          <div className="w-px h-5 bg-ink-10 mx-1" />
+          <button
+            type="button"
+            title="Bold"
+            className="px-1.5 py-1 rounded-md text-[12px] font-bold bg-transparent border-none cursor-pointer text-ink-40 hover:bg-ink-10 hover:text-ink transition-all"
+            onClick={() => insertWrap('**', '**')}
+          >
+            B
+          </button>
+          <button
+            type="button"
+            title="Italic"
+            className="px-1.5 py-1 rounded-md text-[12px] italic bg-transparent border-none cursor-pointer text-ink-40 hover:bg-ink-10 hover:text-ink transition-all"
+            onClick={() => insertWrap('*', '*')}
+          >
+            I
+          </button>
+        </div>
+      )}
+      {showToolbar && toolbarVariant === 'compact' && (() => {
+        const currentCycleIdx = CYCLE_STYLES.indexOf(activeBullet as any)
+        const cycleLabel = activeBullet === 'number' ? '1.' : activeBullet === 'alpha' ? 'a.' : activeBullet === 'arrow' ? '▸' : activeBullet === 'dash' ? '–' : '1.'
+        return (
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <button
+              type="button"
+              title="Bullet list"
+              className={`px-2.5 py-1 rounded-lg text-[12px] font-mono border-none cursor-pointer transition-all ${activeBullet === 'bullet' ? 'bg-gold text-white shadow-sm' : 'bg-ink-05 text-ink-40 hover:bg-ink-10 hover:text-ink'}`}
+              onClick={() => handleBulletClick(activeBullet === 'bullet' ? 'none' : 'bullet')}
+            >
+              •&ensp;Bullet
+            </button>
+            <button
+              type="button"
+              title={`Cycle: ${CYCLE_STYLES.map(s => s === 'number' ? '1.' : s === 'alpha' ? 'a.' : s === 'arrow' ? '▸' : '–').join(' → ')}`}
+              className={`px-2.5 py-1 rounded-lg text-[12px] font-mono border-none cursor-pointer transition-all ${CYCLE_STYLES.includes(activeBullet as any) ? 'bg-gold text-white shadow-sm' : 'bg-ink-05 text-ink-40 hover:bg-ink-10 hover:text-ink'}`}
+              onClick={() => {
+                const nextIdx = (currentCycleIdx + 1) % CYCLE_STYLES.length
+                handleBulletClick(CYCLE_STYLES[nextIdx])
+              }}
+            >
+              {CYCLE_STYLES.includes(activeBullet as any) ? cycleLabel : '1.'}&ensp;List
+            </button>
+            <button
+              type="button"
+              title="Clear formatting"
+              className={`px-2 py-1 rounded-lg text-[12px] font-mono border-none cursor-pointer transition-all ${!activeBullet ? 'bg-ink-10 text-ink-40' : 'bg-ink-05 text-ink-30 hover:bg-ink-10 hover:text-ink'}`}
+              onClick={() => handleBulletClick('none')}
+            >
+              ⊘
+            </button>
+            <div className="w-px h-5 bg-ink-10 mx-0.5" />
+            <button
+              type="button"
+              title="Bold"
+              className="px-1.5 py-1 rounded-lg text-[12px] font-bold bg-ink-05 border-none cursor-pointer text-ink-40 hover:bg-ink-10 hover:text-ink transition-all"
+              onClick={() => insertWrap('**', '**')}
+            >
+              B
+            </button>
+            <button
+              type="button"
+              title="Italic"
+              className="px-1.5 py-1 rounded-lg text-[12px] italic bg-ink-05 border-none cursor-pointer text-ink-40 hover:bg-ink-10 hover:text-ink transition-all"
+              onClick={() => insertWrap('*', '*')}
+            >
+              I
+            </button>
+          </div>
+        )
+      })()}
       <textarea
+        ref={textareaRef}
         className="form-textarea"
         value={value || ''}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={showToolbar ? handleKeyDown : undefined}
         placeholder={placeholder}
         style={{ minHeight: rows * 28 }}
       />
@@ -188,6 +414,8 @@ function SummarySection({ data, onChange }: SectionProps<string>) {
           onChange={onChange}
           placeholder="Experienced professional with 8+ years in product management..."
           rows={5}
+          showToolbar
+          toolbarVariant="compact"
         />
         <div className="flex justify-between items-center">
           <p className="text-[11.5px] text-ink-20 leading-relaxed italic m-0">Tip: Highlight your biggest strengths and what makes you unique.</p>
@@ -274,7 +502,7 @@ function ExperienceSection({ data = [], onChange }: SectionProps<ExperienceEntry
                   </div>
                 </div>
                 <Field label="Location" value={exp.location} onChange={(v) => update(idx, 'location', v)} placeholder="New York, NY" />
-                <TextArea label="Key Achievements & Responsibilities" value={exp.description} onChange={(v) => update(idx, 'description', v)} placeholder="• Led cross-functional team of 8 to ship payments redesign..." rows={4} />
+                <TextArea label="Key Achievements & Responsibilities" value={exp.description} onChange={(v) => update(idx, 'description', v)} placeholder="• Led cross-functional team of 8 to ship payments redesign..." rows={4} showToolbar toolbarVariant="compact" />
                 <div className="flex justify-between items-center mt-[-4px]">
                   <button className="btn btn-danger btn-sm" style={{ fontSize: 11 }} onClick={() => remove(idx)}>Remove</button>
                   <button className="btn btn-ghost btn-sm text-gold" style={{ fontSize: 11 }} onClick={() => handleAi(idx, exp.description)} disabled={aiLoadingIdx === idx || !exp.description}>
@@ -494,7 +722,7 @@ function ProjectsSection({ data = [], onChange }: SectionProps<ProjectEntry[]>) 
                   <Field label="URL (optional)" value={proj.url} onChange={(v) => update(idx, 'url', v)} placeholder="github.com/user/project" />
                 </div>
                 <Field label="Technologies Used" value={proj.tech} onChange={(v) => update(idx, 'tech', v)} placeholder="React, Node.js, PostgreSQL" />
-                <TextArea label="Description" value={proj.description} onChange={(v) => update(idx, 'description', v)} placeholder="Built a real-time analytics dashboard..." rows={3} />
+                <TextArea label="Description" value={proj.description} onChange={(v) => update(idx, 'description', v)} placeholder="Built a real-time analytics dashboard..." rows={3} showToolbar toolbarVariant="compact" />
                 <div className="flex justify-end mt-[-4px]">
                   <button className="btn btn-danger btn-sm" style={{ fontSize: 11 }} onClick={() => remove(idx)}>Remove</button>
                 </div>
