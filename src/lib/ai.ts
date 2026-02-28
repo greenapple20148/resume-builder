@@ -647,6 +647,126 @@ function fallbackHeuristicParsing(text: string): any {
     return result
 }
 
+// ─────────────── AI Theme Generator ───────────────
+
+export interface AIThemeResult {
+    themeId: string
+    accentColor: string
+    font: string
+    explanation: string
+}
+
+/**
+ * Generate a theme configuration from a natural language description.
+ * Returns a matching template ID, accent color, and font.
+ */
+export async function generateThemeFromDescription(description: string): Promise<AIThemeResult> {
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+    if (!apiKey) {
+        throw new Error('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your .env file.')
+    }
+
+    const themeList = [
+        'editorial_luxe - Luxe editorial layout, cream background, serif feel',
+        'dark_architect - Dark tech aesthetic, yellow accent on dark',
+        'bauhaus_geometric - Geometric design, navy sidebar, coral/gold accents',
+        'soft_pastel - Pastel aesthetic, light violet tones',
+        'swiss_grid - Clean grid system, red accent, minimal',
+        'phd - Academic focus, blue accent, formal',
+        'dark - Gold accents on dark elegant background',
+        'terminal - Retro hacker aesthetic, green on dark',
+        'corporate_slate - Slate sidebar with blue accents, professional',
+        'teal_wave - Teal gradient header with rounded cards',
+        'purple_dusk - Violet gradient sidebar with timeline',
+        'coral_bright - Coral gradient header, stat strip, energetic',
+        'ocean_deep - Deep ocean gradient, blue tones',
+        'sage_pro - Clean green accents, professional',
+        'carbon_noir - Dark zinc panels, futuristic',
+        'sand_dune - Warm amber gradient, serif accents',
+        'indigo_sharp - Bold indigo border with diamond markers',
+        'platinum_elite - Executive two-panel with KPI bar',
+        'cascade_blue - Navy sidebar with gradient skill bars',
+        'nordic_minimal - Clean Scandinavian design, serif accents',
+        'midnight_pro - Luxurious dark with gold accents',
+        'blueprint - Engineering blueprint with grid overlay',
+        'emerald_fresh - Green header with triangle bullets',
+        'sunset_warm - Amber sunset gradient, warm tones',
+        'newspaper_classic - Editorial 3-column newspaper layout',
+        'ivory_marble - Luxury navy sidebar with gold accents',
+        'neon_cyber - Cyberpunk neon with stats strip',
+        'origami_zen - Japanese-inspired with fold marks',
+    ]
+
+    const fontOptions = [
+        '', // Theme Default
+        "Calibri, sans-serif",
+        "Arial, sans-serif",
+        "Helvetica, Arial, sans-serif",
+        "Roboto, sans-serif",
+        "'Open Sans', sans-serif",
+        "Georgia, serif",
+        "Garamond, 'EB Garamond', serif",
+        "Cambria, serif",
+    ]
+
+    const prompt = `You are a professional resume designer. Based on the user's description, select the best matching resume theme, accent color, and font.
+
+Available themes (id - description):
+${themeList.join('\n')}
+
+Available fonts:
+${fontOptions.map(f => f || '(theme default)').join('\n')}
+
+User's description: "${description}"
+
+Respond ONLY with valid JSON (no markdown, no code fences):
+{
+  "themeId": "theme_id_here",
+  "accentColor": "#hexcolor",
+  "font": "font value from the list above, or empty string for theme default",
+  "explanation": "One sentence explaining your choice"
+}`
+
+    const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.5, maxOutputTokens: 256 },
+            }),
+        }
+    )
+
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}))
+        throw new Error(err?.error?.message || `Gemini API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    let raw = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
+    if (!raw) throw new Error('No response from AI')
+
+    // Strip markdown code fences if present
+    raw = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()
+
+    const result: AIThemeResult = JSON.parse(raw)
+
+    // Validate theme ID exists
+    const validIds = themeList.map(t => t.split(' - ')[0].trim())
+    if (!validIds.includes(result.themeId)) {
+        result.themeId = 'editorial_luxe'
+    }
+
+    // Validate hex color
+    if (!/^#[0-9a-fA-F]{6}$/.test(result.accentColor)) {
+        result.accentColor = ''
+    }
+
+    return result
+}
+
 export const INTERVIEW_TYPES = {
     general: {
         id: 'general',

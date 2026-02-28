@@ -1224,6 +1224,10 @@ export default function EditorPage() {
   const [analyzerLoading, setAnalyzerLoading] = useState(false)
   const [analysis, setAnalysis] = useState<WeaknessAnalysis | null>(null)
   const [analyzerError, setAnalyzerError] = useState<string | null>(null)
+
+  // AI Theme Dictation
+  const [themePrompt, setThemePrompt] = useState('')
+  const [themeDictating, setThemeDictating] = useState(false)
   const analyzerAbortRef = useRef<AbortController | null>(null)
 
   const cancelAnalysis = () => {
@@ -1340,6 +1344,31 @@ export default function EditorPage() {
     const newThemeId = e.target.value
     setThemeId(newThemeId)
     if (id) await updateResume(id, { theme_id: newThemeId })
+  }
+
+  const handleThemeDictation = async () => {
+    if (!themePrompt.trim()) return
+    setThemeDictating(true)
+    try {
+      const { generateThemeFromDescription } = await import('../lib/ai')
+      const result = await generateThemeFromDescription(themePrompt.trim())
+
+      // Apply theme
+      setThemeId(result.themeId)
+      if (result.accentColor) {
+        setResumeData(prev => ({ ...prev, customColor: result.accentColor, customFont: result.font || prev.customFont }))
+      } else {
+        setResumeData(prev => ({ ...prev, customFont: result.font || prev.customFont }))
+      }
+      if (id) await updateResume(id, { theme_id: result.themeId })
+      toast.success(`Theme applied: ${result.explanation}`)
+      setThemePrompt('')
+    } catch (err: any) {
+      toast.error('Theme generation failed: ' + (err.message || 'Unknown error'))
+      console.error(err)
+    } finally {
+      setThemeDictating(false)
+    }
   }
 
   const handleDownload = async () => {
@@ -1661,6 +1690,35 @@ export default function EditorPage() {
                     onChange={(e) => setResumeData(prev => ({ ...prev, customColor: e.target.value }))}
                   />
                 </label>
+              </div>
+            </div>
+
+            {/* AI Theme Dictation */}
+            <div className="mb-2 mt-3 pt-3 border-t border-ink-10">
+              <label className="text-[10px] text-ink-30 flex items-center gap-1 mb-1.5 px-1">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
+                AI Theme
+              </label>
+              <div className="flex gap-1">
+                <input
+                  type="text"
+                  className="flex-1 text-[11px] px-2 py-1.5 rounded-lg border border-ink-10 bg-[var(--white)] text-ink outline-none focus:border-gold transition-colors"
+                  placeholder="e.g. dark with gold accents"
+                  value={themePrompt}
+                  onChange={(e) => setThemePrompt(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && !themeDictating && handleThemeDictation()}
+                  disabled={themeDictating}
+                />
+                <button
+                  type="button"
+                  className="shrink-0 text-[10px] font-semibold px-2 py-1.5 rounded-lg border-none cursor-pointer transition-all disabled:opacity-40"
+                  style={{ background: 'var(--gold)', color: '#fff' }}
+                  onClick={handleThemeDictation}
+                  disabled={themeDictating || !themePrompt.trim()}
+                  title="Generate theme from description"
+                >
+                  {themeDictating ? '…' : '✨'}
+                </button>
               </div>
             </div>
           </div>
