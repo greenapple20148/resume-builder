@@ -1375,7 +1375,7 @@ export default function EditorPage() {
       await new Promise(r => setTimeout(r, 100))
 
       const opt = {
-        margin: [0, 0, 0, 0] as [number, number, number, number], // Strict tuple for TS
+        margin: [0, 0, 12, 0] as [number, number, number, number], // Strict tuple for TS. 12mm bottom margin for footer!
         filename: `${title || 'resume'}.pdf`,
         image: { type: 'jpeg' as const, quality: 1.0 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
@@ -1391,9 +1391,38 @@ export default function EditorPage() {
           const totalPages = pdf.internal.getNumberOfPages()
           const pdfWidth = pdf.internal.pageSize.getWidth()
           const pageHeight = pdf.internal.pageSize.getHeight()
+
+          // Extract theme background color to paint the footer seamlessly
+          let r = 255, g = 255, b = 255
+          const themeEl = previewEl.firstElementChild
+          if (themeEl) {
+            const bgStr = window.getComputedStyle(themeEl).backgroundColor
+            const match = bgStr.match(/\d+/g)
+            if (match && match.length >= 3) {
+              r = parseInt(match[0])
+              g = parseInt(match[1])
+              b = parseInt(match[2])
+            }
+          }
+
+          // Calculate brightness to ensure watermark readability
+          const brightness = (r * 299 + g * 587 + b * 114) / 1000
+          const isDark = brightness < 128
+
           for (let i = 1; i <= totalPages; i++) {
             pdf.setPage(i)
-            pdf.text('Made with ResumeBuildIn', pdfWidth / 2, pageHeight - 10, { align: 'center' })
+            // Draw a rectangle filling the 12mm bottom margin to match the theme background
+            pdf.setFillColor(r, g, b)
+            pdf.rect(0, pageHeight - 12, pdfWidth, 12, 'F')
+
+            // Set watermark text color
+            if (isDark) {
+              pdf.setTextColor(180, 180, 180)
+            } else {
+              pdf.setTextColor(130, 130, 130)
+            }
+            pdf.setFontSize(10)
+            pdf.text('Made with ResumeBuildIn', pdfWidth / 2, pageHeight - 4, { align: 'center' })
           }
         }
       })
