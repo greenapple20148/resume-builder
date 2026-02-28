@@ -1336,8 +1336,7 @@ export default function EditorPage() {
     setDownloading(true)
     toast.info('Generating PDF…')
     try {
-      const { default: jsPDF } = await import('jspdf')
-      const { default: html2canvas } = await import('html2canvas')
+      const html2pdf = (await import('html2pdf.js')).default
 
       const previewEl = document.getElementById('resume-preview-root')
       if (!previewEl) throw new Error('Preview not found')
@@ -1357,79 +1356,21 @@ export default function EditorPage() {
       // Wait for layout to settle without constraints
       await new Promise(r => setTimeout(r, 100))
 
-      // Capture using html2canvas (DOM walking - highly accurate long-page geometry)
-      const canvas = await html2canvas(previewEl, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff'
-      })
-      const dataUrl = canvas.toDataURL('image/png', 1.0)
+      const opt = {
+        margin: 0,
+        filename: `${title || 'resume'}.pdf`,
+        image: { type: 'jpeg' as const, quality: 1.0 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+      };
+
+      await html2pdf().set(opt).from(previewEl).save();
 
       // Restore original styles
       previewEl.style.transform = origTransform
       previewEl.style.boxShadow = origBoxShadow
       if (guidesEl) guidesEl.style.display = 'flex'
 
-      // Generate PDF
-      const pdf = new jsPDF('p', 'mm', 'a4')
-      const pdfWidth = pdf.internal.pageSize.getWidth()
-      const a4Height = pdf.internal.pageSize.getHeight()
-
-      // Load the image to get dimensions
-      const img = new Image()
-      await new Promise<void>((resolve, reject) => {
-        img.onload = () => resolve()
-        img.onerror = reject
-        img.src = dataUrl
-      })
-
-      const pdfHeight = (img.height * pdfWidth) / img.width
-
-      // Calculate true document minimum scale height in Pixels
-      const pxPerMm = 794 / 210 // ~3.78095
-      const minPagePx = Math.ceil(297 * pxPerMm)
-      const numPages = Math.ceil(previewEl.scrollHeight / minPagePx) || 1
-
-      // Single page: fill entire width
-      if (pdfHeight <= a4Height + 1) { // Adding 1mm tolerance
-        pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, Math.min(pdfHeight, a4Height))
-      } else {
-        // Multi-page for genuinely long resumes
-        // Exactly divide the captured image height by the number of pages to prevent drift
-        const totalPages = numPages
-        const pageImgHeight = Math.floor(img.height / totalPages)
-
-        for (let page = 0; page < totalPages; page++) {
-          if (page > 0) pdf.addPage()
-
-          const yOffset = page * pageImgHeight
-          const sliceH = Math.min(pageImgHeight, img.height - yOffset)
-
-          const pageCanvas = document.createElement('canvas')
-          pageCanvas.width = img.width
-          pageCanvas.height = pageImgHeight // Always keep canvas standard A4 height
-
-          const ctx = pageCanvas.getContext('2d')
-          if (ctx) {
-            // Fill white background to prevent transparent patches
-            ctx.fillStyle = '#ffffff'
-            ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height)
-
-            // Draw this slice of the image
-            ctx.drawImage(img, 0, yOffset, img.width, sliceH, 0, 0, img.width, sliceH)
-
-            pdf.addImage(pageCanvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, pdfWidth, a4Height)
-          }
-        }
-      }
-
-      const isFree = profile?.plan === 'free' || !profile?.plan
-      if (isFree) {
-        pdf.text('Made with ResumeBuildIn', pdfWidth / 2, a4Height - 10, { align: 'center' })
-      }
-
-      pdf.save(`${title || 'resume'}.pdf`)
       toast.success('PDF downloaded!')
     } catch (err) {
       console.error('PDF generation error:', err)
