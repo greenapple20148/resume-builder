@@ -1327,67 +1327,64 @@ export default function EditorPage() {
   const handleDownload = async () => {
     setDownloading(true)
     toast.info('Generating PDF…')
-    try {
-      const { default: jsPDF } = await import('jspdf')
-      const { default: html2canvas } = await import('html2canvas')
 
-      // Target the actual resume page root, NOT the scrollable container wrapper
-      const previewEl = document.getElementById('resume-preview-root')
-      if (!previewEl) throw new Error('Preview not found')
+    // Target the actual resume page root, NOT the scrollable container wrapper
+    const previewEl = document.getElementById('resume-preview-root')
+    if (!previewEl) {
+      toast.error('Preview not found')
+      setDownloading(false)
+      return
+    }
+
+    // Save transform state outside try block so we can restore it strictly
+    const origTransform = previewEl.style.transform
+
+    try {
+      // @ts-ignore
+      const { default: html2pdf } = await import('html2pdf.js')
 
       // Temporarily remove scaling so html2canvas captures full native resolution
-      const origTransform = previewEl.style.transform
       previewEl.style.transform = 'none'
 
       // Wait a moment for the DOM to repaint without scale
       await new Promise(r => setTimeout(r, 100))
 
-      const canvas = await html2canvas(previewEl, {
-        scale: 2, // 2x for high DPI clarity
-        useCORS: true,
-        backgroundColor: '#ffffff'
+      const opt = {
+        margin: [0, 0, 0, 0] as [number, number, number, number], // Strict tuple for TS
+        filename: `${title || 'resume'}.pdf`,
+        image: { type: 'jpeg' as const, quality: 1.0 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
+        // Native pagebreak rules: avoid slicing any major text elements or sections in half
+        pagebreak: { mode: 'css', avoid: ['h1', 'h2', 'h3', 'p', 'li', 'td', 'tr', '.section-container', 'section', 'header'] }
+      }
+
+      const worker = html2pdf().set(opt).from(previewEl).toPdf()
+
+      await worker.get('pdf').then((pdf: any) => {
+        if (profile?.plan === 'free' || !profile?.plan) {
+          const totalPages = pdf.internal.getNumberOfPages()
+          const pdfWidth = pdf.internal.pageSize.getWidth()
+          const pageHeight = pdf.internal.pageSize.getHeight()
+          for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i)
+            pdf.text('Made with ResumeBuildIn', pdfWidth / 2, pageHeight - 10, { align: 'center' })
+          }
+        }
       })
+
+      await worker.save()
 
       // Restore scaling immediately
       previewEl.style.transform = origTransform
 
-      const imgData = canvas.toDataURL('image/jpeg', 1.0)
-      const pdf = new jsPDF('p', 'mm', 'a4')
-
-      const pdfWidth = pdf.internal.pageSize.getWidth() // standard ~210mm
-      const pageHeight = pdf.internal.pageSize.getHeight() // standard ~297mm
-
-      // Calculate total image height mapped to PDF mm width
-      const imgHeight = (canvas.height * pdfWidth) / canvas.width
-
-      let heightLeft = imgHeight
-      let position = 0
-
-      // Add first page
-      pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight)
-      heightLeft -= pageHeight
-
-      // Add subsequent pages precisely offset by standard A4 height
-      while (heightLeft > 0) {
-        position -= pageHeight
-        pdf.addPage()
-        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight)
-        heightLeft -= pageHeight
-      }
-
-      if (profile?.plan === 'free' || !profile?.plan) {
-        const totalPages = pdf.getNumberOfPages()
-        for (let i = 1; i <= totalPages; i++) {
-          pdf.setPage(i)
-          pdf.text('Made with ResumeBuildIn', pdfWidth / 2, pageHeight - 10, { align: 'center' })
-        }
-      }
-
-      pdf.save(`${title || 'resume'}.pdf`)
       toast.success('PDF downloaded!')
     } catch (err) {
       console.error('PDF generation error:', err)
       toast.error('PDF generation failed.')
+
+      // Attempt to clean up transform in case of error using original state
+      previewEl.style.transform = origTransform
     } finally {
       setDownloading(false)
     }
