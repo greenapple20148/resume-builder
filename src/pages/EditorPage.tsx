@@ -1331,23 +1331,62 @@ export default function EditorPage() {
       const { default: jsPDF } = await import('jspdf')
       const { default: html2canvas } = await import('html2canvas')
 
-      const previewEl = document.getElementById('resume-preview-content')
+      // Target the actual resume page root, NOT the scrollable container wrapper
+      const previewEl = document.getElementById('resume-preview-root')
       if (!previewEl) throw new Error('Preview not found')
 
-      const canvas = await html2canvas(previewEl, { scale: 2, useCORS: true })
-      const imgData = canvas.toDataURL('image/png')
+      // Temporarily remove scaling so html2canvas captures full native resolution
+      const origTransform = previewEl.style.transform
+      previewEl.style.transform = 'none'
+
+      // Wait a moment for the DOM to repaint without scale
+      await new Promise(r => setTimeout(r, 100))
+
+      const canvas = await html2canvas(previewEl, {
+        scale: 2, // 2x for high DPI clarity
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      })
+
+      // Restore scaling immediately
+      previewEl.style.transform = origTransform
+
+      const imgData = canvas.toDataURL('image/jpeg', 1.0)
       const pdf = new jsPDF('p', 'mm', 'a4')
-      const pdfWidth = pdf.internal.pageSize.getWidth()
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+
+      const pdfWidth = pdf.internal.pageSize.getWidth() // standard ~210mm
+      const pageHeight = pdf.internal.pageSize.getHeight() // standard ~297mm
+
+      // Calculate total image height mapped to PDF mm width
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width
+
+      let heightLeft = imgHeight
+      let position = 0
+
+      // Add first page
+      pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight)
+      heightLeft -= pageHeight
+
+      // Add subsequent pages precisely offset by standard A4 height
+      while (heightLeft > 0) {
+        position -= pageHeight
+        pdf.addPage()
+        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight)
+        heightLeft -= pageHeight
+      }
 
       if (profile?.plan === 'free' || !profile?.plan) {
-        pdf.text('Made with ResumeBuildIn', pdfWidth / 2, pdf.internal.pageSize.getHeight() - 10, { align: 'center' })
+        const totalPages = pdf.getNumberOfPages()
+        for (let i = 1; i <= totalPages; i++) {
+          pdf.setPage(i)
+          pdf.text('Made with ResumeBuildIn', pdfWidth / 2, pageHeight - 10, { align: 'center' })
+        }
       }
 
       pdf.save(`${title || 'resume'}.pdf`)
       toast.success('PDF downloaded!')
     } catch (err) {
+      console.error('PDF generation error:', err)
       toast.error('PDF generation failed.')
     } finally {
       setDownloading(false)
