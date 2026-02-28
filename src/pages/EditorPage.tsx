@@ -1062,101 +1062,109 @@ function LivePreview({ resumeData, themeId }: LivePreviewProps) {
   const projects = Array.isArray(resumeData.projects) ? resumeData.projects : []
   const customSections = Array.isArray(resumeData.customSections) ? resumeData.customSections : []
   const hasExtras = (!isHidden('languages') && languages.length > 0) || (!isHidden('certifications') && certifications.length > 0) || (!isHidden('projects') && projects.length > 0) || (!isHidden('custom') && customSections.length > 0)
-
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden', background: 'var(--ink-05)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 20 }}>
-      <div
-        className="live-preview-page"
-        style={{
-          width: '210mm',
-          minHeight: '297mm',
-          background: '#fff',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-          position: 'relative',
-          transform: `scale(${scale})`,
-          transformOrigin: 'top center',
-          flexShrink: 0,
-        }}
-        id="resume-preview-root"
-      >
-        {resumeData.customFont && (
-          <style>{`
+    <div ref={containerRef} style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden', background: 'var(--ink-05)', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 40, paddingBottom: 80 }}>
+      <div style={{ transform: `scale(${scale})`, transformOrigin: 'top center', flexShrink: 0, marginBottom: `calc(${297 * scale}mm - 297mm)`, position: 'relative' }}>
+
+        {/* Visual Page Break Guides */}
+        <div id="page-guides" style={{ position: 'absolute', top: 0, left: '-20px', right: '-20px', bottom: 0, pointerEvents: 'none', zIndex: 50, display: 'flex', flexDirection: 'column' }}>
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} style={{ height: '297mm', width: '100%', flexShrink: 0, borderBottom: '2px dashed rgba(255,0,0,0.3)', position: 'relative' }}>
+              <span style={{ position: 'absolute', right: -40, bottom: -10, color: 'rgba(255,0,0,0.5)', fontSize: 12, fontWeight: 600 }}>Page {i + 1}</span>
+            </div>
+          ))}
+        </div>
+
+        <div
+          className="live-preview-page"
+          style={{
+            width: '210mm',
+            minHeight: '297mm',
+            background: '#fff',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+            position: 'relative',
+          }}
+          id="resume-preview-root"
+        >
+          {resumeData.customFont && (
+            <style>{`
             #resume-preview-root,
             #resume-preview-root * {
               font-family: ${resumeData.customFont} !important;
             }
           `}</style>
-        )}
-        {resumeData.customColor && (
-          <style>{`
+          )}
+          {resumeData.customColor && (
+            <style>{`
             .live-preview-page [style*="color"] {
               --user-accent: ${resumeData.customColor};
             }
           `}</style>
-        )}
-        <PreviewComponent data={resumeData} />
-        {hasExtras && (
-          <div style={{ padding: '0 48px 40px', fontFamily: "'Inter', 'DM Sans', sans-serif" }}>
-            {!isHidden('languages') && languages.length > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Languages</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {languages.map((l, i) => (
-                    <span key={i} style={{ fontSize: 12, color: '#2a2a2a', background: '#f5f5f5', padding: '4px 12px', borderRadius: 4, border: '1px solid #e8e8e8' }}>
-                      {l.language}{l.level ? <span style={{ color: '#888', marginLeft: 6, fontSize: 11 }}>· {l.level}</span> : ''}
-                    </span>
-                  ))}
+          )}
+          <PreviewComponent data={resumeData} />
+          {hasExtras && (
+            <div style={{ padding: '0 48px 40px', fontFamily: "'Inter', 'DM Sans', sans-serif" }}>
+              {!isHidden('languages') && languages.length > 0 && (
+                <div style={{ marginBottom: 20 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Languages</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {languages.map((l, i) => (
+                      <span key={i} style={{ fontSize: 12, color: '#2a2a2a', background: '#f5f5f5', padding: '4px 12px', borderRadius: 4, border: '1px solid #e8e8e8' }}>
+                        {l.language}{l.level ? <span style={{ color: '#888', marginLeft: 6, fontSize: 11 }}>· {l.level}</span> : ''}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-            {!isHidden('certifications') && certifications.length > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Certifications</div>
-                {certifications.map((c, i) => (
-                  <div key={i} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <div>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{c.name}</span>
-                      {c.issuer && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {c.issuer}</span>}
-                    </div>
-                    {c.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{c.date}</span>}
-                  </div>
-                ))}
-              </div>
-            )}
-            {!isHidden('projects') && projects.length > 0 && (
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Projects</div>
-                {projects.map((proj, i) => (
-                  <div key={i} style={{ marginBottom: 12 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{proj.name}</div>
-                    {proj.tech && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.tech}</div>}
-                    {proj.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 4 }}>{proj.description}</div>}
-                    {proj.url && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.url}</div>}
-                  </div>
-                ))}
-              </div>
-            )}
-            {!isHidden('custom') && customSections.map((section, sIdx) => (
-              section.title && section.entries.length > 0 ? (
-                <div key={sIdx} style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>{section.title}</div>
-                  {section.entries.map((entry, eIdx) => (
-                    <div key={eIdx} style={{ marginBottom: 10 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                        <div>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{entry.title}</span>
-                          {entry.subtitle && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {entry.subtitle}</span>}
-                        </div>
-                        {entry.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{entry.date}</span>}
+              )}
+              {!isHidden('certifications') && certifications.length > 0 && (
+                <div style={{ marginBottom: 20 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Certifications</div>
+                  {certifications.map((c, i) => (
+                    <div key={i} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <div>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{c.name}</span>
+                        {c.issuer && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {c.issuer}</span>}
                       </div>
-                      {entry.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 3 }}>{entry.description}</div>}
+                      {c.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{c.date}</span>}
                     </div>
                   ))}
                 </div>
-              ) : null
-            ))}
-          </div>
-        )}
+              )}
+              {!isHidden('projects') && projects.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Projects</div>
+                  {projects.map((proj, i) => (
+                    <div key={i} style={{ marginBottom: 12 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{proj.name}</div>
+                      {proj.tech && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.tech}</div>}
+                      {proj.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 4 }}>{proj.description}</div>}
+                      {proj.url && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.url}</div>}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {!isHidden('custom') && customSections.map((section, sIdx) => (
+                section.title && section.entries.length > 0 ? (
+                  <div key={sIdx} style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>{section.title}</div>
+                    {section.entries.map((entry, eIdx) => (
+                      <div key={eIdx} style={{ marginBottom: 10 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                          <div>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{entry.title}</span>
+                            {entry.subtitle && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {entry.subtitle}</span>}
+                          </div>
+                          {entry.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{entry.date}</span>}
+                        </div>
+                        {entry.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 3 }}>{entry.description}</div>}
+                      </div>
+                    ))}
+                  </div>
+                ) : null
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -1331,23 +1339,145 @@ export default function EditorPage() {
       const { default: jsPDF } = await import('jspdf')
       const { default: html2canvas } = await import('html2canvas')
 
-      const previewEl = document.getElementById('resume-preview-content')
+      const previewEl = document.getElementById('resume-preview-root')
       if (!previewEl) throw new Error('Preview not found')
 
-      const canvas = await html2canvas(previewEl, { scale: 2, useCORS: true })
-      const imgData = canvas.toDataURL('image/png')
+      // Save original styles
+      const origTransform = previewEl.style.transform
+      const origBoxShadow = previewEl.style.boxShadow
+      const origWidth = previewEl.style.width
+      const origHeight = previewEl.style.height
+      const origOverflow = previewEl.style.overflow
+
+      // Temporarily remove scale transform for full-size capture
+      previewEl.style.transform = 'none'
+      previewEl.style.boxShadow = 'none'
+      previewEl.style.width = '794px' // 210mm at 96dpi
+
+      // Hide page guides from PDF
+      const guidesEl = document.getElementById('page-guides')
+      if (guidesEl) guidesEl.style.display = 'none'
+
+      const ancestors: { el: HTMLElement; overflow: string; width: string; height: string; transform: string }[] = []
+      let ancestor = previewEl.parentElement
+      while (ancestor && ancestor !== document.body && ancestor !== null) {
+        ancestors.push({
+          el: ancestor,
+          overflow: ancestor.style.overflow,
+          width: ancestor.style.width,
+          height: ancestor.style.height,
+          transform: ancestor.style.transform,
+        })
+        ancestor.style.overflow = 'visible'
+        ancestor.style.width = 'auto'
+        ancestor.style.height = 'auto'
+        ancestor.style.transform = 'none'
+        ancestor = ancestor.parentElement
+      }
+
+      // Calculate true document minimum scale height in Pixels
+      const pxPerMm = 794 / 210 // ~3.78095
+      const minPagePx = Math.ceil(297 * pxPerMm)
+
+      // Wait for layout to settle without constraints
+      await new Promise(r => setTimeout(r, 100))
+
+      const scrollH = previewEl.scrollHeight
+      const numPages = Math.ceil(scrollH / minPagePx) || 1
+      const actualH = numPages * minPagePx
+
+      previewEl.style.height = `${actualH}px`
+      previewEl.style.overflow = 'visible'
+
+      // Capture using html2canvas (DOM walking - highly accurate long-page geometry)
+      const canvas = await html2canvas(previewEl, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        windowWidth: 794,
+        windowHeight: actualH,
+        width: 794,
+        height: actualH,
+        onclone: (doc, el) => {
+          el.style.transform = 'none'
+          el.style.width = '794px'
+          el.style.height = `${actualH}px`
+        }
+      })
+      const dataUrl = canvas.toDataURL('image/png', 1.0)
+
+      // Restore original styles
+      previewEl.style.transform = origTransform
+      previewEl.style.boxShadow = origBoxShadow
+      previewEl.style.width = origWidth
+      previewEl.style.height = origHeight
+      previewEl.style.overflow = origOverflow
+      if (guidesEl) guidesEl.style.display = 'flex'
+
+      ancestors.forEach(({ el, overflow, width, height, transform }) => {
+        el.style.overflow = overflow
+        el.style.width = width
+        el.style.height = height
+        el.style.transform = transform
+      })
+
+      // Generate PDF
       const pdf = new jsPDF('p', 'mm', 'a4')
       const pdfWidth = pdf.internal.pageSize.getWidth()
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+      const a4Height = pdf.internal.pageSize.getHeight()
 
-      if (profile?.plan === 'free' || !profile?.plan) {
-        pdf.text('Made with ResumeBuildIn', pdfWidth / 2, pdf.internal.pageSize.getHeight() - 10, { align: 'center' })
+      // Load the image to get dimensions
+      const img = new Image()
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve()
+        img.onerror = reject
+        img.src = dataUrl
+      })
+
+      const pdfHeight = (img.height * pdfWidth) / img.width
+
+      // Single page: fill entire width
+      if (pdfHeight <= a4Height + 1) { // Adding 1mm tolerance
+        pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, Math.min(pdfHeight, a4Height))
+      } else {
+        // Multi-page for genuinely long resumes
+        // Exactly divide the captured image height by the number of pages to prevent drift
+        const totalPages = numPages
+        const pageImgHeight = Math.floor(img.height / totalPages)
+
+        for (let page = 0; page < totalPages; page++) {
+          if (page > 0) pdf.addPage()
+
+          const yOffset = page * pageImgHeight
+          const sliceH = Math.min(pageImgHeight, img.height - yOffset)
+
+          const pageCanvas = document.createElement('canvas')
+          pageCanvas.width = img.width
+          pageCanvas.height = pageImgHeight // Always keep canvas standard A4 height
+
+          const ctx = pageCanvas.getContext('2d')
+          if (ctx) {
+            // Fill white background to prevent transparent patches
+            ctx.fillStyle = '#ffffff'
+            ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height)
+
+            // Draw this slice of the image
+            ctx.drawImage(img, 0, yOffset, img.width, sliceH, 0, 0, img.width, sliceH)
+
+            pdf.addImage(pageCanvas.toDataURL('image/png', 1.0), 'PNG', 0, 0, pdfWidth, a4Height)
+          }
+        }
+      }
+
+      const isFree = profile?.plan === 'free' || !profile?.plan
+      if (isFree) {
+        pdf.text('Made with ResumeBuildIn', pdfWidth / 2, a4Height - 10, { align: 'center' })
       }
 
       pdf.save(`${title || 'resume'}.pdf`)
       toast.success('PDF downloaded!')
     } catch (err) {
+      console.error('PDF generation error:', err)
       toast.error('PDF generation failed.')
     } finally {
       setDownloading(false)
