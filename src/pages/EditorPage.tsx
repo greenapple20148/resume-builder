@@ -1064,17 +1064,25 @@ function LivePreview({ resumeData, themeId }: LivePreviewProps) {
   const hasExtras = (!isHidden('languages') && languages.length > 0) || (!isHidden('certifications') && certifications.length > 0) || (!isHidden('projects') && projects.length > 0) || (!isHidden('custom') && customSections.length > 0)
 
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden', background: 'var(--ink-05)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 20 }}>
+    <div ref={containerRef} style={{ width: '100%', height: '100%', overflowX: 'auto', overflowY: 'hidden', background: 'var(--ink-05)', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start', padding: 20 }}>
       <div
         className="live-preview-page"
         style={{
-          width: '210mm',
-          minHeight: '297mm',
-          background: '#fff',
+          // Native Multi-column page flow representation for screen preview
+          height: '297mm', // strict A4 height
+          columnWidth: '210mm', // A4 width
+          columnGap: '20px',
+          width: 'max-content',
+          minWidth: '210mm',
+
+          // Draw separated white A4 "pages" under the transparent column flows
+          backgroundColor: 'transparent',
+          backgroundImage: 'repeating-linear-gradient(to right, #fff 0, #fff 210mm, transparent 210mm, transparent calc(210mm + 20px))',
           boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+
           position: 'relative',
           transform: `scale(${scale})`,
-          transformOrigin: 'top center',
+          transformOrigin: 'top left',
           flexShrink: 0,
         }}
         id="resume-preview-root"
@@ -1336,17 +1344,34 @@ export default function EditorPage() {
       return
     }
 
-    // Save transform state outside try block so we can restore it strictly
+    // Save initial state so we can restore the visual paginated view
     const origTransform = previewEl.style.transform
+    const origHeight = previewEl.style.height
+    const origColumnWidth = previewEl.style.columnWidth
+    const origColumnGap = previewEl.style.columnGap
+    const origWidth = previewEl.style.width
+    const origMinWidth = previewEl.style.minWidth
+    const origBg = previewEl.style.backgroundColor
+    const origBgImage = previewEl.style.backgroundImage
 
     try {
       // @ts-ignore
       const { default: html2pdf } = await import('html2pdf.js')
 
-      // Temporarily remove scaling so html2canvas captures full native resolution
-      previewEl.style.transform = 'none'
+      // 1. Revert to standard vertical layout to allow html2pdf to process a single continuous block natively!
+      Object.assign(previewEl.style, {
+        transform: 'none',
+        height: 'auto',
+        minHeight: '297mm',
+        columnWidth: 'auto',
+        columnGap: '0px',
+        width: '210mm',
+        minWidth: 'auto',
+        backgroundColor: '#ffffff',
+        backgroundImage: 'none'
+      })
 
-      // Wait a moment for the DOM to repaint without scale
+      // Wait a moment for the DOM to repaint without scale and columns
       await new Promise(r => setTimeout(r, 100))
 
       const opt = {
@@ -1355,8 +1380,8 @@ export default function EditorPage() {
         image: { type: 'jpeg' as const, quality: 1.0 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
-        // Native pagebreak rules: avoid slicing any major text elements or sections in half
-        pagebreak: { mode: 'css', avoid: ['h1', 'h2', 'h3', 'p', 'li', 'td', 'tr', '.section-container', 'section', 'header'] }
+        // Native pagebreak rules: use 'avoid-all' to recursively stop slicing ANY text element or list item across a page!
+        pagebreak: { mode: 'avoid-all', avoid: ['img', 'p', 'li', 'h1', 'h2', 'h3', 'h4', 'div[style*="line-height"]', '.dr-job-desc', '.terminal-exp-co'] }
       }
 
       const worker = html2pdf().set(opt).from(previewEl).toPdf()
@@ -1375,8 +1400,17 @@ export default function EditorPage() {
 
       await worker.save()
 
-      // Restore scaling immediately
-      previewEl.style.transform = origTransform
+      // Restore layout safely
+      Object.assign(previewEl.style, {
+        transform: origTransform,
+        height: origHeight,
+        columnWidth: origColumnWidth,
+        columnGap: origColumnGap,
+        width: origWidth,
+        minWidth: origMinWidth,
+        backgroundColor: origBg,
+        backgroundImage: origBgImage
+      })
 
       toast.success('PDF downloaded!')
     } catch (err) {
@@ -1384,7 +1418,16 @@ export default function EditorPage() {
       toast.error('PDF generation failed.')
 
       // Attempt to clean up transform in case of error using original state
-      previewEl.style.transform = origTransform
+      Object.assign(previewEl.style, {
+        transform: origTransform,
+        height: origHeight,
+        columnWidth: origColumnWidth,
+        columnGap: origColumnGap,
+        width: origWidth,
+        minWidth: origMinWidth,
+        backgroundColor: origBg,
+        backgroundImage: origBgImage
+      })
     } finally {
       setDownloading(false)
     }
