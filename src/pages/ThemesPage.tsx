@@ -12,12 +12,12 @@ import '../styles/healthcare.css'
 import '../styles/futuristic.css'
 import { ResumeData } from '../types'
 
-interface Theme {
+export interface Theme {
   id: string; name: string; category: string; desc: string; accent: string; bg: string
   popular?: boolean; premium?: boolean; new?: boolean
 }
 
-const THEMES: Theme[] = [
+export const THEMES: Theme[] = [
 
   { id: 'editorial_luxe', name: 'Editorial Luxe', category: 'creative', desc: 'Luxe editorial layout', accent: '#dca47d', bg: '#fdfbf9', premium: true },
   { id: 'dark_architect', name: 'Dark Architect', category: 'dark', desc: 'Dark tech aesthetic', accent: '#f5c800', bg: '#121212', premium: true },

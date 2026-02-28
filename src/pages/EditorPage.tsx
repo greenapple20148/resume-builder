@@ -7,6 +7,7 @@ import { PREVIEW_MAP } from './ThemesPreviews'
 import type { ResumeData, PersonalInfo, ExperienceEntry, EducationEntry, LanguageEntry, CertificationEntry, ProjectEntry, CustomSection, CustomSectionEntry } from '../types'
 import { useSEO } from '../lib/useSEO'
 import { useTheme } from '../lib/useTheme'
+import { THEMES } from './ThemesPage'
 
 const SECTIONS = [
   { id: 'personal', label: 'Personal Info', icon: '●' },
@@ -1332,6 +1333,12 @@ export default function EditorPage() {
     if (id) await updateResume(id, { title })
   }
 
+  const handleThemeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newThemeId = e.target.value
+    setThemeId(newThemeId)
+    if (id) await updateResume(id, { theme_id: newThemeId })
+  }
+
   const handleDownload = async () => {
     setDownloading(true)
     toast.info('Generating PDF…')
@@ -1548,6 +1555,19 @@ export default function EditorPage() {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
+          <select
+            className="form-input text-xs font-medium py-1 px-2 h-[34px] w-[150px] cursor-pointer truncate"
+            value={themeId}
+            onChange={handleThemeChange}
+            aria-label="Change Theme"
+          >
+            {THEMES.map((theme) => (
+              <option key={theme.id} value={theme.id}>
+                {theme.name}
+              </option>
+            ))}
+          </select>
+          <div className="w-px h-5 bg-ink-10" />
           <button
             className="btn btn-sm flex items-center gap-1.5"
             style={{ background: 'var(--gold)', color: '#fff', border: 'none', fontSize: 12, fontWeight: 600, letterSpacing: 0.3, padding: '6px 14px' }}
