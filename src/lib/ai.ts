@@ -479,13 +479,18 @@ Rules for analysis:
  */
 export async function extractTextFromPDF(file: File): Promise<string> {
     try {
-        const { getDocument, GlobalWorkerOptions } = await import('pdfjs-dist')
-        GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`
+        console.log('[extractTextFromPDF] Triggered on file size:', file.size)
+        // Correct implementation for Vite with pdfjs-dist > 5.x
+        const pdfjs = await import('pdfjs-dist')
+
+        // Use a trusted unpkg or cdnjs URL for the worker identical to the module version
+        pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.mjs`
 
         const arrayBuffer = await file.arrayBuffer()
-        const pdf = await getDocument({ data: arrayBuffer }).promise
+        const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise
         const pages: string[] = []
 
+        console.log('[extractTextFromPDF] Document opened successfully, total pages:', pdf.numPages)
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i)
             const textContent = await page.getTextContent()
@@ -518,11 +523,79 @@ export async function extractTextFromDocx(file: File): Promise<string> {
 
 /**
  * Parse raw resume text into structured ResumeData.
- * Uses heuristic section detection.
+ * Uses Gemini AI for unmatched extraction accuracy.
  */
 export async function parseResumeWithAI(text: string): Promise<any> {
-    await new Promise(r => setTimeout(r, 300))
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+    if (!apiKey) {
+        console.warn('VITE_GEMINI_API_KEY not found. Falling back to simple heuristic parsing (poor quality).')
+        return fallbackHeuristicParsing(text)
+    }
 
+    try {
+        console.log('[parseResumeWithAI] Requesting JSON extraction from Gemini...')
+        const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `You are an expert ATS (Applicant Tracking System) parser. Parse the following raw resume text into a highly structured JSON object. Extract every detail accurately. Do NOT miss bullet points in experiences or education!
+Return ONLY a valid JSON object without markdown formatting, matching exactly this structure:
+{
+  "personal": { "fullName": "", "email": "", "phone": "", "location": "", "jobTitle": "", "website": "" },
+  "summary": "Professional summary paragraph or objective...",
+  "experience": [
+    { "company": "", "position": "", "startDate": "YYYY-MM or string", "endDate": "YYYY-MM or string or Present", "location": "", "description": "Bullet points combined with \n or • character..." }
+  ],
+  "education": [
+    { "institution": "", "degree": "", "field": "", "startDate": "YYYY-MM or string", "endDate": "YYYY-MM or string" }
+  ],
+  "skills": ["Skill 1", "Skill 2"]
+}
+
+Raw resume text to parse:
+"""
+${text}
+"""`
+                        }]
+                    }],
+                    generationConfig: {
+                        temperature: 0.1,
+                        responseMimeType: "application/json"
+                    }
+                })
+            }
+        )
+
+        if (!response.ok) {
+            throw new Error(`Gemini API error status: ${response.status}`)
+        }
+
+        const data = await response.json()
+        const resultText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
+        if (!resultText) throw new Error("Empty response from AI")
+
+        const parsed = JSON.parse(resultText)
+
+        // Clean up empty fields and return
+        return {
+            personal: parsed.personal || {},
+            summary: parsed.summary || '',
+            experience: parsed.experience || [],
+            education: parsed.education || [],
+            skills: parsed.skills || []
+        }
+    } catch (err) {
+        console.error('[parseResumeWithAI] Gemini extraction failed:', err)
+        return fallbackHeuristicParsing(text)
+    }
+}
+
+// Retrain the old logic purely as a fallback 
+function fallbackHeuristicParsing(text: string): any {
     const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
     const result: any = {
         personal: { fullName: '', email: '', phone: '', location: '', jobTitle: '', website: '' },
@@ -532,15 +605,12 @@ export async function parseResumeWithAI(text: string): Promise<any> {
         skills: [],
     }
 
-    // Extract email
     const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.]+/)
     if (emailMatch) result.personal.email = emailMatch[0]
 
-    // Extract phone
-    const phoneMatch = text.match(/(\+?\d[\d\s\-().]{8,}\d)/)
+    const phoneMatch = text.match(/(\+?\d[\d\s().-]{8,}\d)/)
     if (phoneMatch) result.personal.phone = phoneMatch[1].trim()
 
-    // First non-empty line is likely the name
     if (lines.length > 0) {
         const nameLine = lines[0]
         if (nameLine.length < 60 && !nameLine.includes('@')) {
@@ -548,14 +618,13 @@ export async function parseResumeWithAI(text: string): Promise<any> {
         }
     }
 
-    // Detect sections by common headers
     const sectionHeaders = /^(summary|profile|objective|experience|work|employment|education|skills|expertise|certifications?|projects?|languages?|awards?)/i
     let currentSection = ''
     const sectionContent: Record<string, string[]> = {}
 
     for (const line of lines) {
         if (sectionHeaders.test(line) && line.length < 40) {
-            currentSection = line.toLowerCase().replace(/[:\s]/g, '')
+            currentSection = line.toLowerCase().replace(/[:\\s]/g, '')
             if (currentSection.startsWith('experience') || currentSection.startsWith('work') || currentSection.startsWith('employment')) currentSection = 'experience'
             if (currentSection.startsWith('summary') || currentSection.startsWith('profile') || currentSection.startsWith('objective')) currentSection = 'summary'
             if (currentSection.startsWith('skill') || currentSection.startsWith('expertise')) currentSection = 'skills'
@@ -566,11 +635,7 @@ export async function parseResumeWithAI(text: string): Promise<any> {
         }
     }
 
-    // Map parsed sections
-    if (sectionContent.summary) {
-        result.summary = sectionContent.summary.join(' ')
-    }
-
+    if (sectionContent.summary) result.summary = sectionContent.summary.join(' ')
     if (sectionContent.skills) {
         result.skills = sectionContent.skills
             .join(', ')
