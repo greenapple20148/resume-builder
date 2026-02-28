@@ -1026,6 +1026,11 @@ function CustomSectionsSection({ data = [], onChange }: SectionProps<CustomSecti
 }
 
 // ─── Live Preview ─────────────────────────────────────────────
+// A4 dimensions at 96 DPI
+const PAGE_W_PX = 794   // 210mm
+const PAGE_H_PX = 1123  // 297mm
+const PAGE_GAP = 24     // visual gap between stacked pages
+
 interface LivePreviewProps {
   resumeData: Partial<ResumeData>
   themeId: string
@@ -1034,26 +1039,36 @@ interface LivePreviewProps {
 function LivePreview({ resumeData, themeId }: LivePreviewProps) {
   const PreviewComponent = PREVIEW_MAP[themeId] || PREVIEW_MAP.editorial_luxe
   const containerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0.5)
+  const [pageCount, setPageCount] = useState(1)
 
+  // Calculate scale to fit horizontally
   useEffect(() => {
     const updateScale = () => {
       if (!containerRef.current) return
-      const containerH = containerRef.current.clientHeight
       const containerW = containerRef.current.clientWidth
-      // A4 in px at 96dpi: 210mm ≈ 793.7px, 297mm ≈ 1122.5px
-      const pageW = 794
-      const pageH = 1123
-      const padding = 40 // top+bottom padding in scaled space
-      const scaleH = (containerH - padding) / pageH
-      const scaleW = (containerW - padding) / pageW
-      setScale(Math.min(scaleH, scaleW, 1))
+      const padding = 60
+      setScale(Math.min((containerW - padding) / PAGE_W_PX, 1))
     }
     updateScale()
     const observer = new ResizeObserver(updateScale)
     if (containerRef.current) observer.observe(containerRef.current)
     return () => observer.disconnect()
   }, [])
+
+  // Measure content height and compute page count
+  useEffect(() => {
+    if (!contentRef.current) return
+    const measure = () => {
+      const h = contentRef.current?.scrollHeight || 0
+      setPageCount(Math.max(1, Math.ceil(h / PAGE_H_PX)))
+    }
+    measure()
+    const observer = new ResizeObserver(measure)
+    if (contentRef.current) observer.observe(contentRef.current)
+    return () => observer.disconnect()
+  }, [resumeData, themeId])
 
   const hiddenSections = resumeData.hiddenSections || []
   const isHidden = (s: string) => hiddenSections.includes(s)
@@ -1064,108 +1079,231 @@ function LivePreview({ resumeData, themeId }: LivePreviewProps) {
   const customSections = Array.isArray(resumeData.customSections) ? resumeData.customSections : []
   const hasExtras = (!isHidden('languages') && languages.length > 0) || (!isHidden('certifications') && certifications.length > 0) || (!isHidden('projects') && projects.length > 0) || (!isHidden('custom') && customSections.length > 0)
 
+  // Total height of all stacked pages (at native 1x, before scaling)
+  const totalNativeHeight = pageCount * PAGE_H_PX + (pageCount - 1) * PAGE_GAP
+
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '100%', overflowX: 'auto', overflowY: 'hidden', background: 'var(--ink-05)', display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start', padding: 20 }}>
-      <div
-        className="live-preview-page"
-        style={{
-          // Native Multi-column page flow representation for screen preview
-          height: '297mm', // strict A4 height
-          columnWidth: '210mm', // A4 width
-          columnGap: '20px',
-          width: 'max-content',
-          minWidth: '210mm',
-
-          // Draw separated white A4 "pages" under the transparent column flows
-          backgroundColor: 'transparent',
-          backgroundImage: 'repeating-linear-gradient(to right, #fff 0, #fff 210mm, transparent 210mm, transparent calc(210mm + 20px))',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-
-          position: 'relative',
-          transform: `scale(${scale})`,
+    <div
+      ref={containerRef}
+      style={{
+        width: '100%',
+        height: '100%',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        background: 'var(--ink-05)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: '20px 0',
+      }}
+    >
+      {/* Scaled wrapper */}
+      <div style={{
+        width: PAGE_W_PX * scale,
+        height: totalNativeHeight * scale,
+        flexShrink: 0,
+        position: 'relative',
+      }}>
+        {/* The actual content rendered at native A4 width, scaled down */}
+        <div style={{
+          width: PAGE_W_PX,
           transformOrigin: 'top left',
-          flexShrink: 0,
-        }}
-        id="resume-preview-root"
-      >
-        {resumeData.customFont && (
-          <style>{`
-            #resume-preview-root,
-            #resume-preview-root * {
-              font-family: ${resumeData.customFont} !important;
-            }
-          `}</style>
-        )}
-        {resumeData.customColor && (
-          <style>{`
-            .live-preview-page [style*="color"] {
-              --user-accent: ${resumeData.customColor};
-            }
-          `}</style>
-        )}
-        <PreviewComponent data={resumeData} />
-        {hasExtras && (
-          <div style={{ padding: '0 48px 40px', fontFamily: "'Inter', 'DM Sans', sans-serif" }}>
-            {!isHidden('languages') && languages.length > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Languages</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {languages.map((l, i) => (
-                    <span key={i} style={{ fontSize: 12, color: '#2a2a2a', background: '#f5f5f5', padding: '4px 12px', borderRadius: 4, border: '1px solid #e8e8e8' }}>
-                      {l.language}{l.level ? <span style={{ color: '#888', marginLeft: 6, fontSize: 11 }}>· {l.level}</span> : ''}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-            {!isHidden('certifications') && certifications.length > 0 && (
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Certifications</div>
-                {certifications.map((c, i) => (
-                  <div key={i} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <div>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{c.name}</span>
-                      {c.issuer && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {c.issuer}</span>}
-                    </div>
-                    {c.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{c.date}</span>}
-                  </div>
-                ))}
-              </div>
-            )}
-            {!isHidden('projects') && projects.length > 0 && (
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Projects</div>
-                {projects.map((proj, i) => (
-                  <div key={i} style={{ marginBottom: 12 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{proj.name}</div>
-                    {proj.tech && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.tech}</div>}
-                    {proj.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 4 }}>{proj.description}</div>}
-                    {proj.url && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.url}</div>}
-                  </div>
-                ))}
-              </div>
-            )}
-            {!isHidden('custom') && customSections.map((section, sIdx) => (
-              section.title && section.entries.length > 0 ? (
-                <div key={sIdx} style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>{section.title}</div>
-                  {section.entries.map((entry, eIdx) => (
-                    <div key={eIdx} style={{ marginBottom: 10 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                        <div>
-                          <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{entry.title}</span>
-                          {entry.subtitle && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {entry.subtitle}</span>}
-                        </div>
-                        {entry.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{entry.date}</span>}
+          transform: `scale(${scale})`,
+          position: 'absolute',
+          top: 0,
+          left: 0,
+        }}>
+          {/* Stack of visual "pages" */}
+          {Array.from({ length: pageCount }).map((_, i) => (
+            <div
+              key={i}
+              style={{
+                width: PAGE_W_PX,
+                height: PAGE_H_PX,
+                marginBottom: i < pageCount - 1 ? PAGE_GAP : 0,
+                position: 'relative',
+                overflow: 'hidden',
+                background: '#fff',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08), 0 8px 28px rgba(0,0,0,0.06)',
+                borderRadius: 2,
+              }}
+            >
+              {/* Shift content upward by page offset so each "page" shows its slice */}
+              <div style={{
+                position: 'absolute',
+                top: -(i * PAGE_H_PX),
+                left: 0,
+                width: PAGE_W_PX,
+                pointerEvents: i === 0 ? 'auto' : 'none',
+              }}>
+                {/* Only render the actual DOM once in the first page; clone view for others */}
+                {i === 0 ? (
+                  <div ref={contentRef} id="resume-preview-root" style={{ width: PAGE_W_PX, minHeight: PAGE_H_PX }}>
+                    {resumeData.customFont && (
+                      <style>{`
+                        #resume-preview-root,
+                        #resume-preview-root * {
+                          font-family: ${resumeData.customFont} !important;
+                        }
+                      `}</style>
+                    )}
+                    {resumeData.customColor && (
+                      <style>{`
+                        #resume-preview-root [style*="color"] {
+                          --user-accent: ${resumeData.customColor};
+                        }
+                      `}</style>
+                    )}
+                    <PreviewComponent data={resumeData} />
+                    {hasExtras && (
+                      <div style={{ padding: '0 48px 40px', fontFamily: "'Inter', 'DM Sans', sans-serif" }}>
+                        {!isHidden('languages') && languages.length > 0 && (
+                          <div style={{ marginBottom: 20 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Languages</div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                              {languages.map((l, i) => (
+                                <span key={i} style={{ fontSize: 12, color: '#2a2a2a', background: '#f5f5f5', padding: '4px 12px', borderRadius: 4, border: '1px solid #e8e8e8' }}>
+                                  {l.language}{l.level ? <span style={{ color: '#888', marginLeft: 6, fontSize: 11 }}>· {l.level}</span> : ''}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {!isHidden('certifications') && certifications.length > 0 && (
+                          <div style={{ marginBottom: 20 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Certifications</div>
+                            {certifications.map((c, i) => (
+                              <div key={i} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                <div>
+                                  <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{c.name}</span>
+                                  {c.issuer && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {c.issuer}</span>}
+                                </div>
+                                {c.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{c.date}</span>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {!isHidden('projects') && projects.length > 0 && (
+                          <div>
+                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Projects</div>
+                            {projects.map((proj, i) => (
+                              <div key={i} style={{ marginBottom: 12 }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{proj.name}</div>
+                                {proj.tech && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.tech}</div>}
+                                {proj.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 4 }}>{proj.description}</div>}
+                                {proj.url && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.url}</div>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {!isHidden('custom') && customSections.map((section, sIdx) => (
+                          section.title && section.entries.length > 0 ? (
+                            <div key={sIdx} style={{ marginBottom: 20 }}>
+                              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>{section.title}</div>
+                              {section.entries.map((entry, eIdx) => (
+                                <div key={eIdx} style={{ marginBottom: 10 }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                    <div>
+                                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{entry.title}</span>
+                                      {entry.subtitle && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {entry.subtitle}</span>}
+                                    </div>
+                                    {entry.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{entry.date}</span>}
+                                  </div>
+                                  {entry.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 3 }}>{entry.description}</div>}
+                                </div>
+                              ))}
+                            </div>
+                          ) : null
+                        ))}
                       </div>
-                      {entry.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 3 }}>{entry.description}</div>}
-                    </div>
-                  ))}
-                </div>
-              ) : null
-            ))}
-          </div>
-        )}
+                    )}
+                  </div>
+                ) : (
+                  // For pages 2+, re-render the same content (shifted upward)
+                  <div style={{ width: PAGE_W_PX, minHeight: PAGE_H_PX }} aria-hidden="true">
+                    <PreviewComponent data={resumeData} />
+                    {hasExtras && (
+                      <div style={{ padding: '0 48px 40px', fontFamily: "'Inter', 'DM Sans', sans-serif" }}>
+                        {!isHidden('languages') && languages.length > 0 && (
+                          <div style={{ marginBottom: 20 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Languages</div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                              {languages.map((l, li) => (
+                                <span key={li} style={{ fontSize: 12, color: '#2a2a2a', background: '#f5f5f5', padding: '4px 12px', borderRadius: 4, border: '1px solid #e8e8e8' }}>
+                                  {l.language}{l.level ? <span style={{ color: '#888', marginLeft: 6, fontSize: 11 }}>· {l.level}</span> : ''}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {!isHidden('certifications') && certifications.length > 0 && (
+                          <div style={{ marginBottom: 20 }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Certifications</div>
+                            {certifications.map((c, ci) => (
+                              <div key={ci} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                <div>
+                                  <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{c.name}</span>
+                                  {c.issuer && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {c.issuer}</span>}
+                                </div>
+                                {c.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{c.date}</span>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {!isHidden('projects') && projects.length > 0 && (
+                          <div>
+                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Projects</div>
+                            {projects.map((proj, pi) => (
+                              <div key={pi} style={{ marginBottom: 12 }}>
+                                <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{proj.name}</div>
+                                {proj.tech && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.tech}</div>}
+                                {proj.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 4 }}>{proj.description}</div>}
+                                {proj.url && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.url}</div>}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {!isHidden('custom') && customSections.map((section, sIdx) => (
+                          section.title && section.entries.length > 0 ? (
+                            <div key={sIdx} style={{ marginBottom: 20 }}>
+                              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>{section.title}</div>
+                              {section.entries.map((entry, eIdx) => (
+                                <div key={eIdx} style={{ marginBottom: 10 }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                    <div>
+                                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{entry.title}</span>
+                                      {entry.subtitle && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {entry.subtitle}</span>}
+                                    </div>
+                                    {entry.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{entry.date}</span>}
+                                  </div>
+                                  {entry.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 3 }}>{entry.description}</div>}
+                                </div>
+                              ))}
+                            </div>
+                          ) : null
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Page number indicator */}
+              <div style={{
+                position: 'absolute',
+                bottom: 6,
+                right: 12,
+                fontSize: 10,
+                color: 'rgba(0,0,0,0.25)',
+                fontFamily: 'monospace',
+                pointerEvents: 'none',
+                zIndex: 2,
+              }}>
+                {i + 1} / {pageCount}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -1343,7 +1481,7 @@ export default function EditorPage() {
     setDownloading(true)
     toast.info('Generating PDF…')
 
-    // Target the actual resume page root, NOT the scrollable container wrapper
+    // Target the actual resume content root (first page's content div)
     const previewEl = document.getElementById('resume-preview-root')
     if (!previewEl) {
       toast.error('Preview not found')
@@ -1351,43 +1489,16 @@ export default function EditorPage() {
       return
     }
 
-    // Save initial state so we can restore the visual paginated view
-    const origTransform = previewEl.style.transform
-    const origHeight = previewEl.style.height
-    const origColumnWidth = previewEl.style.columnWidth
-    const origColumnGap = previewEl.style.columnGap
-    const origWidth = previewEl.style.width
-    const origMinWidth = previewEl.style.minWidth
-    const origBg = previewEl.style.backgroundColor
-    const origBgImage = previewEl.style.backgroundImage
-
     try {
       // @ts-ignore
       const { default: html2pdf } = await import('html2pdf.js')
 
-      // 1. Revert to standard vertical layout to allow html2pdf to process a single continuous block natively!
-      Object.assign(previewEl.style, {
-        transform: 'none',
-        height: 'auto',
-        minHeight: '297mm',
-        columnWidth: 'auto',
-        columnGap: '0px',
-        width: '210mm',
-        minWidth: 'auto',
-        backgroundColor: '#ffffff',
-        backgroundImage: 'none'
-      })
-
-      // Wait a moment for the DOM to repaint without scale and columns
-      await new Promise(r => setTimeout(r, 100))
-
       const opt = {
-        margin: [0, 0, 12, 0] as [number, number, number, number], // Strict tuple for TS. 12mm bottom margin for footer!
+        margin: [0, 0, 12, 0] as [number, number, number, number],
         filename: `${title || 'resume'}.pdf`,
         image: { type: 'jpeg' as const, quality: 1.0 },
         html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
-        // Native pagebreak rules: use 'avoid-all' to recursively stop slicing ANY text element or list item across a page!
         pagebreak: { mode: 'avoid-all', avoid: ['img', 'p', 'li', 'h1', 'h2', 'h3', 'h4', 'div[style*="line-height"]', '.dr-job-desc', '.terminal-exp-co'] }
       }
 
@@ -1412,17 +1523,13 @@ export default function EditorPage() {
             }
           }
 
-          // Calculate brightness to ensure watermark readability
           const brightness = (r * 299 + g * 587 + b * 114) / 1000
           const isDark = brightness < 128
 
           for (let i = 1; i <= totalPages; i++) {
             pdf.setPage(i)
-            // Draw a rectangle filling the 12mm bottom margin to match the theme background
             pdf.setFillColor(r, g, b)
             pdf.rect(0, pageHeight - 12, pdfWidth, 12, 'F')
-
-            // Set watermark text color
             if (isDark) {
               pdf.setTextColor(180, 180, 180)
             } else {
@@ -1435,35 +1542,10 @@ export default function EditorPage() {
       })
 
       await worker.save()
-
-      // Restore layout safely
-      Object.assign(previewEl.style, {
-        transform: origTransform,
-        height: origHeight,
-        columnWidth: origColumnWidth,
-        columnGap: origColumnGap,
-        width: origWidth,
-        minWidth: origMinWidth,
-        backgroundColor: origBg,
-        backgroundImage: origBgImage
-      })
-
       toast.success('PDF downloaded!')
     } catch (err) {
       console.error('PDF generation error:', err)
       toast.error('PDF generation failed.')
-
-      // Attempt to clean up transform in case of error using original state
-      Object.assign(previewEl.style, {
-        transform: origTransform,
-        height: origHeight,
-        columnWidth: origColumnWidth,
-        columnGap: origColumnGap,
-        width: origWidth,
-        minWidth: origMinWidth,
-        backgroundColor: origBg,
-        backgroundImage: origBgImage
-      })
     } finally {
       setDownloading(false)
     }
