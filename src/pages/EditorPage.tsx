@@ -1345,81 +1345,31 @@ export default function EditorPage() {
       // Save original styles
       const origTransform = previewEl.style.transform
       const origBoxShadow = previewEl.style.boxShadow
-      const origWidth = previewEl.style.width
-      const origHeight = previewEl.style.height
-      const origOverflow = previewEl.style.overflow
 
       // Temporarily remove scale transform for full-size capture
       previewEl.style.transform = 'none'
       previewEl.style.boxShadow = 'none'
-      previewEl.style.width = '794px' // 210mm at 96dpi
 
       // Hide page guides from PDF
       const guidesEl = document.getElementById('page-guides')
       if (guidesEl) guidesEl.style.display = 'none'
 
-      const ancestors: { el: HTMLElement; overflow: string; width: string; height: string; transform: string }[] = []
-      let ancestor = previewEl.parentElement
-      while (ancestor && ancestor !== document.body && ancestor !== null) {
-        ancestors.push({
-          el: ancestor,
-          overflow: ancestor.style.overflow,
-          width: ancestor.style.width,
-          height: ancestor.style.height,
-          transform: ancestor.style.transform,
-        })
-        ancestor.style.overflow = 'visible'
-        ancestor.style.width = 'auto'
-        ancestor.style.height = 'auto'
-        ancestor.style.transform = 'none'
-        ancestor = ancestor.parentElement
-      }
-
-      // Calculate true document minimum scale height in Pixels
-      const pxPerMm = 794 / 210 // ~3.78095
-      const minPagePx = Math.ceil(297 * pxPerMm)
-
       // Wait for layout to settle without constraints
       await new Promise(r => setTimeout(r, 100))
-
-      const scrollH = previewEl.scrollHeight
-      const numPages = Math.ceil(scrollH / minPagePx) || 1
-      const actualH = numPages * minPagePx
-
-      previewEl.style.height = `${actualH}px`
-      previewEl.style.overflow = 'visible'
 
       // Capture using html2canvas (DOM walking - highly accurate long-page geometry)
       const canvas = await html2canvas(previewEl, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        windowWidth: 794,
-        windowHeight: actualH,
-        width: 794,
-        height: actualH,
-        onclone: (doc, el) => {
-          el.style.transform = 'none'
-          el.style.width = '794px'
-          el.style.height = `${actualH}px`
-        }
+        backgroundColor: '#ffffff'
       })
       const dataUrl = canvas.toDataURL('image/png', 1.0)
 
       // Restore original styles
       previewEl.style.transform = origTransform
       previewEl.style.boxShadow = origBoxShadow
-      previewEl.style.width = origWidth
-      previewEl.style.height = origHeight
-      previewEl.style.overflow = origOverflow
       if (guidesEl) guidesEl.style.display = 'flex'
-
-      ancestors.forEach(({ el, overflow, width, height, transform }) => {
-        el.style.overflow = overflow
-        el.style.width = width
-        el.style.height = height
-        el.style.transform = transform
-      })
 
       // Generate PDF
       const pdf = new jsPDF('p', 'mm', 'a4')
@@ -1435,6 +1385,11 @@ export default function EditorPage() {
       })
 
       const pdfHeight = (img.height * pdfWidth) / img.width
+
+      // Calculate true document minimum scale height in Pixels
+      const pxPerMm = 794 / 210 // ~3.78095
+      const minPagePx = Math.ceil(297 * pxPerMm)
+      const numPages = Math.ceil(previewEl.scrollHeight / minPagePx) || 1
 
       // Single page: fill entire width
       if (pdfHeight <= a4Height + 1) { // Adding 1mm tolerance
