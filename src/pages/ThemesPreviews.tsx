@@ -382,6 +382,23 @@ export function useDynamicData(data: Partial<ResumeData>, themeId?: string) {
   const certifications = isHidden('certifications') ? [] : (Array.isArray(d.certifications) && d.certifications.length > 0 ? d.certifications : [])
   const projects = isHidden('projects') ? [] : (Array.isArray(d.projects) && d.projects.length > 0 ? d.projects : [])
 
+  // Normalize bullet characters → newlines so templates' split('\n') works with imported data
+  const normalizeBullets = (text: string) => {
+    return text
+      .replace(/\s*[•·]\s*/g, '\n')
+      .replace(/\s+[-–—]\s+/g, '\n')
+      .replace(/(?:^|\n)\s*\*\s+/g, '\n')
+      .split('\n')
+      .map(line => line.replace(/^\s*[•·*\-–—]\s*/, '').trim())
+      .filter(Boolean)
+      .join('\n')
+  }
+
+  const normalizedExperience = experience.map(exp => ({
+    ...exp,
+    description: exp.description ? normalizeBullets(exp.description) : exp.description,
+  }))
+
   return {
     name: (p.fullName || '').trim() || fallback.name,
     role: (p.jobTitle || '').trim() || fallback.role,
@@ -392,10 +409,10 @@ export function useDynamicData(data: Partial<ResumeData>, themeId?: string) {
     photo: p.photo || '',
     customFont: d.customFont || '',
     customColor: d.customColor || '',
-    experience,
+    experience: normalizedExperience,
     education,
     skills,
-    summary,
+    summary: summary ? normalizeBullets(summary) : summary,
     languages,
     certifications,
     projects,

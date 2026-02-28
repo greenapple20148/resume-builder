@@ -1090,7 +1090,8 @@ function LivePreview({ resumeData, themeId }: LivePreviewProps) {
             {/* Content — rendered ONCE, flows naturally */}
             <div ref={contentRef} id="resume-preview-root" style={{ width: PAGE_W_PX }}>
               {/* Override templates that use min-height:100% — they'd inherit the paper's minHeight and create empty pages */}
-              <style>{`#resume-preview-root > div { min-height: auto !important; }`}</style>
+              <style>{`#resume-preview-root > div { min-height: auto !important; }
+#resume-preview-root p, #resume-preview-root div { white-space: pre-line; }`}</style>
               {/* AI-generated custom theme CSS override */}
               {resumeData.customThemeCSS && <style>{resumeData.customThemeCSS}</style>}
               {resumeData.customFont && (
