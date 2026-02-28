@@ -650,15 +650,93 @@ function fallbackHeuristicParsing(text: string): any {
 // ─────────────── AI Theme Generator ───────────────
 
 export interface AIThemeResult {
-    themeId: string
+    pageBg: string
+    sidebarBg: string
+    headerBg: string
+    primaryText: string
+    secondaryText: string
     accentColor: string
-    font: string
+    borderColor: string
+    headingFont: string
+    bodyFont: string
     explanation: string
 }
 
 /**
- * Generate a theme configuration from a natural language description.
- * Returns a matching template ID, accent color, and font.
+ * Build a complete CSS override for #resume-preview-root from theme tokens.
+ * This aggressively overrides inline styles on the template.
+ */
+export function buildThemeCSS(t: AIThemeResult): string {
+    return `
+#resume-preview-root,
+#resume-preview-root > div {
+  background: ${t.pageBg} !important;
+  color: ${t.primaryText} !important;
+  font-family: ${t.bodyFont || 'inherit'} !important;
+}
+#resume-preview-root aside,
+#resume-preview-root > div > aside,
+#resume-preview-root > div > div:first-child[style*="background"] {
+  background: ${t.sidebarBg} !important;
+}
+#resume-preview-root header,
+#resume-preview-root > div > header {
+  background: ${t.headerBg} !important;
+}
+#resume-preview-root h1,
+#resume-preview-root h2,
+#resume-preview-root h3 {
+  color: ${t.accentColor} !important;
+  font-family: ${t.headingFont || t.bodyFont || 'inherit'} !important;
+}
+#resume-preview-root h1 {
+  color: ${t.primaryText} !important;
+}
+#resume-preview-root h1 span[style*="color"],
+#resume-preview-root h1 span[style*="italic"] {
+  color: ${t.accentColor} !important;
+}
+#resume-preview-root p,
+#resume-preview-root li,
+#resume-preview-root div[style*="line-height"],
+#resume-preview-root span:not([style*="background"]) {
+  color: ${t.primaryText} !important;
+}
+#resume-preview-root [style*="color: rgb(122"],
+#resume-preview-root [style*="color: #888"],
+#resume-preview-root [style*="color: #666"],
+#resume-preview-root [style*="color: #6e"],
+#resume-preview-root [style*="color: #7a"],
+#resume-preview-root [style*="color: #999"],
+#resume-preview-root small,
+#resume-preview-root .text-muted {
+  color: ${t.secondaryText} !important;
+}
+#resume-preview-root [style*="border-bottom"],
+#resume-preview-root [style*="border-top"],
+#resume-preview-root hr {
+  border-color: ${t.borderColor} !important;
+}
+#resume-preview-root a,
+#resume-preview-root [style*="letter-spacing: 3"],
+#resume-preview-root [style*="letter-spacing: 4"],
+#resume-preview-root [style*="text-transform: uppercase"] {
+  color: ${t.accentColor} !important;
+}
+#resume-preview-root aside *,
+#resume-preview-root > div > aside * {
+  color: inherit !important;
+}
+#resume-preview-root aside h2,
+#resume-preview-root aside h3 {
+  color: ${t.accentColor} !important;
+}
+`.trim()
+}
+
+/**
+ * Generate a completely new theme from a natural language description.
+ * Returns color tokens, fonts, and a CSS override stylesheet.
  */
 export async function generateThemeFromDescription(description: string): Promise<AIThemeResult> {
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY
@@ -666,66 +744,31 @@ export async function generateThemeFromDescription(description: string): Promise
         throw new Error('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your .env file.')
     }
 
-    const themeList = [
-        'editorial_luxe - Luxe editorial layout, cream background, serif feel',
-        'dark_architect - Dark tech aesthetic, yellow accent on dark',
-        'bauhaus_geometric - Geometric design, navy sidebar, coral/gold accents',
-        'soft_pastel - Pastel aesthetic, light violet tones',
-        'swiss_grid - Clean grid system, red accent, minimal',
-        'phd - Academic focus, blue accent, formal',
-        'dark - Gold accents on dark elegant background',
-        'terminal - Retro hacker aesthetic, green on dark',
-        'corporate_slate - Slate sidebar with blue accents, professional',
-        'teal_wave - Teal gradient header with rounded cards',
-        'purple_dusk - Violet gradient sidebar with timeline',
-        'coral_bright - Coral gradient header, stat strip, energetic',
-        'ocean_deep - Deep ocean gradient, blue tones',
-        'sage_pro - Clean green accents, professional',
-        'carbon_noir - Dark zinc panels, futuristic',
-        'sand_dune - Warm amber gradient, serif accents',
-        'indigo_sharp - Bold indigo border with diamond markers',
-        'platinum_elite - Executive two-panel with KPI bar',
-        'cascade_blue - Navy sidebar with gradient skill bars',
-        'nordic_minimal - Clean Scandinavian design, serif accents',
-        'midnight_pro - Luxurious dark with gold accents',
-        'blueprint - Engineering blueprint with grid overlay',
-        'emerald_fresh - Green header with triangle bullets',
-        'sunset_warm - Amber sunset gradient, warm tones',
-        'newspaper_classic - Editorial 3-column newspaper layout',
-        'ivory_marble - Luxury navy sidebar with gold accents',
-        'neon_cyber - Cyberpunk neon with stats strip',
-        'origami_zen - Japanese-inspired with fold marks',
-    ]
-
-    const fontOptions = [
-        '', // Theme Default
-        "Calibri, sans-serif",
-        "Arial, sans-serif",
-        "Helvetica, Arial, sans-serif",
-        "Roboto, sans-serif",
-        "'Open Sans', sans-serif",
-        "Georgia, serif",
-        "Garamond, 'EB Garamond', serif",
-        "Cambria, serif",
-    ]
-
-    const prompt = `You are a professional resume designer. Based on the user's description, select the best matching resume theme, accent color, and font.
-
-Available themes (id - description):
-${themeList.join('\n')}
-
-Available fonts:
-${fontOptions.map(f => f || '(theme default)').join('\n')}
+    const prompt = `You are a world-class resume designer. Generate a COMPLETELY CUSTOM color theme for a resume based on the user's description. Be creative — design unique, harmonious color palettes.
 
 User's description: "${description}"
 
-Respond ONLY with valid JSON (no markdown, no code fences):
+You MUST respond with ONLY valid JSON (no markdown, no code fences, no explanation outside JSON):
 {
-  "themeId": "theme_id_here",
-  "accentColor": "#hexcolor",
-  "font": "font value from the list above, or empty string for theme default",
-  "explanation": "One sentence explaining your choice"
-}`
+  "pageBg": "#hex — main page background color",
+  "sidebarBg": "#hex — sidebar/aside background (can be same as pageBg if no sidebar contrast needed)",
+  "headerBg": "#hex — header area background (often same as pageBg or sidebarBg)",
+  "primaryText": "#hex — main body text color (must be readable on pageBg)",
+  "secondaryText": "#hex — muted/secondary text color",
+  "accentColor": "#hex — highlights, section titles, links, key elements",
+  "borderColor": "#hex — dividers and borders",
+  "headingFont": "CSS font-family for headings (pick from: Georgia, Garamond, Playfair Display, Roboto, Inter, Sora, Arial, Helvetica, Cambria, Source Sans 3, DM Sans, Open Sans)",
+  "bodyFont": "CSS font-family for body text (pick from same list)",
+  "explanation": "One sentence describing the theme you created"
+}
+
+Rules:
+- Ensure sufficient contrast between text and background (WCAG AA minimum)
+- For dark themes: use light text on dark backgrounds
+- For light themes: use dark text on light backgrounds
+- The accent color should POP against both pageBg and sidebarBg
+- Be creative with the palette — don't just use basic primary colors
+- Include appropriate font-family fallbacks (e.g. "Georgia, serif" or "'Inter', sans-serif")`
 
     const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
@@ -734,7 +777,7 @@ Respond ONLY with valid JSON (no markdown, no code fences):
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.5, maxOutputTokens: 256 },
+                generationConfig: { temperature: 0.8, maxOutputTokens: 512 },
             }),
         }
     )
@@ -753,15 +796,13 @@ Respond ONLY with valid JSON (no markdown, no code fences):
 
     const result: AIThemeResult = JSON.parse(raw)
 
-    // Validate theme ID exists
-    const validIds = themeList.map(t => t.split(' - ')[0].trim())
-    if (!validIds.includes(result.themeId)) {
-        result.themeId = 'editorial_luxe'
-    }
-
-    // Validate hex color
-    if (!/^#[0-9a-fA-F]{6}$/.test(result.accentColor)) {
-        result.accentColor = ''
+    // Validate all hex colors
+    const hexFields: (keyof AIThemeResult)[] = ['pageBg', 'sidebarBg', 'headerBg', 'primaryText', 'secondaryText', 'accentColor', 'borderColor']
+    for (const field of hexFields) {
+        const val = result[field]
+        if (typeof val !== 'string' || !/^#[0-9a-fA-F]{3,8}$/.test(val)) {
+            (result as any)[field] = field === 'pageBg' ? '#ffffff' : field === 'primaryText' ? '#1a1a1a' : '#888888'
+        }
     }
 
     return result

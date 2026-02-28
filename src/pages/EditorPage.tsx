@@ -1091,6 +1091,8 @@ function LivePreview({ resumeData, themeId }: LivePreviewProps) {
             <div ref={contentRef} id="resume-preview-root" style={{ width: PAGE_W_PX }}>
               {/* Override templates that use min-height:100% — they'd inherit the paper's minHeight and create empty pages */}
               <style>{`#resume-preview-root > div { min-height: auto !important; }`}</style>
+              {/* AI-generated custom theme CSS override */}
+              {resumeData.customThemeCSS && <style>{resumeData.customThemeCSS}</style>}
               {resumeData.customFont && (
                 <style>{`#resume-preview-root, #resume-preview-root * { font-family: ${resumeData.customFont} !important; }`}</style>
               )}
@@ -1350,18 +1352,18 @@ export default function EditorPage() {
     if (!themePrompt.trim()) return
     setThemeDictating(true)
     try {
-      const { generateThemeFromDescription } = await import('../lib/ai')
+      const { generateThemeFromDescription, buildThemeCSS } = await import('../lib/ai')
       const result = await generateThemeFromDescription(themePrompt.trim())
+      const css = buildThemeCSS(result)
 
-      // Apply theme
-      setThemeId(result.themeId)
-      if (result.accentColor) {
-        setResumeData(prev => ({ ...prev, customColor: result.accentColor, customFont: result.font || prev.customFont }))
-      } else {
-        setResumeData(prev => ({ ...prev, customFont: result.font || prev.customFont }))
-      }
-      if (id) await updateResume(id, { theme_id: result.themeId })
-      toast.success(`Theme applied: ${result.explanation}`)
+      // Apply as custom CSS override + store accent/font for extras sections
+      setResumeData(prev => ({
+        ...prev,
+        customColor: result.accentColor,
+        customFont: result.bodyFont || prev.customFont,
+        customThemeCSS: css,
+      }))
+      toast.success(`✨ ${result.explanation}`)
       setThemePrompt('')
     } catch (err: any) {
       toast.error('Theme generation failed: ' + (err.message || 'Unknown error'))
@@ -1720,6 +1722,15 @@ export default function EditorPage() {
                   {themeDictating ? '…' : '✨'}
                 </button>
               </div>
+              {resumeData.customThemeCSS && (
+                <button
+                  type="button"
+                  className="text-[10px] text-ink-30 hover:text-rose cursor-pointer bg-transparent border-none px-1 mt-1 transition-colors"
+                  onClick={() => setResumeData(prev => ({ ...prev, customThemeCSS: undefined }))}
+                >
+                  ✕ Reset AI theme
+                </button>
+              )}
             </div>
           </div>
 

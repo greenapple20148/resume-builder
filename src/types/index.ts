@@ -93,6 +93,7 @@ export interface ResumeData {
     hiddenSections?: string[]
     customFont?: string
     customColor?: string
+    customThemeCSS?: string
 }
 
 export interface Resume {
