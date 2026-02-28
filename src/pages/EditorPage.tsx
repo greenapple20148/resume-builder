@@ -1029,284 +1029,147 @@ function CustomSectionsSection({ data = [], onChange }: SectionProps<CustomSecti
 // A4 dimensions at 96 DPI
 const PAGE_W_PX = 794   // 210mm
 const PAGE_H_PX = 1123  // 297mm
-const PAGE_GAP = 24     // visual gap between stacked pages
 
 interface LivePreviewProps {
-  resumeData: Partial<ResumeData>
-  themeId: string
+    resumeData: Partial<ResumeData>
+    themeId: string
 }
 
 function LivePreview({ resumeData, themeId }: LivePreviewProps) {
-  const PreviewComponent = PREVIEW_MAP[themeId] || PREVIEW_MAP.editorial_luxe
-  const containerRef = useRef<HTMLDivElement>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
-  const [scale, setScale] = useState(0.5)
-  const [pageCount, setPageCount] = useState(1)
+    const PreviewComponent = PREVIEW_MAP[themeId] || PREVIEW_MAP.editorial_luxe
+    const containerRef = useRef<HTMLDivElement>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
+    const [scale, setScale] = useState(0.5)
+    const [pageCount, setPageCount] = useState(1)
 
-  // Calculate scale to fit horizontally
-  useEffect(() => {
-    const updateScale = () => {
-      if (!containerRef.current) return
-      const containerW = containerRef.current.clientWidth
-      const padding = 60
-      setScale(Math.min((containerW - padding) / PAGE_W_PX, 1))
-    }
-    updateScale()
-    const observer = new ResizeObserver(updateScale)
-    if (containerRef.current) observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [])
+    // Scale to fit container width
+    useEffect(() => {
+        const updateScale = () => {
+            if (!containerRef.current) return
+            const containerW = containerRef.current.clientWidth
+            setScale(Math.min((containerW - 60) / PAGE_W_PX, 1))
+        }
+        updateScale()
+        const observer = new ResizeObserver(updateScale)
+        if (containerRef.current) observer.observe(containerRef.current)
+        return () => observer.disconnect()
+    }, [])
 
-  // Measure content height and compute page count
-  useEffect(() => {
-    if (!contentRef.current) return
-    const measure = () => {
-      const h = contentRef.current?.scrollHeight || 0
-      setPageCount(Math.max(1, Math.ceil(h / PAGE_H_PX)))
-    }
-    measure()
-    const observer = new ResizeObserver(measure)
-    if (contentRef.current) observer.observe(contentRef.current)
-    return () => observer.disconnect()
-  }, [resumeData, themeId])
+    // Measure content height → compute page count
+    useEffect(() => {
+        if (!contentRef.current) return
+        const measure = () => {
+            const h = contentRef.current?.scrollHeight || 0
+            setPageCount(Math.max(1, Math.ceil(h / PAGE_H_PX)))
+        }
+        measure()
+        const observer = new ResizeObserver(measure)
+        if (contentRef.current) observer.observe(contentRef.current)
+        return () => observer.disconnect()
+    }, [resumeData, themeId])
 
-  const hiddenSections = resumeData.hiddenSections || []
-  const isHidden = (s: string) => hiddenSections.includes(s)
-  const accent = resumeData.customColor || '#1a2744'
-  const languages = Array.isArray(resumeData.languages) ? resumeData.languages : []
-  const certifications = Array.isArray(resumeData.certifications) ? resumeData.certifications : []
-  const projects = Array.isArray(resumeData.projects) ? resumeData.projects : []
-  const customSections = Array.isArray(resumeData.customSections) ? resumeData.customSections : []
-  const hasExtras = (!isHidden('languages') && languages.length > 0) || (!isHidden('certifications') && certifications.length > 0) || (!isHidden('projects') && projects.length > 0) || (!isHidden('custom') && customSections.length > 0)
+    const hiddenSections = resumeData.hiddenSections || []
+    const isHidden = (s: string) => hiddenSections.includes(s)
+    const accent = resumeData.customColor || '#1a2744'
+    const languages = Array.isArray(resumeData.languages) ? resumeData.languages : []
+    const certifications = Array.isArray(resumeData.certifications) ? resumeData.certifications : []
+    const projects = Array.isArray(resumeData.projects) ? resumeData.projects : []
+    const customSections = Array.isArray(resumeData.customSections) ? resumeData.customSections : []
+    const hasExtras = (!isHidden('languages') && languages.length > 0) || (!isHidden('certifications') && certifications.length > 0) || (!isHidden('projects') && projects.length > 0) || (!isHidden('custom') && customSections.length > 0)
 
-  // Total height of all stacked pages (at native 1x, before scaling)
-  const totalNativeHeight = pageCount * PAGE_H_PX + (pageCount - 1) * PAGE_GAP
+    const nativeH = Math.max(pageCount * PAGE_H_PX, PAGE_H_PX)
 
-  return (
-    <div
-      ref={containerRef}
-      style={{
-        width: '100%',
-        height: '100%',
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        background: 'var(--ink-05)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: '20px 0',
-      }}
-    >
-      {/* Scaled wrapper */}
-      <div style={{
-        width: PAGE_W_PX * scale,
-        height: totalNativeHeight * scale,
-        flexShrink: 0,
-        position: 'relative',
-      }}>
-        {/* The actual content rendered at native A4 width, scaled down */}
-        <div style={{
-          width: PAGE_W_PX,
-          transformOrigin: 'top left',
-          transform: `scale(${scale})`,
-          position: 'absolute',
-          top: 0,
-          left: 0,
-        }}>
-          {/* Stack of visual "pages" */}
-          {Array.from({ length: pageCount }).map((_, i) => (
-            <div
-              key={i}
-              style={{
-                width: PAGE_W_PX,
-                height: PAGE_H_PX,
-                marginBottom: i < pageCount - 1 ? PAGE_GAP : 0,
-                position: 'relative',
-                overflow: 'hidden',
-                background: '#fff',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.08), 0 8px 28px rgba(0,0,0,0.06)',
-                borderRadius: 2,
-              }}
-            >
-              {/* Shift content upward by page offset so each "page" shows its slice */}
-              <div style={{
-                position: 'absolute',
-                top: -(i * PAGE_H_PX),
-                left: 0,
-                width: PAGE_W_PX,
-                pointerEvents: i === 0 ? 'auto' : 'none',
-              }}>
-                {/* Only render the actual DOM once in the first page; clone view for others */}
-                {i === 0 ? (
-                  <div ref={contentRef} id="resume-preview-root" style={{ width: PAGE_W_PX, minHeight: PAGE_H_PX }}>
-                    {resumeData.customFont && (
-                      <style>{`
-                        #resume-preview-root,
-                        #resume-preview-root * {
-                          font-family: ${resumeData.customFont} !important;
-                        }
-                      `}</style>
-                    )}
-                    {resumeData.customColor && (
-                      <style>{`
-                        #resume-preview-root [style*="color"] {
-                          --user-accent: ${resumeData.customColor};
-                        }
-                      `}</style>
-                    )}
-                    <PreviewComponent data={resumeData} />
-                    {hasExtras && (
-                      <div style={{ padding: '0 48px 40px', fontFamily: "'Inter', 'DM Sans', sans-serif" }}>
-                        {!isHidden('languages') && languages.length > 0 && (
-                          <div style={{ marginBottom: 20 }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Languages</div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                              {languages.map((l, i) => (
-                                <span key={i} style={{ fontSize: 12, color: '#2a2a2a', background: '#f5f5f5', padding: '4px 12px', borderRadius: 4, border: '1px solid #e8e8e8' }}>
-                                  {l.language}{l.level ? <span style={{ color: '#888', marginLeft: 6, fontSize: 11 }}>· {l.level}</span> : ''}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {!isHidden('certifications') && certifications.length > 0 && (
-                          <div style={{ marginBottom: 20 }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Certifications</div>
-                            {certifications.map((c, i) => (
-                              <div key={i} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                <div>
-                                  <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{c.name}</span>
-                                  {c.issuer && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {c.issuer}</span>}
+    return (
+        <div ref={containerRef} style={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden', background: 'var(--ink-05)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0' }}>
+            {/* Reserve scaled space */}
+            <div style={{ width: PAGE_W_PX * scale, height: nativeH * scale, flexShrink: 0, position: 'relative' }}>
+                {/* Scale transform */}
+                <div style={{ width: PAGE_W_PX, transformOrigin: 'top left', transform: `scale(${scale})`, position: 'absolute', top: 0, left: 0 }}>
+                    {/* Paper */}
+                    <div style={{ width: PAGE_W_PX, minHeight: PAGE_H_PX, background: '#fff', boxShadow: '0 2px 12px rgba(0,0,0,0.08), 0 8px 28px rgba(0,0,0,0.06)', borderRadius: 2, position: 'relative' }}>
+                        {/* Content — rendered ONCE, flows naturally */}
+                        <div ref={contentRef} id="resume-preview-root" style={{ width: PAGE_W_PX, minHeight: PAGE_H_PX }}>
+                            {resumeData.customFont && (
+                                <style>{`#resume-preview-root, #resume-preview-root * { font-family: ${resumeData.customFont} !important; }`}</style>
+                            )}
+                            {resumeData.customColor && (
+                                <style>{`#resume-preview-root [style*="color"] { --user-accent: ${resumeData.customColor}; }`}</style>
+                            )}
+                            <PreviewComponent data={resumeData} />
+                            {hasExtras && (
+                                <div style={{ padding: '0 48px 40px', fontFamily: "'Inter', 'DM Sans', sans-serif" }}>
+                                    {!isHidden('languages') && languages.length > 0 && (
+                                        <div style={{ marginBottom: 20 }}>
+                                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Languages</div>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                                {languages.map((l, i) => (
+                                                    <span key={i} style={{ fontSize: 12, color: '#2a2a2a', background: '#f5f5f5', padding: '4px 12px', borderRadius: 4, border: '1px solid #e8e8e8' }}>
+                                                        {l.language}{l.level ? <span style={{ color: '#888', marginLeft: 6, fontSize: 11 }}>· {l.level}</span> : ''}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {!isHidden('certifications') && certifications.length > 0 && (
+                                        <div style={{ marginBottom: 20 }}>
+                                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Certifications</div>
+                                            {certifications.map((c, i) => (
+                                                <div key={i} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                                    <div>
+                                                        <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{c.name}</span>
+                                                        {c.issuer && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {c.issuer}</span>}
+                                                    </div>
+                                                    {c.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{c.date}</span>}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {!isHidden('projects') && projects.length > 0 && (
+                                        <div>
+                                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Projects</div>
+                                            {projects.map((proj, i) => (
+                                                <div key={i} style={{ marginBottom: 12 }}>
+                                                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{proj.name}</div>
+                                                    {proj.tech && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.tech}</div>}
+                                                    {proj.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 4 }}>{proj.description}</div>}
+                                                    {proj.url && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.url}</div>}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {!isHidden('custom') && customSections.map((section, sIdx) => (
+                                        section.title && section.entries.length > 0 ? (
+                                            <div key={sIdx} style={{ marginBottom: 20 }}>
+                                                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>{section.title}</div>
+                                                {section.entries.map((entry, eIdx) => (
+                                                    <div key={eIdx} style={{ marginBottom: 10 }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                                            <div>
+                                                                <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{entry.title}</span>
+                                                                {entry.subtitle && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {entry.subtitle}</span>}
+                                                            </div>
+                                                            {entry.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{entry.date}</span>}
+                                                        </div>
+                                                        {entry.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 3 }}>{entry.description}</div>}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : null
+                                    ))}
                                 </div>
-                                {c.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{c.date}</span>}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {!isHidden('projects') && projects.length > 0 && (
-                          <div>
-                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Projects</div>
-                            {projects.map((proj, i) => (
-                              <div key={i} style={{ marginBottom: 12 }}>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{proj.name}</div>
-                                {proj.tech && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.tech}</div>}
-                                {proj.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 4 }}>{proj.description}</div>}
-                                {proj.url && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.url}</div>}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {!isHidden('custom') && customSections.map((section, sIdx) => (
-                          section.title && section.entries.length > 0 ? (
-                            <div key={sIdx} style={{ marginBottom: 20 }}>
-                              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>{section.title}</div>
-                              {section.entries.map((entry, eIdx) => (
-                                <div key={eIdx} style={{ marginBottom: 10 }}>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                    <div>
-                                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{entry.title}</span>
-                                      {entry.subtitle && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {entry.subtitle}</span>}
-                                    </div>
-                                    {entry.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{entry.date}</span>}
-                                  </div>
-                                  {entry.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 3 }}>{entry.description}</div>}
-                                </div>
-                              ))}
+                            )}
+                        </div>
+                        {/* Page break lines overlaid */}
+                        {pageCount > 1 && Array.from({ length: pageCount - 1 }).map((_, i) => (
+                            <div key={i} style={{ position: 'absolute', top: (i + 1) * PAGE_H_PX, left: 0, right: 0, height: 0, borderTop: '2px dashed rgba(0,0,0,0.18)', pointerEvents: 'none', zIndex: 10 }}>
+                                <span style={{ position: 'absolute', right: 8, top: 4, fontSize: 10, color: 'rgba(0,0,0,0.3)', fontFamily: 'monospace', background: '#fff', padding: '1px 6px', borderRadius: 3 }}>Page {i + 2}</span>
                             </div>
-                          ) : null
                         ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  // For pages 2+, re-render the same content (shifted upward)
-                  <div style={{ width: PAGE_W_PX, minHeight: PAGE_H_PX }} aria-hidden="true">
-                    <PreviewComponent data={resumeData} />
-                    {hasExtras && (
-                      <div style={{ padding: '0 48px 40px', fontFamily: "'Inter', 'DM Sans', sans-serif" }}>
-                        {!isHidden('languages') && languages.length > 0 && (
-                          <div style={{ marginBottom: 20 }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Languages</div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                              {languages.map((l, li) => (
-                                <span key={li} style={{ fontSize: 12, color: '#2a2a2a', background: '#f5f5f5', padding: '4px 12px', borderRadius: 4, border: '1px solid #e8e8e8' }}>
-                                  {l.language}{l.level ? <span style={{ color: '#888', marginLeft: 6, fontSize: 11 }}>· {l.level}</span> : ''}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        {!isHidden('certifications') && certifications.length > 0 && (
-                          <div style={{ marginBottom: 20 }}>
-                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Certifications</div>
-                            {certifications.map((c, ci) => (
-                              <div key={ci} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                <div>
-                                  <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{c.name}</span>
-                                  {c.issuer && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {c.issuer}</span>}
-                                </div>
-                                {c.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{c.date}</span>}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {!isHidden('projects') && projects.length > 0 && (
-                          <div>
-                            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>Projects</div>
-                            {projects.map((proj, pi) => (
-                              <div key={pi} style={{ marginBottom: 12 }}>
-                                <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{proj.name}</div>
-                                {proj.tech && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.tech}</div>}
-                                {proj.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 4 }}>{proj.description}</div>}
-                                {proj.url && <div style={{ fontSize: 11, color: accent, marginTop: 2 }}>{proj.url}</div>}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {!isHidden('custom') && customSections.map((section, sIdx) => (
-                          section.title && section.entries.length > 0 ? (
-                            <div key={sIdx} style={{ marginBottom: 20 }}>
-                              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}22`, paddingBottom: 6, marginBottom: 12 }}>{section.title}</div>
-                              {section.entries.map((entry, eIdx) => (
-                                <div key={eIdx} style={{ marginBottom: 10 }}>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                    <div>
-                                      <span style={{ fontSize: 13, fontWeight: 600, color: '#1a1a1a' }}>{entry.title}</span>
-                                      {entry.subtitle && <span style={{ fontSize: 12, color: '#666', marginLeft: 8 }}>— {entry.subtitle}</span>}
-                                    </div>
-                                    {entry.date && <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>{entry.date}</span>}
-                                  </div>
-                                  {entry.description && <div style={{ fontSize: 12, color: '#555', lineHeight: 1.6, marginTop: 3 }}>{entry.description}</div>}
-                                </div>
-                              ))}
-                            </div>
-                          ) : null
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Page number indicator */}
-              <div style={{
-                position: 'absolute',
-                bottom: 6,
-                right: 12,
-                fontSize: 10,
-                color: 'rgba(0,0,0,0.25)',
-                fontFamily: 'monospace',
-                pointerEvents: 'none',
-                zIndex: 2,
-              }}>
-                {i + 1} / {pageCount}
-              </div>
+                    </div>
+                </div>
             </div>
-          ))}
         </div>
-      </div>
-    </div>
-  )
+    )
 }
 
 // ─── Section completeness helper ─────────────────────────────
