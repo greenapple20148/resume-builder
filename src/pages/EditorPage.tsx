@@ -1846,8 +1846,8 @@ export default function EditorPage() {
         </div>
 
         {/* Live Preview */}
-        <div className="flex-1 max-xl:hidden border-l border-ink-10 flex flex-col min-w-[400px]">
-          <div id="resume-preview-content" className="flex-1">
+        <div className="flex-1 max-xl:hidden border-l border-ink-10 flex flex-col min-w-[400px] min-h-0 overflow-hidden">
+          <div id="resume-preview-content" className="flex-1 min-h-0">
             <LivePreview resumeData={resumeData} themeId={themeId} />
           </div>
         </div>
