@@ -1037,6 +1037,7 @@ interface LivePreviewProps {
 
 function LivePreview({ resumeData, themeId }: LivePreviewProps) {
   const PreviewComponent = PREVIEW_MAP[themeId] || PREVIEW_MAP.editorial_luxe
+  const themeBg = THEMES.find(t => t.id === themeId)?.bg || '#fff'
   const containerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0.5)
@@ -1086,12 +1087,11 @@ function LivePreview({ resumeData, themeId }: LivePreviewProps) {
         {/* Scale transform */}
         <div style={{ width: PAGE_W_PX, transformOrigin: 'top left', transform: `scale(${scale})`, position: 'absolute', top: 0, left: 0 }}>
           {/* Paper */}
-          <div style={{ width: PAGE_W_PX, minHeight: PAGE_H_PX, background: '#fff', boxShadow: '0 2px 12px rgba(0,0,0,0.08), 0 8px 28px rgba(0,0,0,0.06)', borderRadius: 2, position: 'relative' }}>
+          <div style={{ width: PAGE_W_PX, minHeight: PAGE_H_PX, background: themeBg, boxShadow: '0 2px 12px rgba(0,0,0,0.08), 0 8px 28px rgba(0,0,0,0.06)', position: 'relative', overflow: 'hidden' }}>
             {/* Content — rendered ONCE, flows naturally */}
             <div ref={contentRef} id="resume-preview-root" style={{ width: PAGE_W_PX }}>
-              {/* Override templates that use min-height:100% — they'd inherit the paper's minHeight and create empty pages */}
-              <style>{`#resume-preview-root > div { min-height: auto !important; }
-#resume-preview-root p, #resume-preview-root div { white-space: pre-line; }`}</style>
+              {/* Prevent template root from forcing extra height */}
+              <style>{`#resume-preview-root > div { min-height: auto !important; }`}</style>
               {/* AI-generated custom theme CSS override */}
               {resumeData.customThemeCSS && <style>{resumeData.customThemeCSS}</style>}
               {resumeData.customFont && (
@@ -1535,7 +1535,7 @@ export default function EditorPage() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <select
-            className="form-input text-xs font-medium py-1 px-2 h-[34px] w-[150px] cursor-pointer truncate"
+            className="form-select text-xs font-medium py-1 px-2 h-[34px] w-[150px] cursor-pointer truncate"
             value={themeId}
             onChange={handleThemeChange}
             aria-label="Change Theme"

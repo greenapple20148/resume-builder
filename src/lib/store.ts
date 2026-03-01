@@ -228,6 +228,12 @@ export const useStore = create<StoreState>((set, get) => ({
     const { user } = get()
     if (!user) throw new Error('Not authenticated')
 
+    // Ensure we have a valid session before making API calls
+    console.log('[store] Step 1: Refreshing session...')
+    const { error: sessionError } = await supabase.auth.refreshSession()
+    if (sessionError) console.warn('[store] Session refresh warning:', sessionError.message)
+    console.log('[store] Step 2: Checking resume count...')
+
     // Check resume limit with a simple count instead of RPC
     const { count, error: countError } = await supabase
       .from('resumes')

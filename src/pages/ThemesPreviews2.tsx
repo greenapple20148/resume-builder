@@ -919,7 +919,7 @@ export const NordicMinimalPreview: React.FC<PreviewProps> = ({ data }) => {
                                     <div style={{ fontSize: 12, color: c.lt, fontWeight: 300, letterSpacing: 1 }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</div>
                                 </div>
                                 <div style={{ fontSize: 13, color: c.grn, fontWeight: 500, marginBottom: 10 }}>{e.company}{e.location ? ` — ${e.location}` : ''}</div>
-                                <p style={{ fontSize: 13.5, color: c.mid, lineHeight: 1.75, fontWeight: 300 }}>{e.description}</p>
+                                {e.description && e.description.split('\n').filter(Boolean).map((b, j) => <p key={j} style={{ fontSize: 13.5, color: c.mid, lineHeight: 1.75, fontWeight: 300, marginBottom: 4 }}>{b.replace(/^[•\-–—]\s*/, '')}</p>)}
                             </div>
                         ))}
                     </div>
@@ -1203,7 +1203,7 @@ export const SunsetWarmPreview: React.FC<PreviewProps> = ({ data }) => {
                                         <div style={datePill}>{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</div>
                                     </div>
                                     <div style={{ fontSize: 13, color: c.rust, fontWeight: 600, marginBottom: 10 }}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>
-                                    {e.description && <div style={{ fontSize: 13, color: c.muted, lineHeight: 1.7, paddingLeft: 18, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: c.amber, fontSize: 10, top: 3 }}>◈</span>{e.description}</div>}
+                                    {e.description && e.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13, color: c.muted, lineHeight: 1.7, paddingLeft: 18, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, color: c.amber, fontSize: 10, top: 3 }}>◈</span>{b.replace(/^[•\-–—]\s*/, '')}</div>)}
                                 </div>
                             ))}
                         </div>
@@ -1279,7 +1279,7 @@ export const NewspaperClassicPreview: React.FC<PreviewProps> = ({ data }) => {
                                     <div style={entryTitle}>{e.title}</div>
                                     <div style={entryMeta}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>
                                     <div style={entryDate}>{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</div>
-                                    {e.description && <p style={entryP}>{e.description}</p>}
+                                    {e.description && e.description.split('\n').filter(Boolean).map((b, j) => <p key={j} style={{ ...entryP, marginBottom: 4 }}>{b.replace(/^[•\-–—]\s*/, '')}</p>)}
                                 </div>
                             ))}
                         </>
@@ -1392,7 +1392,7 @@ export const IvoryMarblePreview: React.FC<PreviewProps> = ({ data }) => {
                                         <div style={{ fontSize: 11, color: c.light, letterSpacing: 1, fontWeight: 500, whiteSpace: 'nowrap' }}>{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</div>
                                     </div>
                                     <div style={{ fontSize: 12.5, color: c.gold, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 10 }}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>
-                                    {e.description && <div style={{ fontSize: 13, color: c.muted, lineHeight: 1.75, paddingLeft: 18, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: c.gold, fontSize: 9, top: 4 }}>◇</span>{e.description}</div>}
+                                    {e.description && e.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13, color: c.muted, lineHeight: 1.75, paddingLeft: 18, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, color: c.gold, fontSize: 9, top: 4 }}>◇</span>{b.replace(/^[•\-–—]\s*/, '')}</div>)}
                                 </div>
                             ))}
                         </div>
@@ -1455,7 +1455,7 @@ export const NeonCyberPreview: React.FC<PreviewProps> = ({ data }) => {
                                         <div style={datePill}>{e.startDate}{e.endDate ? ` — ${e.endDate}` : ''}</div>
                                     </div>
                                     <div style={{ fontSize: 12, color: c.neon2, fontWeight: 600, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 10 }}>// {e.company}{e.location ? ` · ${e.location}` : ''}</div>
-                                    {e.description && <div style={{ fontSize: 13, color: '#7a9aa8', lineHeight: 1.7, paddingLeft: 20, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: c.neon, fontFamily: mono, fontSize: 10, top: 4, fontWeight: 700 }}>//</span>{e.description}</div>}
+                                    {e.description && e.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13, color: '#7a9aa8', lineHeight: 1.7, paddingLeft: 20, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, color: c.neon, fontFamily: mono, fontSize: 10, top: 4, fontWeight: 700 }}>//</span>{b.replace(/^[•\-–—]\s*/, '')}</div>)}
                                 </div>
                             ))}
                         </div>

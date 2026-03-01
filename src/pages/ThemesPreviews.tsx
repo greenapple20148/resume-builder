@@ -384,10 +384,20 @@ export function useDynamicData(data: Partial<ResumeData>, themeId?: string) {
 
   // Normalize bullet characters → newlines so templates' split('\n') works with imported data
   const normalizeBullets = (text: string) => {
-    return text
+    let normalized = text
+      // Convert explicit bullet markers to newlines
       .replace(/\s*[•·]\s*/g, '\n')
       .replace(/\s+[-–—]\s+/g, '\n')
       .replace(/(?:^|\n)\s*\*\s+/g, '\n')
+
+    // If there are no \n separators yet, try splitting on sentence boundaries
+    // (". " followed by uppercase letter = likely separate achievements)
+    const lines = normalized.split('\n').filter(Boolean)
+    if (lines.length <= 1 && normalized.length > 60) {
+      normalized = normalized.replace(/\.\s+(?=[A-Z])/g, '.\n')
+    }
+
+    return normalized
       .split('\n')
       .map(line => line.replace(/^\s*[•·*\-–—]\s*/, '').trim())
       .filter(Boolean)
@@ -449,7 +459,7 @@ export function DarkPreview({ data }: PreviewProps) {
             <div key={i} className="dr-job">
               <div className="dr-job-title">{exp.title}</div>
               <div className="dr-job-meta">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              <div className="dr-job-desc">{exp.description}</div>
+              {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} className="dr-job-desc">{b.replace(/^[•\-–—]\s*/, '')}</div>)}
             </div>
           ))}
         </div>
@@ -558,7 +568,7 @@ export function TerminalPreview({ data }: PreviewProps) {
                   <div className="terminal-exp-role">{exp.title}</div>
                   <div className="terminal-exp-co">{exp.company}</div>
                   <div style={{ fontSize: '8px', color: '#8b949e' }}>{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-                  <div style={{ fontSize: '8px', color: '#c9d1d9', paddingLeft: 4, lineHeight: 1.5, marginTop: 4 }}>{exp.description}</div>
+                  <div className="terminal-exp-desc" style={{ fontSize: '8px', paddingLeft: 4, lineHeight: 1.5, marginTop: 4 }}>{exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <span key={j}>{b.replace(/^[•\-–—]\s*/, '')}</span>)}</div>
                 </div>
               ))}
             </div>
@@ -822,7 +832,7 @@ export function Resume4SoftPastelPreview({ data }: PreviewProps) {
       </p>
       {/* Skills */}
       {divider('Core Skills')}
-      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10, marginBottom: 8 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 8 }}>
         {res.skills.map((s, i) => (
           <span key={i} style={{ fontSize: 12, fontWeight: 500, padding: '6px 16px', borderRadius: 20, color: c.text, background: chipColors[i % 3] }}>{s}</span>
         ))}

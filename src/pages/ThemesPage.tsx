@@ -147,7 +147,7 @@ export default function ThemesPage() {
               <button className="btn btn-gold" onClick={() => handleUseTheme(selectedTheme)} disabled={useThemeLoading}>{useThemeLoading ? 'Creating…' : 'Use This Theme →'}</button>
             </div>
             <div className="flex-1 min-h-0 flex items-start justify-center px-8 py-7 overflow-hidden relative">
-              <div className="w-[816px] h-[1200px] bg-white rounded shrink-0 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.06),0_12px_36px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_4px_12px_rgba(0,0,0,0.2),0_12px_36px_rgba(0,0,0,0.3)] preview-fill" style={{ zoom: 0.65, transformOrigin: 'top center' }} key={selectedTheme.id}>
+              <div className="w-[816px] h-[1200px] bg-white shrink-0 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.06),0_12px_36px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_4px_12px_rgba(0,0,0,0.2),0_12px_36px_rgba(0,0,0,0.3)] preview-fill" style={{ zoom: 0.65, transformOrigin: 'top center' }} key={selectedTheme.id}>
                 <ThemePreview theme={selectedTheme} data={resumeData} />
               </div>
             </div>
