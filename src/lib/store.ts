@@ -30,6 +30,7 @@ interface StoreState {
   setCurrentResume: (resume: Resume | null) => void
   updateResume: (id: string, updates: Partial<Resume>) => Promise<void>
   deleteResume: (id: string) => Promise<void>
+  deleteAllResumes: () => Promise<void>
   duplicateResume: (resume: Resume) => Promise<Resume>
   fetchCoverLetters: () => Promise<CoverLetter[] | undefined>
   createCoverLetter: (data: Partial<CoverLetter>) => Promise<CoverLetter>
@@ -321,6 +322,22 @@ export const useStore = create<StoreState>((set, get) => ({
       resumes: state.resumes.filter((r) => r.id !== id),
       currentResume: state.currentResume?.id === id ? null : state.currentResume,
     }))
+  },
+
+  deleteAllResumes: async () => {
+    const { user } = get()
+    if (!user) throw new Error('Not authenticated')
+    console.log('[store] Deleting all resumes for user:', user.id)
+    const { error } = await supabase
+      .from('resumes')
+      .delete()
+      .eq('user_id', user.id)
+    if (error) {
+      console.error('[store] Delete all error:', error)
+      throw error
+    }
+    console.log('[store] Delete all successful')
+    set({ resumes: [], currentResume: null })
   },
 
   duplicateResume: async (resume) => {

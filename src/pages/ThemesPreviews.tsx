@@ -2,6 +2,7 @@ import React from 'react'
 import './ThemesPreviews.css'
 import '../styles/terminal.css'
 import '../styles/scifi.css'
+import { MONO_PREVIEW_MAP } from './MonoTemplates'
 import '../styles/sophisticated.css'
 import '../styles/healthcare.css'
 
@@ -1263,4 +1264,5 @@ export const PREVIEW_MAP: Record<string, React.FC<PreviewProps>> = {
   ivory_marble: IvoryMarblePreview,
   neon_cyber: NeonCyberPreview,
   origami_zen: OrigamiZenPreview,
+  ...MONO_PREVIEW_MAP,
 }

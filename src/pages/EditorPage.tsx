@@ -1378,7 +1378,6 @@ export default function EditorPage() {
     setDownloading(true)
     toast.info('Generating PDF…')
 
-    // Target the actual resume content root (first page's content div)
     const previewEl = document.getElementById('resume-preview-root')
     if (!previewEl) {
       toast.error('Preview not found')
@@ -1387,62 +1386,115 @@ export default function EditorPage() {
     }
 
     try {
-      // @ts-ignore
-      const { default: html2pdf } = await import('html2pdf.js')
+      // Look up theme background color
+      const themeBg = THEMES.find(t => t.id === themeId)?.bg || '#fff'
 
-      const opt = {
-        margin: [0, 0, 12, 0] as [number, number, number, number],
-        filename: `${title || 'resume'}.pdf`,
-        image: { type: 'jpeg' as const, quality: 1.0 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const },
-        pagebreak: { mode: 'avoid-all', avoid: ['img', 'p', 'li', 'h1', 'h2', 'h3', 'h4', 'div[style*="line-height"]', '.dr-job-desc', '.terminal-exp-co'] }
-      }
+      // Collect Google Fonts links
+      const fontLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"][href*="fonts.googleapis.com"]'))
+        .map(el => el.outerHTML).join('\n')
 
-      const worker = html2pdf().set(opt).from(previewEl).toPdf()
+      // Collect all stylesheets from the main document
+      const styles = Array.from(document.querySelectorAll('style'))
+        .map(s => s.outerHTML).join('\n')
 
-      await worker.get('pdf').then((pdf: any) => {
-        if (profile?.plan === 'free' || !profile?.plan) {
-          const totalPages = pdf.internal.getNumberOfPages()
-          const pdfWidth = pdf.internal.pageSize.getWidth()
-          const pageHeight = pdf.internal.pageSize.getHeight()
+      // Clone the preview content
+      const contentClone = previewEl.cloneNode(true) as HTMLElement
+      contentClone.id = 'resume-preview-root'
 
-          // Extract theme background color to paint the footer seamlessly
-          let r = 255, g = 255, b = 255
-          const themeEl = previewEl.firstElementChild
-          if (themeEl) {
-            const bgStr = window.getComputedStyle(themeEl).backgroundColor
-            const match = bgStr.match(/\d+/g)
-            if (match && match.length >= 3) {
-              r = parseInt(match[0])
-              g = parseInt(match[1])
-              b = parseInt(match[2])
-            }
-          }
-
-          const brightness = (r * 299 + g * 587 + b * 114) / 1000
-          const isDark = brightness < 128
-
-          for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i)
-            pdf.setFillColor(r, g, b)
-            pdf.rect(0, pageHeight - 12, pdfWidth, 12, 'F')
-            if (isDark) {
-              pdf.setTextColor(180, 180, 180)
-            } else {
-              pdf.setTextColor(130, 130, 130)
-            }
-            pdf.setFontSize(10)
-            pdf.text('Made with ResumeBuildIn', pdfWidth / 2, pageHeight - 4, { align: 'center' })
-          }
-        }
+      // Remove internal style overrides (min-height, etc.)
+      contentClone.querySelectorAll('style').forEach(s => {
+        if (s.textContent?.includes('min-height')) s.remove()
       })
 
-      await worker.save()
+      // Recursively strip all hardcoded 794px widths from the clone
+      const stripFixedWidths = (el: HTMLElement) => {
+        if (el.style?.width && (el.style.width === '794px' || el.style.width === '794')) {
+          el.style.width = '100%'
+        }
+        if (el.style?.minWidth && (el.style.minWidth === '794px' || el.style.minWidth === '794')) {
+          el.style.minWidth = '100%'
+        }
+        for (let i = 0; i < el.children.length; i++) {
+          const child = el.children[i]
+          if (child instanceof HTMLElement) stripFixedWidths(child)
+        }
+      }
+      stripFixedWidths(contentClone)
+
+      // Watermark for free users
+      const isFree = profile?.plan === 'free' || !profile?.plan
+      const isLightBg = ['#ffffff', '#fff', '#fafafa', '#fdfbf9', '#fbf9fc', '#f7f7f7', '#f9f6f0', '#faf7f3', '#f7efe3', '#fdfcfa', '#f8f8f8'].includes(themeBg)
+      const watermarkHTML = isFree
+        ? `<div style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:4mm 0;font-size:9pt;color:${isLightBg ? '#828282' : '#b4b4b4'};background:${themeBg};font-family:sans-serif;">Made with ResumeBuildIn</div>`
+        : ''
+
+      // Build self-contained HTML document for Puppeteer
+      const fullHTML = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  ${fontLinks}
+  ${styles}
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      background: ${themeBg};
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    #resume-preview-root {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    #resume-preview-root > div {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-height: auto !important;
+    }
+  </style>
+</head>
+<body>
+  ${contentClone.outerHTML}
+  ${watermarkHTML}
+</body>
+</html>`
+
+      // Call server-side PDF generation API
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          html: fullHTML,
+          filename: `${title || 'resume'}.pdf`,
+        }),
+      })
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}))
+        throw new Error(err.message || `Server error: ${response.status}`)
+      }
+
+      // Download the PDF
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${title || 'resume'}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
       toast.success('PDF downloaded!')
-    } catch (err) {
+    } catch (err: any) {
       console.error('PDF generation error:', err)
-      toast.error('PDF generation failed.')
+      toast.error(err?.message || 'PDF generation failed.')
     } finally {
       setDownloading(false)
     }

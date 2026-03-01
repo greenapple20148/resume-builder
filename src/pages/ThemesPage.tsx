@@ -51,11 +51,18 @@ export const THEMES: Theme[] = [
   { id: 'ivory_marble', name: 'Ivory Marble', category: 'professional', desc: 'Luxury navy sidebar with gold accents', accent: '#b8963c', bg: '#f9f6f0', new: true, premium: true },
   { id: 'neon_cyber', name: 'Neon Cyber', category: 'dark', desc: 'Cyberpunk neon with stats strip', accent: '#00fff7', bg: '#04080f', new: true, premium: true },
   { id: 'origami_zen', name: 'Origami Zen', category: 'minimal', desc: 'Japanese-inspired with fold marks', accent: '#b03030', bg: '#fdfcfa', new: true },
+
+  // Mono collection
+  { id: 'mono_slate', name: 'Mono Slate', category: 'mono', desc: 'Dark header with clean hairline rules', accent: '#111111', bg: '#ffffff', new: true },
+  { id: 'mono_edge', name: 'Mono Edge', category: 'mono', desc: 'Bold edge bar with monospace accents', accent: '#0a0a0a', bg: '#ffffff', new: true },
+  { id: 'mono_stack', name: 'Mono Stack', category: 'mono', desc: 'Stacked bands with alternating grays', accent: '#111111', bg: '#f7f7f7', new: true },
+  { id: 'mono_grid', name: 'Mono Grid', category: 'mono', desc: 'Dark sidebar grid with skill bars', accent: '#0a0a0a', bg: '#ffffff', new: true },
+  { id: 'mono_ink', name: 'Mono Ink', category: 'mono', desc: 'Editorial serif typography in grayscale', accent: '#111111', bg: '#ffffff', new: true },
 ]
 
 const FILTERS = [
   { id: 'all', label: 'All Themes' }, { id: 'minimal', label: 'Minimal' },
-  { id: 'professional', label: 'Professional' }, { id: 'creative', label: 'Creative' }, { id: 'dark', label: 'Dark' },
+  { id: 'professional', label: 'Professional' }, { id: 'creative', label: 'Creative' }, { id: 'dark', label: 'Dark' }, { id: 'mono', label: 'Mono' },
 ]
 
 function ThemePreview({ theme, data }: { theme: Theme; data: Partial<ResumeData> | undefined }) {

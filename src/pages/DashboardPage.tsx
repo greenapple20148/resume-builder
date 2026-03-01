@@ -131,10 +131,12 @@ function ResumeThumb({ theme, data }: { theme: string; data: any }) {
 }
 
 export default function DashboardPage() {
-  const { profile, resumes, resumesLoading, fetchResumes, createResume, deleteResume, duplicateResume } = useStore()
+  const { profile, resumes, resumesLoading, fetchResumes, createResume, deleteResume, deleteAllResumes, duplicateResume } = useStore()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [deleteAllConfirm, setDeleteAllConfirm] = useState(false)
+  const [deleteAllLoading, setDeleteAllLoading] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
   const [cancelConfirm, setCancelConfirm] = useState(false)
   const [cancelLoading, setCancelLoading] = useState(false)
@@ -240,6 +242,15 @@ export default function DashboardPage() {
               <p className="text-[13px] text-ink-40 font-mono">{resumeCount} resume{resumeCount !== 1 ? 's' : ''} · {profile?.plan || 'free'} plan</p>
             </div>
             <div className="flex gap-2.5">
+              {resumes.length > 0 && (
+                <button
+                  className="btn btn-outline btn-sm"
+                  style={{ color: 'var(--rose, #e74c3c)', borderColor: 'var(--rose, #e74c3c)' }}
+                  onClick={() => setDeleteAllConfirm(true)}
+                >
+                  Delete All
+                </button>
+              )}
               <button className="btn btn-gold" onClick={() => handleCreate(null)}>+ New Resume</button>
             </div>
           </div>
@@ -277,6 +288,37 @@ export default function DashboardPage() {
             <div className="flex gap-2.5">
               <button className="btn btn-danger flex-1" onClick={() => handleDelete(deleteConfirm)}>Delete</button>
               <button className="btn btn-outline flex-1" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteAllConfirm && (
+        <div className="modal-overlay" onClick={() => setDeleteAllConfirm(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="mb-2" style={{ color: 'var(--rose, #e74c3c)' }}>Delete All Resumes?</h3>
+            <p className="mb-2 text-ink-40 text-sm">This will permanently delete <strong>all {resumes.length} resume{resumes.length !== 1 ? 's' : ''}</strong>. This action cannot be undone.</p>
+            <p className="mb-5 text-ink-30 text-[12px]">All resume data, including content and settings, will be lost forever.</p>
+            <div className="flex gap-2.5">
+              <button
+                className="btn btn-danger flex-1"
+                disabled={deleteAllLoading}
+                onClick={async () => {
+                  setDeleteAllLoading(true)
+                  try {
+                    await deleteAllResumes()
+                    toast.success(`All ${resumes.length} resume${resumes.length !== 1 ? 's' : ''} deleted.`)
+                    setDeleteAllConfirm(false)
+                  } catch (err: any) {
+                    toast.error('Could not delete resumes: ' + (err.message || 'Unknown error'))
+                  } finally {
+                    setDeleteAllLoading(false)
+                  }
+                }}
+              >
+                {deleteAllLoading ? 'Deleting…' : `Delete All ${resumes.length} Resume${resumes.length !== 1 ? 's' : ''}`}
+              </button>
+              <button className="btn btn-outline flex-1" onClick={() => setDeleteAllConfirm(false)}>Cancel</button>
             </div>
           </div>
         </div>
