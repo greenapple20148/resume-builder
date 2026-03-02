@@ -225,7 +225,7 @@ export const useStore = create<StoreState>((set, get) => ({
     return (result && 'data' in result ? result.data : get().resumes) as Resume[]
   },
 
-  createResume: async (themeId = 'editorial_luxe', initialData = null) => {
+  createResume: async (themeId = 'classic', initialData = null) => {
     const { user } = get()
     if (!user) throw new Error('Not authenticated')
 

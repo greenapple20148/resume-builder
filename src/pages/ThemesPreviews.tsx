@@ -1,1268 +1,2685 @@
 import React from 'react'
-import './ThemesPreviews.css'
-import '../styles/terminal.css'
-import '../styles/scifi.css'
-import { MONO_PREVIEW_MAP } from './MonoTemplates'
-import '../styles/sophisticated.css'
-import '../styles/healthcare.css'
-
-
-
-import '../styles/futuristic.css'
-import '../styles/new-templates.css'
-import '../styles/new-templates-extra.css'
-import '../styles/new-templates-extra2.css'
-import '../styles/new-templates-extra3.css'
-import { OrigamiZenPreview, CorporateSlatePreview, TealWavePreview, PurpleDuskPreview, CoralBrightPreview, OceanDeepPreview, SageProPreview, CarbonNoirPreview, SandDunePreview, IndigoSharpPreview, PlatinumElitePreview, CascadeBluePreview, NordicMinimalPreview, MidnightProPreview, BlueprintPreview, EmeraldFreshPreview, SunsetWarmPreview, NewspaperClassicPreview, IvoryMarblePreview, NeonCyberPreview } from './ThemesPreviews2'
 import { ResumeData } from '../types'
 
-export const SAMPLE_PERSONAS: Record<string, {
-  name: string, role: string, email: string, phone: string, location: string,
-  experience: { id: number, title: string, company: string, location: string, startDate: string, endDate: string, current: boolean, description: string }[],
-  education: { id: number, degree: string, school: string, location: string, startDate: string, endDate: string, gpa: string, notes: string }[],
-  skills: string[], summary: string
-}> = {
-  editorial_luxe: {
-    name: 'Elena Vasquez', role: 'Senior Product Manager', email: 'elena.vasquez@email.com', phone: '(555) 412-8903', location: 'New York, NY',
-    experience: [
-      { id: 1, title: 'Senior Product Manager', company: 'Notion', location: 'New York, NY', startDate: '2021', endDate: 'Present', current: true, description: 'Led cross-functional team of 14 to launch AI-powered workspace features. Increased user activation by 28% through data-driven onboarding redesign. Managed $4M annual product budget across three product lines.' },
-      { id: 2, title: 'Product Manager', company: 'Spotify', location: 'New York, NY', startDate: '2018', endDate: '2021', current: false, description: 'Owned discovery and personalization features reaching 180M+ monthly listeners. Launched Spotify Blend feature driving 15M shares in first month. Reduced churn by 12% through predictive engagement models.' },
-      { id: 3, title: 'Associate Product Manager', company: 'Google', location: 'Mountain View, CA', startDate: '2016', endDate: '2018', current: false, description: 'Shipped search quality improvements affecting 2B+ daily queries. Collaborated with ML engineers on ranking algorithm updates.' }
-    ],
-    education: [
-      { id: 1, degree: 'MBA, Technology Management', school: 'Columbia Business School', location: 'New York, NY', startDate: '2014', endDate: '2016', gpa: '', notes: '' },
-      { id: 2, degree: 'B.S. Computer Science', school: 'UC Berkeley', location: 'Berkeley, CA', startDate: '2010', endDate: '2014', gpa: '3.8', notes: '' }
-    ],
-    skills: ['Roadmapping', 'OKRs', 'User Research', 'SQL', 'A/B Testing', 'Data Analysis', 'Stakeholder Management', 'Agile'], summary: 'Product leader with 9+ years shipping consumer products at scale. Expert in data-informed decision making, cross-functional leadership, and building products that delight millions of users.'
-  },
-  dark_architect: {
-    name: 'Marcus Chen', role: 'Staff Software Engineer', email: 'm.chen@email.com', phone: '(555) 903-1247', location: 'Seattle, WA',
-    experience: [
-      { id: 1, title: 'Staff Software Engineer', company: 'Datadog', location: 'Seattle, WA', startDate: '2022', endDate: 'Present', current: true, description: 'Designed event ingestion pipeline processing 2.4B events/day. Reduced P99 latency by 65% through architecture redesign. Mentored 8 engineers and led distributed systems guild.' },
-      { id: 2, title: 'Senior Software Engineer', company: 'Stripe', location: 'San Francisco, CA', startDate: '2019', endDate: '2022', current: false, description: 'Built real-time fraud detection service handling 50K+ transactions/second. Designed idempotency framework adopted across 12 payment services. Led migration to event-driven architecture.' },
-      { id: 3, title: 'Software Engineer', company: 'Amazon', location: 'Seattle, WA', startDate: '2015', endDate: '2019', current: false, description: 'Built inventory management system for AWS Marketplace. Optimized DynamoDB access patterns reducing costs by $1.2M annually.' }
-    ],
-    education: [
-      { id: 1, degree: 'M.S. Computer Science', school: 'University of Washington', location: 'Seattle, WA', startDate: '2013', endDate: '2015', gpa: '', notes: '' },
-      { id: 2, degree: 'B.S. Computer Engineering', school: 'UCLA', location: 'Los Angeles, CA', startDate: '2009', endDate: '2013', gpa: '3.7', notes: '' }
-    ],
-    skills: ['Go', 'Rust', 'Kubernetes', 'Kafka', 'gRPC', 'PostgreSQL', 'Distributed Systems', 'System Design'], summary: 'Staff engineer with 10+ years building distributed systems and developer platforms at scale. Passionate about reliability, performance, and mentoring the next generation of engineers.'
-  },
-  bauhaus_geometric: {
-    name: 'Priya Nair', role: 'Data Science Lead', email: 'priya.nair@email.com', phone: '(555) 708-2341', location: 'Boston, MA',
-    experience: [
-      { id: 1, title: 'Lead Data Scientist', company: 'Wayfair', location: 'Boston, MA', startDate: '2021', endDate: 'Present', current: true, description: 'Built visual search recommendation engine increasing product discovery by 38%. Managed team of 6 data scientists and 2 ML engineers. Deployed real-time inference pipeline serving 10M+ daily predictions.' },
-      { id: 2, title: 'Senior Data Scientist', company: 'Netflix', location: 'Los Gatos, CA', startDate: '2018', endDate: '2021', current: false, description: 'Developed personalization algorithms for 230M+ subscribers. Built A/B testing framework reducing experiment cycle time by 40%. Published 3 papers on recommender systems.' },
-      { id: 3, title: 'Data Scientist', company: 'Two Sigma', location: 'New York, NY', startDate: '2016', endDate: '2018', current: false, description: 'Developed quantitative models for alternative data analysis. Built NLP pipeline processing 500K+ financial documents daily.' }
-    ],
-    education: [
-      { id: 1, degree: 'Ph.D. Computer Science', school: 'MIT', location: 'Cambridge, MA', startDate: '2014', endDate: '2018', gpa: '4.0', notes: '' },
-      { id: 2, degree: 'B.Tech. Computer Science', school: 'IIT Bombay', location: 'Mumbai, India', startDate: '2010', endDate: '2014', gpa: '3.9', notes: '' }
-    ],
-    skills: ['Machine Learning', 'Python', 'LLMs', 'NLP', 'TensorFlow', 'PyTorch', 'SQL', 'Spark'], summary: 'Data science leader with 8+ years building ML systems that drive measurable business impact. Expert in recommendation systems, NLP, and scaling models from research to production.'
-  },
+// ─── DATA ADAPTER ──────────────────────────────────────────
+// Normalises ResumeData into flat props every template can consume.
+// Falls back to rich sample data when the user hasn't filled anything in yet.
 
-  sidebar: {
-    name: 'Marcus Chen', role: 'Data Scientist', email: 'marcus.chen@ml.dev', phone: '(650) 200-3419', location: 'Seattle, WA',
-    experience: [
-      { id: 1, title: 'Senior Data Scientist', company: 'Netflix', location: 'Los Gatos, CA', startDate: '2021', endDate: 'Present', current: true, description: 'Built recommendation models serving 230M subscribers. Improved content discovery metrics by 22% through deep learning models. Led cross-functional data science guild of 15 researchers.' },
-      { id: 2, title: 'Data Scientist', company: 'Tesla', location: 'Palo Alto, CA', startDate: '2018', endDate: '2021', current: false, description: 'Developed predictive maintenance algorithms for autopilot systems. Built anomaly detection pipeline processing 500GB telemetry data daily. Published 2 patents on sensor fusion techniques.' },
-      { id: 3, title: 'Research Assistant', company: 'Carnegie Mellon', location: 'Pittsburgh, PA', startDate: '2016', endDate: '2018', current: false, description: 'Published 4 papers on deep reinforcement learning. Developed open-source toolkit for neural architecture search.' }
-    ],
-    education: [
-      { id: 1, degree: 'Ph.D. Machine Learning', school: 'Carnegie Mellon', location: 'Pittsburgh, PA', startDate: '2014', endDate: '2018', gpa: '4.0', notes: '' },
-      { id: 2, degree: 'B.S. Mathematics & CS', school: 'MIT', location: 'Cambridge, MA', startDate: '2010', endDate: '2014', gpa: '3.9', notes: '' }
-    ],
-    skills: ['Python', 'TensorFlow', 'SQL', 'Statistics', 'PyTorch', 'Spark', 'Bayesian Methods', 'Deep Learning'], summary: 'ML researcher turned industry practitioner specializing in recommendation systems, deep learning, and scaling models from research to production.'
-  },
-  creative: {
-    name: 'Sofia Reyes', role: 'Creative Director', email: 'sofia@reyesstudio.com', phone: '(323) 654-8820', location: 'Los Angeles, CA',
-    experience: [
-      { id: 1, title: 'Creative Director', company: 'Nike', location: 'Portland, OR', startDate: '2020', endDate: 'Present', current: true, description: 'Led brand campaigns reaching 100M+ impressions globally. Directed creative for Air Max 2024 launch generating $50M in first-week sales. Managed team of 12 designers and 4 copywriters.' },
-      { id: 2, title: 'Art Director', company: 'Ogilvy', location: 'New York, NY', startDate: '2016', endDate: '2020', current: false, description: 'Directed visual identity for Fortune 500 clients including IBM and Coca-Cola. Won 3 Cannes Lions and 5 D&AD Pencils. Led rebranding projects valued at $2M+.' },
-      { id: 3, title: 'Senior Designer', company: 'Pentagram', location: 'New York, NY', startDate: '2014', endDate: '2016', current: false, description: 'Designed brand identities for startups and cultural institutions. Created visual systems for museum exhibitions seen by 500K+ visitors.' }
-    ],
-    education: [
-      { id: 1, degree: 'BFA Graphic Design', school: 'Parsons School of Design', location: 'New York, NY', startDate: '2012', endDate: '2016', gpa: '3.7', notes: '' },
-      { id: 2, degree: 'Certificate, Art Direction', school: 'School of Visual Arts', location: 'New York, NY', startDate: '2016', endDate: '2016', gpa: '', notes: '' }
-    ],
-    skills: ['Brand Strategy', 'Adobe Creative Suite', 'Motion Design', 'Typography', 'Art Direction', 'Video Production', 'Illustration', 'UX/UI'], summary: 'Award-winning creative leader with a track record of building iconic brand identities and campaigns that drive cultural conversation and business results.'
-  },
-  dark: {
-    name: 'Viktor Sørensen', role: 'Principal Architect', email: 'viktor@sorensen.arch', phone: '(310) 442-7756', location: 'Copenhagen, Denmark',
-    experience: [
-      { id: 1, title: 'Principal Architect', company: 'Bjarke Ingels Group', location: 'Copenhagen, DK', startDate: '2019', endDate: 'Present', current: true, description: 'Led design of $200M mixed-use sustainable complex. Won AIA Honor Award for CopenHill waste-to-energy facility. Managed projects across 4 countries with 20+ person teams.' },
-      { id: 2, title: 'Senior Architect', company: 'Foster + Partners', location: 'London, UK', startDate: '2015', endDate: '2019', current: false, description: 'Designed award-winning commercial towers achieving LEED Platinum certification. Led parametric facade design for Bloomberg HQ. Coordinated with 8 engineering disciplines.' },
-      { id: 3, title: 'Architect', company: 'OMA', location: 'Rotterdam, NL', startDate: '2013', endDate: '2015', current: false, description: 'Contributed to master planning for cultural district in Seoul. Developed computational design tools for complex geometries.' }
-    ],
-    education: [
-      { id: 1, degree: 'M.Arch Architecture', school: 'ETH Zürich', location: 'Zürich, CH', startDate: '2011', endDate: '2015', gpa: '', notes: '' },
-      { id: 2, degree: 'B.Arch Architecture', school: 'Aarhus School of Architecture', location: 'Aarhus, DK', startDate: '2007', endDate: '2011', gpa: '', notes: '' }
-    ],
-    skills: ['Rhino', 'Parametric Design', 'Sustainability', 'BIM', 'Grasshopper', 'AutoCAD', 'Revit', 'V-Ray'], summary: 'Visionary architect blending sustainable innovation with bold structural expression. Specialist in parametric design and net-zero building strategies.'
-  },
-  editorial: {
-    name: 'Eleanor Voss', role: 'Executive Editor', email: 'eleanor@vossmedia.com', phone: '(917) 330-2201', location: 'New York, NY',
-    experience: [
-      { id: 1, title: 'Executive Editor', company: 'The Atlantic', location: 'Washington, DC', startDate: '2020', endDate: 'Present', current: true, description: 'Grew digital readership by 40% year-over-year. Launched 3 award-winning investigative series. Managed editorial team of 25 writers and editors.' },
-      { id: 2, title: 'Senior Editor', company: 'Condé Nast', location: 'New York, NY', startDate: '2016', endDate: '2020', current: false, description: 'Oversaw editorial for Vanity Fair digital reaching 12M monthly readers. Edited 200+ feature stories and profiles. Won National Magazine Award for Digital Innovation.' },
-      { id: 3, title: 'Staff Writer', company: 'The New Yorker', location: 'New York, NY', startDate: '2014', endDate: '2016', current: false, description: 'Published 40+ longform pieces on technology and culture. Broke 3 stories picked up by national media outlets.' }
-    ],
-    education: [
-      { id: 1, degree: 'B.A. English Literature', school: 'Columbia University', location: 'New York, NY', startDate: '2010', endDate: '2014', gpa: '3.9', notes: '' },
-      { id: 2, degree: 'Certificate, Investigative Journalism', school: 'UC Berkeley', location: 'Berkeley, CA', startDate: '2014', endDate: '2014', gpa: '', notes: '' }
-    ],
-    skills: ['Editorial Strategy', 'Longform Writing', 'Audience Growth', 'SEO', 'Content Strategy', 'CMS Management', 'Social Media', 'Newsletter Growth'], summary: 'Award-winning editor with 10+ years shaping narratives at premier publications. Expert in audience development and digital-first editorial strategy.'
-  },
-  bold: {
-    name: 'Kai Nakamura', role: 'Brand Strategist', email: 'kai@nakamura.co', phone: '(503) 871-4420', location: 'Portland, OR',
-    experience: [
-      { id: 1, title: 'Head of Brand', company: 'Glossier', location: 'New York, NY', startDate: '2021', endDate: 'Present', current: true, description: 'Repositioned brand for Gen-Z, driving 55% revenue growth. Led rebrand across 200+ touchpoints in 6 months. Built in-house creative team of 8.' },
-      { id: 2, title: 'Brand Strategist', company: 'R/GA', location: 'Portland, OR', startDate: '2018', endDate: '2021', current: false, description: 'Developed go-to-market strategies for 15+ tech startups. Created brand architecture frameworks adopted as agency standard. Won Effie Award for startup launch campaign.' },
-      { id: 3, title: 'Brand Designer', company: 'IDEO', location: 'San Francisco, CA', startDate: '2016', endDate: '2018', current: false, description: 'Designed brand systems for Fortune 500 healthcare and fintech clients. Led naming and verbal identity projects.' }
-    ],
-    education: [
-      { id: 1, degree: 'MBA Marketing', school: 'Wharton', location: 'Philadelphia, PA', startDate: '2016', endDate: '2018', gpa: '3.8', notes: '' },
-      { id: 2, degree: 'B.A. Visual Arts', school: 'Brown University', location: 'Providence, RI', startDate: '2012', endDate: '2016', gpa: '3.6', notes: '' }
-    ],
-    skills: ['Brand Identity', 'Consumer Insights', 'Go-to-Market', 'Storytelling', 'Visual Design', 'Market Research', 'Campaign Strategy', 'Social Media'], summary: 'Strategic brand builder who transforms startups into household names through culturally resonant storytelling and design.'
-  },
-  teal: {
-    name: 'Amara Okafor', role: 'Full-Stack Developer', email: 'amara@okafor.dev', phone: '(469) 220-5518', location: 'Austin, TX',
-    experience: [
-      { id: 1, title: 'Staff Engineer', company: 'Vercel', location: 'Remote', startDate: '2022', endDate: 'Present', current: true, description: 'Core contributor to Next.js framework and edge runtime. Shipped incremental static regeneration feature used by 500K+ projects. Led performance optimization reducing cold start times by 70%.' },
-      { id: 2, title: 'Senior Developer', company: 'Twilio', location: 'San Francisco, CA', startDate: '2019', endDate: '2022', current: false, description: 'Built real-time communication APIs handling 1B+ messages monthly. Designed WebSocket infrastructure for video calling platform. Reduced API response times by 45%.' },
-      { id: 3, title: 'Software Developer', company: 'Netlify', location: 'San Francisco, CA', startDate: '2017', endDate: '2019', current: false, description: 'Built CI/CD pipeline features for JAMstack deployments. Created open-source plugins downloaded 2M+ times.' }
-    ],
-    education: [
-      { id: 1, degree: 'B.S. Software Engineering', school: 'Georgia Tech', location: 'Atlanta, GA', startDate: '2015', endDate: '2019', gpa: '3.7', notes: '' },
-      { id: 2, degree: 'Minor in Human-Computer Interaction', school: 'Georgia Tech', location: 'Atlanta, GA', startDate: '2015', endDate: '2019', gpa: '', notes: '' }
-    ],
-    skills: ['Next.js', 'Node.js', 'PostgreSQL', 'Edge Computing', 'TypeScript', 'React', 'GraphQL', 'Serverless'], summary: 'Open-source contributor and full-stack engineer passionate about developer experience, performance, and building tools that empower other developers.'
-  },
-  timeline: {
-    name: 'Daniel Ortiz', role: 'Project Manager', email: 'daniel@ortiz.pm', phone: '(714) 892-3301', location: 'Chicago, IL',
-    experience: [
-      { id: 1, title: 'Senior Project Manager', company: 'McKinsey', location: 'Chicago, IL', startDate: '2020', endDate: 'Present', current: true, description: 'Managed digital transformation programs worth $50M+ across 3 industry verticals. Led teams of 15-30 consultants on 6-month engagements. Achieved 95% client satisfaction rating.' },
-      { id: 2, title: 'Project Manager', company: 'Deloitte', location: 'New York, NY', startDate: '2017', endDate: '2020', current: false, description: 'Led agile delivery for enterprise SaaS migrations serving 100K+ users. Reduced project delivery time by 30% through process optimization. Managed $12M annual program budget.' },
-      { id: 3, title: 'Associate Consultant', company: 'Accenture', location: 'Chicago, IL', startDate: '2015', endDate: '2017', current: false, description: 'Supported cloud migration strategy for Fortune 100 financial clients. Created project management playbook adopted by 50+ consultants.' }
-    ],
-    education: [
-      { id: 1, degree: 'MBA Operations', school: 'Kellogg School', location: 'Evanston, IL', startDate: '2015', endDate: '2017', gpa: '3.6', notes: '' },
-      { id: 2, degree: 'B.S. Industrial Engineering', school: 'Purdue University', location: 'West Lafayette, IN', startDate: '2011', endDate: '2015', gpa: '3.7', notes: '' }
-    ],
-    skills: ['Agile', 'Stakeholder Management', 'Budgeting', 'Risk Analysis', 'Scrum', 'JIRA', 'Change Management', 'Six Sigma'], summary: 'Results-driven PM who delivers complex programs on time and under budget. Expert in digital transformation and organizational change management.'
-  },
-  grande: {
-    name: 'Isabelle Dupont', role: 'Marketing Director', email: 'isabelle@dupont.mktg', phone: '(646) 500-7742', location: 'Paris, France',
-    experience: [
-      { id: 1, title: 'VP of Marketing', company: 'Chanel', location: 'Paris, FR', startDate: '2021', endDate: 'Present', current: true, description: 'Orchestrated global luxury marketing campaigns across 40+ markets. Grew social media following by 200% through influencer partnerships. Managed €15M annual marketing budget.' },
-      { id: 2, title: 'Marketing Director', company: 'LVMH', location: 'Paris, FR', startDate: '2017', endDate: '2021', current: false, description: 'Grew direct-to-consumer e-commerce by 120% in 3 years. Launched omnichannel CRM strategy increasing repeat purchases by 35%. Led digital transformation for 5 luxury brands.' },
-      { id: 3, title: 'Brand Manager', company: 'L\'Oréal', location: 'Paris, FR', startDate: '2015', endDate: '2017', current: false, description: 'Managed product launches across European markets. Developed sustainability-focused brand narrative adopted company-wide.' }
-    ],
-    education: [
-      { id: 1, degree: 'M.S. Marketing', school: 'HEC Paris', location: 'Paris, FR', startDate: '2013', endDate: '2015', gpa: '', notes: '' },
-      { id: 2, degree: 'B.A. Business Administration', school: 'Sciences Po', location: 'Paris, FR', startDate: '2009', endDate: '2013', gpa: '', notes: '' }
-    ],
-    skills: ['Luxury Marketing', 'E-Commerce', 'CRM', 'Brand Positioning', 'Influencer Strategy', 'Market Research', 'Omnichannel', 'Analytics'], summary: 'Luxury marketing executive with deep expertise in global brand strategy, digital transformation, and building iconic consumer experiences.'
-  },
-  blob: {
-    name: 'Priya Sharma', role: 'Product Designer', email: 'priya@sharmadesign.co', phone: '(408) 200-6630', location: 'San Jose, CA',
-    experience: [
-      { id: 1, title: 'Senior Product Designer', company: 'Notion', location: 'San Francisco, CA', startDate: '2022', endDate: 'Present', current: true, description: 'Redesigned workspace templates used by 30M+ users. Increased template adoption by 45% through iterative testing. Led design system migration to Figma tokens.' },
-      { id: 2, title: 'Product Designer', company: 'Canva', location: 'Sydney, AU', startDate: '2019', endDate: '2022', current: false, description: 'Built design tool features reaching millions of users globally. Shipped collaborative whiteboard feature from concept to launch. Conducted 150+ usability tests.' },
-      { id: 3, title: 'UX Designer', company: 'Flipkart', location: 'Bangalore, IN', startDate: '2017', endDate: '2019', current: false, description: 'Designed e-commerce checkout flow reducing cart abandonment by 18%. Created mobile-first design patterns for 200M+ users.' }
-    ],
-    education: [
-      { id: 1, degree: 'B.Des Industrial Design', school: 'NID Ahmedabad', location: 'Ahmedabad, IN', startDate: '2015', endDate: '2019', gpa: '', notes: '' },
-      { id: 2, degree: 'Certificate, Interaction Design', school: 'Cooper Union', location: 'New York, NY', startDate: '2019', endDate: '2019', gpa: '', notes: '' }
-    ],
-    skills: ['Product Thinking', 'Sketch', 'Framer', 'A/B Testing', 'Figma', 'Design Systems', 'User Research', 'Prototyping'], summary: 'Design-driven product thinker who bridges user empathy with business outcomes. Expert in design systems, rapid prototyping, and data-informed design decisions.'
-  },
-  split: {
-    name: 'Oliver Brennan', role: 'DevOps Engineer', email: 'oliver@brennan.ops', phone: '(617) 332-9940', location: 'Boston, MA',
-    experience: [
-      { id: 1, title: 'Lead DevOps Engineer', company: 'Datadog', location: 'New York, NY', startDate: '2021', endDate: 'Present', current: true, description: 'Managed infrastructure serving 10B+ daily metrics across 200+ microservices. Reduced deployment failures by 80% through GitOps adoption. Led SRE team of 6 engineers.' },
-      { id: 2, title: 'DevOps Engineer', company: 'HashiCorp', location: 'San Francisco, CA', startDate: '2018', endDate: '2021', current: false, description: 'Contributed to Terraform cloud provisioning tools used by 100K+ organizations. Built automated compliance scanning pipeline. Created internal developer platform.' },
-      { id: 3, title: 'Systems Administrator', company: 'Red Hat', location: 'Raleigh, NC', startDate: '2016', endDate: '2018', current: false, description: 'Managed hybrid cloud environments for enterprise clients. Automated server provisioning reducing setup time from days to minutes.' }
-    ],
-    education: [
-      { id: 1, degree: 'B.S. Computer Engineering', school: 'Boston University', location: 'Boston, MA', startDate: '2014', endDate: '2018', gpa: '3.5', notes: '' },
-      { id: 2, degree: 'AWS Solutions Architect Professional', school: 'Amazon Web Services', location: 'Online', startDate: '2020', endDate: '2020', gpa: '', notes: '' }
-    ],
-    skills: ['Kubernetes', 'Terraform', 'CI/CD', 'Monitoring', 'Docker', 'Ansible', 'Prometheus', 'AWS'], summary: 'Infrastructure engineer focused on reliability, scalability, and developer productivity. Expert in GitOps, infrastructure-as-code, and platform engineering.'
-  },
-  obsidian: {
-    name: 'Cassandra Blake', role: 'Investment Banker', email: 'c.blake@goldman.com', phone: '(212) 902-1001', location: 'New York, NY',
-    experience: [
-      { id: 1, title: 'Vice President', company: 'Goldman Sachs', location: 'New York, NY', startDate: '2020', endDate: 'Present', current: true, description: 'Executed $5B+ in M&A transactions across tech and healthcare sectors. Led cross-border acquisition of $800M fintech company. Managed team of 6 analysts and associates.' },
-      { id: 2, title: 'Associate', company: 'Morgan Stanley', location: 'New York, NY', startDate: '2017', endDate: '2020', current: false, description: 'Led financial modeling for IPO advisory generating $200M+ in fees. Built DCF and LBO models for 20+ tech companies. Supported $3B SPAC merger negotiation.' },
-      { id: 3, title: 'Analyst', company: 'Lazard', location: 'New York, NY', startDate: '2015', endDate: '2017', current: false, description: 'Created pitch books and financial analyses for restructuring engagements. Supported $1.2B debt restructuring for retail conglomerate.' }
-    ],
-    education: [
-      { id: 1, degree: 'MBA Finance', school: 'Harvard Business School', location: 'Boston, MA', startDate: '2015', endDate: '2017', gpa: '', notes: '' },
-      { id: 2, degree: 'B.S. Economics', school: 'University of Pennsylvania', location: 'Philadelphia, PA', startDate: '2011', endDate: '2015', gpa: '3.8', notes: '' }
-    ],
-    skills: ['Financial Modeling', 'M&A', 'Valuation', 'Due Diligence', 'LBO Analysis', 'Capital Markets', 'Negotiation', 'Bloomberg'], summary: 'Seasoned dealmaker with a track record of closing complex cross-border transactions across technology, healthcare, and financial services.'
-  },
-  ivory: {
-    name: 'Charlotte Ashford', role: 'Strategy Consultant', email: 'charlotte@ashford.co', phone: '(202) 555-1190', location: 'Washington, DC',
-    experience: [
-      { id: 1, title: 'Principal Consultant', company: 'Bain & Company', location: 'Boston, MA', startDate: '2019', endDate: 'Present', current: true, description: 'Advised C-suites on growth strategy and operations across tech, healthcare, and retail verticals. Led 8 engagements generating $30M+ in consulting revenue. Built proprietary market sizing methodology.' },
-      { id: 2, title: 'Consultant', company: 'BCG', location: 'Chicago, IL', startDate: '2016', endDate: '2019', current: false, description: 'Led cost transformation programs for F500 clients saving $150M+ collectively. Managed teams of 4-8 consultants on 12-week engagements. Developed go-to-market strategy for $500M product launch.' },
-      { id: 3, title: 'Business Analyst', company: 'McKinsey', location: 'Washington, DC', startDate: '2014', endDate: '2016', current: false, description: 'Conducted competitive analysis and market research for government consulting practice. Built financial models for public-private partnership valuations.' }
-    ],
-    education: [
-      { id: 1, degree: 'MBA', school: 'Yale School of Management', location: 'New Haven, CT', startDate: '2014', endDate: '2016', gpa: '3.9', notes: '' },
-      { id: 2, degree: 'B.A. Economics', school: 'Georgetown University', location: 'Washington, DC', startDate: '2010', endDate: '2014', gpa: '3.8', notes: '' }
-    ],
-    skills: ['Corporate Strategy', 'Due Diligence', 'Market Sizing', 'Board Decks', 'Financial Modeling', 'Change Management', 'Competitive Analysis', 'Stakeholder Management'], summary: 'Strategy consultant who turns ambiguity into actionable roadmaps for Fortune 500 leaders. Expert in growth strategy, operational transformation, and M&A due diligence.'
-  },
-  noir: {
-    name: 'Raven Cross', role: 'Security Engineer', email: 'raven@crosssec.io', phone: '(571) 200-6640', location: 'Arlington, VA',
-    experience: [
-      { id: 1, title: 'Principal Security Engineer', company: 'CrowdStrike', location: 'Austin, TX', startDate: '2021', endDate: 'Present', current: true, description: 'Led threat hunting team protecting Fortune 100 clients from nation-state actors. Developed automated threat detection reducing MTTR by 75%. Published 5 threat intelligence reports.' },
-      { id: 2, title: 'Security Engineer', company: 'Palantir', location: 'Palo Alto, CA', startDate: '2018', endDate: '2021', current: false, description: 'Built anomaly detection for classified government systems. Designed zero-trust architecture adopted across 3 agencies. Led red team exercises for critical infrastructure.' },
-      { id: 3, title: 'SOC Analyst', company: 'Mandiant', location: 'Reston, VA', startDate: '2016', endDate: '2018', current: false, description: 'Investigated 200+ security incidents across financial and defense sectors. Built SIEM correlation rules reducing false positives by 60%.' }
-    ],
-    education: [
-      { id: 1, degree: 'M.S. Cybersecurity', school: 'Georgia Tech', location: 'Atlanta, GA', startDate: '2016', endDate: '2018', gpa: '3.9', notes: '' },
-      { id: 2, degree: 'B.S. Computer Science', school: 'Virginia Tech', location: 'Blacksburg, VA', startDate: '2012', endDate: '2016', gpa: '3.7', notes: '' }
-    ],
-    skills: ['Penetration Testing', 'SIEM', 'Threat Intel', 'Zero Trust', 'Incident Response', 'Malware Analysis', 'Python', 'Cloud Security'], summary: 'Offensive security specialist who thinks like an adversary to protect critical infrastructure. Expert in threat hunting, red teaming, and security architecture.'
-  },
-  rose: {
-    name: 'Camille Laurent', role: 'Fashion Editor', email: 'camille@laurentmag.com', phone: '(347) 880-5523', location: 'New York, NY',
-    experience: [
-      { id: 1, title: 'Fashion Director', company: 'Vogue', location: 'New York, NY', startDate: '2021', endDate: 'Present', current: true, description: 'Curated editorial direction for print and digital across 4 seasonal issues. Directed 60+ photo shoots with top photographers and models. Grew Instagram engagement by 85%.' },
-      { id: 2, title: 'Style Editor', company: 'Harper\'s Bazaar', location: 'New York, NY', startDate: '2017', endDate: '2021', current: false, description: 'Produced 50+ editorial shoots per year for print and web. Launched sustainable fashion vertical growing to 2M monthly readers. Styled celebrity covers featured on 15 magazine covers.' },
-      { id: 3, title: 'Fashion Assistant', company: 'Elle', location: 'London, UK', startDate: '2015', endDate: '2017', current: false, description: 'Assisted on fashion week coverage across Paris, Milan, and London. Coordinated showroom pulls and managed sample logistics for 200+ pieces per issue.' }
-    ],
-    education: [
-      { id: 1, degree: 'B.A. Fashion Studies', school: 'Central Saint Martins', location: 'London, UK', startDate: '2013', endDate: '2017', gpa: '', notes: '' },
-      { id: 2, degree: 'Certificate, Fashion Journalism', school: 'London College of Fashion', location: 'London, UK', startDate: '2015', endDate: '2015', gpa: '', notes: '' }
-    ],
-    skills: ['Trend Forecasting', 'Styling', 'Art Direction', 'Photography', 'Content Strategy', 'Brand Partnerships', 'Social Media', 'Visual Storytelling'], summary: 'Fashion storyteller blending haute couture sensibility with modern cultural commentary. Expert in editorial direction, sustainable fashion, and digital audience growth.'
-  },
-  executive: {
-    name: 'Richard Thornton', role: 'Chief Operating Officer', email: 'r.thornton@exec.com', phone: '(312) 400-9901', location: 'Chicago, IL',
-    experience: [
-      { id: 1, title: 'COO', company: 'Salesforce', location: 'San Francisco, CA', startDate: '2020', endDate: 'Present', current: true, description: 'Streamlined operations across 70,000+ employees globally. Reduced operational costs by $180M through process automation. Led post-acquisition integration of 3 companies.' },
-      { id: 2, title: 'SVP Operations', company: 'Oracle', location: 'Austin, TX', startDate: '2015', endDate: '2020', current: false, description: 'Led operational turnaround saving $200M annually. Redesigned global supply chain reducing delivery times by 35%. Managed P&L for $4B business unit.' },
-      { id: 3, title: 'VP Strategy', company: 'IBM', location: 'Armonk, NY', startDate: '2011', endDate: '2015', current: false, description: 'Drove cloud-first transformation strategy generating $2B in new revenue. Led strategic planning for Watson AI division.' }
-    ],
-    education: [
-      { id: 1, degree: 'MBA', school: 'Chicago Booth', location: 'Chicago, IL', startDate: '2011', endDate: '2013', gpa: '', notes: '' },
-      { id: 2, degree: 'B.S. Economics', school: 'University of Chicago', location: 'Chicago, IL', startDate: '2001', endDate: '2005', gpa: '3.7', notes: '' }
-    ],
-    skills: ['P&L Management', 'Org Design', 'Board Relations', 'Transformation', 'M&A Integration', 'Supply Chain', 'Six Sigma', 'Strategic Planning'], summary: 'C-suite executive with 15+ years driving operational excellence at enterprise scale. Expert in organizational transformation and post-merger integration.'
-  },
-  terminal: {
-    name: 'Zara Malik', role: 'Backend Engineer', email: 'zara@malik.dev', phone: '(206) 330-1142', location: 'Seattle, WA',
-    experience: [
-      { id: 1, title: 'Staff Backend Engineer', company: 'GitHub', location: 'Remote', startDate: '2022', endDate: 'Present', current: true, description: 'Designed Git storage layer for 100M+ repositories. Reduced git clone times by 40% through pack file optimization. Led backend architecture redesign for Copilot integration.' },
-      { id: 2, title: 'Backend Engineer', company: 'Cloudflare', location: 'Austin, TX', startDate: '2019', endDate: '2022', current: false, description: 'Built edge caching infrastructure serving 25M+ requests/second globally. Designed DNS resolution system with 99.999% uptime. Reduced bandwidth costs by $3M annually.' },
-      { id: 3, title: 'Software Engineer', company: 'DigitalOcean', location: 'New York, NY', startDate: '2017', endDate: '2019', current: false, description: 'Built container orchestration platform for managed Kubernetes service. Implemented auto-scaling algorithms handling 500% traffic spikes.' }
-    ],
-    education: [
-      { id: 1, degree: 'B.S. Computer Science', school: 'University of Washington', location: 'Seattle, WA', startDate: '2015', endDate: '2019', gpa: '3.8', notes: '' },
-      { id: 2, degree: 'Certificate, Distributed Systems', school: 'MIT OpenCourseWare', location: 'Online', startDate: '2020', endDate: '2020', gpa: '', notes: '' }
-    ],
-    skills: ['Go', 'Rust', 'Distributed Systems', 'gRPC', 'Linux', 'Networking', 'Docker', 'Redis'], summary: 'Low-level systems engineer building infrastructure that powers millions of developers. Expert in performance optimization, distributed storage, and network protocols.'
-  },
-  healthcare: {
-    name: 'Dr. Elena Vasquez', role: 'Emergency Physician', email: 'elena.v@cedars.org', phone: '(310) 555-0198', location: 'Los Angeles, CA',
-    experience: [
-      { id: 1, title: 'Attending Physician', company: 'Cedars-Sinai', location: 'Los Angeles, CA', startDate: '2019', endDate: 'Present', current: true, description: 'Lead physician in Level I trauma center treating 5,000+ patients annually. Developed sepsis early detection protocol reducing mortality by 15%. Supervise team of 12 residents.' },
-      { id: 2, title: 'Resident Physician', company: 'Johns Hopkins', location: 'Baltimore, MD', startDate: '2016', endDate: '2019', current: false, description: 'Completed emergency medicine residency with honors. Led quality improvement initiative for pediatric emergency department. Published research on point-of-care ultrasound.' },
-      { id: 3, title: 'Research Fellow', company: 'NIH', location: 'Bethesda, MD', startDate: '2014', endDate: '2016', current: false, description: 'Conducted clinical research on traumatic brain injury outcomes. Co-authored 4 peer-reviewed publications in leading medical journals.' }
-    ],
-    education: [
-      { id: 1, degree: 'M.D.', school: 'Johns Hopkins Medicine', location: 'Baltimore, MD', startDate: '2012', endDate: '2016', gpa: '', notes: '' },
-      { id: 2, degree: 'B.S. Biochemistry', school: 'UCLA', location: 'Los Angeles, CA', startDate: '2008', endDate: '2012', gpa: '3.9', notes: '' }
-    ],
-    skills: ['Trauma Surgery', 'Critical Care', 'ACLS', 'Team Leadership', 'Point-of-Care Ultrasound', 'Research', 'Quality Improvement', 'Medical Education'], summary: 'Board-certified emergency physician with expertise in trauma and critical care medicine. Published researcher focused on improving emergency department outcomes and patient safety.'
-  },
-  nature: {
-    name: 'Rowan Blackwell', role: 'Environmental Scientist', email: 'rowan@blackwell.eco', phone: '(970) 443-2218', location: 'Boulder, CO',
-    experience: [
-      { id: 1, title: 'Lead Ecologist', company: 'National Geographic', location: 'Washington, DC', startDate: '2021', endDate: 'Present', current: true, description: 'Led biodiversity research expeditions in 12 countries across 4 continents. Published landmark study on coral reef decline cited by IPCC. Managed $2M annual research budget and team of 8 field researchers.' },
-      { id: 2, title: 'Environmental Analyst', company: 'Patagonia', location: 'Ventura, CA', startDate: '2018', endDate: '2021', current: false, description: 'Developed carbon footprint reduction strategies saving 5,000 metric tons CO2 annually. Built supply chain sustainability dashboard adopted company-wide. Led Fair Trade certification for 12 factories.' },
-      { id: 3, title: 'Research Associate', company: 'Sierra Club', location: 'Oakland, CA', startDate: '2016', endDate: '2018', current: false, description: 'Conducted watershed health assessments across California. Secured $1.5M in conservation grants through technical writing and presentations.' }
-    ],
-    education: [
-      { id: 1, degree: 'M.S. Environmental Science', school: 'UC Berkeley', location: 'Berkeley, CA', startDate: '2015', endDate: '2018', gpa: '3.9', notes: '' },
-      { id: 2, degree: 'B.S. Biology', school: 'University of Colorado', location: 'Boulder, CO', startDate: '2011', endDate: '2015', gpa: '3.7', notes: '' }
-    ],
-    skills: ['GIS Mapping', 'Field Research', 'Data Analysis', 'Grant Writing', 'R Programming', 'Remote Sensing', 'Statistical Modeling', 'Policy Analysis'], summary: 'Passionate ecologist using data-driven research to protect natural ecosystems worldwide. Expert in climate science, biodiversity assessment, and environmental policy.'
-  },
-  scifi: {
-    name: 'Nova Sterling', role: 'AI Research Scientist', email: 'nova@sterling.ai', phone: '(628) 200-0042', location: 'San Francisco, CA',
-    experience: [
-      { id: 1, title: 'Research Scientist', company: 'DeepMind', location: 'London, UK', startDate: '2022', endDate: 'Present', current: true, description: 'Published 8 papers on reinforcement learning and multi-agent systems. Developed novel reward shaping technique improving sample efficiency by 3x. Led research team of 4 scientists.' },
-      { id: 2, title: 'ML Engineer', company: 'OpenAI', location: 'San Francisco, CA', startDate: '2019', endDate: '2022', current: false, description: 'Contributed to large language model training infrastructure. Built distributed training pipeline scaling to 1000+ GPUs. Co-authored paper on constitutional AI alignment.' },
-      { id: 3, title: 'Research Intern', company: 'Google Brain', location: 'Mountain View, CA', startDate: '2018', endDate: '2019', current: false, description: 'Developed attention mechanisms for vision transformers. Published first-author paper at NeurIPS with 500+ citations.' }
-    ],
-    education: [
-      { id: 1, degree: 'Ph.D. Artificial Intelligence', school: 'MIT', location: 'Cambridge, MA', startDate: '2015', endDate: '2019', gpa: '4.0', notes: '' },
-      { id: 2, degree: 'B.S. Mathematics & CS', school: 'Stanford University', location: 'Stanford, CA', startDate: '2011', endDate: '2015', gpa: '3.9', notes: '' }
-    ],
-    skills: ['PyTorch', 'Reinforcement Learning', 'NLP', 'Research', 'JAX', 'Distributed Training', 'Computer Vision', 'Paper Writing'], summary: 'AI researcher pushing the frontier of machine intelligence and autonomous agents. Published 20+ papers with 3000+ total citations across top ML venues.'
-  },
-  sophisticated: {
-    name: 'Alexander Mercer', role: 'Managing Director', email: 'a.mercer@blackrock.com', phone: '(212) 810-3300', location: 'New York, NY',
-    experience: [
-      { id: 1, title: 'Managing Director', company: 'BlackRock', location: 'New York, NY', startDate: '2019', endDate: 'Present', current: true, description: 'Managed $12B portfolio across global equities and fixed income. Generated 18% alpha over benchmark through factor-based strategies. Built quantitative analytics team of 8.' },
-      { id: 2, title: 'Director', company: 'J.P. Morgan', location: 'New York, NY', startDate: '2014', endDate: '2019', current: false, description: 'Led quantitative strategies desk managing $4B in systematic equity. Developed proprietary alpha signals generating $200M in annual revenue. Mentored 12 analysts.' },
-      { id: 3, title: 'Vice President', company: 'Goldman Sachs', location: 'London, UK', startDate: '2010', endDate: '2014', current: false, description: 'Built derivatives pricing models for structured products desk. Managed $500M credit portfolio through European sovereign debt crisis.' }
-    ],
-    education: [
-      { id: 1, degree: 'MBA Finance', school: 'London Business School', location: 'London, UK', startDate: '2010', endDate: '2012', gpa: '', notes: '' },
-      { id: 2, degree: 'B.S. Applied Mathematics', school: 'Imperial College London', location: 'London, UK', startDate: '2005', endDate: '2009', gpa: '', notes: '' }
-    ],
-    skills: ['Portfolio Management', 'Risk Analysis', 'Derivatives', 'Bloomberg Terminal', 'Python', 'Quantitative Analysis', 'Factor Investing', 'Fixed Income'], summary: 'Senior investment professional with 14+ years managing institutional-grade portfolios. Expert in quantitative strategies, risk management, and systematic investing.'
-  },
-  vintage: {
-    name: 'Theodore Wren', role: 'Literary Agent', email: 'theo@wrenlit.com', phone: '(207) 440-8812', location: 'Portland, ME',
-    experience: [
-      { id: 1, title: 'Senior Literary Agent', company: 'William Morris Endeavor', location: 'New York, NY', startDate: '2018', endDate: 'Present', current: true, description: 'Represented 40+ bestselling authors across literary fiction, memoir, and narrative nonfiction. Negotiated deals totaling $15M+ in advances. Launched 8 debut authors to bestseller lists.' },
-      { id: 2, title: 'Associate Agent', company: 'Penguin Random House', location: 'New York, NY', startDate: '2014', endDate: '2018', current: false, description: 'Acquired and edited literary fiction titles generating $3M in revenue. Managed backlist of 200+ titles. Discovered 3 authors who won major literary prizes.' },
-      { id: 3, title: 'Editorial Assistant', company: 'FSG', location: 'New York, NY', startDate: '2012', endDate: '2014', current: false, description: 'Assisted senior editors on 25+ book launches annually. Managed first-reader program evaluating 500+ manuscripts per year.' }
-    ],
-    education: [
-      { id: 1, degree: 'B.A. Comparative Literature', school: 'Brown University', location: 'Providence, RI', startDate: '2010', endDate: '2014', gpa: '3.8', notes: '' },
-      { id: 2, degree: 'Certificate, Publishing', school: 'Columbia University', location: 'New York, NY', startDate: '2014', endDate: '2014', gpa: '', notes: '' }
-    ],
-    skills: ['Manuscript Evaluation', 'Contract Negotiation', 'Editorial', 'Publishing', 'Rights Management', 'Author Development', 'Market Analysis', 'Submissions Strategy'], summary: 'Discerning literary agent championing bold voices and timeless storytelling. Track record of launching debut authors and negotiating career-defining deals.'
-  },
-  graduate: {
-    name: 'Maya Patel', role: 'Junior Developer', email: 'maya@patel.dev', phone: '(510) 200-4430', location: 'San Francisco, CA',
-    experience: [
-      { id: 1, title: 'Software Engineering Intern', company: 'Meta', location: 'Menlo Park, CA', startDate: '2024', endDate: '2024', current: false, description: 'Built accessibility features for Instagram Stories reaching 500M+ daily users. Implemented screen reader support for AR filters. Received return offer with outstanding performance review.' },
-      { id: 2, title: 'Teaching Assistant', company: 'UC Berkeley', location: 'Berkeley, CA', startDate: '2023', endDate: '2024', current: false, description: 'TA for CS61B Data Structures, mentored 300 students across 2 semesters. Created automated grading tools reducing TA workload by 30%. Led weekly review sessions averaging 80+ attendance.' },
-      { id: 3, title: 'Research Assistant', company: 'UC Berkeley EECS', location: 'Berkeley, CA', startDate: '2023', endDate: '2024', current: false, description: 'Contributed to open-source ML fairness toolkit. Co-authored paper on algorithmic bias detection presented at FAccT workshop.' }
-    ],
-    education: [
-      { id: 1, degree: 'B.S. Computer Science', school: 'UC Berkeley', location: 'Berkeley, CA', startDate: '2021', endDate: '2025', gpa: '3.9', notes: '' },
-      { id: 2, degree: 'Minor in Data Science', school: 'UC Berkeley', location: 'Berkeley, CA', startDate: '2021', endDate: '2025', gpa: '', notes: '' }
-    ],
-    skills: ['Java', 'React', 'Git', 'Algorithms', 'Python', 'SQL', 'TypeScript', 'Machine Learning'], summary: 'Recent CS graduate passionate about building products that make technology more accessible. Strong foundation in algorithms, data structures, and full-stack web development.'
-  },
-  futuristic: {
-    name: 'Axel Rios', role: 'XR Engineer', email: 'axel@rios.xr', phone: '(424) 900-1177', location: 'Los Angeles, CA',
-    experience: [
-      { id: 1, title: 'Senior XR Engineer', company: 'Apple Vision Pro', location: 'Cupertino, CA', startDate: '2023', endDate: 'Present', current: true, description: 'Built spatial computing experiences for visionOS launching with 600+ apps. Developed hand-tracking interaction framework used by 3rd-party developers. Filed 2 patents on spatial UI rendering.' },
-      { id: 2, title: 'VR Developer', company: 'Meta Reality Labs', location: 'Burlingame, CA', startDate: '2020', endDate: '2023', current: false, description: 'Developed multiplayer VR environments for Quest with 10M+ downloads. Optimized rendering pipeline achieving 90fps on mobile VR hardware. Led cross-platform SDK development.' },
-      { id: 3, title: 'Graphics Engineer', company: 'Unity Technologies', location: 'San Francisco, CA', startDate: '2018', endDate: '2020', current: false, description: 'Built real-time global illumination system for Unity HDRP. Contributed to shader graph editor used by 2M+ developers worldwide.' }
-    ],
-    education: [
-      { id: 1, degree: 'M.S. Computer Graphics', school: 'USC', location: 'Los Angeles, CA', startDate: '2018', endDate: '2020', gpa: '3.8', notes: '' },
-      { id: 2, degree: 'B.S. Computer Science', school: 'UCLA', location: 'Los Angeles, CA', startDate: '2014', endDate: '2018', gpa: '3.7', notes: '' }
-    ],
-    skills: ['Unity', 'Swift', 'WebXR', '3D Rendering', 'Metal', 'Shader Programming', 'ARKit', 'C++'], summary: 'Spatial computing engineer creating the next generation of immersive digital experiences. Expert in real-time rendering, XR interaction design, and cross-platform development.'
-  },
+const FALLBACK = {
+  name: 'Jane Doe',
+  role: 'Senior Product Designer',
+  email: 'jane.doe@email.com',
+  phone: '(555) 123-4567',
+  location: 'San Francisco, CA',
+  website: 'janedoe.design',
+  photo: '',
+  summary:
+    'Product designer with 8+ years of experience crafting intuitive digital products for consumer and enterprise audiences. Passionate about design systems, accessibility, and turning complex problems into elegant solutions.',
+  experience: [
+    { id: 1, title: 'Senior Product Designer', company: 'Figma', location: 'San Francisco, CA', startDate: '2021', endDate: 'Present', current: true, description: 'Led the redesign of the component library used by 4M+ designers worldwide\nShipped auto-layout v4 reducing design-to-dev handoff time by 35%\nMentored 3 junior designers and established a weekly design critique program' },
+    { id: 2, title: 'Product Designer', company: 'Stripe', location: 'San Francisco, CA', startDate: '2018', endDate: '2021', current: false, description: 'Designed the Stripe Dashboard payments overview used by 500K+ businesses\nConducted 60+ user interviews to inform checkout flow optimisation\nReduced support tickets by 22% through self-service UX improvements' },
+    { id: 3, title: 'UX Designer', company: 'Airbnb', location: 'San Francisco, CA', startDate: '2016', endDate: '2018', current: false, description: 'Designed the host onboarding flow increasing completion rate by 18%\nCreated the illustration system used across marketing and product' },
+  ],
+  education: [
+    { id: 1, degree: 'B.F.A. Interaction Design', school: 'California College of the Arts', location: 'San Francisco, CA', startDate: '2012', endDate: '2016', gpa: '3.8', notes: '' },
+  ],
+  skills: ['Figma', 'Design Systems', 'User Research', 'Prototyping', 'Accessibility', 'HTML/CSS', 'React', 'Data Visualisation'],
+  certifications: [],
+  languages: [],
+  projects: [],
 }
 
-export function useDynamicData(data: Partial<ResumeData>, themeId?: string) {
+export function useDynamicData(data: Partial<ResumeData>, _themeId?: string) {
   const d = data || {}
-  const p = d.personal || { fullName: '', jobTitle: '', email: '', phone: '', location: '', website: '', summary: '', photo: '' }
-
-  // Use persona-specific defaults based on themeId
-  const persona = themeId ? SAMPLE_PERSONAS[themeId] : undefined
-  const fallback = persona || SAMPLE_PERSONAS.editorial_luxe
-
-  const hiddenSections = d.hiddenSections || []
+  const p = (d as any).personal || { fullName: '', jobTitle: '', email: '', phone: '', location: '', website: '', summary: '', photo: '' }
+  const hiddenSections: string[] = (d as any).hiddenSections || []
   const isHidden = (s: string) => hiddenSections.includes(s)
 
-  // For hidden sections, return empty data so templates naturally skip rendering them
-  const experience = isHidden('experience') ? [] : (Array.isArray(d.experience) && d.experience.length > 0 ? d.experience : fallback.experience)
-  const education = isHidden('education') ? [] : (Array.isArray(d.education) && d.education.length > 0 ? d.education : fallback.education)
-  const skills = isHidden('skills') ? [] : (Array.isArray(d.skills) && d.skills.length > 0 ? d.skills : fallback.skills)
-  const summary = isHidden('summary') ? '' : (d.summary || fallback.summary)
-  const languages = isHidden('languages') ? [] : (Array.isArray(d.languages) && d.languages.length > 0 ? d.languages : [])
-  const certifications = isHidden('certifications') ? [] : (Array.isArray(d.certifications) && d.certifications.length > 0 ? d.certifications : [])
-  const projects = isHidden('projects') ? [] : (Array.isArray(d.projects) && d.projects.length > 0 ? d.projects : [])
+  const hasContent = (p.fullName || '').trim().length > 0 || (Array.isArray(d.experience) && d.experience.length > 0)
 
-  // Normalize bullet characters → newlines so templates' split('\n') works with imported data
-  const normalizeBullets = (text: string) => {
-    let normalized = text
-      // Convert explicit bullet markers to newlines
-      .replace(/\s*[•·]\s*/g, '\n')
-      .replace(/\s+[-–—]\s+/g, '\n')
-      .replace(/(?:^|\n)\s*\*\s+/g, '\n')
-
-    // If there are no \n separators yet, try splitting on sentence boundaries
-    // (". " followed by uppercase letter = likely separate achievements)
-    const lines = normalized.split('\n').filter(Boolean)
-    if (lines.length <= 1 && normalized.length > 60) {
-      normalized = normalized.replace(/\.\s+(?=[A-Z])/g, '.\n')
-    }
-
-    return normalized
-      .split('\n')
-      .map(line => line.replace(/^\s*[•·*\-–—]\s*/, '').trim())
-      .filter(Boolean)
-      .join('\n')
-  }
-
-  const normalizedExperience = experience.map(exp => ({
-    ...exp,
-    description: exp.description ? normalizeBullets(exp.description) : exp.description,
-  }))
+  const exp = isHidden('experience') ? [] : (Array.isArray(d.experience) && d.experience.length > 0 ? d.experience : (hasContent ? [] : FALLBACK.experience))
+  const edu = isHidden('education') ? [] : (Array.isArray(d.education) && d.education.length > 0 ? d.education : (hasContent ? [] : FALLBACK.education))
+  const skills = isHidden('skills') ? [] : (Array.isArray(d.skills) && d.skills.length > 0 ? d.skills : (hasContent ? [] : FALLBACK.skills))
+  const summary = isHidden('summary') ? '' : (d.summary || (hasContent ? '' : FALLBACK.summary))
 
   return {
-    name: (p.fullName || '').trim() || fallback.name,
-    role: (p.jobTitle || '').trim() || fallback.role,
-    email: (p.email || '').trim() || fallback.email,
-    phone: ((p.phone || '').replace(/\D/g, '').length > 0 ? p.phone : fallback.phone) || fallback.phone,
-    location: (p.location || '').trim() || fallback.location,
-    website: p.website || '',
-    photo: p.photo || '',
-    customFont: d.customFont || '',
-    customColor: d.customColor || '',
-    experience: normalizedExperience,
-    education,
+    name: (p.fullName || '').trim() || FALLBACK.name,
+    role: (p.jobTitle || '').trim() || FALLBACK.role,
+    email: (p.email || '').trim() || FALLBACK.email,
+    phone: (p.phone || '').trim() || FALLBACK.phone,
+    location: (p.location || '').trim() || FALLBACK.location,
+    website: (p.website || '').trim() || FALLBACK.website,
+    photo: (p.photo || '').trim(),
+    summary,
+    experience: exp as any[],
+    education: edu as any[],
     skills,
-    summary: summary ? normalizeBullets(summary) : summary,
-    languages,
-    certifications,
-    projects,
-    hiddenSections,
+    certifications: isHidden('certifications') ? [] : (Array.isArray(d.certifications) ? d.certifications : []),
+    languages: isHidden('languages') ? [] : (Array.isArray(d.languages) ? d.languages : []),
+    projects: isHidden('projects') ? [] : (Array.isArray(d.projects) ? d.projects : []),
+    customColor: (d as any).customColor || '',
     show: (section: string) => !isHidden(section),
   }
 }
+
+// ─── SHARED TYPES ──────────────────────────────────────────
 
 interface PreviewProps {
   data?: Partial<ResumeData>
 }
 
-// ─── THEMES (In ThemesPreviews.css) ─────────────────────
+// Bullet helper — splits description into lines
+function bullets(desc?: string): string[] {
+  if (!desc) return []
+  return desc
+    .split('\n')
+    .map(l => l.replace(/^[•·\-–—*]\s*/, '').trim())
+    .filter(Boolean)
+}
 
+// ────────────────────────────────────────────────────────────
+// 1.  CLASSIC — Serif headings + sans body, single-column
+//     Fonts: Playfair Display 700 + Source Sans 3 400
+//     Sizes: 11px body, 22px section heading
+// ────────────────────────────────────────────────────────────
 
-export function DarkPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'dark')
+function ClassicTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const accent = r.customColor || '#1a1a1a'
+  const heading = "'Playfair Display', Georgia, serif"
+  const body = "'Source Sans 3', 'Segoe UI', sans-serif"
+  const bodySize = 11
+  const headSize = 13
+
+  const sectionTitle = (label: string): React.CSSProperties => ({
+    fontFamily: heading, fontSize: headSize, fontWeight: 700, letterSpacing: 3,
+    textTransform: 'uppercase', color: accent, borderBottom: `1.5px solid ${accent}`,
+    paddingBottom: 6, marginBottom: 14, marginTop: 28,
+  })
+
   return (
-    <div className="dark-resume">
-      <div className="dr-accent-line"></div>
-      <div className="dr-name">{res.name}</div>
-      <div className="dr-role">{res.role}</div>
-      <div className="dr-divider"></div>
-      {res.show('summary') && (
-        <div className="dr-section">
-          <div className="dr-section-title">Summary</div>
-          <div className="dr-job-desc">{res.summary}</div>
+    <div style={{ fontFamily: body, fontSize: bodySize, color: '#222', lineHeight: 1.55, padding: '48px 52px', background: '#fff', minHeight: 1123 }}>
+      {/* Header */}
+      <header style={{ textAlign: 'center', marginBottom: 8 }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 12px', display: 'block', border: `2px solid ${accent}` }} />}
+        <h1 style={{ fontFamily: heading, fontSize: 32, fontWeight: 700, color: accent, letterSpacing: 1, margin: 0 }}>{r.name}</h1>
+        <div style={{ fontSize: bodySize, color: '#555', marginTop: 4, letterSpacing: 1.5, textTransform: 'uppercase' }}>{r.role}</div>
+        <div style={{ fontSize: bodySize, color: '#888', marginTop: 8 }}>
+          {[r.location, r.phone, r.email, r.website].filter(Boolean).join('  ·  ')}
         </div>
+      </header>
+
+      {/* Summary */}
+      {r.summary && (
+        <>
+          <div style={sectionTitle('Summary')}>Summary</div>
+          <p style={{ margin: 0, color: '#444' }}>{r.summary}</p>
+        </>
       )}
-      {res.show('experience') && (
-        <div className="dr-section">
-          <div className="dr-section-title">Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} className="dr-job">
-              <div className="dr-job-title">{exp.title}</div>
-              <div className="dr-job-meta">{exp.company} · {exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-              {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} className="dr-job-desc">{b.replace(/^[•\-–—]\s*/, '')}</div>)}
+
+      {/* Experience */}
+      {r.experience.length > 0 && (
+        <>
+          <div style={sectionTitle('Experience')}>Experience</div>
+          {r.experience.map((exp, i) => (
+            <div key={i} style={{ marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <strong style={{ fontSize: bodySize, color: '#111' }}>{exp.title}</strong>
+                <span style={{ fontSize: bodySize, color: '#888', whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
+              </div>
+              <div style={{ fontSize: bodySize, color: accent, fontWeight: 600, marginBottom: 4 }}>{exp.company}{exp.location ? `, ${exp.location}` : ''}</div>
+              {bullets(exp.description).map((b, j) => (
+                <div key={j} style={{ paddingLeft: 14, position: 'relative', marginBottom: 2, color: '#444' }}>
+                  <span style={{ position: 'absolute', left: 0 }}>•</span>{b}
+                </div>
+              ))}
             </div>
           ))}
-        </div>
+        </>
       )}
-      {res.show('education') && (
-        <div className="dr-section">
-          <div className="dr-section-title">Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} className="dr-job">
-              <div className="dr-job-title">{edu.degree}</div>
-              <div className="dr-job-meta">{edu.school} · {edu.startDate} – {edu.endDate}</div>
+
+      {/* Education */}
+      {r.education.length > 0 && (
+        <>
+          <div style={sectionTitle('Education')}>Education</div>
+          {r.education.map((edu, i) => (
+            <div key={i} style={{ marginBottom: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <div>
+                <strong style={{ fontSize: bodySize }}>{edu.degree}</strong>
+                <div style={{ color: '#555', fontSize: bodySize }}>{edu.school}{edu.location ? `, ${edu.location}` : ''}{edu.gpa ? ` — GPA: ${edu.gpa}` : ''}</div>
+              </div>
+              <span style={{ fontSize: bodySize, color: '#888', whiteSpace: 'nowrap' }}>{edu.endDate}</span>
             </div>
           ))}
-        </div>
+        </>
       )}
-      {res.show('skills') && (
-        <div className="dr-section">
-          <div className="dr-section-title">Skills</div>
-          <div className="dr-skills">{res.skills.map((s, i) => <span key={i} className="dr-skill">{s}</span>)}</div>
-        </div>
-      )}
-      <div className="dr-section">
-        <div className="dr-section-title">Selected Projects</div>
-        {[
-          { name: 'Distributed Tracing Platform', co: 'Datadog · 2023', desc: 'Rebuilt trace ingestion to handle 4B spans/day. Cut storage costs 42% via adaptive sampling. Adopted by 18K+ enterprise customers.' },
-          { name: 'Payments Idempotency Layer', co: 'Stripe · 2021', desc: 'Cross-service framework preventing $2M+ in duplicate charges monthly across 12 payment APIs.' },
-        ].map((proj, i) => (
-          <div key={i} className="dr-job">
-            <div className="dr-job-title">{proj.name}</div>
-            <div className="dr-job-meta">{proj.co}</div>
-            <div className="dr-job-desc">{proj.desc}</div>
+
+      {/* Skills */}
+      {r.skills.length > 0 && (
+        <>
+          <div style={sectionTitle('Skills')}>Skills</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {r.skills.map((s, i) => (
+              <span key={i} style={{ fontSize: bodySize, padding: '3px 12px', borderRadius: 4, border: `1px solid ${accent}20`, background: `${accent}08`, color: '#333' }}>{s}</span>
+            ))}
           </div>
-        ))}
-      </div>
-      <div className="dr-section">
-        <div className="dr-section-title">Certifications</div>
-        <div className="dr-job"><div className="dr-job-title">Certified Kubernetes Administrator</div><div className="dr-job-meta">CNCF · 2023</div></div>
-        <div className="dr-job"><div className="dr-job-title">AWS Solutions Architect Pro</div><div className="dr-job-meta">Amazon · 2022</div></div>
-      </div>
-      <div className="dr-section">
-        <div className="dr-section-title">Languages</div>
-        <div className="dr-skills">
-          <span className="dr-skill">English — Native</span>
-          <span className="dr-skill">Cantonese — Fluent</span>
-          <span className="dr-skill">Mandarin — Conversational</span>
-        </div>
-      </div>
+        </>
+      )}
+
+      {/* Languages */}
+      {r.languages.length > 0 && (
+        <>
+          <div style={sectionTitle('Languages')}>Languages</div>
+          <div style={{ display: 'flex', gap: 16 }}>
+            {r.languages.map((l: any, i) => <span key={i} style={{ fontSize: bodySize, color: '#444' }}>{l.language} — {l.level}</span>)}
+          </div>
+        </>
+      )}
+
+      {/* Certifications */}
+      {r.certifications.length > 0 && (
+        <>
+          <div style={sectionTitle('Certifications')}>Certifications</div>
+          {r.certifications.map((c: any, i) => (
+            <div key={i} style={{ marginBottom: 4, fontSize: bodySize, color: '#444' }}>
+              <strong>{c.name}</strong>{c.issuer ? ` — ${c.issuer}` : ''}{c.date ? ` (${c.date})` : ''}
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* Projects */}
+      {r.projects.length > 0 && (
+        <>
+          <div style={sectionTitle('Projects')}>Projects</div>
+          {r.projects.map((p: any, i) => (
+            <div key={i} style={{ marginBottom: 10 }}>
+              <strong style={{ fontSize: bodySize }}>{p.name}</strong>
+              {p.tech && <span style={{ fontSize: bodySize, color: '#888', marginLeft: 8 }}>({p.tech})</span>}
+              {p.description && <div style={{ fontSize: bodySize, color: '#444', marginTop: 2 }}>{p.description}</div>}
+            </div>
+          ))}
+        </>
+      )}
     </div>
   )
 }
 
-export function TerminalPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'terminal')
-  const skillColors = ['linear-gradient(90deg, #7ee787, #56d364)', 'linear-gradient(90deg, #79c0ff, #58a6ff)', 'linear-gradient(90deg, #e3b341, #d29922)', 'linear-gradient(90deg, #bc8cff, #a371f7)', 'linear-gradient(90deg, #f778ba, #db61a2)']
-  const skillPcts = [95, 90, 85, 80, 75]
+// ────────────────────────────────────────────────────────────
+// 2.  MODERN — Two-column sidebar, clean sans-serif
+//     Fonts: Inter 600 + Inter 400
+//     Sizes: 11px body, 12px section heading
+// ────────────────────────────────────────────────────────────
+
+function ModernTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const accent = r.customColor || '#2563eb'
+  const font = "'Inter', 'Segoe UI', sans-serif"
+  const bodySize = 11
+  const headSize = 11
+
+  const sLabel: React.CSSProperties = {
+    fontFamily: font, fontSize: headSize, fontWeight: 700, letterSpacing: 2.5,
+    textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginBottom: 12, paddingBottom: 6,
+    borderBottom: '1px solid rgba(255,255,255,0.1)',
+  }
+  const mLabel: React.CSSProperties = {
+    fontFamily: font, fontSize: headSize, fontWeight: 700, letterSpacing: 2.5,
+    textTransform: 'uppercase', color: accent, marginBottom: 14, paddingBottom: 6,
+    borderBottom: `1.5px solid ${accent}20`,
+  }
+
   return (
-    <div className="terminal-theme-wrapper">
-      <div className="terminal-container">
-        <div className="terminal-window">
-          <div className="terminal-titlebar">
-            <div className="terminal-titlebar-btn close"></div>
-            <div className="terminal-titlebar-btn min"></div>
-            <div className="terminal-titlebar-btn max"></div>
-            <div className="terminal-titlebar-text">resume.sh — bash — 86×42</div>
-          </div>
-          <div className="terminal-body">
-            <div className="terminal-prompt"><span className="terminal-prompt-prefix">user</span><span className="terminal-prompt-dir">@portfolio</span><span className="terminal-prompt-symbol"> $ </span><span className="terminal-command">cat</span> <span style={{ color: '#f778ba' }}>--pretty</span> <span style={{ color: '#7ee787' }}>~/resume.json</span></div>
-            <div className="terminal-section">
-              <div className="terminal-ascii-box"><div className="terminal-name">{res.name}</div><div className="terminal-title">{res.role}</div></div>
+    <div style={{ fontFamily: font, fontSize: bodySize, display: 'grid', gridTemplateColumns: '220px 1fr', minHeight: 1123, background: '#fff', color: '#222', lineHeight: 1.55 }}>
+      {/* Sidebar */}
+      <aside style={{ background: '#1a1a2e', color: '#e0e0e0', padding: '40px 24px' }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', display: 'block', border: `3px solid ${accent}` }} />}
+        <h1 style={{ fontFamily: font, fontSize: 22, fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.2, marginBottom: 4 }}>{r.name}</h1>
+        <div style={{ textAlign: 'center', fontSize: bodySize, color: accent, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 24 }}>{r.role}</div>
+
+        {/* Contact */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={sLabel}>Contact</div>
+          {[r.email, r.phone, r.location, r.website].filter(Boolean).map((v, i) => (
+            <div key={i} style={{ fontSize: bodySize, marginBottom: 6, color: '#ccc', wordBreak: 'break-word' }}>{v}</div>
+          ))}
+        </div>
+
+        {/* Skills */}
+        {r.skills.length > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <div style={sLabel}>Skills</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+              {r.skills.map((s, i) => (
+                <span key={i} style={{ fontSize: 10, padding: '3px 10px', borderRadius: 4, background: `${accent}25`, color: accent, fontWeight: 500 }}>{s}</span>
+              ))}
             </div>
-            <div className="terminal-section">
-              <div className="terminal-section-cmd">$ grep <span style={{ color: '#f778ba' }}>-i</span> <span style={{ color: '#7ee787' }}>"contact"</span> info.cfg</div>
-              <div style={{ paddingLeft: 4 }}>
-                {[['email', res.email], ['phone', res.phone], ['location', res.location]].map(([k, v], i) => (
-                  <div key={i} style={{ display: 'flex', gap: 8, padding: '2px 0', fontSize: '9px' }}>
-                    <span style={{ color: '#f778ba', minWidth: 70 }}>  {k}:</span>
-                    <span style={{ color: '#c9d1d9' }}>{v}</span>
+          </div>
+        )}
+
+        {/* Education */}
+        {r.education.length > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <div style={sLabel}>Education</div>
+            {r.education.map((edu, i) => (
+              <div key={i} style={{ marginBottom: 12 }}>
+                <div style={{ fontWeight: 600, color: '#fff', fontSize: bodySize }}>{edu.degree}</div>
+                <div style={{ fontSize: bodySize, color: '#aaa' }}>{edu.school}</div>
+                <div style={{ fontSize: bodySize, color: '#777' }}>{edu.endDate}{edu.gpa ? ` · GPA ${edu.gpa}` : ''}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Languages */}
+        {r.languages.length > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <div style={sLabel}>Languages</div>
+            {r.languages.map((l: any, i) => (
+              <div key={i} style={{ fontSize: bodySize, marginBottom: 4, color: '#ccc' }}>{l.language} — <span style={{ color: '#999' }}>{l.level}</span></div>
+            ))}
+          </div>
+        )}
+
+        {/* Certifications */}
+        {r.certifications.length > 0 && (
+          <div>
+            <div style={sLabel}>Certifications</div>
+            {r.certifications.map((c: any, i) => (
+              <div key={i} style={{ marginBottom: 6, fontSize: bodySize, color: '#ccc' }}>{c.name}{c.date ? ` (${c.date})` : ''}</div>
+            ))}
+          </div>
+        )}
+      </aside>
+
+      {/* Main */}
+      <main style={{ padding: '40px 40px 40px 32px' }}>
+        {/* Summary */}
+        {r.summary && (
+          <div style={{ marginBottom: 24 }}>
+            <div style={mLabel}>Profile</div>
+            <p style={{ margin: 0, color: '#555', lineHeight: 1.65 }}>{r.summary}</p>
+          </div>
+        )}
+
+        {/* Experience */}
+        {r.experience.length > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <div style={mLabel}>Experience</div>
+            {r.experience.map((exp, i) => (
+              <div key={i} style={{ marginBottom: 18 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <strong style={{ fontSize: 13, color: '#111' }}>{exp.title}</strong>
+                  <span style={{ fontSize: bodySize, color: '#999', whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
+                </div>
+                <div style={{ fontSize: bodySize, color: accent, fontWeight: 600, marginBottom: 6 }}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</div>
+                {bullets(exp.description).map((b, j) => (
+                  <div key={j} style={{ paddingLeft: 14, position: 'relative', marginBottom: 2, color: '#555' }}>
+                    <span style={{ position: 'absolute', left: 0, color: accent }}>▸</span>{b}
                   </div>
                 ))}
               </div>
-            </div>
-            <div className="terminal-section">
-              <div className="terminal-section-cmd">$ echo <span style={{ color: '#7ee787' }}>$ABOUT_ME</span></div>
-              <div style={{ fontSize: '9px', color: '#c9d1d9', lineHeight: 1.6, paddingLeft: 4 }}>{res.summary}</div>
-            </div>
-            <div className="terminal-section">
-              <div className="terminal-section-cmd">$ skills <span style={{ color: '#f778ba' }}>--list</span> <span style={{ color: '#f778ba' }}>--verbose</span></div>
-              {res.skills.slice(0, 5).map((s, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '3px 0', paddingLeft: 4 }}>
-                  <span style={{ fontSize: '9px', color: '#c9d1d9', minWidth: 80 }}>{s}</span>
-                  <div style={{ flex: 1, height: 6, background: '#1b2733', borderRadius: 2, overflow: 'hidden' }}>
-                    <div style={{ width: `${skillPcts[i] || 70}%`, height: '100%', background: skillColors[i % skillColors.length], borderRadius: 2 }} />
-                  </div>
-                  <span style={{ fontSize: '8px', color: '#8b949e', minWidth: 24, textAlign: 'right' as const }}>{skillPcts[i] || 70}%</span>
-                </div>
-              ))}
-              <div style={{ marginTop: 8 }}><span style={{ fontSize: '8px', color: '#8b949e', fontStyle: 'italic' }}>  # Also comfortable with:</span></div>
-              <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 4, paddingLeft: 4, marginTop: 4 }}>
-                {res.skills.slice(5).map((s, i) => <span key={i} style={{ fontSize: '8px', background: 'rgba(121,192,255,0.08)', border: '1px solid rgba(121,192,255,0.2)', color: '#79c0ff', padding: '2px 8px', borderRadius: 3 }}>{s}</span>)}
-              </div>
-            </div>
-            <div className="terminal-section">
-              <div className="terminal-section-cmd">$ history <span style={{ color: '#f778ba' }}>--career</span> <span style={{ color: '#8b949e' }}>|</span> sort <span style={{ color: '#f778ba' }}>-r</span></div>
-              {res.experience.map((exp, i) => (
-                <div key={i} className="terminal-exp-entry">
-                  <div className="terminal-exp-role">{exp.title}</div>
-                  <div className="terminal-exp-co">{exp.company}</div>
-                  <div style={{ fontSize: '8px', color: '#8b949e' }}>{exp.startDate} – {exp.current ? 'Present' : exp.endDate}</div>
-                  <div className="terminal-exp-desc" style={{ fontSize: '8px', paddingLeft: 4, lineHeight: 1.5, marginTop: 4 }}>{exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <span key={j}>{b.replace(/^[•\-–—]\s*/, '')}</span>)}</div>
-                </div>
-              ))}
-            </div>
-            <div className="terminal-section">
-              <div className="terminal-section-cmd">$ cat <span style={{ color: '#7ee787' }}>/etc/education</span></div>
-              {res.education.map((edu, i) => (
-                <div key={i} className="terminal-exp-entry">
-                  <div style={{ color: '#f0f6fc', fontWeight: 600, fontSize: '10px' }}>{edu.degree}</div>
-                  <div style={{ color: '#bc8cff', fontSize: '9px' }}>{edu.school}</div>
-                  <div style={{ fontSize: '8px', color: '#8b949e' }}>{edu.startDate} – {edu.endDate}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ marginTop: 12, paddingTop: 10, borderTop: '1px dashed #1b2733', display: 'flex', justifyContent: 'space-between', fontSize: '8px', color: '#8b949e' }}>
-              <span><span className="terminal-prompt-prefix">user</span><span className="terminal-prompt-dir">@portfolio</span><span className="terminal-prompt-symbol"> $ </span><span style={{ display: 'inline-block', width: 6, height: 10, background: '#7ee787', animation: 'blink 1s step-end infinite', verticalAlign: 'text-bottom' }} /></span>
-              <span style={{ color: '#7ee787' }}>uptime: {res.experience.length}+ yrs in tech</span>
-            </div>
+            ))}
           </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+        )}
 
-export function Resume1EditorialLuxePreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'editorial_luxe')
-  const c = { ink: '#1a1a1a', cream: '#f8f5f0', accent: res.customColor || '#c4553a', muted: '#7a7167', rule: '#d4cec5' }
-  const sTitle: React.CSSProperties = { fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 14 }
-  const nameParts = res.name.split(' ')
-  const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
-  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
-  return (
-    <div style={{ fontFamily: "'Source Sans 3', 'DM Sans', sans-serif", background: c.cream, padding: '60px 64px', position: 'relative', overflow: 'hidden', minHeight: '100%', boxSizing: 'border-box' as const }}>
-      {/* Corner marks */}
-      <span style={{ position: 'absolute', top: 28, left: 28, width: 24, height: 24, borderTop: `2px solid ${c.accent}`, borderLeft: `2px solid ${c.accent}`, opacity: 0.4 }} />
-      <span style={{ position: 'absolute', bottom: 28, right: 28, width: 24, height: 24, borderBottom: `2px solid ${c.accent}`, borderRight: `2px solid ${c.accent}`, opacity: 0.4 }} />
-      {/* Header */}
-      <header style={{ display: 'grid', gridTemplateColumns: res.photo ? 'auto 1fr auto' : '1fr auto', alignItems: 'flex-end', gap: 24, paddingBottom: 28, borderBottom: `1px solid ${c.rule}`, marginBottom: 36 }}>
-        {res.photo && <img src={res.photo} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${c.accent}`, boxShadow: '0 2px 8px rgba(0,0,0,0.1)', flexShrink: 0 }} />}
-        <div>
-          <h1 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontWeight: 900, fontSize: 52, letterSpacing: -1, lineHeight: 1, color: c.ink }}>{firstName} {lastName && <span style={{ color: c.accent, fontStyle: 'italic', fontWeight: 400 }}>{lastName}</span>}</h1>
-          <div style={{ fontSize: 15, fontWeight: 300, color: c.muted, letterSpacing: 3, textTransform: 'uppercase', marginTop: 10 }}>{res.role}</div>
-        </div>
-        <div style={{ textAlign: 'right', fontSize: 13.5, color: c.muted, lineHeight: 1.8 }}>
-          {res.location}<br />{res.phone}<br /><span style={{ color: c.accent }}>{res.email}</span>
-        </div>
-      </header>
-      {/* Summary */}
-      <div style={{ fontSize: 15.5, lineHeight: 1.7, color: '#444', fontWeight: 300, marginBottom: 36, paddingLeft: 20, borderLeft: `3px solid ${c.accent}` }}>
-        {res.summary}
-      </div>
-      {/* Content */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 260px', gap: 48 }}>
-        {/* Main */}
-        <main>
-          <div style={sTitle}>Experience<span style={{ flex: 1, height: 1, background: c.rule }} /></div>
-          {res.experience.map((exp, i) => (
-            <div key={i} style={{ marginBottom: 26 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 4 }}>
-                <h3 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 17, fontWeight: 700, color: c.ink }}>{exp.title}</h3>
-                <span style={{ fontSize: 12.5, color: c.muted, whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
-              </div>
-              <div style={{ fontSize: 14, color: c.accent, fontWeight: 600, marginBottom: 8 }}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</div>
-              {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13.5, color: '#555', lineHeight: 1.6, paddingLeft: 16, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, color: c.accent, fontWeight: 600 }}>—</span>{b.replace(/^[•\-–—]\s*/, '')}</div>)}
-            </div>
-          ))}
-        </main>
-        {/* Sidebar */}
-        <aside>
-          <div style={{ marginBottom: 28 }}>
-            <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18 }}>Skills</div>
-            <p style={{ fontSize: 13.5, color: '#444', lineHeight: 1.8 }}>{res.skills.join(', ')}</p>
-          </div>
-          <div style={{ marginBottom: 28 }}>
-            <div style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: c.accent, marginBottom: 18 }}>Education</div>
-            {res.education.map((edu, i) => (
-              <div key={i} style={{ marginBottom: 14 }}>
-                <h4 style={{ fontFamily: "'Playfair Display', 'EB Garamond', serif", fontSize: 14.5, fontWeight: 700, color: c.ink }}>{edu.degree}</h4>
-                <p style={{ fontSize: 13, color: c.muted, lineHeight: 1.5 }}>{edu.school}<br />{edu.endDate}</p>
+        {/* Projects */}
+        {r.projects.length > 0 && (
+          <div>
+            <div style={mLabel}>Projects</div>
+            {r.projects.map((p: any, i) => (
+              <div key={i} style={{ marginBottom: 12 }}>
+                <strong style={{ fontSize: bodySize }}>{p.name}</strong>
+                {p.tech && <span style={{ fontSize: 10, color: '#999', marginLeft: 6 }}>({p.tech})</span>}
+                {p.description && <div style={{ fontSize: bodySize, color: '#555', marginTop: 2 }}>{p.description}</div>}
               </div>
             ))}
           </div>
-        </aside>
-      </div>
-    </div>
-  )
-}
-
-export function Resume2DarkArchitectPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'dark_architect')
-  const c = { bg: '#0f0f13', surface: '#18181f', surface2: '#1f1f28', border: '#2a2a36', text: '#e4e2de', muted: '#8a8690', accent: res.customColor || '#64ffda', accentDim: 'rgba(100,255,218,0.08)', warm: '#ffd6a0' }
-  const mono = "'JetBrains Mono', 'DM Mono', monospace"
-  const sLabel: React.CSSProperties = { fontFamily: mono, fontSize: 10, fontWeight: 500, letterSpacing: 3, textTransform: 'uppercase', color: c.muted, marginBottom: 20, paddingBottom: 8, borderBottom: `1px solid ${c.border}` }
-  const tag: React.CSSProperties = { fontFamily: mono, fontSize: 11, padding: '4px 10px', borderRadius: 4, background: 'rgba(100,255,218,0.06)', border: '1px solid rgba(100,255,218,0.15)', color: c.accent }
-  const nameParts = res.name.split(' ')
-  const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
-  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
-  return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", background: c.surface, border: `1px solid ${c.border}`, borderRadius: 16, overflow: 'hidden', color: c.text, minHeight: '100%', display: 'flex', flexDirection: 'column' as const }}>
-      {/* Accent bar */}
-      <div style={{ height: 3, background: `linear-gradient(90deg, ${c.accent}, ${c.warm}, ${c.accent})` }} />
-      {/* Header */}
-      <header style={{ padding: '48px 56px 36px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 40, alignItems: 'flex-start', borderBottom: `1px solid ${c.border}` }}>
-        <div>
-          <h1 style={{ fontSize: 42, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1.1, color: c.text }}><span style={{ fontWeight: 300, opacity: 0.7 }}>{firstName}</span> {lastName}</h1>
-          <div style={{ fontFamily: mono, fontSize: 13, color: c.accent, marginTop: 8, letterSpacing: 1 }}><span style={{ opacity: 0.4 }}>{'> '}</span>{res.role}</div>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 24px', fontFamily: mono, fontSize: 12, color: c.muted }}>
-          {[['Location', res.location], ['Phone', res.phone], ['Email', res.email]].map(([label, val], i) => (
-            <div key={i}><span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: 1.5, color: c.accent, opacity: 0.6 }}>{label}</span><br />{val}</div>
-          ))}
-        </div>
-      </header>
-      {/* Summary */}
-      <div style={{ padding: '32px 56px', borderBottom: `1px solid ${c.border}`, background: c.accentDim }}>
-        <p style={{ fontSize: 15, fontWeight: 300, lineHeight: 1.75, color: c.text, maxWidth: 680 }}>{res.summary}</p>
-      </div>
-      {/* Body */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 240px', flex: 1 }}>
-        {/* Main */}
-        <div style={{ padding: '36px 48px 48px 56px', borderRight: `1px solid ${c.border}` }}>
-          <div style={sLabel}>Experience</div>
-          {res.experience.map((exp, i) => (
-            <div key={i} style={{ marginBottom: 28 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 2 }}>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: c.text }}>{exp.title}</h3>
-                <span style={{ fontFamily: mono, fontSize: 11.5, color: c.muted, whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
-              </div>
-              <div style={{ fontSize: 13.5, fontWeight: 500, color: c.accent, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>{exp.company}{exp.location && <><span style={{ width: 4, height: 4, borderRadius: '50%', background: c.warm }} />{exp.location}</>}</div>
-              {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13.5, fontWeight: 300, color: c.text, opacity: 0.85, lineHeight: 1.6, paddingLeft: 18, position: 'relative', marginBottom: 5 }}><span style={{ position: 'absolute', left: 0, color: c.accent, fontSize: 12 }}>▸</span>{b.replace(/^[•\-–—]\s*/, '')}</div>)}
-            </div>
-          ))}
-        </div>
-        {/* Sidebar */}
-        <div style={{ padding: '36px 36px 48px', background: c.surface2 }}>
-          <div style={{ marginBottom: 28 }}>
-            <div style={sLabel}>Tech Stack</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {res.skills.map((s, i) => <span key={i} style={tag}>{s}</span>)}
-            </div>
-          </div>
-          <div style={{ marginBottom: 28 }}>
-            <div style={sLabel}>Education</div>
-            {res.education.map((edu, i) => (
-              <div key={i} style={{ marginBottom: 16 }}>
-                <h4 style={{ fontSize: 14, fontWeight: 600, color: c.text }}>{edu.degree}</h4>
-                <p style={{ fontSize: 12.5, color: c.muted, lineHeight: 1.5 }}>{edu.school}<br />{edu.endDate}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export function Resume3BauhausGeometricPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'bauhaus_geometric')
-  const c = { navy: '#0d1b3e', coral: res.customColor || '#e8634a', gold: '#f0c75e', sky: '#4a98d9', cream: '#faf8f4', text: '#2c2c2c', muted: '#6e6e6e', ltBg: '#f2efe8' }
-  const sbHead: React.CSSProperties = { fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: c.coral, marginBottom: 12, paddingBottom: 6, borderBottom: '2px solid rgba(255,255,255,0.08)' }
-  const initials = res.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
-  return (
-    <div style={{ fontFamily: "'Sora', 'DM Sans', sans-serif", display: 'grid', gridTemplateColumns: '260px 1fr', overflow: 'hidden', borderRadius: 4, background: '#fff', color: c.text, minHeight: '100%' }}>
-      {/* Sidebar */}
-      <aside style={{ background: c.navy, color: '#fff', padding: '48px 28px 40px', position: 'relative' }}>
-        {/* Coral triangle corner */}
-        <div style={{ position: 'absolute', top: 0, right: 0, width: 60, height: 60, background: c.coral, clipPath: 'polygon(100% 0, 0 0, 100% 100%)' }} />
-        {/* Gold circle ornament */}
-        <div style={{ position: 'absolute', bottom: 40, left: 28, width: 36, height: 36, border: `3px solid ${c.gold}`, borderRadius: '50%', opacity: 0.4 }} />
-        {/* Avatar */}
-        <div style={{ width: 80, height: 80, borderRadius: '50%', background: `linear-gradient(135deg, ${c.coral}, ${c.gold})`, marginBottom: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 800, color: '#fff' }}>{initials}</div>
-        <h1 style={{ fontSize: 26, fontWeight: 800, lineHeight: 1.15, marginBottom: 6 }}>{res.name}</h1>
-        <div style={{ fontSize: 12, fontWeight: 300, letterSpacing: 2.5, textTransform: 'uppercase', color: c.gold, marginBottom: 32 }}>{res.role}</div>
-        {/* Contact */}
-        <div style={{ marginBottom: 28 }}>
-          <div style={sbHead}>Contact</div>
-          <p style={{ fontSize: 12.5, fontWeight: 300, lineHeight: 2, color: 'rgba(255,255,255,0.8)' }}>{res.location}<br />{res.phone}<br /><span style={{ color: c.gold }}>{res.email}</span></p>
-        </div>
-        {/* Skills */}
-        <div style={{ marginBottom: 28 }}>
-          <div style={sbHead}>Expertise</div>
-          {res.skills.map((skill, i) => (
-            <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginBottom: 8 }}>{skill}</div>
-          ))}
-        </div>
-        {/* Education */}
-        <div style={{ marginBottom: 28 }}>
-          <div style={sbHead}>Education</div>
-          {res.education.map((edu, i) => (
-            <div key={i} style={{ marginBottom: 14 }}>
-              <h4 style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{edu.degree}</h4>
-              <p style={{ fontSize: 11.5, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>{edu.school} · {edu.endDate}</p>
-            </div>
-          ))}
-        </div>
-      </aside>
-      {/* Main */}
-      <main style={{ padding: '48px 48px 40px' }}>
-        {/* Profile */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
-          <svg width="14" height="14" viewBox="0 0 14 14"><circle fill={c.coral} cx="7" cy="7" r="7" /></svg>
-          <h2 style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.navy }}>Profile</h2>
-          <span style={{ flex: 1, height: 2, background: c.ltBg }} />
-        </div>
-        <div style={{ fontFamily: "'IBM Plex Serif', 'Georgia', serif", fontSize: 15, lineHeight: 1.75, color: c.muted, marginBottom: 32, padding: '20px 24px', background: c.cream, borderLeft: `4px solid ${c.coral}`, borderRadius: '0 8px 8px 0' }}>
-          {res.summary}
-        </div>
-        {/* Experience */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22, marginTop: 8 }}>
-          <svg width="14" height="14" viewBox="0 0 14 14"><rect fill={c.sky} width="14" height="14" /></svg>
-          <h2 style={{ fontSize: 12, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.navy }}>Experience</h2>
-          <span style={{ flex: 1, height: 2, background: c.ltBg }} />
-        </div>
-        {res.experience.map((exp, i) => (
-          <div key={i} style={{ marginBottom: 26, paddingLeft: 20, borderLeft: `2px solid ${c.ltBg}`, position: 'relative' }}>
-            <div style={{ position: 'absolute', left: -5, top: 6, width: 8, height: 8, background: c.coral, borderRadius: '50%' }} />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: c.navy }}>{exp.title}</h3>
-              <span style={{ fontSize: 12, color: c.muted, whiteSpace: 'nowrap', background: c.cream, padding: '2px 10px', borderRadius: 10 }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
-            </div>
-            <div style={{ fontSize: 13.5, fontWeight: 600, color: c.coral, marginBottom: 8 }}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</div>
-            {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13.5, color: '#555', lineHeight: 1.65, paddingLeft: 16, position: 'relative', marginBottom: 4 }}><span style={{ position: 'absolute', left: 0, top: 9, width: 6, height: 2, background: c.gold }} />{b.replace(/^[•\-–—]\s*/, '')}</div>)}
-          </div>
-        ))}
+        )}
       </main>
     </div>
   )
 }
 
-export function Resume4SoftPastelPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'soft_pastel')
-  const c = { rose: res.customColor || '#d4726a', roseLt: '#f8e8e6', sage: '#7a9e7e', sageLt: '#e4f0e5', lav: '#8e7cc3', lavLt: '#ece8f6', bg: '#fdfbf8', text: '#3a3535', light: '#7d7575', border: '#ede8e3' }
-  const divider = (label: string) => (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16, margin: '36px 0 24px' }}>
-      <span style={{ flex: 1, height: 1, background: c.border }} />
-      <h2 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 14, fontWeight: 600, color: c.rose, letterSpacing: 2.5, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{label}</h2>
-      <span style={{ flex: 1, height: 1, background: c.border }} />
-    </div>
-  )
-  const chipColors = [c.roseLt, c.sageLt, c.lavLt]
-  const gradients = [`linear-gradient(90deg, ${c.rose}, ${c.lav})`, `linear-gradient(90deg, ${c.sage}, ${c.rose})`, `linear-gradient(90deg, ${c.lav}, ${c.sage})`]
-  const nameParts = res.name.split(' ')
-  const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
-  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
+// ────────────────────────────────────────────────────────────
+// 3.  EXECUTIVE — Full-width header with photo, serif accent
+//     Fonts: Merriweather 700 + Open Sans 400
+//     Sizes: 11px body, 13px section heading
+// ────────────────────────────────────────────────────────────
+
+function ExecutiveTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const accent = r.customColor || '#0c4a6e'
+  const heading = "'Merriweather', Georgia, serif"
+  const body = "'Open Sans', 'Segoe UI', sans-serif"
+  const bodySize = 11
+  const headSize = 12
+
+  const sTitle: React.CSSProperties = {
+    fontFamily: heading, fontSize: headSize, fontWeight: 700, letterSpacing: 3,
+    textTransform: 'uppercase', color: accent, marginBottom: 12, marginTop: 28,
+    display: 'flex', alignItems: 'center', gap: 10,
+  }
+  const rule: React.CSSProperties = { flex: 1, height: 1, background: `${accent}30` }
+
   return (
-    <div style={{ fontFamily: "'Outfit', 'DM Sans', sans-serif", background: c.bg, borderRadius: 20, padding: '52px 56px', overflow: 'hidden', color: c.text, lineHeight: 1.5 }}>
+    <div style={{ fontFamily: body, fontSize: bodySize, color: '#222', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
       {/* Header */}
-      <header style={{ textAlign: 'center', marginBottom: 40 }}>
-        <h1 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 44, fontWeight: 600, color: c.text, letterSpacing: -0.5, marginBottom: 6 }}>{firstName} {lastName && <span style={{ color: c.rose }}>{lastName}</span>}</h1>
-        <div style={{ fontSize: 15, fontWeight: 500, color: c.sage, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 16 }}>{res.role}</div>
-        <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: 10 }}>
-          {[['📍', res.location], ['📱', res.phone], ['✉️', res.email]].map(([icon, val], i) => (
-            <span key={i} style={{ fontSize: 12.5, padding: '6px 16px', borderRadius: 20, background: '#fff', border: `1px solid ${c.border}`, color: c.light }}><span style={{ marginRight: 6, opacity: 0.6 }}>{icon}</span>{val}</span>
-          ))}
+      <header style={{ background: accent, color: '#fff', padding: '36px 52px', display: 'flex', alignItems: 'center', gap: 28 }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(255,255,255,0.3)', flexShrink: 0 }} />}
+        <div style={{ flex: 1 }}>
+          <h1 style={{ fontFamily: heading, fontSize: 30, fontWeight: 700, margin: 0, letterSpacing: 0.5 }}>{r.name}</h1>
+          <div style={{ fontSize: 13, fontWeight: 300, opacity: 0.8, marginTop: 4, letterSpacing: 2, textTransform: 'uppercase' }}>{r.role}</div>
+        </div>
+        <div style={{ textAlign: 'right', fontSize: bodySize, lineHeight: 1.8, opacity: 0.85 }}>
+          {r.location}<br />{r.phone}<br />{r.email}
         </div>
       </header>
-      {/* About */}
-      {divider('About')}
-      <p style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 12px', fontSize: 15, fontWeight: 300, lineHeight: 1.8, color: c.light }}>
-        {res.summary}
-      </p>
-      {/* Skills */}
-      {divider('Core Skills')}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 8 }}>
-        {res.skills.map((s, i) => (
-          <span key={i} style={{ fontSize: 12, fontWeight: 500, padding: '6px 16px', borderRadius: 20, color: c.text, background: chipColors[i % 3] }}>{s}</span>
-        ))}
-      </div>
-      {/* Experience */}
-      {divider('Experience')}
-      {res.experience.map((exp, i) => (
-        <div key={i} style={{ background: '#fff', border: `1px solid ${c.border}`, borderRadius: 14, padding: '22px 24px', marginBottom: 16, position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: gradients[i % 3] }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 2 }}>
-            <h3 style={{ fontSize: 15.5, fontWeight: 600, color: c.text }}>{exp.title}</h3>
-            <span style={{ fontSize: 12, color: c.light, whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
-          </div>
-          <div style={{ fontSize: 13, fontWeight: 500, color: c.rose, marginBottom: 10 }}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</div>
-          {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13, color: c.light, lineHeight: 1.6, paddingLeft: 14, position: 'relative', marginBottom: 4, fontWeight: 300 }}><span style={{ position: 'absolute', left: 0, top: 8, width: 5, height: 5, borderRadius: '50%', background: c.sage }} />{b.replace(/^[•\-–—]\s*/, '')}</div>)}
-        </div>
-      ))}
-      {/* Education */}
-      {divider('Education')}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        {res.education.map((edu, i) => (
-          <div key={i} style={{ background: '#fff', border: `1px solid ${c.border}`, borderRadius: 14, padding: '20px 24px' }}>
-            <h3 style={{ fontFamily: "'Lora', 'Georgia', serif", fontSize: 15, fontWeight: 600, color: c.text, marginBottom: 2 }}>{edu.degree}</h3>
-            <p style={{ fontSize: 13, color: c.light, fontWeight: 300 }}>{edu.school} · {edu.endDate}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
 
-export function Resume5SwissGridPreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'swiss_grid')
-  const c = { black: '#111', white: '#fff', red: res.customColor || '#d63031', g1: '#f7f7f7', g2: '#e5e5e5', g3: '#999', g4: '#666', type: '#222' }
-  const rowLabel: React.CSSProperties = { padding: '28px 24px 28px 52px', borderRight: `1px solid ${c.g2}`, borderBottom: `1px solid ${c.g2}`, background: c.g1 }
-  const rowContent: React.CSSProperties = { padding: '28px 52px 28px 32px', borderBottom: `1px solid ${c.g2}` }
-  const sLabel: React.CSSProperties = { fontSize: 10, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', color: c.red }
-  const nameParts = res.name.split(' ')
-  const firstName = nameParts.slice(0, -1).join(' ') || nameParts[0]
-  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
-  return (
-    <div style={{ fontFamily: "'Instrument Sans', 'DM Sans', sans-serif", background: c.white, color: c.type, overflow: 'hidden', display: 'flex', flexDirection: 'column' as const }}>
-      {/* Top Bar */}
-      <div style={{ background: c.black, color: c.white, padding: '44px 52px', display: 'grid', gridTemplateColumns: '1fr auto', gap: 32, alignItems: 'flex-end' }}>
-        <div>
-          <h1 style={{ fontSize: 48, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>{firstName} <span style={{ color: c.red }}>{lastName}</span></h1>
-          <div style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontSize: 16, fontStyle: 'italic', color: c.g3, marginTop: 8 }}>{res.role}</div>
-        </div>
-        <div style={{ textAlign: 'right', fontSize: 13, color: c.g3, lineHeight: 1.9 }}>
-          <strong style={{ color: c.white, fontWeight: 500 }}>{res.location}</strong><br />{res.phone}<br />{res.email}
-        </div>
-      </div>
-      {/* Body Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', flex: 1 }}>
-        {/* Profile */}
-        <div style={rowLabel}><h2 style={sLabel}>Profile</h2></div>
-        <div style={rowContent}>
-          <p style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontSize: 16, lineHeight: 1.75, color: c.g4, maxWidth: 580 }}>{res.summary}</p>
-        </div>
+      <div style={{ padding: '0 52px 48px' }}>
+        {/* Summary */}
+        {r.summary && (
+          <>
+            <div style={sTitle}><span style={rule} />Summary<span style={rule} /></div>
+            <p style={{ margin: 0, color: '#444', textAlign: 'center', maxWidth: 620, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.7 }}>{r.summary}</p>
+          </>
+        )}
+
         {/* Experience */}
-        <div style={rowLabel}><h2 style={sLabel}>Experience</h2></div>
-        <div style={rowContent}>
-          {res.experience.map((exp, i) => (
-            <div key={i} style={{ marginBottom: i < res.experience.length - 1 ? 28 : 0 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', alignItems: 'baseline', marginBottom: 4 }}>
-                <h3 style={{ fontSize: 17, fontWeight: 700, color: c.black }}>{exp.title}</h3>
-                <span style={{ fontSize: 12, fontWeight: 500, color: c.g3, textTransform: 'uppercase', letterSpacing: 1 }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
-              </div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: c.red, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 8 }}>{exp.company}{exp.location && <><span style={{ width: 20, height: 1, background: c.g2 }} /><span style={{ fontWeight: 400, color: c.g3 }}>{exp.location}</span></>}</div>
-              {exp.description && exp.description.split('\n').filter(Boolean).map((b, j) => <div key={j} style={{ fontSize: 13.5, color: c.g4, lineHeight: 1.65, paddingLeft: 20, position: 'relative', marginBottom: 5 }}><span style={{ position: 'absolute', left: 0, top: 8, width: 8, height: 1, background: c.red }} />{b.replace(/^[•\-–—]\s*/, '')}</div>)}
-            </div>
-          ))}
-        </div>
-        {/* Skills */}
-        <div style={rowLabel}><h2 style={sLabel}>Skills</h2></div>
-        <div style={rowContent}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-            {res.skills.map((s, i) => (
-              <span key={i} style={{ fontSize: 12.5, fontWeight: 500, padding: '4px 14px', borderRadius: 4, background: c.g1, border: `1px solid ${c.g2}`, color: c.type }}>{s}</span>
-            ))}
-          </div>
-        </div>
-        {/* Education */}
-        <div style={rowLabel}><h2 style={sLabel}>Education</h2></div>
-        <div style={rowContent}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-            {res.education.map((edu, i) => (
-              <div key={i}>
-                <h3 style={{ fontSize: 15, fontWeight: 700, color: c.black, marginBottom: 2 }}>{edu.degree}</h3>
-                <div style={{ fontFamily: "'Newsreader', 'Georgia', serif", fontStyle: 'italic', fontSize: 13.5, color: c.g4 }}>{edu.school}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: c.red, marginTop: 2 }}>{edu.endDate}{edu.gpa ? ` · GPA: ${edu.gpa}` : ''}</div>
+        {r.experience.length > 0 && (
+          <>
+            <div style={sTitle}>Experience<span style={rule} /></div>
+            {r.experience.map((exp, i) => (
+              <div key={i} style={{ marginBottom: 18, paddingLeft: 16, borderLeft: `2px solid ${accent}20` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <strong style={{ fontSize: 13, color: '#111' }}>{exp.title}</strong>
+                  <span style={{ fontSize: bodySize, color: '#999', whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
+                </div>
+                <div style={{ fontSize: bodySize, color: accent, fontWeight: 600, marginBottom: 6 }}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</div>
+                {bullets(exp.description).map((b, j) => (
+                  <div key={j} style={{ paddingLeft: 14, position: 'relative', marginBottom: 2, color: '#555' }}>
+                    <span style={{ position: 'absolute', left: 0, color: accent, fontWeight: 700 }}>—</span>{b}
+                  </div>
+                ))}
               </div>
             ))}
+          </>
+        )}
+
+        {/* Two-column bottom */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, marginTop: 8 }}>
+          <div>
+            {r.education.length > 0 && (
+              <>
+                <div style={sTitle}>Education<span style={rule} /></div>
+                {r.education.map((edu, i) => (
+                  <div key={i} style={{ marginBottom: 10 }}>
+                    <strong style={{ fontSize: bodySize }}>{edu.degree}</strong>
+                    <div style={{ fontSize: bodySize, color: '#555' }}>{edu.school} · {edu.endDate}</div>
+                  </div>
+                ))}
+              </>
+            )}
+            {r.certifications.length > 0 && (
+              <>
+                <div style={sTitle}>Certifications<span style={rule} /></div>
+                {r.certifications.map((c: any, i) => (
+                  <div key={i} style={{ fontSize: bodySize, marginBottom: 4, color: '#444' }}><strong>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>
+                ))}
+              </>
+            )}
+          </div>
+          <div>
+            {r.skills.length > 0 && (
+              <>
+                <div style={sTitle}>Skills<span style={rule} /></div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {r.skills.map((s, i) => (
+                    <span key={i} style={{ fontSize: bodySize, padding: '3px 12px', borderRadius: 20, background: `${accent}10`, border: `1px solid ${accent}20`, color: '#333' }}>{s}</span>
+                  ))}
+                </div>
+              </>
+            )}
+            {r.languages.length > 0 && (
+              <>
+                <div style={sTitle}>Languages<span style={rule} /></div>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  {r.languages.map((l: any, i) => (
+                    <span key={i} style={{ fontSize: bodySize, color: '#444' }}>{l.language} — {l.level}</span>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
+
+        {/* Projects */}
+        {r.projects.length > 0 && (
+          <>
+            <div style={sTitle}>Projects<span style={rule} /></div>
+            {r.projects.map((p: any, i) => (
+              <div key={i} style={{ marginBottom: 10 }}>
+                <strong style={{ fontSize: bodySize }}>{p.name}</strong>
+                {p.tech && <span style={{ fontSize: 10, color: '#888', marginLeft: 6 }}>({p.tech})</span>}
+                {p.description && <div style={{ fontSize: bodySize, color: '#444', marginTop: 2 }}>{p.description}</div>}
+              </div>
+            ))}
+          </>
+        )}
       </div>
-      {/* Footer */}
-      <div style={{ background: c.black, padding: '14px 52px', fontSize: 11, color: c.g3, textAlign: 'center', letterSpacing: 1 }}>References available upon request</div>
     </div>
   )
 }
 
-export function PhdResumePreview({ data }: PreviewProps) {
-  const res = useDynamicData(data || {}, 'phd')
+// ────────────────────────────────────────────────────────────
+// 4.  MINIMAL — Ultra-clean, lots of whitespace, single-column
+//     Fonts: DM Sans 500 + DM Sans 400
+//     Sizes: 11px body, 11px section heading (caps)
+// ────────────────────────────────────────────────────────────
+
+function MinimalTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const accent = r.customColor || '#111'
+  const font = "'DM Sans', 'Segoe UI', sans-serif"
+  const bodySize = 11
+
+  const sTitle: React.CSSProperties = {
+    fontFamily: font, fontSize: bodySize, fontWeight: 600, letterSpacing: 3,
+    textTransform: 'uppercase', color: accent, marginBottom: 14, marginTop: 32,
+  }
+
   return (
-    <div className="phd-wrapper">
-
-
-
-      <header className="hd">
-        <div>
-          <div className="hd-label">Department of Brain & Cognitive Sciences · PhD Candidate</div>
-          <h1 className="hd-name">{res.name}</h1>
-          <div className="hd-cred">B.Sc. (Hons) · M.Sc. · PhD Candidate (ABD) · Expected 2026</div>
-          <div className="hd-affil">
-            <strong>Massachusetts Institute of Technology</strong><br />
-            Brain & Cognitive Sciences Program<br />
-            Advisor: Prof. Daniel J. Hartman
-          </div>
+    <div style={{ fontFamily: font, fontSize: bodySize, color: '#333', lineHeight: 1.6, padding: '56px 60px', background: '#fff', minHeight: 1123 }}>
+      {/* Header */}
+      <header style={{ display: 'flex', alignItems: 'center', gap: 20, marginBottom: 12, paddingBottom: 20, borderBottom: `1px solid #e5e5e5` }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />}
+        <div style={{ flex: 1 }}>
+          <h1 style={{ fontFamily: font, fontSize: 28, fontWeight: 600, color: accent, margin: 0, letterSpacing: -0.5 }}>{r.name}</h1>
+          <div style={{ fontSize: bodySize, color: '#888', marginTop: 4 }}>{r.role}</div>
         </div>
-        <div className="hd-contact">
-          <div className="hd-contact-item">e.whitfield@mit.edu</div>
-          <div className="hd-contact-item">+1 (617) 555-0142</div>
-          <div className="hd-contact-item">Cambridge, MA 02139</div>
-          <div className="hd-contact-item">orcid.org / 0000-0002-1234-5678</div>
-          <div className="hd-contact-item">scholar.whitfield.mit.edu</div>
+        <div style={{ textAlign: 'right', fontSize: bodySize, color: '#999', lineHeight: 1.8 }}>
+          {r.email}<br />{r.phone}<br />{r.location}
         </div>
       </header>
 
-      <div className="orn"><div className="orn-line"></div><div className="orn-gem"></div><div className="orn-line"></div></div>
+      {/* Summary */}
+      {r.summary && (
+        <p style={{ margin: '16px 0 0', color: '#555', lineHeight: 1.7 }}>{r.summary}</p>
+      )}
 
-
-      <div className="body">
-
-
-        <main className="main">
-
-
-          <div className="diss">
-            <div className="diss-label">Doctoral Dissertation — Expected May 2026</div>
-            <div className="diss-title">"Predictive Coding and Temporal Precision: How the Brain Constructs Time from Noisy Sensory Signals"</div>
-            <div className="diss-desc">Investigates the neural mechanisms underlying temporal perception using fMRI, EEG, and computational modelling. Proposes a unified hierarchical Bayesian framework reconciling conflicting accounts of interval timing in prefrontal and cerebellar circuits. Three first-author papers completed; one under review at <em>PLOS Computational Biology</em>.</div>
-          </div>
-
-
-          <div className="section">
-            <div className="sec-title">Education</div>
-
-            <div className="entry">
-              <div>
-                <div className="e-title">Doctor of Philosophy — <em>Brain & Cognitive Sciences</em></div>
-                <div className="e-org">Massachusetts Institute of Technology, Cambridge MA</div>
-                <div className="e-sub">Thesis Committee: D. Hartman (chair), L. Chen, R. Patel (Oxford)</div>
-                <div className="e-desc">NSF Graduate Research Fellow. Qualifying exams passed with distinction. Recipient of MIT School of Science Fellowship (2021–22).</div>
+      {/* Experience */}
+      {r.experience.length > 0 && (
+        <>
+          <div style={sTitle}>Experience</div>
+          {r.experience.map((exp, i) => (
+            <div key={i} style={{ marginBottom: 18 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <span><strong style={{ color: '#111' }}>{exp.title}</strong> <span style={{ color: '#999' }}>at</span> <strong style={{ color: accent }}>{exp.company}</strong></span>
+                <span style={{ fontSize: bodySize, color: '#aaa', whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
               </div>
-              <div className="e-date">2021 — present</div>
+              {exp.location && <div style={{ fontSize: bodySize, color: '#bbb', marginBottom: 4 }}>{exp.location}</div>}
+              {bullets(exp.description).map((b, j) => (
+                <div key={j} style={{ color: '#555', marginBottom: 2 }}>– {b}</div>
+              ))}
             </div>
+          ))}
+        </>
+      )}
 
-            <div className="entry">
+      {/* Education */}
+      {r.education.length > 0 && (
+        <>
+          <div style={sTitle}>Education</div>
+          {r.education.map((edu, i) => (
+            <div key={i} style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between' }}>
               <div>
-                <div className="e-title">Master of Science — <em>Cognitive Neuroscience</em></div>
-                <div className="e-org">University College London, London UK</div>
-                <div className="e-sub">Thesis: "Bayesian Priors in Auditory Temporal Estimation" · Awarded Distinction</div>
+                <strong>{edu.degree}</strong>
+                <span style={{ color: '#999' }}> — {edu.school}</span>
+                {edu.gpa && <span style={{ color: '#bbb' }}> (GPA: {edu.gpa})</span>}
               </div>
-              <div className="e-date">2019 — 2020</div>
+              <span style={{ color: '#bbb', whiteSpace: 'nowrap' }}>{edu.endDate}</span>
             </div>
+          ))}
+        </>
+      )}
 
-            <div className="entry">
-              <div>
-                <div className="e-title">Bachelor of Science — <em>Psychology with Neuroscience</em></div>
-                <div className="e-org">University of Edinburgh, Edinburgh UK</div>
-                <div className="e-sub">First Class Honours · Dean's List (all four years) · Best Undergraduate Thesis Prize</div>
-              </div>
-              <div className="e-date">2015 — 2019</div>
+      {/* Skills */}
+      {r.skills.length > 0 && (
+        <>
+          <div style={sTitle}>Skills</div>
+          <div style={{ color: '#555' }}>{r.skills.join('  ·  ')}</div>
+        </>
+      )}
+
+      {/* Languages */}
+      {r.languages.length > 0 && (
+        <>
+          <div style={sTitle}>Languages</div>
+          <div style={{ color: '#555' }}>{r.languages.map((l: any) => `${l.language} (${l.level})`).join('  ·  ')}</div>
+        </>
+      )}
+
+      {/* Certifications */}
+      {r.certifications.length > 0 && (
+        <>
+          <div style={sTitle}>Certifications</div>
+          {r.certifications.map((c: any, i) => (
+            <div key={i} style={{ marginBottom: 3, color: '#555' }}>{c.name}{c.issuer ? ` — ${c.issuer}` : ''}{c.date ? ` (${c.date})` : ''}</div>
+          ))}
+        </>
+      )}
+
+      {/* Projects */}
+      {r.projects.length > 0 && (
+        <>
+          <div style={sTitle}>Projects</div>
+          {r.projects.map((p: any, i) => (
+            <div key={i} style={{ marginBottom: 8 }}>
+              <strong>{p.name}</strong>{p.tech && <span style={{ color: '#999' }}> ({p.tech})</span>}
+              {p.description && <div style={{ color: '#555', marginTop: 2 }}>{p.description}</div>}
             </div>
-          </div>
-
-
-          <div className="section">
-            <div className="sec-title">Research Experience</div>
-
-            <div className="entry">
-              <div>
-                <div className="e-title">Graduate Research Assistant</div>
-                <div className="e-org">Hartman Computational Cognition Lab · MIT</div>
-                <div className="e-sub">PI: Prof. Daniel J. Hartman</div>
-                <div className="e-desc">Designing and executing behavioural and neuroimaging studies of temporal perception. Developed novel fMRI paradigm to dissociate prospective and retrospective timing. Built lab's Python/R neuroimaging analysis pipeline. Mentoring four undergraduate research assistants.</div>
-              </div>
-              <div className="e-date">2021 — present</div>
-            </div>
-
-            <div className="entry">
-              <div>
-                <div className="e-title">Visiting Researcher</div>
-                <div className="e-org">Department of Experimental Psychology · University of Oxford</div>
-                <div className="e-sub">Host: Prof. Rachel Patel · Funded by MIT SHASS International Travel Grant</div>
-                <div className="e-desc">Collaborated on cross-modal timing experiments using TMS-EEG co-registration. Co-authored two manuscripts from the collaboration, one published in <em>Journal of Neuroscience</em>.</div>
-              </div>
-              <div className="e-date">Summer 2023</div>
-            </div>
-
-            <div className="entry">
-              <div>
-                <div className="e-title">Research Assistant</div>
-                <div className="e-org">Language & Brain Lab · UCL</div>
-                <div className="e-sub">PI: Prof. Sophie Laurent</div>
-                <div className="e-desc">Supported MEG data collection for study on prosodic rhythm and temporal prediction. Preprocessed 40+ participant datasets using SPM12 and MNE-Python.</div>
-              </div>
-              <div className="e-date">2019 — 2020</div>
-            </div>
-          </div>
-
-
-          <div className="section">
-            <div className="sec-title">Selected Publications</div>
-
-            <div className="pub">
-              <div className="pub-title">"Hierarchical Temporal Prediction Errors in Human Auditory Cortex"</div>
-              <div className="pub-meta"><span className="journal">Nature Neuroscience</span>, 27(4), 2024 · Whitfield, E., Chen, L., & Hartman, D.J. <span className="pub-status">Published</span></div>
-            </div>
-
-            <div className="pub">
-              <div className="pub-title">"Cerebellar-Prefrontal Dynamics During Interval Timing: A Dynamic Causal Modelling Analysis"</div>
-              <div className="pub-meta"><span className="journal">Journal of Neuroscience</span>, 43(12), 2023 · Whitfield, E., Patel, R., & Hartman, D.J. <span className="pub-status">Published</span></div>
-            </div>
-
-            <div className="pub">
-              <div className="pub-title">"Bayesian Observer Models Fail to Capture Individual Differences in Temporal Sensitivity"</div>
-              <div className="pub-meta"><span className="journal">PLOS Computational Biology</span>, 2024 · Whitfield, E., Okafor, T., & Hartman, D.J. <span className="pub-status">In Review</span></div>
-            </div>
-
-            <div className="pub">
-              <div className="pub-title">"Prior Expectations Modulate Temporal Rate Perception Across Sensory Modalities"</div>
-              <div className="pub-meta"><span className="journal">Cognition</span>, 224, 2022 · Whitfield, E. & Laurent, S. <span className="pub-status">Published</span></div>
-            </div>
-          </div>
-
-
-          <div className="section">
-            <div className="sec-title">Teaching & Mentorship</div>
-
-            <div className="entry">
-              <div>
-                <div className="e-title">Teaching Assistant — <em>Computational Neuroscience (9.40)</em></div>
-                <div className="e-org">MIT · Dept. of Brain & Cognitive Sciences</div>
-                <div className="e-desc">Led weekly recitation sections (30 students). Developed new problem sets on dynamical systems modelling. Student evaluation: 4.9 / 5.0.</div>
-              </div>
-              <div className="e-date">Spring 2023</div>
-            </div>
-
-            <div className="entry">
-              <div>
-                <div className="e-title">Guest Lecturer — <em>Perception & Cognition (9.35)</em></div>
-                <div className="e-org">MIT · Three 90-minute lectures on temporal perception and Bayesian brain theory</div>
-              </div>
-              <div className="e-date">2022, 2024</div>
-            </div>
-
-            <div className="entry">
-              <div>
-                <div className="e-title">Undergraduate Thesis Co-Supervisor</div>
-                <div className="e-org">MIT · Two senior thesis projects; both students graduated with honours</div>
-              </div>
-              <div className="e-date">2023 — present</div>
-            </div>
-          </div>
-
-        </main>
-
-
-        <aside className="sidebar">
-
-          <div className="sb-sec">
-            <div className="sb-title">Research Interests</div>
-            <div className="tags">
-              <span className="tag">Temporal Perception</span>
-              <span className="tag">Predictive Coding</span>
-              <span className="tag">Bayesian Brain</span>
-              <span className="tag">fMRI / EEG</span>
-              <span className="tag">Computational Models</span>
-              <span className="tag">Interval Timing</span>
-              <span className="tag">Cerebellum</span>
-              <span className="tag">Multisensory</span>
-            </div>
-          </div>
-
-          <div className="sb-sec">
-            <div className="sb-title">Honours & Funding</div>
-            <div className="award">
-              <div className="award-gem"></div>
-              <div className="award-text"><strong>NSF Graduate Research Fellowship</strong>$138,000 · 2021 – 2024</div>
-            </div>
-            <div className="award">
-              <div className="award-gem"></div>
-              <div className="award-text"><strong>CNS Young Investigator Award</strong>Cognitive Neuroscience Society · SF 2024</div>
-            </div>
-            <div className="award">
-              <div className="award-gem"></div>
-              <div className="award-text"><strong>MIT School of Science Fellowship</strong>2021 – 2022</div>
-            </div>
-            <div className="award">
-              <div className="award-gem"></div>
-              <div className="award-text"><strong>UCL Dean's Prize · Best MSc Thesis</strong>2020</div>
-            </div>
-            <div className="award">
-              <div className="award-gem"></div>
-              <div className="award-text"><strong>BPS Undergraduate Prize</strong>2019</div>
-            </div>
-          </div>
-
-          <div className="sb-sec">
-            <div className="sb-title">Conferences</div>
-            <div className="sb-item">
-              <div className="sb-item-title">Society for Neuroscience (SfN)</div>
-              <div className="sb-item-sub">Oral presentation · Chicago · 2024</div>
-            </div>
-            <div className="sb-item">
-              <div className="sb-item-title">Cognitive Neuroscience Society</div>
-              <div className="sb-item-sub">Poster + travel award · SF · 2024</div>
-            </div>
-            <div className="sb-item">
-              <div className="sb-item-title">Vision Sciences Society</div>
-              <div className="sb-item-sub">Poster · St. Pete Beach · 2023</div>
-            </div>
-            <div className="sb-item">
-              <div className="sb-item-title">European Conf. on Visual Perception</div>
-              <div className="sb-item-sub">Talk · Leuven, Belgium · 2022</div>
-            </div>
-          </div>
-
-          <div className="sb-sec">
-            <div className="sb-title">Technical Skills</div>
-            <div className="skill-row">
-              <span className="skill-name">Python (MNE, nilearn, Stan)</span>
-              <div className="skill-dots"><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div></div>
-            </div>
-            <div className="skill-row">
-              <span className="skill-name">R / Bayesian modelling</span>
-              <div className="skill-dots"><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div><div className="d-off"></div></div>
-            </div>
-            <div className="skill-row">
-              <span className="skill-name">MATLAB / SPM12</span>
-              <div className="skill-dots"><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div><div className="d-off"></div></div>
-            </div>
-            <div className="skill-row">
-              <span className="skill-name">fMRI (3T & 7T Siemens)</span>
-              <div className="skill-dots"><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div><div className="d-off"></div></div>
-            </div>
-            <div className="skill-row">
-              <span className="skill-name">EEG / TMS-EEG</span>
-              <div className="skill-dots"><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div><div className="d-off"></div><div className="d-off"></div></div>
-            </div>
-            <div className="skill-row">
-              <span className="skill-name">Git / Docker / HPC</span>
-              <div className="skill-dots"><div className="d-on"></div><div className="d-on"></div><div className="d-on"></div><div className="d-off"></div><div className="d-off"></div></div>
-            </div>
-          </div>
-
-          <div className="sb-sec">
-            <div className="sb-title">Languages</div>
-            <div className="skill-row"><span className="skill-name">English</span><span className="skill-level">Native</span></div>
-            <div className="skill-row"><span className="skill-name">French</span><span className="skill-level">Fluent</span></div>
-            <div className="skill-row"><span className="skill-name">German</span><span className="skill-level">Intermediate</span></div>
-            <div className="skill-row"><span className="skill-name">Mandarin</span><span className="skill-level">Basic</span></div>
-          </div>
-
-          <div className="sb-sec">
-            <div className="sb-title">Service & Outreach</div>
-            <div className="sb-item">
-              <div className="sb-item-title">Peer Reviewer</div>
-              <div className="sb-item-sub">Nature Neuroscience, J. Neurosci., Cognition, NeuroImage · 28 reviews, 2022–present</div>
-            </div>
-            <div className="sb-item">
-              <div className="sb-item-title">Graduate Women in Science</div>
-              <div className="sb-item-sub">Chapter co-president, MIT · 2022 – 2023</div>
-            </div>
-            <div className="sb-item">
-              <div className="sb-item-title">Brain Awareness Week</div>
-              <div className="sb-item-sub">Public lecturer & lab tour coordinator · 2022 – 2024</div>
-            </div>
-          </div>
-
-        </aside>
-      </div>
-
-
-      <footer className="footer">
-        <div className="footer-note">Curriculum Vitae · Eleanor Whitfield · Updated February 2026</div>
-        <div className="footer-note">Full list: scholar.whitfield.mit.edu</div>
-      </footer>
-
-
+          ))}
+        </>
+      )}
     </div>
   )
 }
+
+// ────────────────────────────────────────────────────────────
+// 5.  BOLD — Dark header block, high contrast, strong type
+//     Fonts: Space Grotesk 700 + DM Sans 400
+//     Sizes: 11px body, 12px section heading
+// ────────────────────────────────────────────────────────────
+
+function BoldTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const accent = r.customColor || '#f59e0b'
+  const heading = "'Space Grotesk', 'DM Sans', sans-serif"
+  const body = "'DM Sans', 'Segoe UI', sans-serif"
+  const bodySize = 11
+  const headSize = 12
+
+  const sTitle: React.CSSProperties = {
+    fontFamily: heading, fontSize: headSize, fontWeight: 700, letterSpacing: 3,
+    textTransform: 'uppercase', color: accent, marginBottom: 14, marginTop: 28,
+    paddingBottom: 6, borderBottom: `2px solid ${accent}`,
+  }
+
+  return (
+    <div style={{ fontFamily: body, fontSize: bodySize, color: '#222', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
+      {/* Header */}
+      <header style={{ background: '#111', color: '#fff', padding: '40px 52px', position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: -40, right: -40, width: 160, height: 160, borderRadius: '50%', background: `${accent}15` }} />
+        <div style={{ position: 'absolute', bottom: -20, left: 80, width: 80, height: 80, borderRadius: '50%', background: `${accent}10` }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24, position: 'relative', zIndex: 1 }}>
+          {r.photo && <img src={r.photo} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${accent}`, flexShrink: 0 }} />}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontFamily: heading, fontSize: 32, fontWeight: 700, margin: 0, letterSpacing: -0.5 }}>{r.name}</h1>
+            <div style={{ fontSize: 13, color: accent, fontWeight: 600, marginTop: 4, letterSpacing: 1.5, textTransform: 'uppercase' }}>{r.role}</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: bodySize, color: '#aaa', lineHeight: 1.8 }}>
+            {r.email}<br />{r.phone}<br />{r.location}
+          </div>
+        </div>
+      </header>
+
+      <div style={{ padding: '0 52px 48px' }}>
+        {/* Summary */}
+        {r.summary && (
+          <>
+            <div style={sTitle}>About</div>
+            <p style={{ margin: 0, color: '#444', lineHeight: 1.7 }}>{r.summary}</p>
+          </>
+        )}
+
+        {/* Experience */}
+        {r.experience.length > 0 && (
+          <>
+            <div style={sTitle}>Experience</div>
+            {r.experience.map((exp, i) => (
+              <div key={i} style={{ marginBottom: 18 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <strong style={{ fontSize: 13, color: '#111' }}>{exp.title}</strong>
+                  <span style={{ fontSize: bodySize, color: '#999', whiteSpace: 'nowrap' }}>{exp.startDate} — {exp.current ? 'Present' : exp.endDate}</span>
+                </div>
+                <div style={{ fontSize: bodySize, color: accent, fontWeight: 600, marginBottom: 6 }}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</div>
+                {bullets(exp.description).map((b, j) => (
+                  <div key={j} style={{ paddingLeft: 14, position: 'relative', marginBottom: 2, color: '#555' }}>
+                    <span style={{ position: 'absolute', left: 0, top: 1, width: 6, height: 6, background: accent, borderRadius: 1 }} />{b}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </>
+        )}
+
+        {/* Two-column bottom */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+          <div>
+            {r.education.length > 0 && (
+              <>
+                <div style={sTitle}>Education</div>
+                {r.education.map((edu, i) => (
+                  <div key={i} style={{ marginBottom: 10 }}>
+                    <strong style={{ fontSize: bodySize }}>{edu.degree}</strong>
+                    <div style={{ fontSize: bodySize, color: '#555' }}>{edu.school} · {edu.endDate}{edu.gpa ? ` · GPA ${edu.gpa}` : ''}</div>
+                  </div>
+                ))}
+              </>
+            )}
+            {r.languages.length > 0 && (
+              <>
+                <div style={sTitle}>Languages</div>
+                {r.languages.map((l: any, i) => (
+                  <div key={i} style={{ fontSize: bodySize, marginBottom: 3, color: '#444' }}>{l.language} — {l.level}</div>
+                ))}
+              </>
+            )}
+          </div>
+          <div>
+            {r.skills.length > 0 && (
+              <>
+                <div style={sTitle}>Skills</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {r.skills.map((s, i) => (
+                    <span key={i} style={{ fontSize: bodySize, padding: '4px 12px', borderRadius: 4, background: '#111', color: '#fff', fontWeight: 500 }}>{s}</span>
+                  ))}
+                </div>
+              </>
+            )}
+            {r.certifications.length > 0 && (
+              <>
+                <div style={sTitle}>Certifications</div>
+                {r.certifications.map((c: any, i) => (
+                  <div key={i} style={{ fontSize: bodySize, marginBottom: 4, color: '#444' }}><strong>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>
+                ))}
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Projects */}
+        {r.projects.length > 0 && (
+          <>
+            <div style={sTitle}>Projects</div>
+            {r.projects.map((p: any, i) => (
+              <div key={i} style={{ marginBottom: 10 }}>
+                <strong style={{ fontSize: bodySize }}>{p.name}</strong>
+                {p.tech && <span style={{ fontSize: 10, color: '#888', marginLeft: 6 }}>({p.tech})</span>}
+                {p.description && <div style={{ fontSize: bodySize, color: '#444', marginTop: 2 }}>{p.description}</div>}
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// MONO 1 — Clean single-column, hairline rules
+// Fonts: IBM Plex Mono 600 + IBM Plex Sans 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function MonoCleanTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const h = "'IBM Plex Mono', monospace"; const b = "'IBM Plex Sans', sans-serif"
+  const bs = 11; const hs = 12
+  const sec = (l: string): React.CSSProperties => ({ fontFamily: h, fontSize: hs, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase', color: '#111', borderBottom: '1px solid #ccc', paddingBottom: 6, marginBottom: 14, marginTop: 28 })
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#222', lineHeight: 1.55, padding: '48px 52px', background: '#fff', minHeight: 1123 }}>
+      <header style={{ textAlign: 'center', marginBottom: 8 }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 10px', display: 'block', filter: 'grayscale(100%)' }} />}
+        <h1 style={{ fontFamily: h, fontSize: 28, fontWeight: 700, color: '#000', margin: 0 }}>{r.name}</h1>
+        <div style={{ fontSize: bs, color: '#666', marginTop: 4, letterSpacing: 2, textTransform: 'uppercase' }}>{r.role}</div>
+        <div style={{ fontSize: bs, color: '#999', marginTop: 8 }}>{[r.email, r.phone, r.location].filter(Boolean).join(' · ')}</div>
+      </header>
+      {r.summary && <><div style={sec('S')}>Summary</div><p style={{ margin: 0, color: '#444' }}>{r.summary}</p></>}
+      {r.experience.length > 0 && <><div style={sec('E')}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 16 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong>{e.title}</strong><span style={{ color: '#888', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: '#555', fontWeight: 600, marginBottom: 4 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 12, position: 'relative', color: '#444', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0 }}>–</span>{x}</div>)}</div>)}</>}
+      {r.education.length > 0 && <><div style={sec('Ed')}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 8 }}><strong>{e.degree}</strong> — {e.school} <span style={{ color: '#999' }}>{e.endDate}</span></div>)}</>}
+      {r.skills.length > 0 && <><div style={sec('Sk')}>Skills</div><div style={{ color: '#555' }}>{r.skills.join(' · ')}</div></>}
+      {r.languages.length > 0 && <><div style={sec('L')}>Languages</div><div style={{ color: '#555' }}>{r.languages.map((l: any) => `${l.language} (${l.level})`).join(' · ')}</div></>}
+      {r.certifications.length > 0 && <><div style={sec('C')}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 3, color: '#444' }}>{c.name}{c.date ? ` (${c.date})` : ''}</div>)}</>}
+      {r.projects.length > 0 && <><div style={sec('P')}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 8 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#444', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// MONO 2 — Dark sidebar, white main
+// Fonts: JetBrains Mono 700 + Inter 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function MonoSidebarTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const h = "'JetBrains Mono', monospace"; const b = "'Inter', sans-serif"
+  const bs = 11; const hs = 11
+  const sL: React.CSSProperties = { fontFamily: h, fontSize: hs, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: '#888', marginBottom: 12, paddingBottom: 6, borderBottom: '1px solid #333' }
+  const mL: React.CSSProperties = { fontFamily: h, fontSize: hs, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: '#111', marginBottom: 14, paddingBottom: 6, borderBottom: '1px solid #ddd' }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, display: 'grid', gridTemplateColumns: '210px 1fr', minHeight: 1123, background: '#fff', color: '#222', lineHeight: 1.55 }}>
+      <aside style={{ background: '#111', color: '#ccc', padding: '40px 22px' }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 14px', display: 'block', filter: 'grayscale(100%)', border: '2px solid #444' }} />}
+        <h1 style={{ fontFamily: h, fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.2, marginBottom: 4 }}>{r.name}</h1>
+        <div style={{ textAlign: 'center', fontSize: bs, color: '#777', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 24 }}>{r.role}</div>
+        <div style={{ marginBottom: 24 }}><div style={sL}>Contact</div>{[r.email, r.phone, r.location, r.website].filter(Boolean).map((v, i) => <div key={i} style={{ fontSize: bs, marginBottom: 5, color: '#aaa', wordBreak: 'break-word' }}>{v}</div>)}</div>
+        {r.skills.length > 0 && <div style={{ marginBottom: 24 }}><div style={sL}>Skills</div>{r.skills.map((s, i) => <div key={i} style={{ fontSize: bs, marginBottom: 4, color: '#ccc' }}>// {s}</div>)}</div>}
+        {r.education.length > 0 && <div style={{ marginBottom: 24 }}><div style={sL}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><div style={{ fontWeight: 600, color: '#fff', fontSize: bs }}>{e.degree}</div><div style={{ fontSize: bs, color: '#888' }}>{e.school} · {e.endDate}</div></div>)}</div>}
+        {r.languages.length > 0 && <div><div style={sL}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ fontSize: bs, marginBottom: 3, color: '#aaa' }}>{l.language} — {l.level}</div>)}</div>}
+      </aside>
+      <main style={{ padding: '40px 36px' }}>
+        {r.summary && <div style={{ marginBottom: 24 }}><div style={mL}>Profile</div><p style={{ margin: 0, color: '#555' }}>{r.summary}</p></div>}
+        {r.experience.length > 0 && <div style={{ marginBottom: 24 }}><div style={mL}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ color: '#111' }}>{e.title}</strong><span style={{ color: '#999', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: '#555', fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: '#999' }}>&gt;</span>{x}</div>)}</div>)}</div>}
+        {r.certifications.length > 0 && <div><div style={mL}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#444' }}>{c.name}{c.date ? ` (${c.date})` : ''}</div>)}</div>}
+        {r.projects.length > 0 && <div style={{ marginTop: 20 }}><div style={mL}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#555', marginTop: 2 }}>{p.description}</div>}</div>)}</div>}
+      </main>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// MONO 3 — Stacked bands with alternating grays
+// Fonts: Space Mono 700 + DM Sans 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function MonoStackTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const h = "'Space Mono', monospace"; const b = "'DM Sans', sans-serif"
+  const bs = 11
+  const band = (dark: boolean): React.CSSProperties => ({ background: dark ? '#f0f0f0' : '#fff', padding: '20px 48px' })
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#111', marginBottom: 14 }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#222', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
+      <header style={{ background: '#111', color: '#fff', padding: '36px 48px', display: 'flex', alignItems: 'center', gap: 20 }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', filter: 'grayscale(100%)', border: '2px solid #555', flexShrink: 0 }} />}
+        <div style={{ flex: 1 }}><h1 style={{ fontFamily: h, fontSize: 26, fontWeight: 700, margin: 0 }}>{r.name}</h1><div style={{ fontSize: bs, color: '#999', marginTop: 4, letterSpacing: 1.5, textTransform: 'uppercase' }}>{r.role}</div></div>
+        <div style={{ textAlign: 'right', fontSize: bs, color: '#888', lineHeight: 1.8 }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+      </header>
+      {r.summary && <div style={band(true)}><div style={sec}>Summary</div><p style={{ margin: 0, color: '#444' }}>{r.summary}</p></div>}
+      {r.experience.length > 0 && <div style={band(false)}><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 16 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong>{e.title}</strong><span style={{ color: '#888' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: '#555', fontWeight: 600, marginBottom: 4 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 12, position: 'relative', color: '#444', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0 }}>▪</span>{x}</div>)}</div>)}</div>}
+      {r.education.length > 0 && <div style={band(true)}><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 8 }}><strong>{e.degree}</strong> — {e.school} <span style={{ color: '#999' }}>{e.endDate}</span></div>)}</div>}
+      <div style={band(false)}>
+        {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 20 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 10px', border: '1px solid #ccc', borderRadius: 3, color: '#333' }}>{s}</span>)}</div></>}
+        {r.languages.length > 0 && <><div style={sec}>Languages</div><div style={{ color: '#555', marginBottom: 20 }}>{r.languages.map((l: any) => `${l.language} (${l.level})`).join(' · ')}</div></>}
+        {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 3, color: '#444' }}>{c.name}{c.date ? ` (${c.date})` : ''}</div>)}</>}
+      </div>
+      {r.projects.length > 0 && <div style={band(true)}><div style={sec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 8 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#444', marginTop: 2 }}>{p.description}</div>}</div>)}</div>}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// MONO 4 — Typography-focused, large name, monospace accents
+// Fonts: IBM Plex Mono 700 + IBM Plex Sans 400 | 11px / 11px
+// ────────────────────────────────────────────────────────────
+function MonoTypeTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const h = "'IBM Plex Mono', monospace"; const b = "'IBM Plex Sans', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: bs, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#000', marginBottom: 12, marginTop: 28, display: 'flex', alignItems: 'center', gap: 8 }
+  const line: React.CSSProperties = { flex: 1, height: 1, background: '#ccc' }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#333', lineHeight: 1.6, padding: '52px 56px', background: '#fff', minHeight: 1123 }}>
+      <header style={{ marginBottom: 16, borderBottom: '2px solid #000', paddingBottom: 16 }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', filter: 'grayscale(100%)', marginBottom: 10 }} />}
+        <h1 style={{ fontFamily: h, fontSize: 36, fontWeight: 700, color: '#000', margin: 0, lineHeight: 1.1, letterSpacing: -1 }}>{r.name}</h1>
+        <div style={{ fontFamily: h, fontSize: bs, color: '#666', marginTop: 6, letterSpacing: 3, textTransform: 'uppercase' }}>{r.role}</div>
+        <div style={{ fontSize: bs, color: '#999', marginTop: 6 }}>{[r.email, r.phone, r.location].filter(Boolean).join(' | ')}</div>
+      </header>
+      {r.summary && <><div style={sec}>Summary<span style={line} /></div><p style={{ margin: 0, color: '#444' }}>{r.summary}</p></>}
+      {r.experience.length > 0 && <><div style={sec}>Experience<span style={line} /></div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 16 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ color: '#000' }}>{e.title}</strong><span style={{ fontFamily: h, color: '#999', whiteSpace: 'nowrap' }}>{e.startDate}–{e.current ? 'Present' : e.endDate}</span></div><div style={{ color: '#555', marginBottom: 4 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ color: '#444', marginBottom: 2 }}>→ {x}</div>)}</div>)}</>}
+      {r.education.length > 0 && <><div style={sec}>Education<span style={line} /></div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 8 }}><strong>{e.degree}</strong><span style={{ color: '#888' }}> — {e.school} · {e.endDate}</span></div>)}</>}
+      {r.skills.length > 0 && <><div style={sec}>Skills<span style={line} /></div><div style={{ fontFamily: h, fontSize: bs, color: '#555' }}>{r.skills.join(', ')}</div></>}
+      {r.languages.length > 0 && <><div style={sec}>Languages<span style={line} /></div><div style={{ color: '#555' }}>{r.languages.map((l: any) => `${l.language} (${l.level})`).join(' · ')}</div></>}
+      {r.certifications.length > 0 && <><div style={sec}>Certifications<span style={line} /></div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 3, color: '#444' }}>{c.name}{c.date ? ` (${c.date})` : ''}</div>)}</>}
+      {r.projects.length > 0 && <><div style={sec}>Projects<span style={line} /></div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 8 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#444', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// MONO 5 — Editorial serif in grayscale, newspaper feel
+// Fonts: Playfair Display 700 + Source Sans 3 400 | 11px / 13px
+// ────────────────────────────────────────────────────────────
+function MonoEditorialTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const h = "'Playfair Display', Georgia, serif"; const b = "'Source Sans 3', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 13, fontWeight: 700, color: '#000', marginBottom: 12, marginTop: 28, paddingBottom: 6, borderBottom: '2px solid #000' }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#222', lineHeight: 1.55, padding: '48px 52px', background: '#fafafa', minHeight: 1123 }}>
+      <header style={{ textAlign: 'center', marginBottom: 8, paddingBottom: 16, borderBottom: '1px solid #ddd' }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 70, height: 70, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 10px', display: 'block', filter: 'grayscale(100%)', border: '2px solid #ccc' }} />}
+        <h1 style={{ fontFamily: h, fontSize: 34, fontWeight: 700, color: '#000', margin: 0 }}>{r.name}</h1>
+        <div style={{ fontSize: bs, color: '#666', marginTop: 4, letterSpacing: 2, textTransform: 'uppercase', fontStyle: 'italic' }}>{r.role}</div>
+        <div style={{ fontSize: bs, color: '#999', marginTop: 8 }}>{[r.email, r.phone, r.location].filter(Boolean).join('  ·  ')}</div>
+      </header>
+      {r.summary && <><div style={sec}>Summary</div><p style={{ margin: 0, color: '#444', lineHeight: 1.7, fontStyle: 'italic' }}>{r.summary}</p></>}
+      {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 16 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ color: '#000' }}>{e.title}</strong><span style={{ color: '#888', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: '#555', fontStyle: 'italic', marginBottom: 4 }}>{e.company}{e.location ? `, ${e.location}` : ''}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#444', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0 }}>•</span>{x}</div>)}</div>)}</>}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, marginTop: 8 }}>
+        <div>
+          {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 8 }}><strong>{e.degree}</strong><div style={{ color: '#666' }}>{e.school} · {e.endDate}</div></div>)}</>}
+          {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 3, color: '#444' }}>{c.name}{c.date ? ` (${c.date})` : ''}</div>)}</>}
+        </div>
+        <div>
+          {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '2px 10px', border: '1px solid #999', borderRadius: 2, color: '#333' }}>{s}</span>)}</div></>}
+          {r.languages.length > 0 && <><div style={{ ...sec, marginTop: 20 }}>Languages</div><div style={{ color: '#555' }}>{r.languages.map((l: any) => `${l.language} (${l.level})`).join(' · ')}</div></>}
+        </div>
+      </div>
+      {r.projects.length > 0 && <><div style={sec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 8 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#444', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// EXEC 1 — Navy header with gold accents
+// Fonts: Merriweather 700 + Open Sans 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function ExecNavyTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#c9a84c'; const navy = '#0a1e3d'
+  const h = "'Merriweather', Georgia, serif"; const b = "'Open Sans', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: navy, marginBottom: 14, marginTop: 28, paddingBottom: 6, borderBottom: `2px solid ${ac}` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#222', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
+      <header style={{ background: navy, color: '#fff', padding: '38px 52px', display: 'flex', alignItems: 'center', gap: 24 }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 76, height: 76, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${ac}`, flexShrink: 0 }} />}
+        <div style={{ flex: 1 }}><h1 style={{ fontFamily: h, fontSize: 28, fontWeight: 700, margin: 0, color: '#fff' }}>{r.name}</h1><div style={{ fontSize: bs, color: ac, marginTop: 4, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div></div>
+        <div style={{ textAlign: 'right', fontSize: bs, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8 }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+      </header>
+      <div style={{ padding: '0 52px 48px' }}>
+        {r.summary && <><div style={sec}>Executive Summary</div><p style={{ margin: 0, color: '#444', lineHeight: 1.7 }}>{r.summary}</p></>}
+        {r.experience.length > 0 && <><div style={sec}>Professional Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18, paddingLeft: 14, borderLeft: `3px solid ${ac}` }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: navy }}>{e.title}</strong><span style={{ color: '#999', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>▸</span>{x}</div>)}</div>)}</>}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+          <div>
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{e.degree}</strong><div style={{ color: '#555' }}>{e.school} · {e.endDate}</div></div>)}</>}
+            {r.languages.length > 0 && <><div style={sec}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#444' }}>{l.language} — {l.level}</div>)}</>}
+          </div>
+          <div>
+            {r.skills.length > 0 && <><div style={sec}>Core Competencies</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 20, background: `${navy}08`, border: `1px solid ${navy}20`, color: '#333' }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#444' }}><strong>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+          </div>
+        </div>
+        {r.projects.length > 0 && <><div style={sec}>Key Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#444', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// EXEC 2 — Slate sidebar, sophisticated
+// Fonts: Inter 700 + Inter 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function ExecSlateTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#3b82f6'; const slate = '#1e293b'
+  const f = "'Inter', 'Segoe UI', sans-serif"
+  const bs = 11
+  const sL: React.CSSProperties = { fontFamily: f, fontSize: bs, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', marginBottom: 12, paddingBottom: 6, borderBottom: '1px solid rgba(255,255,255,0.1)' }
+  const mL: React.CSSProperties = { fontFamily: f, fontSize: 12, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: slate, marginBottom: 14, paddingBottom: 6, borderBottom: `2px solid ${ac}` }
+  return (
+    <div style={{ fontFamily: f, fontSize: bs, display: 'grid', gridTemplateColumns: '230px 1fr', minHeight: 1123, background: '#fff', color: '#222', lineHeight: 1.55 }}>
+      <aside style={{ background: slate, color: '#d0d5dd', padding: '40px 24px' }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', display: 'block', border: `3px solid ${ac}` }} />}
+        <h1 style={{ fontFamily: f, fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.2, marginBottom: 4 }}>{r.name}</h1>
+        <div style={{ textAlign: 'center', fontSize: bs, color: ac, fontWeight: 600, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 28 }}>{r.role}</div>
+        <div style={{ marginBottom: 24 }}><div style={sL}>Contact</div>{[r.email, r.phone, r.location, r.website].filter(Boolean).map((v, i) => <div key={i} style={{ fontSize: bs, marginBottom: 6, color: '#b0b8c4', wordBreak: 'break-word' }}>{v}</div>)}</div>
+        {r.skills.length > 0 && <div style={{ marginBottom: 24 }}><div style={sL}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: 10, padding: '3px 10px', borderRadius: 4, background: `${ac}20`, color: ac }}>{s}</span>)}</div></div>}
+        {r.education.length > 0 && <div style={{ marginBottom: 24 }}><div style={sL}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><div style={{ fontWeight: 600, color: '#fff', fontSize: bs }}>{e.degree}</div><div style={{ fontSize: bs, color: '#8896a6' }}>{e.school} · {e.endDate}</div></div>)}</div>}
+        {r.languages.length > 0 && <div><div style={sL}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ fontSize: bs, marginBottom: 3, color: '#b0b8c4' }}>{l.language} — {l.level}</div>)}</div>}
+      </aside>
+      <main style={{ padding: '40px 40px 40px 32px' }}>
+        {r.summary && <div style={{ marginBottom: 24 }}><div style={mL}>Profile</div><p style={{ margin: 0, color: '#555', lineHeight: 1.65 }}>{r.summary}</p></div>}
+        {r.experience.length > 0 && <div style={{ marginBottom: 24 }}><div style={mL}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#111' }}>{e.title}</strong><span style={{ color: '#999', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>▸</span>{x}</div>)}</div>)}</div>}
+        {r.certifications.length > 0 && <div><div style={mL}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#444' }}>{c.name}{c.date ? ` (${c.date})` : ''}</div>)}</div>}
+        {r.projects.length > 0 && <div style={{ marginTop: 20 }}><div style={mL}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#555', marginTop: 2 }}>{p.description}</div>}</div>)}</div>}
+      </main>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// EXEC 3 — Ivory marble, luxury feel
+// Fonts: Playfair Display 700 + Open Sans 400 | 11px / 13px
+// ────────────────────────────────────────────────────────────
+function ExecMarbleTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#b8963c'
+  const h = "'Playfair Display', Georgia, serif"; const b = "'Open Sans', sans-serif"
+  const bs = 11
+  const sec = (label: string): React.CSSProperties => ({ fontFamily: h, fontSize: 13, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: ac, marginBottom: 14, marginTop: 28, display: 'flex', alignItems: 'center', gap: 10 })
+  const rule: React.CSSProperties = { flex: 1, height: 1, background: `${ac}40` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#222', lineHeight: 1.55, background: '#f9f6f0', minHeight: 1123, padding: '48px 52px' }}>
+      <header style={{ textAlign: 'center', marginBottom: 8, paddingBottom: 20, borderBottom: `2px solid ${ac}` }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 12px', display: 'block', border: `3px solid ${ac}` }} />}
+        <h1 style={{ fontFamily: h, fontSize: 32, fontWeight: 700, color: '#1a1a1a', margin: 0 }}>{r.name}</h1>
+        <div style={{ fontSize: bs, color: ac, marginTop: 4, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div>
+        <div style={{ fontSize: bs, color: '#888', marginTop: 8 }}>{[r.email, r.phone, r.location].filter(Boolean).join('  ·  ')}</div>
+      </header>
+      {r.summary && <><div style={sec('S')}><span style={rule} />Summary<span style={rule} /></div><p style={{ margin: 0, color: '#444', textAlign: 'center', lineHeight: 1.7 }}>{r.summary}</p></>}
+      {r.experience.length > 0 && <><div style={sec('E')}>Experience<span style={rule} /></div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18, paddingLeft: 16, borderLeft: `2px solid ${ac}30` }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#111' }}>{e.title}</strong><span style={{ color: '#999', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>◆</span>{x}</div>)}</div>)}</>}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, marginTop: 8 }}>
+        <div>
+          {r.education.length > 0 && <><div style={sec('Ed')}>Education<span style={rule} /></div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{e.degree}</strong><div style={{ color: '#555' }}>{e.school} · {e.endDate}</div></div>)}</>}
+          {r.certifications.length > 0 && <><div style={sec('C')}>Certifications<span style={rule} /></div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#444' }}><strong>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+        </div>
+        <div>
+          {r.skills.length > 0 && <><div style={sec('Sk')}>Skills<span style={rule} /></div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 20, background: `${ac}10`, border: `1px solid ${ac}30`, color: '#333' }}>{s}</span>)}</div></>}
+          {r.languages.length > 0 && <><div style={sec('L')}>Languages<span style={rule} /></div><div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>{r.languages.map((l: any, i) => <span key={i} style={{ color: '#444' }}>{l.language} — {l.level}</span>)}</div></>}
+        </div>
+      </div>
+      {r.projects.length > 0 && <><div style={sec('P')}>Projects<span style={rule} /></div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#444', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// EXEC 4 — Charcoal dark header, white body
+// Fonts: Space Grotesk 700 + Inter 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function ExecCharcoalTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#64748b'
+  const h = "'Space Grotesk', sans-serif"; const b = "'Inter', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#334155', marginBottom: 14, marginTop: 28, paddingBottom: 6, borderBottom: `1.5px solid ${ac}40` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#222', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
+      <header style={{ background: 'linear-gradient(135deg, #1e293b, #334155)', color: '#fff', padding: '40px 52px', display: 'flex', alignItems: 'center', gap: 24 }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 76, height: 76, borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(255,255,255,0.2)', flexShrink: 0 }} />}
+        <div style={{ flex: 1 }}><h1 style={{ fontFamily: h, fontSize: 30, fontWeight: 700, margin: 0 }}>{r.name}</h1><div style={{ fontSize: bs, color: ac, marginTop: 4, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div></div>
+        <div style={{ textAlign: 'right', fontSize: bs, color: 'rgba(255,255,255,0.6)', lineHeight: 1.8 }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+      </header>
+      <div style={{ padding: '0 52px 48px' }}>
+        {r.summary && <><div style={sec}>Summary</div><p style={{ margin: 0, color: '#555', lineHeight: 1.7 }}>{r.summary}</p></>}
+        {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#111' }}>{e.title}</strong><span style={{ color: '#999', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: '#475569', fontWeight: 600, marginBottom: 6 }}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>—</span>{x}</div>)}</div>)}</>}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+          <div>
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{e.degree}</strong><div style={{ color: '#555' }}>{e.school} · {e.endDate}</div></div>)}</>}
+            {r.languages.length > 0 && <><div style={sec}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#444' }}>{l.language} — {l.level}</div>)}</>}
+          </div>
+          <div>
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 4, background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#334155' }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#444' }}><strong>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+          </div>
+        </div>
+        {r.projects.length > 0 && <><div style={sec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#444', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// EXEC 5 — Copper/bronze accents, warm professional
+// Fonts: Merriweather 700 + DM Sans 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function ExecCopperTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#b45309'
+  const h = "'Merriweather', Georgia, serif"; const b = "'DM Sans', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: ac, marginBottom: 14, marginTop: 28, paddingBottom: 6, display: 'flex', alignItems: 'center', gap: 10 }
+  const rule: React.CSSProperties = { flex: 1, height: 1, background: `${ac}30` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#222', lineHeight: 1.55, background: '#fffbf5', minHeight: 1123 }}>
+      <header style={{ padding: '40px 52px', borderBottom: `3px solid ${ac}`, display: 'flex', alignItems: 'center', gap: 24 }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 76, height: 76, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${ac}`, flexShrink: 0 }} />}
+        <div style={{ flex: 1 }}><h1 style={{ fontFamily: h, fontSize: 30, fontWeight: 700, color: '#1a1a1a', margin: 0 }}>{r.name}</h1><div style={{ fontSize: bs, color: ac, marginTop: 4, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div></div>
+        <div style={{ textAlign: 'right', fontSize: bs, color: '#888', lineHeight: 1.8 }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+      </header>
+      <div style={{ padding: '0 52px 48px' }}>
+        {r.summary && <><div style={sec}>Summary<span style={rule} /></div><p style={{ margin: 0, color: '#444', lineHeight: 1.7 }}>{r.summary}</p></>}
+        {r.experience.length > 0 && <><div style={sec}>Experience<span style={rule} /></div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#111' }}>{e.title}</strong><span style={{ color: '#999', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>◈</span>{x}</div>)}</div>)}</>}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+          <div>
+            {r.education.length > 0 && <><div style={sec}>Education<span style={rule} /></div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{e.degree}</strong><div style={{ color: '#555' }}>{e.school} · {e.endDate}</div></div>)}</>}
+            {r.languages.length > 0 && <><div style={sec}>Languages<span style={rule} /></div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#444' }}>{l.language} — {l.level}</div>)}</>}
+          </div>
+          <div>
+            {r.skills.length > 0 && <><div style={sec}>Skills<span style={rule} /></div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 4, background: `${ac}08`, border: `1px solid ${ac}20`, color: '#333' }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications<span style={rule} /></div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#444' }}><strong>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+          </div>
+        </div>
+        {r.projects.length > 0 && <><div style={sec}>Projects<span style={rule} /></div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#444', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// CREATIVE 1 — Gradient purple/pink sidebar
+// Fonts: Outfit 700 + Inter 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function CreativeGradientTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#a855f7'
+  const h = "'Outfit', sans-serif"; const b = "'Inter', sans-serif"
+  const bs = 11
+  const sL: React.CSSProperties = { fontFamily: h, fontSize: bs, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)', marginBottom: 12, paddingBottom: 6, borderBottom: '1px solid rgba(255,255,255,0.12)' }
+  const mL: React.CSSProperties = { fontFamily: h, fontSize: 12, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: '#1a1a2e', marginBottom: 14, paddingBottom: 6, borderBottom: `2px solid ${ac}` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, display: 'grid', gridTemplateColumns: '230px 1fr', minHeight: 1123, background: '#fff', color: '#222', lineHeight: 1.55 }}>
+      <aside style={{ background: 'linear-gradient(180deg, #7c3aed, #a855f7, #ec4899)', color: '#fff', padding: '40px 24px' }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 84, height: 84, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', display: 'block', border: '3px solid rgba(255,255,255,0.3)' }} />}
+        <h1 style={{ fontFamily: h, fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.2, marginBottom: 4 }}>{r.name}</h1>
+        <div style={{ textAlign: 'center', fontSize: bs, color: 'rgba(255,255,255,0.75)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 28 }}>{r.role}</div>
+        <div style={{ marginBottom: 24 }}><div style={sL}>Contact</div>{[r.email, r.phone, r.location, r.website].filter(Boolean).map((v, i) => <div key={i} style={{ fontSize: bs, marginBottom: 6, color: 'rgba(255,255,255,0.8)', wordBreak: 'break-word' }}>{v}</div>)}</div>
+        {r.skills.length > 0 && <div style={{ marginBottom: 24 }}><div style={sL}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: 10, padding: '3px 10px', borderRadius: 12, background: 'rgba(255,255,255,0.15)', color: '#fff' }}>{s}</span>)}</div></div>}
+        {r.education.length > 0 && <div style={{ marginBottom: 24 }}><div style={sL}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><div style={{ fontWeight: 600, color: '#fff', fontSize: bs }}>{e.degree}</div><div style={{ fontSize: bs, color: 'rgba(255,255,255,0.6)' }}>{e.school} · {e.endDate}</div></div>)}</div>}
+        {r.languages.length > 0 && <div><div style={sL}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ fontSize: bs, marginBottom: 3, color: 'rgba(255,255,255,0.75)' }}>{l.language} — {l.level}</div>)}</div>}
+      </aside>
+      <main style={{ padding: '40px 36px' }}>
+        {r.summary && <div style={{ marginBottom: 24 }}><div style={mL}>Profile</div><p style={{ margin: 0, color: '#555', lineHeight: 1.65 }}>{r.summary}</p></div>}
+        {r.experience.length > 0 && <div style={{ marginBottom: 24 }}><div style={mL}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#111' }}>{e.title}</strong><span style={{ color: '#999', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>▸</span>{x}</div>)}</div>)}</div>}
+        {r.certifications.length > 0 && <div><div style={mL}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#444' }}>{c.name}{c.date ? ` (${c.date})` : ''}</div>)}</div>}
+        {r.projects.length > 0 && <div style={{ marginTop: 20 }}><div style={mL}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#555', marginTop: 2 }}>{p.description}</div>}</div>)}</div>}
+      </main>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// CREATIVE 2 — Dark background, neon green accents
+// Fonts: Space Grotesk 700 + DM Sans 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function CreativeNeonTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#22c55e'
+  const h = "'Space Grotesk', sans-serif"; const b = "'DM Sans', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: ac, marginBottom: 14, marginTop: 28, paddingBottom: 6, borderBottom: `1px solid ${ac}40` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#d4d4d8', lineHeight: 1.55, background: '#0f0f0f', minHeight: 1123, padding: '48px 52px' }}>
+      <header style={{ marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          {r.photo && <img src={r.photo} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${ac}`, flexShrink: 0 }} />}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontFamily: h, fontSize: 30, fontWeight: 700, margin: 0, color: '#fff' }}>{r.name}</h1>
+            <div style={{ fontSize: bs, color: ac, marginTop: 4, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: bs, color: '#71717a', lineHeight: 1.8 }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+        </div>
+      </header>
+      {r.summary && <><div style={sec}>About</div><p style={{ margin: 0, color: '#a1a1aa', lineHeight: 1.7 }}>{r.summary}</p></>}
+      {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#fff' }}>{e.title}</strong><span style={{ color: '#52525b', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#a1a1aa', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>›</span>{x}</div>)}</div>)}</>}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+        <div>
+          {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{e.degree}</strong><div style={{ color: '#71717a' }}>{e.school} · {e.endDate}</div></div>)}</>}
+          {r.languages.length > 0 && <><div style={sec}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#a1a1aa' }}>{l.language} — {l.level}</div>)}</>}
+        </div>
+        <div>
+          {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 4, background: `${ac}15`, border: `1px solid ${ac}30`, color: ac }}>{s}</span>)}</div></>}
+          {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#a1a1aa' }}><strong style={{ color: '#fff' }}>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+        </div>
+      </div>
+      {r.projects.length > 0 && <><div style={sec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{p.name}</strong>{p.tech && <span style={{ color: '#52525b' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#a1a1aa', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// CREATIVE 3 — Warm coral/terracotta with organic shapes
+// Fonts: DM Serif Display 400 + Inter 400 | 11px / 13px
+// ────────────────────────────────────────────────────────────
+function CreativeCoralTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#dc6843'
+  const h = "'DM Serif Display', Georgia, serif"; const b = "'Inter', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 13, fontWeight: 400, letterSpacing: 1, color: ac, marginBottom: 14, marginTop: 28, paddingBottom: 6, borderBottom: `2px solid ${ac}` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#222', lineHeight: 1.55, background: '#fef7f3', minHeight: 1123, padding: '48px 52px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: `${ac}08` }} />
+      <div style={{ position: 'absolute', bottom: -40, left: -40, width: 140, height: 140, borderRadius: '50%', background: `${ac}06` }} />
+      <header style={{ position: 'relative', zIndex: 1, marginBottom: 8, textAlign: 'center', paddingBottom: 20, borderBottom: `1px solid ${ac}20` }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 12px', display: 'block', border: `3px solid ${ac}` }} />}
+        <h1 style={{ fontFamily: h, fontSize: 32, fontWeight: 400, color: '#1a1a1a', margin: 0 }}>{r.name}</h1>
+        <div style={{ fontSize: bs, color: ac, marginTop: 4, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div>
+        <div style={{ fontSize: bs, color: '#999', marginTop: 8 }}>{[r.email, r.phone, r.location].filter(Boolean).join('  ·  ')}</div>
+      </header>
+      {r.summary && <><div style={sec}>Summary</div><p style={{ margin: 0, color: '#555', lineHeight: 1.7, position: 'relative', zIndex: 1 }}>{r.summary}</p></>}
+      {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18, paddingLeft: 14, borderLeft: `2px solid ${ac}30`, position: 'relative', zIndex: 1 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#111' }}>{e.title}</strong><span style={{ color: '#999', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>◦</span>{x}</div>)}</div>)}</>}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, position: 'relative', zIndex: 1 }}>
+        <div>
+          {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{e.degree}</strong><div style={{ color: '#666' }}>{e.school} · {e.endDate}</div></div>)}</>}
+          {r.languages.length > 0 && <><div style={sec}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#555' }}>{l.language} — {l.level}</div>)}</>}
+        </div>
+        <div>
+          {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 20, background: `${ac}10`, border: `1px solid ${ac}25`, color: '#333' }}>{s}</span>)}</div></>}
+          {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#444' }}>{c.name}{c.date ? ` (${c.date})` : ''}</div>)}</>}
+        </div>
+      </div>
+      {r.projects.length > 0 && <><div style={sec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10, position: 'relative', zIndex: 1 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#555', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// CREATIVE 4 — Technical blueprint style
+// Fonts: JetBrains Mono 700 + Inter 400 | 11px / 11px
+// ────────────────────────────────────────────────────────────
+function CreativeBlueprintTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#38bdf8'
+  const h = "'JetBrains Mono', monospace"; const b = "'Inter', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: bs, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: ac, marginBottom: 14, marginTop: 28, paddingBottom: 6, borderBottom: `1px dashed ${ac}50` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#e2e8f0', lineHeight: 1.55, background: '#0c1929', minHeight: 1123, padding: '48px 52px' }}>
+      <header style={{ borderBottom: `1px solid ${ac}30`, paddingBottom: 16, marginBottom: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          {r.photo && <img src={r.photo} alt="" style={{ width: 68, height: 68, borderRadius: 6, objectFit: 'cover', border: `2px solid ${ac}50`, flexShrink: 0 }} />}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontFamily: h, fontSize: 26, fontWeight: 700, margin: 0, color: '#fff' }}>&lt;{r.name} /&gt;</h1>
+            <div style={{ fontSize: bs, color: ac, marginTop: 4, fontFamily: h }}>{'// '}{r.role}</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: bs, color: '#64748b', lineHeight: 1.8, fontFamily: h }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+        </div>
+      </header>
+      {r.summary && <><div style={sec}>/* Summary */</div><p style={{ margin: 0, color: '#94a3b8', lineHeight: 1.7 }}>{r.summary}</p></>}
+      {r.experience.length > 0 && <><div style={sec}>/* Experience */</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18, paddingLeft: 14, borderLeft: `2px solid ${ac}30` }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#fff' }}>{e.title}</strong><span style={{ color: '#475569', fontFamily: h, whiteSpace: 'nowrap' }}>{e.startDate}–{e.current ? 'now' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#94a3b8', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac, fontFamily: h }}>→</span>{x}</div>)}</div>)}</>}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+        <div>
+          {r.education.length > 0 && <><div style={sec}>/* Education */</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{e.degree}</strong><div style={{ color: '#64748b' }}>{e.school} · {e.endDate}</div></div>)}</>}
+          {r.languages.length > 0 && <><div style={sec}>/* Languages */</div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#94a3b8' }}>{l.language} — {l.level}</div>)}</>}
+        </div>
+        <div>
+          {r.skills.length > 0 && <><div style={sec}>/* Skills */</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 3, background: `${ac}12`, border: `1px solid ${ac}25`, color: ac, fontFamily: h }}>{s}</span>)}</div></>}
+          {r.certifications.length > 0 && <><div style={sec}>/* Certs */</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#94a3b8' }}><strong style={{ color: '#fff' }}>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+        </div>
+      </div>
+      {r.projects.length > 0 && <><div style={sec}>/* Projects */</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{p.name}</strong>{p.tech && <span style={{ color: '#475569', fontFamily: h }}> ({p.tech})</span>}{p.description && <div style={{ color: '#94a3b8', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// CREATIVE 5 — Sunset warm orange gradient header
+// Fonts: Outfit 700 + DM Sans 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function CreativeSunsetTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#ea580c'
+  const h = "'Outfit', sans-serif"; const b = "'DM Sans', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: ac, marginBottom: 14, marginTop: 28, paddingBottom: 6, borderBottom: `2px solid ${ac}` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#222', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
+      <header style={{ background: 'linear-gradient(135deg, #ea580c, #f59e0b, #f97316)', color: '#fff', padding: '40px 52px', display: 'flex', alignItems: 'center', gap: 24 }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(255,255,255,0.4)', flexShrink: 0 }} />}
+        <div style={{ flex: 1 }}><h1 style={{ fontFamily: h, fontSize: 30, fontWeight: 700, margin: 0 }}>{r.name}</h1><div style={{ fontSize: bs, color: 'rgba(255,255,255,0.85)', marginTop: 4, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div></div>
+        <div style={{ textAlign: 'right', fontSize: bs, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8 }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+      </header>
+      <div style={{ padding: '0 52px 48px' }}>
+        {r.summary && <><div style={sec}>About Me</div><p style={{ margin: 0, color: '#555', lineHeight: 1.7 }}>{r.summary}</p></>}
+        {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18, paddingLeft: 14, borderLeft: `3px solid ${ac}30` }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#111' }}>{e.title}</strong><span style={{ color: '#999', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>▸</span>{x}</div>)}</div>)}</>}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+          <div>
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{e.degree}</strong><div style={{ color: '#555' }}>{e.school} · {e.endDate}</div></div>)}</>}
+            {r.languages.length > 0 && <><div style={sec}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#444' }}>{l.language} — {l.level}</div>)}</>}
+          </div>
+          <div>
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 20, background: `${ac}10`, border: `1px solid ${ac}25`, color: '#333' }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#444' }}><strong>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+          </div>
+        </div>
+        {r.projects.length > 0 && <><div style={sec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#555', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// DARK 1 — Obsidian: pure black, clean white text
+// Fonts: Inter 700 + Inter 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function DarkObsidianTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#e5e5e5'
+  const f = "'Inter', 'Segoe UI', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: f, fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: ac, marginBottom: 14, marginTop: 28, paddingBottom: 6, borderBottom: `1px solid #333` }
+  return (
+    <div style={{ fontFamily: f, fontSize: bs, color: '#ccc', lineHeight: 1.55, background: '#0a0a0a', minHeight: 1123, padding: '48px 52px' }}>
+      <header style={{ marginBottom: 12, paddingBottom: 20, borderBottom: '1px solid #222' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          {r.photo && <img src={r.photo} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '2px solid #333', flexShrink: 0 }} />}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontFamily: f, fontSize: 30, fontWeight: 700, margin: 0, color: '#fff' }}>{r.name}</h1>
+            <div style={{ fontSize: bs, color: '#888', marginTop: 4, letterSpacing: 2, textTransform: 'uppercase' }}>{r.role}</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: bs, color: '#555', lineHeight: 1.8 }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+        </div>
+      </header>
+      {r.summary && <><div style={sec}>Summary</div><p style={{ margin: 0, color: '#999', lineHeight: 1.7 }}>{r.summary}</p></>}
+      {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#fff' }}>{e.title}</strong><span style={{ color: '#555', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: '#777', fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#999', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: '#555' }}>·</span>{x}</div>)}</div>)}</>}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+        <div>
+          {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{e.degree}</strong><div style={{ color: '#666' }}>{e.school} · {e.endDate}</div></div>)}</>}
+          {r.languages.length > 0 && <><div style={sec}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#999' }}>{l.language} — {l.level}</div>)}</>}
+        </div>
+        <div>
+          {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 4, background: '#161616', border: '1px solid #2a2a2a', color: '#bbb' }}>{s}</span>)}</div></>}
+          {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#999' }}><strong style={{ color: '#fff' }}>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+        </div>
+      </div>
+      {r.projects.length > 0 && <><div style={sec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{p.name}</strong>{p.tech && <span style={{ color: '#555' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#999', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// DARK 2 — Midnight: deep blue dark with ice-blue accents
+// Fonts: Space Grotesk 700 + Inter 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function DarkMidnightTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#60a5fa'
+  const h = "'Space Grotesk', sans-serif"; const b = "'Inter', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: ac, marginBottom: 14, marginTop: 28, paddingBottom: 6, borderBottom: `1px solid #1e293b` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#cbd5e1', lineHeight: 1.55, background: '#0b1120', minHeight: 1123 }}>
+      <header style={{ background: 'linear-gradient(135deg, #0f172a, #1e293b)', padding: '40px 52px', display: 'flex', alignItems: 'center', gap: 24 }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 76, height: 76, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${ac}40`, flexShrink: 0 }} />}
+        <div style={{ flex: 1 }}><h1 style={{ fontFamily: h, fontSize: 30, fontWeight: 700, margin: 0, color: '#f1f5f9' }}>{r.name}</h1><div style={{ fontSize: bs, color: ac, marginTop: 4, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div></div>
+        <div style={{ textAlign: 'right', fontSize: bs, color: '#475569', lineHeight: 1.8 }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+      </header>
+      <div style={{ padding: '0 52px 48px' }}>
+        {r.summary && <><div style={sec}>Summary</div><p style={{ margin: 0, color: '#94a3b8', lineHeight: 1.7 }}>{r.summary}</p></>}
+        {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18, paddingLeft: 14, borderLeft: `2px solid ${ac}30` }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#f1f5f9' }}>{e.title}</strong><span style={{ color: '#475569', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#94a3b8', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>▸</span>{x}</div>)}</div>)}</>}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+          <div>
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#f1f5f9' }}>{e.degree}</strong><div style={{ color: '#64748b' }}>{e.school} · {e.endDate}</div></div>)}</>}
+            {r.languages.length > 0 && <><div style={sec}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#94a3b8' }}>{l.language} — {l.level}</div>)}</>}
+          </div>
+          <div>
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 4, background: '#1e293b', border: `1px solid ${ac}20`, color: ac }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#94a3b8' }}><strong style={{ color: '#f1f5f9' }}>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+          </div>
+        </div>
+        {r.projects.length > 0 && <><div style={sec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#f1f5f9' }}>{p.name}</strong>{p.tech && <span style={{ color: '#475569' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#94a3b8', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// DARK 3 — Eclipse: dark with warm amber/gold glow
+// Fonts: Outfit 700 + DM Sans 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function DarkEclipseTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#f59e0b'
+  const h = "'Outfit', sans-serif"; const b = "'DM Sans', sans-serif"
+  const bs = 11
+  const sL: React.CSSProperties = { fontFamily: h, fontSize: bs, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: `${ac}90`, marginBottom: 12, paddingBottom: 6, borderBottom: `1px solid ${ac}20` }
+  const mL: React.CSSProperties = { fontFamily: h, fontSize: 12, fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', color: ac, marginBottom: 14, paddingBottom: 6, borderBottom: `1px solid #2a2520` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, display: 'grid', gridTemplateColumns: '220px 1fr', minHeight: 1123, background: '#12100e', color: '#d4c8b8', lineHeight: 1.55 }}>
+      <aside style={{ background: '#1a1714', padding: '40px 22px', borderRight: `1px solid ${ac}15` }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', display: 'block', border: `3px solid ${ac}40` }} />}
+        <h1 style={{ fontFamily: h, fontSize: 20, fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.2, marginBottom: 4 }}>{r.name}</h1>
+        <div style={{ textAlign: 'center', fontSize: bs, color: ac, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 28 }}>{r.role}</div>
+        <div style={{ marginBottom: 24 }}><div style={sL}>Contact</div>{[r.email, r.phone, r.location, r.website].filter(Boolean).map((v, i) => <div key={i} style={{ fontSize: bs, marginBottom: 6, color: '#8a7e70', wordBreak: 'break-word' }}>{v}</div>)}</div>
+        {r.skills.length > 0 && <div style={{ marginBottom: 24 }}><div style={sL}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: 10, padding: '3px 10px', borderRadius: 4, background: `${ac}12`, border: `1px solid ${ac}20`, color: ac }}>{s}</span>)}</div></div>}
+        {r.education.length > 0 && <div style={{ marginBottom: 24 }}><div style={sL}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><div style={{ fontWeight: 600, color: '#e8ddd0', fontSize: bs }}>{e.degree}</div><div style={{ fontSize: bs, color: '#6b6055' }}>{e.school} · {e.endDate}</div></div>)}</div>}
+        {r.languages.length > 0 && <div><div style={sL}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ fontSize: bs, marginBottom: 3, color: '#8a7e70' }}>{l.language} — {l.level}</div>)}</div>}
+      </aside>
+      <main style={{ padding: '40px 36px' }}>
+        {r.summary && <div style={{ marginBottom: 24 }}><div style={mL}>Profile</div><p style={{ margin: 0, color: '#a09080', lineHeight: 1.65 }}>{r.summary}</p></div>}
+        {r.experience.length > 0 && <div style={{ marginBottom: 24 }}><div style={mL}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#fff' }}>{e.title}</strong><span style={{ color: '#5a5045', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#a09080', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>▸</span>{x}</div>)}</div>)}</div>}
+        {r.certifications.length > 0 && <div><div style={mL}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#a09080' }}><strong style={{ color: '#e8ddd0' }}>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</div>}
+        {r.projects.length > 0 && <div style={{ marginTop: 20 }}><div style={mL}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{p.name}</strong>{p.tech && <span style={{ color: '#5a5045' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#a09080', marginTop: 2 }}>{p.description}</div>}</div>)}</div>}
+      </main>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// DARK 4 — Void: OLED pure black with violet accent
+// Fonts: DM Sans 700 + DM Sans 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function DarkVoidTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#a78bfa'
+  const f = "'DM Sans', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: f, fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: ac, marginBottom: 14, marginTop: 28, paddingBottom: 6, borderBottom: `1px solid ${ac}25` }
+  return (
+    <div style={{ fontFamily: f, fontSize: bs, color: '#d4d4d8', lineHeight: 1.55, background: '#000', minHeight: 1123, padding: '48px 52px' }}>
+      <header style={{ marginBottom: 12, paddingBottom: 20, borderBottom: `2px solid ${ac}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          {r.photo && <img src={r.photo} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${ac}`, flexShrink: 0 }} />}
+          <div style={{ flex: 1 }}>
+            <h1 style={{ fontFamily: f, fontSize: 30, fontWeight: 700, margin: 0, color: '#fff' }}>{r.name}</h1>
+            <div style={{ fontSize: bs, color: ac, marginTop: 4, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: bs, color: '#52525b', lineHeight: 1.8 }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+        </div>
+      </header>
+      {r.summary && <><div style={sec}>About</div><p style={{ margin: 0, color: '#a1a1aa', lineHeight: 1.7 }}>{r.summary}</p></>}
+      {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18, paddingLeft: 14, borderLeft: `2px solid ${ac}30` }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#fff' }}>{e.title}</strong><span style={{ color: '#52525b', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#a1a1aa', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>›</span>{x}</div>)}</div>)}</>}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+        <div>
+          {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{e.degree}</strong><div style={{ color: '#71717a' }}>{e.school} · {e.endDate}</div></div>)}</>}
+          {r.languages.length > 0 && <><div style={sec}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#a1a1aa' }}>{l.language} — {l.level}</div>)}</>}
+        </div>
+        <div>
+          {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 4, background: `${ac}10`, border: `1px solid ${ac}20`, color: ac }}>{s}</span>)}</div></>}
+          {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#a1a1aa' }}><strong style={{ color: '#fff' }}>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+        </div>
+      </div>
+      {r.projects.length > 0 && <><div style={sec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{p.name}</strong>{p.tech && <span style={{ color: '#52525b' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#a1a1aa', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// DARK 5 — Carbon: dark gray with teal accents
+// Fonts: Outfit 700 + Inter 400 | 11px / 12px
+// ────────────────────────────────────────────────────────────
+function DarkCarbonTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#2dd4bf'
+  const h = "'Outfit', sans-serif"; const b = "'Inter', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 12, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: ac, marginBottom: 14, marginTop: 28, paddingBottom: 6, borderBottom: `1px solid #2a2a2a` }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#d4d4d4', lineHeight: 1.55, background: '#141414', minHeight: 1123 }}>
+      <header style={{ background: '#1c1c1c', padding: '40px 52px', display: 'flex', alignItems: 'center', gap: 24, borderBottom: `3px solid ${ac}` }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 76, height: 76, borderRadius: '50%', objectFit: 'cover', border: `3px solid ${ac}40`, flexShrink: 0 }} />}
+        <div style={{ flex: 1 }}><h1 style={{ fontFamily: h, fontSize: 30, fontWeight: 700, margin: 0, color: '#fff' }}>{r.name}</h1><div style={{ fontSize: bs, color: ac, marginTop: 4, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div></div>
+        <div style={{ textAlign: 'right', fontSize: bs, color: '#666', lineHeight: 1.8 }}>{r.email}<br />{r.phone}<br />{r.location}</div>
+      </header>
+      <div style={{ padding: '0 52px 48px' }}>
+        {r.summary && <><div style={sec}>Summary</div><p style={{ margin: 0, color: '#999', lineHeight: 1.7 }}>{r.summary}</p></>}
+        {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginBottom: 18, paddingLeft: 14, borderLeft: `2px solid ${ac}30` }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 13, color: '#fff' }}>{e.title}</strong><span style={{ color: '#555', whiteSpace: 'nowrap' }}>{e.startDate} — {e.current ? 'Present' : e.endDate}</span></div><div style={{ color: ac, fontWeight: 600, marginBottom: 6 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#999', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0, color: ac }}>▸</span>{x}</div>)}</div>)}</>}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
+          <div>
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{e.degree}</strong><div style={{ color: '#666' }}>{e.school} · {e.endDate}</div></div>)}</>}
+            {r.languages.length > 0 && <><div style={sec}>Languages</div>{r.languages.map((l: any, i) => <div key={i} style={{ marginBottom: 3, color: '#999' }}>{l.language} — {l.level}</div>)}</>}
+          </div>
+          <div>
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: bs, padding: '3px 12px', borderRadius: 4, background: '#1c1c1c', border: `1px solid ${ac}25`, color: ac }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 4, color: '#999' }}><strong style={{ color: '#fff' }}>{c.name}</strong>{c.date ? ` (${c.date})` : ''}</div>)}</>}
+          </div>
+        </div>
+        {r.projects.length > 0 && <><div style={sec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ color: '#fff' }}>{p.name}</strong>{p.tech && <span style={{ color: '#555' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#999', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// PRESTIGE — Gold-accented luxury professional (reference match)
+// Fonts: Cormorant Garamond 300/700 + Open Sans 400 | 11px / 13px
+// Two-column: experience left, skills/education right
+// ────────────────────────────────────────────────────────────
+function PrestigeTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const gold = r.customColor || '#c5a572'
+  const h = "'Cormorant Garamond', Georgia, serif"
+  const b = "'Open Sans', 'Segoe UI', sans-serif"
+  const bs = 11
+  const rightSec: React.CSSProperties = { fontFamily: h, fontSize: 13, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#333', marginBottom: 10, marginTop: 24, paddingBottom: 4, borderBottom: `1.5px solid ${gold}` }
+  const leftSec: React.CSSProperties = { fontFamily: h, fontSize: 13, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#333', marginBottom: 10, marginTop: 24 }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#333', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
+      {/* Top gold bar */}
+      <div style={{ height: 6, background: `linear-gradient(90deg, ${gold}, ${gold}cc, ${gold})` }} />
+
+      {/* Header: name + role */}
+      <header style={{ textAlign: 'center', padding: '32px 52px 20px' }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 10px', display: 'block', border: `3px solid ${gold}` }} />}
+        <h1 style={{ fontFamily: h, fontSize: 36, margin: 0, color: '#222', letterSpacing: 4 }}>
+          <span style={{ fontWeight: 300 }}>{r.name.split(' ')[0]}</span>{' '}
+          <span style={{ fontWeight: 700 }}>{r.name.split(' ').slice(1).join(' ')}</span>
+        </h1>
+        <div style={{ fontFamily: b, fontSize: 11, letterSpacing: 3, textTransform: 'uppercase', color: '#888', marginTop: 4 }}>{r.role}</div>
+      </header>
+
+      {/* Contact bar between gold rules */}
+      <div style={{ borderTop: `1.5px solid ${gold}`, borderBottom: `1.5px solid ${gold}`, margin: '0 40px', padding: '10px 0', display: 'flex', justifyContent: 'center', gap: 32, flexWrap: 'wrap' }}>
+        {r.phone && <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#555' }}><span style={{ width: 22, height: 22, borderRadius: '50%', border: `1px solid ${gold}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: gold }}>✆</span>{r.phone}</div>}
+        {r.email && <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#555' }}><span style={{ width: 22, height: 22, borderRadius: '50%', border: `1px solid ${gold}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: gold }}>@</span>{r.email}</div>}
+        {r.location && <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#555' }}><span style={{ width: 22, height: 22, borderRadius: '50%', border: `1px solid ${gold}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: gold }}>◉</span>{r.location}</div>}
+        {r.website && <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 10, color: '#555' }}><span style={{ width: 22, height: 22, borderRadius: '50%', border: `1px solid ${gold}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: gold }}>⌘</span>{r.website}</div>}
+      </div>
+
+      {/* Two-column body */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 220px', gap: 32, padding: '0 44px 40px', borderRight: 'none' }}>
+        {/* LEFT: summary + experience */}
+        <div style={{ borderRight: `1px solid #e8e2d8`, paddingRight: 28 }}>
+          {r.summary && <><div style={leftSec}>Professional Profile</div><p style={{ margin: 0, color: '#555', lineHeight: 1.7 }}>{r.summary}</p></>}
+
+          {r.experience.length > 0 && <>
+            <div style={leftSec}>Work Experience</div>
+            {r.experience.map((e, i) => (
+              <div key={i} style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <strong style={{ fontSize: 12, color: '#222', textTransform: 'uppercase', letterSpacing: 0.5 }}>{e.title}</strong>
+                  <span style={{ fontSize: 10, color: '#999', whiteSpace: 'nowrap', letterSpacing: 0.5 }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span>
+                </div>
+                <div style={{ fontSize: 10, color: gold, fontStyle: 'italic', marginBottom: 4 }}>{e.company}{e.location ? ` / ${e.location}` : ''}</div>
+                {bullets(e.description).map((x, j) => (
+                  <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2, fontSize: bs }}>
+                    <span style={{ position: 'absolute', left: 0, color: '#333' }}>•</span>{x}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </>}
+
+          {r.projects.length > 0 && <><div style={leftSec}>Projects</div>{r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 8 }}><strong style={{ fontSize: 12, color: '#222' }}>{p.name}</strong>{p.tech && <span style={{ color: '#999' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#555', marginTop: 2 }}>{p.description}</div>}</div>)}</>}
+        </div>
+
+        {/* RIGHT: skills, education, certifications, languages */}
+        <div>
+          {r.skills.length > 0 && <>
+            <div style={rightSec}>Skills</div>
+            {r.skills.map((s, i) => <div key={i} style={{ fontSize: bs, color: '#555', marginBottom: 4, paddingLeft: 0 }}>{s}</div>)}
+          </>}
+
+          {r.education.length > 0 && <>
+            <div style={rightSec}>Education</div>
+            {r.education.map((e, i) => (
+              <div key={i} style={{ marginBottom: 10 }}>
+                <strong style={{ fontSize: 12, color: '#222', textTransform: 'uppercase', letterSpacing: 0.5 }}>{e.degree}</strong>
+                <div style={{ fontSize: 10, color: '#666' }}>{e.school}</div>
+                <div style={{ fontSize: 10, color: '#999' }}>{e.endDate}</div>
+              </div>
+            ))}
+          </>}
+
+          {r.certifications.length > 0 && <>
+            <div style={rightSec}>Achievements</div>
+            {r.certifications.map((c: any, i) => (
+              <div key={i} style={{ marginBottom: 8 }}>
+                <strong style={{ fontSize: 12, color: '#222', textTransform: 'uppercase', letterSpacing: 0.5 }}>{c.name}</strong>
+                {c.date && <div style={{ fontSize: 10, color: '#999' }}>{c.date}</div>}
+              </div>
+            ))}
+          </>}
+
+          {r.languages.length > 0 && <>
+            <div style={rightSec}>Languages</div>
+            {r.languages.map((l: any, i) => <div key={i} style={{ fontSize: bs, color: '#555', marginBottom: 4 }}>{l.language} — {l.level}</div>)}
+          </>}
+        </div>
+      </div>
+
+      {/* Bottom gold bar */}
+      <div style={{ height: 6, background: `linear-gradient(90deg, ${gold}, ${gold}cc, ${gold})`, marginTop: 'auto' }} />
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// TABLEAU — Dark header + dark sidebar, clean professional
+// Fonts: Cormorant Garamond 300/700 + Open Sans 400 | 11px / 13px
+// ────────────────────────────────────────────────────────────
+function TableauTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const dark = r.customColor || '#2d2d2d'
+  const h = "'Cormorant Garamond', Georgia, serif"
+  const b = "'Open Sans', 'Segoe UI', sans-serif"
+  const bs = 11
+  const sideSec: React.CSSProperties = { fontFamily: h, fontSize: 13, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: '#fff', marginBottom: 14, marginTop: 28 }
+  const mainSec: React.CSSProperties = { fontFamily: h, fontSize: 14, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: '#222', marginBottom: 14, marginTop: 28 }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#333', lineHeight: 1.55, background: '#fff', minHeight: 1123, display: 'flex', flexDirection: 'column' }}>
+      {/* Dark header */}
+      <header style={{ background: dark, padding: '40px 52px 24px', textAlign: 'center' }}>
+        <h1 style={{ fontFamily: h, fontSize: 38, margin: 0, color: '#fff', letterSpacing: 8 }}>
+          <span style={{ fontWeight: 300 }}>{r.name.split(' ')[0]}</span>{' '}
+          <span style={{ fontWeight: 700 }}>{r.name.split(' ').slice(1).join(' ')}</span>
+        </h1>
+      </header>
+      {/* Title bar */}
+      <div style={{ textAlign: 'center', padding: '10px 0', borderBottom: '1px solid #ddd' }}>
+        <span style={{ fontFamily: h, fontSize: 13, fontWeight: 400, letterSpacing: 3, color: '#666', fontStyle: 'italic' }}>{r.role}</span>
+      </div>
+
+      {/* Two-column body */}
+      <div style={{ display: 'grid', gridTemplateColumns: '210px 1fr', flex: 1 }}>
+        {/* LEFT dark sidebar */}
+        <aside style={{ background: dark, color: '#ddd', padding: '24px 20px 40px' }}>
+          {r.photo && <img src={r.photo} alt="" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 16px', display: 'block', border: '2px solid #555' }} />}
+
+          {/* Contact */}
+          <div style={sideSec}>Contact</div>
+          {r.phone && <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, fontSize: bs }}><span style={{ color: '#999' }}>✆</span><span style={{ color: '#ccc' }}>{r.phone}</span></div>}
+          {r.email && <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, fontSize: bs }}><span style={{ color: '#999' }}>✉</span><span style={{ color: '#ccc', wordBreak: 'break-all' }}>{r.email}</span></div>}
+          {r.location && <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, fontSize: bs }}><span style={{ color: '#999' }}>⌂</span><span style={{ color: '#ccc' }}>{r.location}</span></div>}
+          {r.website && <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, fontSize: bs }}><span style={{ color: '#999' }}>⌘</span><span style={{ color: '#ccc', wordBreak: 'break-all' }}>{r.website}</span></div>}
+
+          {/* Education */}
+          {r.education.length > 0 && <>
+            <div style={sideSec}>Education</div>
+            {r.education.map((e, i) => (
+              <div key={i} style={{ marginBottom: 12 }}>
+                <strong style={{ fontSize: 12, color: '#fff', textTransform: 'uppercase', letterSpacing: 0.5 }}>{e.degree}</strong>
+                <div style={{ fontSize: 10, color: '#999' }}>{e.school}</div>
+                <div style={{ fontSize: 10, color: '#777' }}>{e.endDate}</div>
+              </div>
+            ))}
+          </>}
+
+          {/* Skills */}
+          {r.skills.length > 0 && <>
+            <div style={sideSec}>Skills</div>
+            <div style={{ fontSize: 10, color: '#999', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>// Professional</div>
+            {r.skills.map((s, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5, fontSize: bs, color: '#ccc' }}>
+                <span style={{ color: '#666' }}>•</span>{s}
+              </div>
+            ))}
+          </>}
+
+          {/* Languages */}
+          {r.languages.length > 0 && <>
+            <div style={sideSec}>Languages</div>
+            {r.languages.map((l: any, i) => <div key={i} style={{ fontSize: bs, color: '#ccc', marginBottom: 4 }}>{l.language} — {l.level}</div>)}
+          </>}
+        </aside>
+
+        {/* RIGHT main content */}
+        <main style={{ padding: '0 40px 40px' }}>
+          {r.summary && <>
+            <div style={mainSec}>Profile</div>
+            <p style={{ margin: 0, color: '#555', lineHeight: 1.7 }}>{r.summary}</p>
+          </>}
+
+          {r.experience.length > 0 && <>
+            <div style={mainSec}>Work Experience</div>
+            {r.experience.map((e, i) => (
+              <div key={i} style={{ marginBottom: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                  <strong style={{ fontSize: 12, color: '#222', textTransform: 'uppercase', letterSpacing: 0.5 }}>{e.title}</strong>
+                  <span style={{ fontSize: 10, color: '#bbb' }}>|</span>
+                  <span style={{ fontSize: 10, color: '#999' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span>
+                </div>
+                <div style={{ fontSize: 10, color: '#888', marginBottom: 6 }}>{e.company}{e.location ? ` | ${e.location}` : ''}</div>
+                {bullets(e.description).map((x, j) => (
+                  <div key={j} style={{ paddingLeft: 14, position: 'relative', color: '#555', marginBottom: 2, fontSize: bs }}>
+                    <span style={{ position: 'absolute', left: 0, color: '#999' }}>•</span>{x}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </>}
+
+          {r.certifications.length > 0 && <>
+            <div style={mainSec}>Certifications</div>
+            {r.certifications.map((c: any, i) => (
+              <div key={i} style={{ marginBottom: 6 }}>
+                <strong style={{ fontSize: 12, color: '#222' }}>{c.name}</strong>
+                {c.date && <span style={{ fontSize: 10, color: '#999' }}> — {c.date}</span>}
+              </div>
+            ))}
+          </>}
+
+          {r.projects.length > 0 && <>
+            <div style={mainSec}>Projects</div>
+            {r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 8 }}><strong style={{ fontSize: 12, color: '#222' }}>{p.name}</strong>{p.tech && <span style={{ color: '#999' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#555', marginTop: 2 }}>{p.description}</div>}</div>)}
+          </>}
+        </main>
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// SHOWCASE — Photo header, 3-col info row, 2-col body
+// Fonts: Cormorant Garamond 700 + Open Sans 400 | 11px / 13px
+// ────────────────────────────────────────────────────────────
+function ShowcaseTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#222'
+  const h = "'Cormorant Garamond', Georgia, serif"
+  const b = "'Open Sans', 'Segoe UI', sans-serif"
+  const bs = 11
+  const sec: React.CSSProperties = { fontFamily: h, fontSize: 14, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: '#222', marginBottom: 12, marginTop: 0, paddingBottom: 6, borderBottom: '2px solid #222' }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#333', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
+      {/* Header banner */}
+      <div style={{ background: '#e8e4e0', height: 80, position: 'relative' }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '4px solid #fff', position: 'absolute', bottom: -40, left: '50%', transform: 'translateX(-50%)', zIndex: 2 }} />}
+      </div>
+
+      {/* Name + role */}
+      <header style={{ textAlign: 'center', padding: r.photo ? '48px 52px 10px' : '20px 52px 10px' }}>
+        <h1 style={{ fontFamily: h, fontSize: 34, margin: 0, color: '#222', letterSpacing: 5 }}>
+          <span style={{ fontWeight: 300 }}>{r.name.split(' ')[0]}</span>{' '}
+          <span style={{ fontWeight: 700 }}>{r.name.split(' ').slice(1).join(' ')}</span>
+        </h1>
+        <div style={{ fontFamily: b, fontSize: 11, letterSpacing: 4, textTransform: 'uppercase', color: '#999', marginTop: 4 }}>{r.role}</div>
+      </header>
+
+      {/* Profile pill heading + summary */}
+      <div style={{ textAlign: 'center', margin: '12px 52px 0' }}>
+        <span style={{ fontFamily: h, fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', padding: '4px 18px', border: '1.5px solid #222', display: 'inline-block' }}>Profile</span>
+      </div>
+      {r.summary && <p style={{ margin: '12px 52px 0', color: '#555', lineHeight: 1.7, textAlign: 'center', fontSize: bs }}>{r.summary}</p>}
+
+      {/* Three-column info row: Contact | Education | Skills */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 0, margin: '20px 40px 0', borderTop: '1.5px solid #222', borderBottom: '1.5px solid #222' }}>
+        <div style={{ padding: '16px 14px', borderRight: '1px solid #ddd' }}>
+          <div style={{ ...sec, fontSize: 12 }}>Contacts</div>
+          {r.phone && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: bs }}><span style={{ fontSize: 10, color: '#999' }}>✆</span>{r.phone}</div>}
+          {r.email && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: bs }}><span style={{ fontSize: 10, color: '#999' }}>✉</span>{r.email}</div>}
+          {r.location && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: bs }}><span style={{ fontSize: 10, color: '#999' }}>⌂</span>{r.location}</div>}
+          {r.website && <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, fontSize: bs }}><span style={{ fontSize: 10, color: '#999' }}>⌘</span>{r.website}</div>}
+        </div>
+        <div style={{ padding: '16px 14px', borderRight: '1px solid #ddd' }}>
+          <div style={{ ...sec, fontSize: 12 }}>Education</div>
+          {r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ fontSize: 12, color: '#222', textTransform: 'uppercase' }}>{e.degree}</strong><div style={{ fontSize: 10, color: '#888' }}>{e.school}</div><div style={{ fontSize: 10, color: '#aaa' }}>{e.endDate}</div></div>)}
+        </div>
+        <div style={{ padding: '16px 14px' }}>
+          <div style={{ ...sec, fontSize: 12 }}>Skills</div>
+          {r.skills.map((s, i) => <div key={i} style={{ fontSize: bs, color: '#555', marginBottom: 4 }}>• {s}</div>)}
+        </div>
+      </div>
+
+      {/* Two-column bottom: Experience | Awards+Certifications */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32, padding: '0 44px 40px' }}>
+        <div>
+          {r.experience.length > 0 && <>
+            <div style={{ ...sec, marginTop: 20 }}>Work Experience</div>
+            {r.experience.map((e, i) => <div key={i} style={{ marginBottom: 14 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><strong style={{ fontSize: 12, color: '#222' }}>{e.title}</strong><span style={{ fontSize: 10, color: '#999' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div><div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>{e.company}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ paddingLeft: 12, position: 'relative', color: '#555', marginBottom: 2 }}><span style={{ position: 'absolute', left: 0 }}>•</span>{x}</div>)}</div>)}
+          </>}
+        </div>
+        <div>
+          {r.certifications.length > 0 && <>
+            <div style={{ ...sec, marginTop: 20 }}>Awards</div>
+            {r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 8 }}><strong style={{ fontSize: 12, color: '#222' }}>{c.name}</strong>{c.date && <div style={{ fontSize: 10, color: '#999' }}>{c.date}</div>}</div>)}
+          </>}
+          {r.languages.length > 0 && <>
+            <div style={{ ...sec, marginTop: 20 }}>Languages</div>
+            {r.languages.map((l: any, i) => <div key={i} style={{ fontSize: bs, color: '#555', marginBottom: 4 }}>{l.language} — {l.level}</div>)}
+          </>}
+          {r.projects.length > 0 && <>
+            <div style={{ ...sec, marginTop: 20 }}>Projects</div>
+            {r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 8 }}><strong style={{ fontSize: 12, color: '#222' }}>{p.name}</strong>{p.tech && <span style={{ color: '#999' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#555', marginTop: 2 }}>{p.description}</div>}</div>)}
+          </>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// DIRECTOR — Bold header with vertical bar, circle section icons
+// Fonts: Outfit 700 + DM Sans 400 | 11px / 13px
+// ────────────────────────────────────────────────────────────
+function DirectorTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#222'
+  const h = "'Outfit', sans-serif"
+  const b = "'DM Sans', sans-serif"
+  const bs = 11
+  const icon = (letter: string): React.CSSProperties => ({ width: 26, height: 26, borderRadius: '50%', background: ac, color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, fontFamily: h, flexShrink: 0 })
+  const sec = (letter: string, label: string) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 28, marginBottom: 14 }}>
+      <span style={icon(letter)}>{letter}</span>
+      <span style={{ fontFamily: h, fontSize: 14, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: '#222' }}>{label}</span>
+      <span style={{ flex: 1, height: 2, background: '#222' }} />
+    </div>
+  )
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#333', lineHeight: 1.55, background: '#f8f8f6', minHeight: 1123, padding: '40px 44px' }}>
+      {/* Header: name | role | contact */}
+      <header style={{ display: 'flex', alignItems: 'flex-start', gap: 0, marginBottom: 12, paddingBottom: 16, borderBottom: '1px solid #ddd' }}>
+        <div style={{ flex: '0 0 auto', paddingRight: 20, borderRight: `3px solid ${ac}` }}>
+          <h1 style={{ fontFamily: h, fontSize: 32, margin: 0, color: '#111', fontWeight: 900, lineHeight: 1.1 }}>{r.name.toUpperCase()}</h1>
+        </div>
+        <div style={{ paddingLeft: 16, paddingRight: 20, flex: 1 }}>
+          {r.role && <div style={{ fontFamily: h, fontSize: 12, fontWeight: 700, color: '#444', letterSpacing: 1, lineHeight: 1.4, textTransform: 'uppercase' }}>{r.role}</div>}
+        </div>
+        <div style={{ textAlign: 'right', fontSize: 10, color: '#666', lineHeight: 1.8, whiteSpace: 'nowrap' }}>
+          {r.phone && <div>P: {r.phone}</div>}
+          {r.email && <div>E: {r.email}</div>}
+          {r.location && <div>A: {r.location}</div>}
+        </div>
+      </header>
+
+      {/* Summary */}
+      {r.summary && <p style={{ margin: '0 0 4px', color: '#555', lineHeight: 1.7 }}>{r.summary}</p>}
+      {r.photo && <div style={{ textAlign: 'center', marginBottom: 4 }}><img src={r.photo} alt="" style={{ width: 0, height: 0 }} /></div>}
+
+      {/* Education: 2-column */}
+      {r.education.length > 0 && <>
+        {sec('E', 'Education')}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          {r.education.map((e, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ fontSize: 12, color: '#222', textTransform: 'uppercase' }}>{e.degree}</strong><div style={{ fontSize: 10, color: '#888' }}>{e.school} | {e.endDate}</div></div>)}
+        </div>
+      </>}
+
+      {/* Work Experience: 2-column */}
+      {r.experience.length > 0 && <>
+        {sec('W', 'Work Experience')}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          {r.experience.map((e, i) => <div key={i} style={{ marginBottom: 14 }}><strong style={{ fontSize: 12, color: '#111', textTransform: 'uppercase' }}>{e.title}</strong><div style={{ fontSize: 10, color: '#888', marginBottom: 4, textTransform: 'uppercase' }}>{e.company} | {e.startDate} – {e.current ? 'Present' : e.endDate}</div>{bullets(e.description).map((x, j) => <div key={j} style={{ color: '#555', marginBottom: 2 }}>{x}</div>)}</div>)}
+        </div>
+      </>}
+
+      {/* Awards + Skills side by side */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
+        <div>
+          {r.certifications.length > 0 && <>
+            {sec('A', 'Awards')}
+            {r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 10 }}><strong style={{ fontSize: 12, color: '#222', textTransform: 'uppercase' }}>{c.name}</strong>{c.date && <div style={{ fontSize: 10, color: '#888' }}>{c.date}</div>}</div>)}
+          </>}
+          {r.projects.length > 0 && <>
+            {sec('P', 'Projects')}
+            {r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 8 }}><strong style={{ fontSize: 12, color: '#222' }}>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ color: '#555', marginTop: 2 }}>{p.description}</div>}</div>)}
+          </>}
+        </div>
+        <div>
+          {r.skills.length > 0 && <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 28, marginBottom: 14 }}>
+              <span style={{ fontFamily: h, fontSize: 14, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', color: '#222' }}>Skills & Languages</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4 }}>
+              {r.skills.map((s, i) => <div key={i} style={{ fontSize: bs, padding: '4px 0', borderBottom: '1px solid #ddd', color: '#444', textTransform: 'uppercase', letterSpacing: 0.5 }}>{s}</div>)}
+            </div>
+            {r.languages.length > 0 && <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginTop: 12 }}>
+              {r.languages.map((l: any, i) => <div key={i} style={{ fontSize: bs, padding: '4px 0', borderBottom: '1px solid #ddd', color: '#444', textTransform: 'uppercase' }}>{l.language}</div>)}
+            </div>}
+          </>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// VIVID — Bold yellow creative portfolio style
+// Fonts: Outfit 900 + DM Sans 400 | 11px / 14px
+// ────────────────────────────────────────────────────────────
+function VividTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const ac = r.customColor || '#eab308'
+  const h = "'Outfit', sans-serif"
+  const b = "'DM Sans', sans-serif"
+  const bs = 11
+  const cardSec: React.CSSProperties = { fontFamily: h, fontSize: 16, fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase', color: '#111', marginBottom: 14 }
+  return (
+    <div style={{ fontFamily: b, fontSize: bs, color: '#222', lineHeight: 1.55, background: ac, minHeight: 1123 }}>
+      {/* Header */}
+      <header style={{ padding: '32px 40px 24px', display: 'flex', alignItems: 'flex-start', gap: 20 }}>
+        <div style={{ flex: 1 }}>
+          <h1 style={{ fontFamily: h, fontSize: 36, fontWeight: 900, margin: 0, color: '#111', lineHeight: 1.1 }}>{r.name.toUpperCase()}</h1>
+          <div style={{ fontFamily: h, fontSize: 14, fontWeight: 700, color: '#333', letterSpacing: 1, textTransform: 'uppercase', marginTop: 4 }}>{r.role}</div>
+          {r.summary && <p style={{ margin: '10px 0 0', color: '#333', lineHeight: 1.6, fontSize: bs, maxWidth: 280, fontStyle: 'italic' }}>{r.summary.slice(0, 150)}{r.summary.length > 150 ? '...' : ''}</p>}
+        </div>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 4, border: '3px solid #fff', flexShrink: 0 }} />}
+        <div style={{ fontSize: 10, color: '#333', lineHeight: 2, whiteSpace: 'nowrap' }}>
+          {r.phone && <div>✆ {r.phone}</div>}
+          {r.email && <div>✉ {r.email}</div>}
+          {r.website && <div>⌘ {r.website}</div>}
+          {r.location && <div>◉ {r.location}</div>}
+        </div>
+      </header>
+
+      {/* White card: "WHO AM I?" + "EXPERT IN" */}
+      <div style={{ margin: '0 20px', background: '#fff', borderRadius: 6, padding: '24px 28px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
+        <div>
+          <div style={cardSec}>Who Am I?</div>
+          {r.summary && <p style={{ margin: 0, color: '#555', lineHeight: 1.7, fontSize: bs }}>{r.summary}</p>}
+        </div>
+        <div>
+          <div style={cardSec}>Expert In</div>
+          {r.skills.slice(0, 5).map((s, i) => {
+            const pct = 60 + Math.round(Math.random() * 35)
+            return (
+              <div key={i} style={{ marginBottom: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, textTransform: 'uppercase', letterSpacing: 1, color: '#333', marginBottom: 2 }}><span>{s}</span><span>{pct}%</span></div>
+                <div style={{ height: 6, background: '#e5e5e5', borderRadius: 3 }}><div style={{ height: 6, background: ac, borderRadius: 3, width: `${pct}%` }} /></div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Education + Experience side by side in bordered cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, margin: '16px 20px' }}>
+        <div style={{ background: '#fff', borderRadius: 6, padding: '20px 24px' }}>
+          <div style={cardSec}>Education</div>
+          {r.education.map((e, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: 12, marginBottom: 12 }}>
+              <div><div style={{ fontSize: 10, fontWeight: 700, color: '#333' }}>{e.endDate}</div><div style={{ fontSize: 10, color: '#888', fontWeight: 600 }}>{e.school}</div></div>
+              <div><strong style={{ fontSize: 12, color: '#111' }}>{e.degree}</strong></div>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: '#fff', borderRadius: 6, padding: '20px 24px' }}>
+          <div style={cardSec}>Experience</div>
+          {r.experience.map((e, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: 12, marginBottom: 12 }}>
+              <div><div style={{ fontSize: 10, fontWeight: 700, color: '#333' }}>{e.startDate}–{e.current ? 'Now' : e.endDate}</div><div style={{ fontSize: 10, color: '#888', fontWeight: 600 }}>{e.company}</div></div>
+              <div><strong style={{ fontSize: 12, color: '#111' }}>{e.title}</strong>{bullets(e.description).length > 0 && <div style={{ color: '#555', marginTop: 2, fontSize: bs }}>{bullets(e.description)[0]}</div>}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bottom: certifications + interests as tags */}
+      <div style={{ margin: '0 20px', background: '#fff', borderRadius: 6, padding: '20px 24px', marginBottom: 16 }}>
+        {r.certifications.length > 0 && <>
+          <div style={cardSec}>Achievements</div>
+          {r.certifications.map((c: any, i) => <div key={i} style={{ marginBottom: 6 }}><strong style={{ fontSize: 12, color: '#222' }}>{c.name}</strong>{c.date && <span style={{ color: '#999' }}> — {c.date}</span>}</div>)}
+        </>}
+        {r.projects.length > 0 && <>
+          <div style={{ ...cardSec, marginTop: 16 }}>Projects</div>
+          {r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 6 }}><strong style={{ fontSize: 12, color: '#222' }}>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}</div>)}
+        </>}
+      </div>
+
+      {/* Skill/Interest tags at very bottom */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, padding: '0 20px 28px', justifyContent: 'center' }}>
+        {r.skills.map((s, i) => <span key={i} style={{ fontSize: 10, padding: '6px 16px', borderRadius: 4, background: '#fff', color: '#222', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>{s}</span>)}
+        {r.languages.map((l: any, i) => <span key={`l${i}`} style={{ fontSize: 10, padding: '6px 16px', borderRadius: 4, background: '#111', color: '#fff', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>{l.language}</span>)}
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// MODERN SIDEBAR — Green accent, sidebar with contact/skills/education
+// Fonts: Source Sans 3 / Segoe UI | 10.5–13px
+// ────────────────────────────────────────────────────────────
+function ModernSidebarTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const accent = r.customColor || '#2D8C6F'
+  const dark = '#1A1A2E'
+  const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+  const sideHead: React.CSSProperties = { fontSize: 10.5, fontWeight: 700, color: accent, letterSpacing: 2, textTransform: 'uppercase', borderBottom: `1.5px solid ${accent}`, paddingBottom: 3, marginTop: 14, marginBottom: 8 }
+  const mainHead: React.CSSProperties = { fontSize: 12, fontWeight: 700, color: dark, letterSpacing: 3, textTransform: 'uppercase', borderBottom: `1.5px solid ${accent}`, paddingBottom: 4, marginTop: 16, marginBottom: 10 }
+  return (
+    <div style={{ fontFamily: f, color: '#333', lineHeight: 1.5, background: '#fff', minHeight: 1123 }}>
+      {/* Header */}
+      <div style={{ borderBottom: `3px solid ${accent}`, padding: '20px 28px 14px' }}>
+        <h1 style={{ fontSize: 30, letterSpacing: 4, color: dark, margin: 0, textTransform: 'uppercase', fontWeight: 800 }}>{r.name}</h1>
+        <div style={{ fontSize: 14, color: accent, marginTop: 2 }}>{r.role}</div>
+      </div>
+
+      {/* Layout: sidebar + main */}
+      <div style={{ display: 'flex', gap: 24, padding: '0 28px 40px' }}>
+        {/* Sidebar */}
+        <div style={{ width: 200, flexShrink: 0, background: '#F0F5F3', borderRadius: 6, padding: 14, marginTop: 14 }}>
+          {r.photo && <img src={r.photo} alt="" style={{ width: 70, height: 70, borderRadius: '50%', objectFit: 'cover', margin: '0 auto 12px', display: 'block', border: `2px solid ${accent}` }} />}
+
+          <div style={{ ...sideHead, marginTop: 0 }}>Contact</div>
+          {r.email && <div style={{ fontSize: 10.5, color: '#555', marginBottom: 4 }}>{r.email}</div>}
+          {r.phone && <div style={{ fontSize: 10.5, color: '#555', marginBottom: 4 }}>{r.phone}</div>}
+          {r.location && <div style={{ fontSize: 10.5, color: '#555', marginBottom: 4 }}>{r.location}</div>}
+          {r.website && <div style={{ fontSize: 10.5, color: accent, marginBottom: 4 }}>{r.website}</div>}
+
+          {r.skills.length > 0 && <>
+            <div style={sideHead}>Skills</div>
+            {r.skills.map((s, i) => <div key={i} style={{ fontSize: 10.5, color: '#555', marginBottom: 4, display: 'flex', alignItems: 'baseline', gap: 5 }}><span style={{ color: accent, fontSize: 8, flexShrink: 0 }}>●</span>{s}</div>)}
+          </>}
+
+          {r.certifications.length > 0 && <>
+            <div style={sideHead}>Certifications</div>
+            {r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10, color: '#555', marginBottom: 6 }}>{c.name}{c.date ? ` (${c.date})` : ''}</div>)}
+          </>}
+
+          {r.education.length > 0 && <>
+            <div style={sideHead}>Education</div>
+            {r.education.map((e, i) => (
+              <div key={i} style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: '#222' }}>{e.degree}</div>
+                <div style={{ fontSize: 10, color: '#666' }}>{e.school}</div>
+                <div style={{ fontSize: 10, color: accent }}>{e.endDate}</div>
+              </div>
+            ))}
+          </>}
+
+          {r.languages.length > 0 && <>
+            <div style={sideHead}>Languages</div>
+            {r.languages.map((l: any, i) => <div key={i} style={{ fontSize: 10.5, color: '#555', marginBottom: 4, display: 'flex', alignItems: 'baseline', gap: 5 }}><span style={{ color: accent, fontSize: 8, flexShrink: 0 }}>●</span>{l.language} — {l.level}</div>)}
+          </>}
+        </div>
+
+        {/* Main content */}
+        <div style={{ flex: 1, minWidth: 0, paddingTop: 14 }}>
+          {r.summary && <>
+            <div style={{ ...mainHead, marginTop: 0 }}>Profile</div>
+            <div style={{ fontSize: 11, color: '#555' }}>{r.summary}</div>
+          </>}
+
+          {r.experience.length > 0 && <>
+            <div style={mainHead}>Experience</div>
+            {r.experience.map((e, i) => (
+              <div key={i} style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: dark, marginTop: i > 0 ? 10 : 0 }}>{e.title}</div>
+                <div style={{ fontSize: 11 }}>
+                  <span style={{ color: accent, fontWeight: 600 }}>{e.company}</span>
+                  {e.location && <span style={{ color: '#aaa' }}> | {e.location}</span>}
+                </div>
+                <div style={{ fontSize: 10.5, color: '#aaa', fontStyle: 'italic' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</div>
+                {bullets(e.description).length > 0 && (
+                  <div style={{ marginTop: 5, paddingLeft: 14 }}>
+                    {bullets(e.description).map((b, j) => (
+                      <div key={j} style={{ fontSize: 10.5, color: '#555', marginBottom: 3, position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: -12, color: accent }}>▸</span>{b}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </>}
+
+          {r.projects.length > 0 && <>
+            <div style={mainHead}>Projects</div>
+            {r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 8 }}><strong style={{ fontSize: 12, color: dark }}>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ fontSize: 10.5, color: '#555', marginTop: 2 }}>{p.description}</div>}</div>)}
+          </>}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// CORAL HORIZON — Warm coral gradient header, two-column body
+// Fonts: Source Sans 3 / Segoe UI | 10.5–12.5px
+// ────────────────────────────────────────────────────────────
+function CoralHorizonTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const coral = r.customColor || '#E8634A'
+  const sand = '#FFF8F5'
+  const stone = '#4A4A4A'
+  const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+  const secTitle: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: coral, letterSpacing: 3, textTransform: 'uppercase', marginTop: 16, marginBottom: 8 }
+  const sideHead: React.CSSProperties = { fontSize: 10, fontWeight: 700, color: coral, letterSpacing: 2.5, textTransform: 'uppercase', marginTop: 14, marginBottom: 6 }
+  return (
+    <div style={{ fontFamily: f, color: '#3D3D3D', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
+      {/* Gradient header */}
+      <header style={{ background: `linear-gradient(135deg, ${coral}, #F4845F)`, padding: '24px 28px', borderRadius: '0', color: '#fff' }}>
+        {r.photo && <img src={r.photo} alt="" style={{ width: 60, height: 60, borderRadius: '50%', objectFit: 'cover', border: '3px solid rgba(255,255,255,0.5)', float: 'right', marginLeft: 12 }} />}
+        <h1 style={{ fontSize: 28, fontWeight: 300, letterSpacing: 3, margin: 0, textTransform: 'uppercase' }}>{r.name}</h1>
+        <div style={{ fontSize: 13, fontWeight: 600, opacity: 0.9, marginTop: 4, letterSpacing: 1 }}>{r.role}</div>
+        <div style={{ fontSize: 10, opacity: 0.8, marginTop: 10 }}>
+          {[r.email, r.phone, r.location, r.website].filter(Boolean).join('  ·  ')}
+        </div>
+      </header>
+
+      {/* Body */}
+      <div style={{ padding: '4px 28px 40px' }}>
+        {r.summary && <>
+          <div style={{ ...secTitle, marginTop: 16 }}>Summary</div>
+          <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>{r.summary}</div>
+        </>}
+
+        {/* Two-column: experience left, sidebar right */}
+        <div style={{ display: 'flex', gap: 20, marginTop: 16 }}>
+          {/* Left: experience */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {r.experience.length > 0 && <>
+              <div style={{ ...secTitle, marginTop: 0 }}>Experience</div>
+              {r.experience.map((e, i) => (
+                <div key={i} style={{ marginBottom: 10 }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 700, color: stone, marginTop: i > 0 ? 10 : 0 }}>{e.title}</div>
+                  <div style={{ fontSize: 11, display: 'flex', justifyContent: 'space-between' }}>
+                    <span><span style={{ color: coral, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#bbb' }}>, {e.location}</span>}</span>
+                    <span style={{ color: '#bbb', fontStyle: 'italic' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span>
+                  </div>
+                  {bullets(e.description).length > 0 && (
+                    <div style={{ marginTop: 4, paddingLeft: 14 }}>
+                      {bullets(e.description).map((b, j) => (
+                        <div key={j} style={{ fontSize: 10.5, color: '#666', marginBottom: 3, position: 'relative' }}>
+                          <span style={{ position: 'absolute', left: -10, color: coral }}>•</span>{b}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </>}
+
+            {r.projects.length > 0 && <>
+              <div style={secTitle}>Projects</div>
+              {r.projects.map((p: any, i) => <div key={i} style={{ marginBottom: 6 }}><strong style={{ fontSize: 11, color: stone }}>{p.name}</strong>{p.tech && <span style={{ color: '#888' }}> ({p.tech})</span>}{p.description && <div style={{ fontSize: 10.5, color: '#666', marginTop: 2 }}>{p.description}</div>}</div>)}
+            </>}
+          </div>
+
+          {/* Right sidebar */}
+          <div style={{ width: 190, flexShrink: 0, background: sand, borderRadius: 6, padding: 14 }}>
+            {r.skills.length > 0 && <>
+              <div style={{ ...sideHead, marginTop: 0 }}>Skills</div>
+              {r.skills.map((s, i) => <div key={i} style={{ fontSize: 10, color: '#666', padding: '3px 0', borderBottom: i < r.skills.length - 1 ? '1px solid #F0E8E5' : 'none' }}>{s}</div>)}
+            </>}
+
+            {r.education.length > 0 && <>
+              <div style={sideHead}>Education</div>
+              {r.education.map((e, i) => (
+                <div key={i} style={{ marginBottom: 8 }}>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: stone }}>{e.degree}</div>
+                  <div style={{ fontSize: 10, color: '#888' }}>{e.school}</div>
+                  <div style={{ fontSize: 10, color: coral }}>{e.endDate}</div>
+                </div>
+              ))}
+            </>}
+
+            {r.certifications.length > 0 && <>
+              <div style={sideHead}>Certifications</div>
+              {r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10, color: '#888', marginBottom: 5 }}>{c.name}</div>)}
+            </>}
+
+            {r.languages.length > 0 && <>
+              <div style={sideHead}>Languages</div>
+              {r.languages.map((l: any, i) => <div key={i} style={{ fontSize: 10, color: '#666', padding: '3px 0', borderBottom: i < r.languages.length - 1 ? '1px solid #F0E8E5' : 'none' }}>{l.language} — {l.level}</div>)}
+            </>}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────
+// SWISS GRID — Bold black + red, grid layout with monospace dates
+// Fonts: Source Sans 3 / Segoe UI | 10–12px
+// ────────────────────────────────────────────────────────────
+function SwissGridTemplate({ data }: PreviewProps) {
+  const r = useDynamicData(data || {})
+  const red = r.customColor || '#FF0000'
+  const blk = '#111'
+  const gray = '#888'
+  const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+  const mono = "'IBM Plex Mono', 'Courier New', monospace"
+  const secTitle: React.CSSProperties = { fontSize: 10, fontWeight: 900, color: blk, letterSpacing: 4, textTransform: 'uppercase', marginTop: 20, marginBottom: 8, paddingTop: 4, borderTop: '1px solid #ddd' }
+  return (
+    <div style={{ fontFamily: f, color: '#222', lineHeight: 1.5, background: '#fff', minHeight: 1123, padding: '28px 32px' }}>
+      {/* Header */}
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: `3px solid ${blk}`, paddingBottom: 12, marginBottom: 16 }}>
+        <div>
+          <h1 style={{ fontSize: 36, fontWeight: 900, color: blk, margin: 0, lineHeight: 1, textTransform: 'uppercase' }}>{r.name}</h1>
+          <div style={{ fontSize: 13, color: red, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, marginTop: 4 }}>{r.role}</div>
+        </div>
+        <div style={{ textAlign: 'right', fontSize: 10.5, color: gray, lineHeight: 1.6 }}>
+          {r.email && <div>{r.email}</div>}
+          {r.phone && <div>{r.phone}</div>}
+          {r.location && <div>{r.location}</div>}
+          {r.website && <div>{r.website}</div>}
+        </div>
+      </header>
+
+      {/* Profile */}
+      {r.summary && <>
+        <div style={{ ...secTitle, marginTop: 0, borderTop: 'none' }}>Profile</div>
+        <div style={{ fontSize: 11, color: '#555' }}>{r.summary}</div>
+      </>}
+
+      {/* Experience — grid layout */}
+      {r.experience.length > 0 && <>
+        <div style={secTitle}>Experience</div>
+        {r.experience.map((e, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '2px 16px', marginTop: i > 0 ? 10 : 0 }}>
+            <div style={{ fontSize: 10, color: gray, fontFamily: mono, paddingTop: 2 }}>{e.startDate} – {e.current ? 'Now' : e.endDate}</div>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 800, color: blk, textTransform: 'uppercase' }}>{e.title}</div>
+              <div style={{ fontSize: 11 }}>
+                <span style={{ color: red, fontWeight: 600 }}>{e.company}</span>
+                {e.location && <span style={{ color: gray, fontWeight: 400 }}> · {e.location}</span>}
+              </div>
+              {bullets(e.description).length > 0 && (
+                <div style={{ margin: '4px 0 10px', paddingLeft: 14 }}>
+                  {bullets(e.description).map((b, j) => (
+                    <div key={j} style={{ fontSize: 10.5, color: '#555', marginBottom: 2, position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: -12, color: red, fontSize: 6, top: 4 }}>■</span>{b}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </>}
+
+      {/* Education — grid layout */}
+      {r.education.length > 0 && <>
+        <div style={secTitle}>Education</div>
+        {r.education.map((e, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '2px 16px', marginBottom: 6 }}>
+            <div style={{ fontSize: 10, color: gray, fontFamily: mono }}>{e.endDate}</div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 11.5, color: blk }}>{e.degree}</div>
+              <div style={{ fontSize: 11, color: '#555' }}>{e.school}</div>
+            </div>
+          </div>
+        ))}
+      </>}
+
+      {/* Skills — two-column with arrows */}
+      {r.skills.length > 0 && <>
+        <div style={secTitle}>Skills</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 0 }}>
+          {r.skills.map((s, i) => (
+            <div key={i} style={{ fontSize: 10, color: '#555', padding: '4px 0', width: '50%' }}>
+              <span style={{ color: red, fontWeight: 700 }}>→ </span>{s}
+            </div>
+          ))}
+        </div>
+      </>}
+
+      {/* Certifications */}
+      {r.certifications.length > 0 && <>
+        <div style={secTitle}>Certifications</div>
+        {r.certifications.map((c: any, i) => (
+          <div key={i} style={{ fontSize: 10.5, color: '#555', marginBottom: 3 }}>
+            <span style={{ color: red, fontSize: 6 }}>■ </span>{c.name}{c.date ? ` (${c.date})` : ''}
+          </div>
+        ))}
+      </>}
+
+      {/* Languages */}
+      {r.languages.length > 0 && <>
+        <div style={secTitle}>Languages</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 0 }}>
+          {r.languages.map((l: any, i) => (
+            <div key={i} style={{ fontSize: 10, color: '#555', padding: '4px 0', width: '50%' }}>
+              <span style={{ color: red, fontWeight: 700 }}>→ </span>{l.language} — {l.level}
+            </div>
+          ))}
+        </div>
+      </>}
+    </div>
+  )
+}
+
+// Templates 9-14 converted to inline styles
+
+// T9: OCEAN BREEZE
+function OceanBreezeTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const sky = r.customColor || '#0EA5E9'; const deep = '#0C4A6E'; const foam = '#F0F9FF'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { display: 'inline-block', fontSize: 10.5, fontWeight: 700, color: deep, letterSpacing: 3, textTransform: 'uppercase', margin: '20px 0 10px', background: foam, padding: '4px 14px', borderRadius: 20 }
+    return (
+        <div style={{ fontFamily: f, color: '#334155', lineHeight: 1.55, background: '#fff', minHeight: 1123, padding: '28px 32px' }}>
+            <header style={{ textAlign: 'center', paddingBottom: 16, marginBottom: 16, borderBottom: `2px solid ${sky}` }}>
+                <h1 style={{ fontSize: 32, fontWeight: 300, color: deep, margin: 0, letterSpacing: 4, textTransform: 'uppercase' }}>{r.name}</h1>
+                <div style={{ fontSize: 14, color: sky, fontWeight: 600, marginTop: 4 }}>{r.role}</div>
+                <div style={{ fontSize: 10.5, color: '#94A3B8', marginTop: 8 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join('  ·  ')}</div>
+            </header>
+            {r.summary && <><div style={sec}>Summary</div><div style={{ fontSize: 11, color: '#64748B', padding: '10px 0' }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}>Experience</div>
+                {r.experience.map((e, i) => (
+                    <div key={i} style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8, padding: '12px 16px', marginTop: 10, borderLeft: `3px solid ${sky}` }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: deep }}>{e.title}</div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}><span><span style={{ color: sky, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#CBD5E1' }}> · {e.location}</span>}</span><span style={{ color: '#94A3B8' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div>
+                        {bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#64748B', marginTop: 3, paddingLeft: 12, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: sky }}>•</span>{b}</div>)}
+                    </div>))}
+            </>}
+            {r.education.length > 0 && <><div style={sec}>Education</div>
+                {r.education.map((e, i) => (
+                    <div key={i} style={{ background: foam, borderRadius: 6, padding: '10px 14px', marginTop: 8 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 700, fontSize: 11.5, color: deep }}>{e.degree}</span><span style={{ color: '#94A3B8', fontSize: 10 }}>{e.endDate}</span></div>
+                        <div style={{ fontSize: 11, color: sky }}>{e.school}</div>
+                    </div>))}
+            </>}
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ background: foam, color: deep, fontSize: 10, padding: '4px 12px', borderRadius: 20, fontWeight: 600, border: '1px solid #BAE6FD' }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10.5, color: '#64748B', marginBottom: 4, paddingLeft: 14, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: sky, fontSize: 8, top: 2 }}>✦</span>{c.name}</div>)}</>}
+        </div>)
+}
+
+// T10: MONOCHROME EDITORIAL
+function MonochromeEditorialTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const blk = '#0a0a0a'; const mid = '#6b6b6b'; const lt = '#a0a0a0'; const rule = '#d4d4d4'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 9, fontWeight: 800, color: blk, letterSpacing: 5, textTransform: 'uppercase', borderTop: `1px solid ${rule}`, borderBottom: `1px solid ${rule}`, padding: '5px 0', margin: '18px 0 10px', textAlign: 'center' }
+    return (
+        <div style={{ fontFamily: f, color: '#1a1a1a', lineHeight: 1.55, background: '#fff', minHeight: 1123, padding: '28px 32px' }}>
+            <header style={{ borderBottom: `4px double ${blk}`, paddingBottom: 14, marginBottom: 16, textAlign: 'center' }}>
+                <h1 style={{ fontSize: 38, fontWeight: 300, color: blk, margin: 0, letterSpacing: 8, textTransform: 'uppercase' }}>{r.name}</h1>
+                <div style={{ height: 1, background: blk, margin: '8px 0' }} />
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 20, fontSize: 10, color: mid, textTransform: 'uppercase', letterSpacing: 2 }}>{[r.email, r.phone, r.location].filter(Boolean).map((v, i) => <span key={i}>{v}</span>)}</div>
+                <div style={{ fontSize: 12, color: mid, fontStyle: 'italic', marginTop: 6 }}>{r.role}</div>
+            </header>
+            {r.summary && <><div style={sec}>Profile</div><div style={{ fontSize: 11, color: mid, textAlign: 'justify', fontStyle: 'italic' }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}>Experience</div>
+                {r.experience.map((e, i) => (
+                    <div key={i} style={{ marginTop: 12, paddingBottom: 10, borderBottom: i < r.experience.length - 1 ? `1px dotted ${rule}` : 'none' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><span style={{ fontSize: 13, fontWeight: 700, color: blk }}>{e.title}</span><span style={{ fontSize: 10, color: lt, fontStyle: 'italic' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div>
+                        <div style={{ fontSize: 11, color: mid }}>{e.company}{e.location && <span style={{ color: lt }}> · {e.location}</span>}</div>
+                        {bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: mid, marginTop: 3, paddingLeft: 14, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: lt }}>—</span>{b}</div>)}
+                    </div>))}
+            </>}
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginTop: 8 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 700, fontSize: 11.5, color: blk }}>{e.degree}</span><span style={{ fontSize: 10, color: lt, fontStyle: 'italic' }}>{e.endDate}</span></div><div style={{ fontSize: 11, color: mid }}>{e.school}</div></div>)}</>}
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ fontSize: 10.5, color: mid, textAlign: 'center', marginTop: 6 }}>{r.skills.join(' / ')}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10.5, color: mid, textAlign: 'center', marginBottom: 3 }}>{c.name}</div>)}</>}
+        </div>)
+}
+
+// T11: MIDNIGHT LUXE
+function MidnightLuxeTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const gold = r.customColor || '#C9A96E'; const cream = '#E8DCC8'; const dim = '#7A7A8E'; const bg = '#1A1A2E'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 10, fontWeight: 700, color: gold, letterSpacing: 4, textTransform: 'uppercase', textAlign: 'center', margin: '22px 0 10px' }
+    return (
+        <div style={{ fontFamily: f, color: '#D4C5A9', lineHeight: 1.55, background: bg, minHeight: 1123, padding: '30px 34px', borderRadius: 4 }}>
+            <h1 style={{ fontSize: 30, fontWeight: 300, color: cream, letterSpacing: 10, textTransform: 'uppercase', textAlign: 'center', margin: 0 }}>{r.name}</h1>
+            <div style={{ height: 1, background: `linear-gradient(90deg, transparent, ${gold}, transparent)`, margin: '10px 60px' }} />
+            <div style={{ textAlign: 'center', fontSize: 13, color: gold, letterSpacing: 3, textTransform: 'uppercase', fontWeight: 600 }}>{r.role}</div>
+            <div style={{ textAlign: 'center', fontSize: 10, color: dim, margin: '10px 0 20px', letterSpacing: 1 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join('  |  ')}</div>
+            {r.summary && <><div style={sec}>About</div><div style={{ fontSize: 11, color: dim, textAlign: 'center', fontStyle: 'italic', padding: '0 20px' }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i}><div style={{ fontSize: 13, fontWeight: 700, color: cream, marginTop: 14 }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}><span><span style={{ color: gold }}>{e.company}</span>{e.location && <span style={{ color: dim }}> · {e.location}</span>}</span><span style={{ color: dim, fontStyle: 'italic' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#9A9AAE', marginTop: 3, paddingLeft: 16, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: gold }}>•</span>{b}</div>)}</div>)}</>}
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i}><div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}><span style={{ fontWeight: 700, fontSize: 11.5, color: cream }}>{e.degree}</span><span style={{ color: dim, fontStyle: 'italic', fontSize: 10 }}>{e.endDate}</span></div><div style={{ fontSize: 11, color: gold }}>{e.school}</div></div>)}</>}
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginTop: 8 }}>{r.skills.map((s, i) => <span key={i} style={{ border: '1px solid #333355', color: gold, fontSize: 9.5, padding: '3px 10px', borderRadius: 2, letterSpacing: 0.5 }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10.5, color: '#9A9AAE', textAlign: 'center', marginBottom: 4 }}>{c.name}</div>)}</>}
+        </div>)
+}
+
+// T12: FOREST CANOPY
+function ForestCanopyTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const pine = r.customColor || '#2D5016'; const moss = '#6B8F4E'; const leaf = '#A8C686'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: pine, letterSpacing: 3, textTransform: 'uppercase', margin: '20px 0 8px', paddingBottom: 4, borderBottom: `2px solid ${leaf}` }
+    return (
+        <div style={{ fontFamily: f, color: '#2D3B2D', lineHeight: 1.55, background: '#fff', minHeight: 1123, padding: '28px 32px' }}>
+            <header style={{ borderLeft: `5px solid ${pine}`, paddingLeft: 18, marginBottom: 18 }}>
+                <h1 style={{ fontSize: 30, fontWeight: 800, color: pine, margin: 0 }}>{r.name}</h1>
+                <div style={{ fontSize: 13, color: moss, fontWeight: 600, marginTop: 2 }}>{r.role}</div>
+                <div style={{ fontSize: 10.5, color: '#8A8A7A', marginTop: 6 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join(' · ')}</div>
+            </header>
+            {r.summary && <><div style={sec}>Summary</div><div style={{ fontSize: 11, color: '#5A6B5A', background: '#FEFCF3', padding: '10px 14px', borderRadius: 4, border: '1px solid #E8E4D4' }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ position: 'relative', paddingLeft: 20, marginTop: 14, borderLeft: '2px solid #D4DEC8' }}><span style={{ position: 'absolute', left: -6, top: 0, color: moss, fontSize: 10, background: '#fff' }}>●</span><div style={{ fontSize: 12.5, fontWeight: 700, color: pine }}>{e.title}</div><div style={{ fontSize: 11 }}><span style={{ color: moss, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#B0B0A0' }}> · {e.location}</span>} <span style={{ color: '#A0A090', fontStyle: 'italic' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#5A6B5A', marginTop: 3, paddingLeft: 12, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: leaf }}>•</span>{b}</div>)}</div>)}</>}
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginTop: 8 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 700, fontSize: 11.5, color: pine }}>{e.degree}</span><span style={{ color: '#A0A090', fontStyle: 'italic', fontSize: 10 }}>{e.endDate}</span></div><div style={{ fontSize: 11, color: moss }}>{e.school}</div></div>)}</>}
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ background: '#EDF3E5', color: pine, fontSize: 10, padding: '4px 10px', borderRadius: 4, fontWeight: 600 }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10.5, color: '#5A6B5A', marginBottom: 4, paddingLeft: 14, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: moss, fontWeight: 700, fontSize: 11 }}>✓</span>{c.name}</div>)}</>}
+        </div>)
+}
+
+// T13: COPPER DECO
+function CopperDecoTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const copper = r.customColor || '#B87333'; const dark = '#2C1810'; const cream = '#FFF8F0'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: dark, letterSpacing: 4, textTransform: 'uppercase', margin: '22px 0 10px', textAlign: 'center' }
+    return (
+        <div style={{ fontFamily: f, color: '#3E2723', lineHeight: 1.55, background: '#fff', minHeight: 1123, padding: '28px 32px' }}>
+            <header style={{ textAlign: 'center', paddingBottom: 16 }}>
+                <div style={{ color: copper, fontSize: 12, marginBottom: 6 }}>— ◆ —</div>
+                <h1 style={{ fontSize: 32, fontWeight: 700, color: dark, margin: 0, letterSpacing: 5, textTransform: 'uppercase' }}>{r.name}</h1>
+                <div style={{ fontSize: 13, color: copper, letterSpacing: 2, marginTop: 4 }}>{r.role}</div>
+                <div style={{ fontSize: 10, color: '#A0887A', marginTop: 8, letterSpacing: 1 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join('  ·  ')}</div>
+            </header>
+            {r.summary && <><div style={sec}>◈ Summary ◈</div><div style={{ fontSize: 11, color: '#6D5D53', textAlign: 'center', borderTop: '1px solid #E8D5C4', borderBottom: '1px solid #E8D5C4', padding: '10px 16px', background: cream }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}>◈ Experience ◈</div>{r.experience.map((e, i) => <div key={i}><div style={{ fontSize: 12.5, fontWeight: 700, color: dark, marginTop: 12 }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}><span><span style={{ color: copper, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#B0A090' }}>, {e.location}</span>}</span><span style={{ color: '#B0A090', fontStyle: 'italic' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#6D5D53', marginTop: 3, paddingLeft: 16, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: copper }}>•</span>{b}</div>)}</div>)}</>}
+            {r.education.length > 0 && <><div style={sec}>◈ Education ◈</div>{r.education.map((e, i) => <div key={i} style={{ marginTop: 8 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 700, fontSize: 11.5, color: dark }}>{e.degree}</span><span style={{ color: '#B0A090', fontStyle: 'italic', fontSize: 10 }}>{e.endDate}</span></div><div style={{ fontSize: 11, color: copper }}>{e.school}</div></div>)}</>}
+            {r.skills.length > 0 && <><div style={sec}>◈ Expertise ◈</div><div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '4px 14px', marginTop: 6 }}>{r.skills.map((s, i) => <div key={i} style={{ fontSize: 10.5, color: '#6D5D53', textAlign: 'center', padding: '3px 0', borderBottom: '1px dotted #E8D5C4' }}>{s}</div>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>◈ Certifications ◈</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10.5, color: '#6D5D53', textAlign: 'center', marginBottom: 3 }}>{c.name}</div>)}</>}
+        </div>)
+}
+
+// T14: ARCTIC FROST
+function ArcticFrostTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const frost = r.customColor || '#5E81AC'; const ice = '#88C0D0'; const snow = '#ECEFF4'; const night = '#2E3440'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sideTitle: React.CSSProperties = { fontSize: 9.5, fontWeight: 700, color: frost, letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 8 }
+    const mainTitle: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: frost, letterSpacing: 3, textTransform: 'uppercase', margin: '0 0 10px', borderBottom: '2px solid #D8DEE9', paddingBottom: 4 }
+    return (
+        <div style={{ fontFamily: f, color: '#2E3440', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
+            <header style={{ background: 'linear-gradient(135deg, #2E3440, #3B4252)', color: '#fff', padding: '22px 26px', marginBottom: 16 }}>
+                <h1 style={{ fontSize: 26, fontWeight: 700, margin: 0, letterSpacing: 2 }}>{r.name}</h1>
+                <div style={{ fontSize: 13, color: ice, marginTop: 3 }}>{r.role}</div>
+                <div style={{ fontSize: 10, color: '#8892A4', marginTop: 8 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join('  ·  ')}</div>
+            </header>
+            <div style={{ display: 'flex', gap: 20, padding: '0 26px 28px' }}>
+                <div style={{ width: 180, flexShrink: 0 }}>
+                    <div style={{ background: snow, borderRadius: 6, padding: 12, marginBottom: 12 }}><div style={sideTitle}>Skills</div>{r.skills.map((s, i) => <div key={i} style={{ fontSize: 10, color: '#4C566A', padding: '3px 0', display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: ice, flexShrink: 0 }} />{s}</div>)}</div>
+                    <div style={{ background: snow, borderRadius: 6, padding: 12, marginBottom: 12 }}><div style={sideTitle}>Education</div>{r.education.map((e, i) => <div key={i}><div style={{ fontSize: 10.5, fontWeight: 700, color: night }}>{e.degree}</div><div style={{ fontSize: 10, color: frost }}>{e.school}</div><div style={{ fontSize: 9.5, color: '#8892A4', marginBottom: 8 }}>{e.endDate}</div></div>)}</div>
+                    {r.certifications.length > 0 && <div style={{ background: snow, borderRadius: 6, padding: 12 }}><div style={sideTitle}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 9.5, color: '#4C566A', marginBottom: 5 }}>{c.name}</div>)}</div>}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    {r.summary && <><div style={mainTitle}>Profile</div><div style={{ fontSize: 11, color: '#4C566A', marginBottom: 16 }}>{r.summary}</div></>}
+                    {r.experience.length > 0 && <><div style={mainTitle}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ background: snow, borderRadius: 6, padding: '12px 14px', marginBottom: 10 }}><div style={{ fontSize: 12.5, fontWeight: 700, color: night }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginTop: 2 }}><span><span style={{ color: frost, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#B0B8C8' }}> · {e.location}</span>}</span><span style={{ color: '#8892A4' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#4C566A', marginTop: 2, paddingLeft: 12, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: ice }}>•</span>{b}</div>)}</div>)}</>}
+                </div>
+            </div>
+        </div>)
+}
+
+
+// Templates 15-20 converted to inline styles
+
+// T15: SUNSET GRADIENT
+function SunsetGradientTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const flame = r.customColor || '#E85D26'; const plum = '#8B2F5F'; const peach = '#FEF0E7'; const wine = '#5C1A3A'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: 3.5, textTransform: 'uppercase', margin: '20px 0 8px', color: flame }
+    return (
+        <div style={{ fontFamily: f, color: '#3D2C2C', lineHeight: 1.55, background: '#fff', minHeight: 1123 }}>
+            <header style={{ background: `linear-gradient(135deg, ${flame}, ${plum})`, color: '#fff', padding: '26px 30px', textAlign: 'center' }}>
+                <h1 style={{ fontSize: 28, fontWeight: 300, letterSpacing: 6, textTransform: 'uppercase', margin: 0 }}>{r.name}</h1>
+                <div style={{ fontSize: 13, opacity: 0.9, marginTop: 4, letterSpacing: 2 }}>{r.role}</div>
+                <div style={{ fontSize: 10, opacity: 0.75, marginTop: 10 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join(' · ')}</div>
+            </header>
+            <div style={{ padding: '0 30px 28px' }}>
+                {r.summary && <><div style={sec}>Profile</div><div style={{ fontSize: 11, color: '#6B5A5A', background: peach, padding: '10px 14px', borderRadius: 8 }}>{r.summary}</div></>}
+                {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i}><div style={{ fontSize: 12.5, fontWeight: 700, color: wine, marginTop: 12 }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}><span><span style={{ color: flame, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#C0A0A0' }}> · {e.location}</span>}</span><span style={{ color: '#C0A0A0', fontStyle: 'italic' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#6B5A5A', marginTop: 3, paddingLeft: 16, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: flame }}>•</span>{b}</div>)}</div>)}</>}
+                {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginTop: 10 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 700, fontSize: 11.5, color: wine }}>{e.degree}</span><span style={{ color: '#C0A0A0', fontSize: 10 }}>{e.endDate}</span></div><div style={{ fontSize: 11, color: plum }}>{e.school}</div></div>)}</>}
+                {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ background: 'linear-gradient(135deg, #FEF0E7, #FCE4EC)', color: wine, fontSize: 10, padding: '4px 12px', borderRadius: 20, fontWeight: 600 }}>{s}</span>)}</div></>}
+                {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10.5, color: '#6B5A5A', marginBottom: 4, paddingLeft: 14, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: flame, fontSize: 9 }}>★</span>{c.name}</div>)}</>}
+            </div>
+        </div>)
+}
+
+// T16: METRO LINE
+function MetroLineTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const blue = r.customColor || '#0078D4'; const dark = '#1B1B1B'; const ltbg = '#F3F3F3'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const mono = "'IBM Plex Mono', 'Courier New', monospace"
+    const sec: React.CSSProperties = { fontSize: 10.5, fontWeight: 800, color: '#fff', letterSpacing: 3, textTransform: 'uppercase', background: blue, display: 'inline-block', padding: '3px 12px', margin: '18px 0 10px' }
+    return (
+        <div style={{ fontFamily: f, color: '#333', lineHeight: 1.5, background: '#fff', minHeight: 1123, padding: '28px 32px' }}>
+            <header style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 16, paddingBottom: 14, borderBottom: `3px solid ${blue}` }}>
+                <div><h1 style={{ fontSize: 24, fontWeight: 800, color: dark, margin: 0, textTransform: 'uppercase', letterSpacing: 1 }}>{r.name}</h1><div style={{ fontSize: 13, color: blue, fontWeight: 600 }}>{r.role}</div><div style={{ fontSize: 10, color: '#888', marginTop: 3 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join(' · ')}</div></div>
+            </header>
+            {r.summary && <><div style={sec}>Profile</div><div style={{ fontSize: 11, color: '#555', padding: '8px 12px', background: ltbg, borderLeft: `3px solid ${blue}` }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i} style={{ display: 'flex', gap: 14, marginTop: 12 }}><div style={{ width: 90, flexShrink: 0, fontSize: 10, color: '#888', paddingTop: 2, textAlign: 'right', fontFamily: mono }}>{e.startDate}–{e.current ? 'Now' : e.endDate}</div><div style={{ flex: 1, borderLeft: '2px solid #D0D0D0', paddingLeft: 14, paddingBottom: 8 }}><div style={{ fontSize: 12.5, fontWeight: 700, color: dark }}>{e.title}</div><div style={{ fontSize: 11, color: blue, fontWeight: 600 }}>{e.company}{e.location && <span style={{ color: '#aaa', fontWeight: 400 }}> · {e.location}</span>}</div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#555', marginTop: 2, paddingLeft: 12, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: blue }}>▪</span>{b}</div>)}</div></div>)}</>}
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginTop: 8 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 700, fontSize: 11.5, color: dark }}>{e.degree}</span><span style={{ fontSize: 10, color: '#888', fontFamily: mono }}>{e.endDate}</span></div><div style={{ fontSize: 11, color: blue }}>{e.school}</div></div>)}</>}
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 6 }}>{r.skills.map((s, i) => <div key={i} style={{ background: ltbg, color: dark, fontSize: 10, padding: '4px 10px', fontWeight: 600, borderLeft: `3px solid ${blue}` }}>{s}</div>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10.5, color: '#555', marginBottom: 3, paddingLeft: 14, position: 'relative' }}><span style={{ position: 'absolute', left: 2, color: blue }}>▪</span>{c.name}</div>)}</>}
+        </div>)
+}
+
+// T17: ROSE QUARTZ
+function RoseQuartzTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const rose = r.customColor || '#C77D8A'; const blush = '#F5E6EA'; const deep = '#6B3A4A'; const soft = '#E8CDD3'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 10.5, fontWeight: 700, color: rose, letterSpacing: 3, textTransform: 'uppercase', margin: '20px 0 8px', display: 'flex', alignItems: 'center', gap: 10 }
+    const line: React.CSSProperties = { flex: 1, height: 1, background: soft }
+    return (
+        <div style={{ fontFamily: f, color: '#4A3B3B', lineHeight: 1.55, background: '#fff', minHeight: 1123, padding: '28px 32px' }}>
+            <header style={{ textAlign: 'center', paddingBottom: 16, borderBottom: `1px solid ${soft}`, marginBottom: 16 }}>
+                <h1 style={{ fontSize: 30, fontWeight: 300, color: deep, letterSpacing: 6, textTransform: 'uppercase', margin: 0 }}>{r.name}</h1>
+                <div style={{ fontSize: 13, color: rose, marginTop: 4, fontWeight: 600, letterSpacing: 1 }}>{r.role}</div>
+                <div style={{ fontSize: 10.5, color: '#B0A0A4', marginTop: 8 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join('  ·  ')}</div>
+            </header>
+            {r.summary && <><div style={sec}><div style={line} /><span>Summary</span><div style={line} /></div><div style={{ fontSize: 11, color: '#7A6A6A', textAlign: 'center', padding: '10px 24px', background: blush, borderRadius: 8 }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}><div style={line} /><span>Experience</span><div style={line} /></div>{r.experience.map((e, i) => <div key={i}><div style={{ fontSize: 12.5, fontWeight: 700, color: deep, marginTop: 12 }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}><span><span style={{ color: rose, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#C0B0B4' }}> · {e.location}</span>}</span><span style={{ color: '#C0B0B4', fontStyle: 'italic' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#7A6A6A', marginTop: 3, paddingLeft: 16, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: rose, fontSize: 7 }}>♦</span>{b}</div>)}</div>)}</>}
+            {r.education.length > 0 && <><div style={sec}><div style={line} /><span>Education</span><div style={line} /></div>{r.education.map((e, i) => <div key={i} style={{ marginTop: 10 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 700, fontSize: 11.5, color: deep }}>{e.degree}</span><span style={{ color: '#C0B0B4', fontSize: 10 }}>{e.endDate}</span></div><div style={{ fontSize: 11, color: rose }}>{e.school}</div></div>)}</>}
+            {r.skills.length > 0 && <><div style={sec}><div style={line} /><span>Skills</span><div style={line} /></div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginTop: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ background: blush, color: deep, fontSize: 10, padding: '4px 12px', borderRadius: 20, fontWeight: 600, border: `1px solid ${soft}` }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}><div style={line} /><span>Certifications</span><div style={line} /></div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10.5, color: '#7A6A6A', textAlign: 'center', marginBottom: 4 }}>{c.name}</div>)}</>}
+        </div>)
+}
+
+// T18: CONCRETE BRUTALIST
+function ConcreteBrutalistTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const yellow = r.customColor || '#FFD600'; const blk = '#0a0a0a'; const concrete = '#8C8C8C'; const ltbg = '#F2F2F2'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const mono = "'IBM Plex Mono', 'Courier New', monospace"
+    const sec: React.CSSProperties = { fontSize: 11, fontWeight: 900, color: blk, letterSpacing: 4, textTransform: 'uppercase', margin: '20px 0 8px', background: yellow, display: 'inline-block', padding: '2px 10px' }
+    return (
+        <div style={{ fontFamily: f, color: '#1a1a1a', lineHeight: 1.5, background: '#fff', minHeight: 1123, padding: '28px 32px' }}>
+            <header style={{ border: `3px solid ${blk}`, padding: '18px 20px', marginBottom: 16 }}>
+                <h1 style={{ fontSize: 34, fontWeight: 900, color: blk, margin: 0, textTransform: 'uppercase', lineHeight: 1 }}>{r.name}</h1>
+                <div style={{ fontSize: 13, fontWeight: 800, color: blk, textTransform: 'uppercase', letterSpacing: 4, marginTop: 4, background: yellow, display: 'inline-block', padding: '2px 8px' }}>{r.role}</div>
+                <div style={{ fontSize: 10, color: concrete, marginTop: 8, textTransform: 'uppercase', letterSpacing: 1 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join(' / ')}</div>
+            </header>
+            {r.summary && <><div style={sec}>Profile</div><div style={{ fontSize: 11, color: '#444', border: '1px solid #ddd', padding: '10px 14px', background: ltbg }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i}><div style={{ fontSize: 13, fontWeight: 900, color: blk, textTransform: 'uppercase', marginTop: 14 }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, borderBottom: '1px solid #ddd', paddingBottom: 4, marginBottom: 4 }}><span><span style={{ color: blk, fontWeight: 700 }}>{e.company}</span>{e.location && <span style={{ color: concrete, fontWeight: 400 }}> / {e.location}</span>}</span><span style={{ color: concrete, fontFamily: mono, fontSize: 10 }}>{e.startDate}–{e.current ? 'NOW' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#444', marginBottom: 2, paddingLeft: 16, position: 'relative' }}><span style={{ position: 'absolute', left: 2, color: yellow, fontSize: 8 }}>■</span>{b}</div>)}</div>)}</>}
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginTop: 8 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 900, fontSize: 11.5, color: blk, textTransform: 'uppercase' }}>{e.degree}</span><span style={{ color: concrete, fontFamily: mono, fontSize: 10 }}>{e.endDate}</span></div><div style={{ fontSize: 11, color: '#444' }}>{e.school}</div></div>)}</>}
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 3, marginTop: 6 }}>{r.skills.map((s, i) => <div key={i} style={{ fontSize: 10, fontWeight: 700, color: blk, textTransform: 'uppercase', padding: '4px 8px', background: ltbg, borderLeft: `3px solid ${yellow}` }}>{s}</div>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10.5, color: '#444', marginBottom: 3, fontFamily: mono, fontSize: 10 }}>// {c.name}</div>)}</>}
+        </div>)
+}
+
+// T19: LAVENDER FIELDS
+function LavenderFieldsTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const lav = r.customColor || '#7C6DAF'; const lilac = '#E8E0F0'; const deep = '#2E2348'; const soft = '#F5F2FA'; const muted = '#9B8EC0'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 11, fontWeight: 700, color: deep, letterSpacing: 3, textTransform: 'uppercase', margin: '20px 0 8px', padding: '4px 12px', background: lilac, borderRadius: 4, display: 'inline-block' }
+    return (
+        <div style={{ fontFamily: f, color: '#3D3557', lineHeight: 1.55, background: '#fff', minHeight: 1123, padding: '28px 32px' }}>
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: `2px solid ${lav}`, paddingBottom: 12, marginBottom: 16 }}>
+                <div><h1 style={{ fontSize: 28, fontWeight: 700, color: deep, margin: 0 }}>{r.name}</h1><div style={{ fontSize: 13, color: lav, fontWeight: 600 }}>{r.role}</div></div>
+                <div style={{ textAlign: 'right', fontSize: 10.5, color: muted, lineHeight: 1.7 }}>{r.email && <div>{r.email}</div>}{r.phone && <div>{r.phone}</div>}{r.location && <div>{r.location}</div>}{r.website && <div>{r.website}</div>}</div>
+            </header>
+            {r.summary && <><div style={sec}>Summary</div><div style={{ fontSize: 11, color: '#6B5E80', padding: '10px 14px', background: soft, borderRadius: 6, borderLeft: `3px solid ${muted}` }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}>Experience</div>{r.experience.map((e, i) => <div key={i}><div style={{ fontSize: 12.5, fontWeight: 700, color: deep, marginTop: 12 }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}><span><span style={{ color: lav, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#B8B0C8' }}> · {e.location}</span>}</span><span style={{ color: muted, fontStyle: 'italic' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#6B5E80', marginTop: 3, paddingLeft: 16, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: lav }}>•</span>{b}</div>)}</div>)}</>}
+            {r.education.length > 0 && <><div style={sec}>Education</div>{r.education.map((e, i) => <div key={i} style={{ marginTop: 10 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 700, fontSize: 11.5, color: deep }}>{e.degree}</span><span style={{ color: muted, fontSize: 10 }}>{e.endDate}</span></div><div style={{ fontSize: 11, color: lav }}>{e.school}</div></div>)}</>}
+            {r.skills.length > 0 && <><div style={sec}>Skills</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>{r.skills.map((s, i) => <span key={i} style={{ background: soft, color: deep, fontSize: 10, padding: '4px 10px', borderRadius: 4, fontWeight: 600, border: `1px solid ${lilac}` }}>{s}</span>)}</div></>}
+            {r.certifications.length > 0 && <><div style={sec}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10.5, color: '#6B5E80', marginBottom: 4, paddingLeft: 14, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: lav, fontSize: 10 }}>◇</span>{c.name}</div>)}</>}
+        </div>)
+}
+
+// T20: STEEL INDUSTRIAL
+function SteelIndustrialTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const steel = '#607D8B'; const iron = r.customColor || '#37474F'; const rivet = '#FF6F00'; const plate = '#ECEFF1'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const mono = "'IBM Plex Mono', 'Courier New', monospace"
+    const sec: React.CSSProperties = { fontSize: 10.5, fontWeight: 900, color: iron, letterSpacing: 4, textTransform: 'uppercase', margin: '20px 0 8px', paddingBottom: 4, borderBottom: `2px solid ${iron}`, display: 'flex', alignItems: 'center', gap: 8 }
+    return (
+        <div style={{ fontFamily: f, color: '#333', lineHeight: 1.5, background: '#fff', minHeight: 1123 }}>
+            <header style={{ background: iron, color: '#fff', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div><h1 style={{ fontSize: 26, fontWeight: 900, margin: 0, textTransform: 'uppercase', letterSpacing: 2 }}>{r.name}</h1><div style={{ fontSize: 12, color: rivet, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 3, marginTop: 2 }}>{r.role}</div></div>
+                <div style={{ textAlign: 'right', fontSize: 10, color: '#90A4AE', lineHeight: 1.7 }}>{r.email && <div>{r.email}</div>}{r.phone && <div>{r.phone}</div>}{r.location && <div>{r.location}</div>}</div>
+            </header>
+            <div style={{ padding: '0 24px 28px' }}>
+                {r.summary && <><div style={sec}><span style={{ width: 8, height: 8, background: rivet, borderRadius: '50%', flexShrink: 0 }} />Profile</div><div style={{ fontSize: 11, color: '#546E7A', background: plate, padding: '10px 14px', borderLeft: `4px solid ${steel}` }}>{r.summary}</div></>}
+                {r.experience.length > 0 && <><div style={sec}><span style={{ width: 8, height: 8, background: rivet, borderRadius: '50%', flexShrink: 0 }} />Experience</div>{r.experience.map((e, i) => <div key={i}><div style={{ fontSize: 13, fontWeight: 800, color: iron, textTransform: 'uppercase', marginTop: 14 }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}><span><span style={{ color: rivet, fontWeight: 700 }}>{e.company}</span>{e.location && <span style={{ color: '#90A4AE' }}> · {e.location}</span>}</span><span style={{ color: steel, fontFamily: mono, fontSize: 10 }}>{e.startDate}–{e.current ? 'NOW' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#546E7A', marginTop: 2, paddingLeft: 12, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: rivet }}>▸</span>{b}</div>)}</div>)}</>}
+                {r.education.length > 0 && <><div style={sec}><span style={{ width: 8, height: 8, background: rivet, borderRadius: '50%', flexShrink: 0 }} />Education</div>{r.education.map((e, i) => <div key={i} style={{ marginTop: 10 }}><div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ fontWeight: 800, fontSize: 11.5, color: iron, textTransform: 'uppercase' }}>{e.degree}</span><span style={{ color: steel, fontSize: 10 }}>{e.endDate}</span></div><div style={{ fontSize: 11, color: steel }}>{e.school}</div></div>)}</>}
+                {r.skills.length > 0 && <><div style={sec}><span style={{ width: 8, height: 8, background: rivet, borderRadius: '50%', flexShrink: 0 }} />Skills</div><div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4, marginTop: 6 }}>{r.skills.map((s, i) => <div key={i} style={{ background: plate, color: iron, fontSize: 10, padding: '5px 8px', fontWeight: 700, textTransform: 'uppercase', textAlign: 'center', borderTop: `2px solid ${rivet}` }}>{s}</div>)}</div></>}
+                {r.certifications.length > 0 && <><div style={sec}><span style={{ width: 8, height: 8, background: rivet, borderRadius: '50%', flexShrink: 0 }} />Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10, color: '#546E7A', marginBottom: 3, fontFamily: mono }}>⬡ {c.name}</div>)}</>}
+            </div>
+        </div>)
+}
+
+
+// T21: OBSIDIAN EXECUTIVE
+function ObsidianExecutiveTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const violet = r.customColor || '#7C4DFF'; const bg = '#0D0D1A'; const slate = '#1A1A30'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 10, fontWeight: 700, color: violet, letterSpacing: 4, textTransform: 'uppercase', margin: '22px 0 10px', display: 'flex', alignItems: 'center', gap: 10 }
+    return (
+        <div style={{ fontFamily: f, color: '#E0E0E0', lineHeight: 1.55, background: bg, minHeight: 1123, borderRadius: 6, overflow: 'hidden' }}>
+            <header style={{ background: 'linear-gradient(160deg, #0D0D1A 0%, #1A1040 50%, #0D0D1A 100%)', padding: '30px 34px 24px', borderBottom: `1px solid ${violet}30` }}>
+                <h1 style={{ fontSize: 28, fontWeight: 700, color: '#fff', margin: 0, letterSpacing: 1 }}>{r.name}</h1>
+                <div style={{ fontSize: 14, color: violet, fontWeight: 600, marginTop: 2, letterSpacing: 1 }}>{r.role}</div>
+                <div style={{ fontSize: 10, color: '#B0B0C0', marginTop: 12, display: 'flex', gap: 16, flexWrap: 'wrap' }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).map((v, i) => <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 4, height: 4, borderRadius: '50%', background: violet }} />{v}</span>)}</div>
+            </header>
+            <div style={{ padding: '20px 34px 30px' }}>
+                {r.summary && <><div style={sec}>Profile<div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, #2A2A4A, transparent)' }} /></div><div style={{ fontSize: 11, color: '#B0B0C0', background: `${violet}14`, padding: '14px 18px', borderRadius: 8, border: '1px solid #2A2A4A' }}>{r.summary}</div></>}
+                {r.experience.length > 0 && <><div style={sec}>Experience<div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, #2A2A4A, transparent)' }} /></div>{r.experience.map((e, i) => <div key={i} style={{ background: slate, borderRadius: 8, padding: '14px 18px', marginTop: 10, border: '1px solid #2A2A4A' }}><div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginTop: 2 }}><span><span style={{ color: violet, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#6A6A80' }}> · {e.location}</span>}</span><span style={{ color: '#6A6A80', fontFamily: 'monospace', fontSize: 10 }}>{e.startDate}–{e.current ? 'Now' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#9090A8', marginTop: 3, paddingLeft: 16, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: violet }}>•</span>{b}</div>)}</div>)}</>}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 10 }}>
+                    <div style={{ background: slate, borderRadius: 8, padding: '14px 16px', border: '1px solid #2A2A4A' }}>
+                        <div style={{ fontSize: 9.5, fontWeight: 700, color: violet, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8 }}>Education</div>
+                        {r.education.map((e, i) => <div key={i}><div style={{ fontWeight: 700, fontSize: 11, color: '#fff' }}>{e.degree}</div><div style={{ fontSize: 10, color: violet }}>{e.school} · {e.endDate}</div><div style={{ fontSize: 9.5, color: '#6A6A80', marginBottom: 8 }}></div></div>)}
+                        {r.certifications.length > 0 && <><div style={{ fontSize: 9.5, fontWeight: 700, color: violet, letterSpacing: 3, textTransform: 'uppercase', marginTop: 12, marginBottom: 8 }}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 9.5, color: '#9090A8', marginBottom: 5, paddingLeft: 10, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: violet, fontWeight: 700 }}>›</span>{c.name}</div>)}</>}
+                    </div>
+                    <div style={{ background: slate, borderRadius: 8, padding: '14px 16px', border: '1px solid #2A2A4A' }}>
+                        <div style={{ fontSize: 9.5, fontWeight: 700, color: violet, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8 }}>Skills</div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>{r.skills.map((s, i) => <span key={i} style={{ background: `${violet}14`, color: violet, fontSize: 9, padding: '3px 9px', borderRadius: 4, border: '1px solid #2A2A4A', fontWeight: 600 }}>{s}</span>)}</div>
+                    </div>
+                </div>
+            </div>
+        </div>)
+}
+
+// T22: IVORY PRESTIGE
+function IvoryPrestigeTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const walnut = '#5C4033'; const tan = r.customColor || '#C4A97D'; const ink = '#2C2117'; const parchment = '#F5EFE3'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 10, fontWeight: 600, color: walnut, letterSpacing: 5, textTransform: 'uppercase', textAlign: 'center', margin: '24px 0 6px' }
+    return (
+        <div style={{ fontFamily: f, color: '#3B3226', lineHeight: 1.6, background: '#FEFCF6', minHeight: 1123, padding: '28px 32px' }}>
+            <header style={{ textAlign: 'center', paddingBottom: 18 }}>
+                <div style={{ color: tan, fontSize: 18, letterSpacing: 12, marginBottom: 4, opacity: 0.5 }}>◦ ◦ ◦ ◦ ◦</div>
+                <h1 style={{ fontSize: 34, fontWeight: 300, color: ink, letterSpacing: 10, textTransform: 'uppercase', margin: 0 }}>{r.name}</h1>
+                <div style={{ fontSize: 12, color: tan, letterSpacing: 4, textTransform: 'uppercase', fontWeight: 600, marginTop: 6 }}>{r.role}</div>
+                <div style={{ width: 80, height: 1, background: tan, margin: '12px auto' }} />
+                <div style={{ fontSize: 10, color: '#A09080', letterSpacing: 1.5 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join('   ·   ')}</div>
+            </header>
+            {r.summary && <><div style={sec}>Executive Summary</div><div style={{ textAlign: 'center', color: tan, fontSize: 10, letterSpacing: 6, marginBottom: 10, opacity: 0.4 }}>— — —</div><div style={{ fontSize: 11, color: '#7A6B5A', textAlign: 'center', maxWidth: '90%', margin: '0 auto 6px', fontStyle: 'italic', lineHeight: 1.7 }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}>Professional Experience</div><div style={{ textAlign: 'center', color: tan, fontSize: 10, letterSpacing: 6, marginBottom: 10, opacity: 0.4 }}>— — —</div>{r.experience.map((e, i) => <div key={i} style={{ border: '1px solid #E8DFD0', borderRadius: 4, padding: '14px 18px', marginTop: 12, background: parchment }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}><span style={{ fontSize: 13, fontWeight: 700, color: ink }}>{e.title}</span><span style={{ fontSize: 10.5, color: tan, fontStyle: 'italic' }}>{e.startDate} – {e.current ? 'Present' : e.endDate}</span></div><div><span style={{ fontSize: 11.5, color: walnut, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#B0A090' }}> · {e.location}</span>}</div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#6B5E50', marginTop: 3, paddingLeft: 18, position: 'relative' }}><span style={{ position: 'absolute', left: 6, color: tan }}>•</span>{b}</div>)}</div>)}</>}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginTop: 14 }}>
+                <div style={{ borderTop: `1px solid ${tan}`, paddingTop: 10 }}>
+                    <div style={{ fontSize: 9.5, fontWeight: 600, color: walnut, letterSpacing: 4, textTransform: 'uppercase', marginBottom: 8 }}>Education</div>
+                    {r.education.map((e, i) => <div key={i}><div style={{ fontWeight: 700, fontSize: 11, color: ink }}>{e.degree}</div><div style={{ fontSize: 10.5, color: walnut }}>{e.school}</div><div style={{ fontSize: 10, color: tan, marginBottom: 8 }}>{e.endDate}</div></div>)}
+                    {r.certifications.length > 0 && <><div style={{ fontSize: 9.5, fontWeight: 600, color: walnut, letterSpacing: 4, textTransform: 'uppercase', marginTop: 14, marginBottom: 8 }}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10, color: '#7A6B5A', marginBottom: 5 }}>{c.name}</div>)}</>}
+                </div>
+                <div style={{ borderTop: `1px solid ${tan}`, paddingTop: 10 }}>
+                    <div style={{ fontSize: 9.5, fontWeight: 600, color: walnut, letterSpacing: 4, textTransform: 'uppercase', marginBottom: 8 }}>Areas of Expertise</div>
+                    {r.skills.map((s, i) => <div key={i} style={{ fontSize: 10, color: '#6B5E50', padding: '3px 0', borderBottom: '1px dotted #E0D8C8', display: 'flex', alignItems: 'center', gap: 6 }}><span style={{ width: 5, height: 5, border: `1px solid ${tan}`, borderRadius: '50%', flexShrink: 0 }} />{s}</div>)}
+                </div>
+            </div>
+            <div style={{ width: 80, height: 1, background: tan, margin: '24px auto 0' }} />
+        </div>)
+}
+
+// T23: AURORA BOREALIS
+function AuroraBorealisTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const teal = r.customColor || '#00C9A7'; const dim = '#6B8A80'; const card = '#111F2E'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 10, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase', margin: '22px 0 10px', color: teal, display: 'flex', alignItems: 'center', gap: 10 }
+    return (
+        <div style={{ fontFamily: f, color: '#E0ECE4', lineHeight: 1.55, background: 'linear-gradient(180deg, #0B1622 0%, #0F1B2B 100%)', minHeight: 1123, borderRadius: 6, overflow: 'hidden' }}>
+            <header style={{ padding: '28px 32px 22px', background: `linear-gradient(135deg, ${teal}14, #E040FB10)`, borderBottom: '1px solid #1A3040' }}>
+                <h1 style={{ fontSize: 30, fontWeight: 300, color: '#fff', margin: 0, letterSpacing: 4, textTransform: 'uppercase' }}>{r.name}</h1>
+                <div style={{ fontSize: 14, color: teal, fontWeight: 700, marginTop: 4, letterSpacing: 1 }}>{r.role}</div>
+                <div style={{ fontSize: 10, color: dim, marginTop: 10 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join('  ·  ')}</div>
+            </header>
+            <div style={{ padding: '20px 32px 28px' }}>
+                {r.summary && <><div style={sec}>Profile<div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, #1A3040, transparent)' }} /></div><div style={{ fontSize: 11, color: dim, borderLeft: `2px solid ${teal}`, padding: '10px 16px', background: `${teal}08`, borderRadius: '0 6px 6px 0' }}>{r.summary}</div></>}
+                {r.experience.length > 0 && <><div style={sec}>Experience<div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, #1A3040, transparent)' }} /></div>{r.experience.map((e, i) => <div key={i} style={{ background: card, borderRadius: 8, padding: '14px 18px', marginTop: 10, border: '1px solid #1A3040', borderLeft: `3px solid ${teal}` }}><div style={{ fontSize: 13, fontWeight: 700, color: '#fff' }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginTop: 2 }}><span><span style={{ color: teal, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: '#4A6A70' }}> · {e.location}</span>}</span><span style={{ color: '#4A6A70', fontFamily: 'monospace', fontSize: 10 }}>{e.startDate}–{e.current ? 'Now' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#7A9A90', marginTop: 3, paddingLeft: 16, position: 'relative' }}><span style={{ position: 'absolute', left: 4, color: teal }}>•</span>{b}</div>)}</div>)}</>}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginTop: 10 }}>
+                    <div style={{ background: card, borderRadius: 8, padding: '14px 16px', border: '1px solid #1A3040' }}>
+                        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8, color: teal }}>Education</div>
+                        {r.education.map((e, i) => <div key={i}><div style={{ fontWeight: 700, fontSize: 11, color: '#fff' }}>{e.degree}</div><div style={{ fontSize: 10, color: teal }}>{e.school} · {e.endDate}</div><div style={{ fontSize: 9.5, color: '#4A6A70', marginBottom: 8 }}></div></div>)}
+                        {r.certifications.length > 0 && <><div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', marginTop: 10, marginBottom: 8, color: teal }}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 9.5, color: '#7A9A90', marginBottom: 5 }}>{c.name}</div>)}</>}
+                    </div>
+                    <div style={{ background: card, borderRadius: 8, padding: '14px 16px', border: '1px solid #1A3040' }}>
+                        <div style={{ fontSize: 9, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8, color: teal }}>Skills</div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>{r.skills.map((s, i) => <span key={i} style={{ fontSize: 9, padding: '3px 9px', borderRadius: 20, fontWeight: 600, border: '1px solid #1A3040', background: `${teal}10`, color: teal }}>{s}</span>)}</div>
+                    </div>
+                </div>
+            </div>
+        </div>)
+}
+
+// T24: BLUEPRINT ARCHITECT
+function BlueprintArchitectTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const blue = r.customColor || '#4FC3F7'; const bg = '#0D2137'; const line = '#1A3A5C'; const white = '#E8F0F8'; const dim = '#5A8AAA'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const mono = "'IBM Plex Mono', 'Courier New', monospace"
+    const sec: React.CSSProperties = { fontSize: 10, fontWeight: 700, color: blue, letterSpacing: 3, textTransform: 'uppercase', fontFamily: mono, margin: '22px 0 8px', paddingBottom: 4, borderBottom: `1px dashed ${line}` }
+    return (
+        <div style={{ fontFamily: f, color: '#C8D8E8', lineHeight: 1.5, background: bg, minHeight: 1123, padding: '28px 32px', borderRadius: 4 }}>
+            <header style={{ border: `1px solid ${blue}`, padding: '18px 22px', marginBottom: 20, position: 'relative' }}>
+                <h1 style={{ fontSize: 26, fontWeight: 300, color: white, margin: 0, letterSpacing: 4, textTransform: 'uppercase', fontFamily: mono }}>{r.name}</h1>
+                <div style={{ fontSize: 12, color: blue, fontFamily: mono, marginTop: 4 }}>{r.role}</div>
+                <div style={{ fontSize: 10, color: dim, fontFamily: mono, marginTop: 8 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).join(' | ')}</div>
+            </header>
+            {r.summary && <><div style={sec}>// Summary</div><div style={{ fontSize: 11, color: dim, padding: '10px 14px', border: `1px dashed ${line}` }}>{r.summary}</div></>}
+            {r.experience.length > 0 && <><div style={sec}>// Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginTop: 12, paddingLeft: 18, borderLeft: `1px solid ${line}`, position: 'relative' }}><span style={{ position: 'absolute', left: -5, top: 0, color: blue, fontSize: 9, background: bg }}>○</span><div style={{ fontSize: 12.5, fontWeight: 700, color: white, fontFamily: mono }}>{e.title}</div><div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10.5 }}><span><span style={{ color: blue }}>{e.company}</span>{e.location && <span style={{ color: '#3A6A88' }}> · {e.location}</span>}</span><span style={{ color: dim, fontFamily: mono, fontSize: 10 }}>{e.startDate}–{e.current ? 'Now' : e.endDate}</span></div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#7AA0B8', marginTop: 2, paddingLeft: 14, position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: blue }}>→</span>{b}</div>)}</div>)}</>}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 10 }}>
+                <div style={{ border: `1px dashed ${line}`, padding: '12px 14px' }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: blue, letterSpacing: 3, textTransform: 'uppercase', fontFamily: mono, marginBottom: 8 }}># Education</div>
+                    {r.education.map((e, i) => <div key={i}><div style={{ fontWeight: 700, fontSize: 11, color: white, fontFamily: mono }}>{e.degree}</div><div style={{ fontSize: 10, color: blue }}>{e.school} · {e.endDate}</div><div style={{ fontSize: 9.5, color: dim, marginBottom: 6 }}></div></div>)}
+                    {r.certifications.length > 0 && <><div style={{ fontSize: 9, fontWeight: 700, color: blue, letterSpacing: 3, textTransform: 'uppercase', fontFamily: mono, marginTop: 10, marginBottom: 8 }}># Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 9.5, color: '#7AA0B8', fontFamily: mono, marginBottom: 4 }}>✓ {c.name}</div>)}</>}
+                </div>
+                <div style={{ border: `1px dashed ${line}`, padding: '12px 14px' }}>
+                    <div style={{ fontSize: 9, fontWeight: 700, color: blue, letterSpacing: 3, textTransform: 'uppercase', fontFamily: mono, marginBottom: 8 }}># Skills</div>
+                    {r.skills.map((s, i) => <div key={i} style={{ fontSize: 10, color: blue, fontFamily: mono, padding: '2px 0' }}>&gt; {s}</div>)}
+                </div>
+            </div>
+        </div>)
+}
+
+// T25: ONYX & EMBER
+function OnyxEmberTemplate({ data }: PreviewProps) {
+    const r = useDynamicData(data || {})
+    const ember = r.customColor || '#FF5722'; const onyx = '#121212'; const ash = '#2A2A2A'; const smoke = '#8A8A7A'
+    const f = "'Source Sans 3', 'Segoe UI', sans-serif"
+    const sec: React.CSSProperties = { fontSize: 11, fontWeight: 900, color: ember, letterSpacing: 4, textTransform: 'uppercase', margin: '24px 0 10px', display: 'flex', alignItems: 'center', gap: 10 }
+    return (
+        <div style={{ fontFamily: f, color: '#D4D0C8', lineHeight: 1.55, background: onyx, minHeight: 1123, borderRadius: 6, overflow: 'hidden' }}>
+            <header style={{ padding: '28px 32px 20px', borderBottom: `3px solid ${ember}` }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}><h1 style={{ fontSize: 32, fontWeight: 900, color: '#fff', margin: 0, textTransform: 'uppercase', letterSpacing: 2 }}>{r.name}</h1><span style={{ background: ember, color: '#fff', fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 3, letterSpacing: 2, textTransform: 'uppercase' }}>{r.role}</span></div>
+                <div style={{ fontSize: 10, color: smoke, marginTop: 10, display: 'flex', gap: 14 }}>{[r.email, r.phone, r.location, r.website].filter(Boolean).map((v, i) => <span key={i}>{v}</span>)}</div>
+            </header>
+            <div style={{ padding: '20px 32px 28px' }}>
+                {r.summary && <><div style={sec}><span style={{ width: 16, height: 3, background: ember, flexShrink: 0 }} />Profile</div><div style={{ fontSize: 11, color: smoke, background: ash, padding: '14px 18px', borderRadius: 6, borderLeft: `3px solid ${ember}` }}>{r.summary}</div></>}
+                {r.experience.length > 0 && <><div style={sec}><span style={{ width: 16, height: 3, background: ember, flexShrink: 0 }} />Experience</div>{r.experience.map((e, i) => <div key={i} style={{ marginTop: 14, paddingBottom: 12, borderBottom: i < r.experience.length - 1 ? '1px solid #222' : 'none' }}><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={{ fontSize: 14, fontWeight: 800, color: '#fff', textTransform: 'uppercase' }}>{e.title}</span><span style={{ fontSize: 10, color: ember, fontFamily: 'monospace', background: ash, padding: '2px 8px', borderRadius: 3 }}>{e.startDate}–{e.current ? 'Now' : e.endDate}</span></div><div><span style={{ fontSize: 11.5, color: ember, fontWeight: 600 }}>{e.company}</span>{e.location && <span style={{ color: smoke }}> · {e.location}</span>}</div>{bullets(e.description).map((b, j) => <div key={j} style={{ fontSize: 10.5, color: '#A0A090', marginTop: 3, paddingLeft: 16, position: 'relative' }}><span style={{ position: 'absolute', left: 2, color: ember, fontSize: 6 }}>▪</span>{b}</div>)}</div>)}</>}
+                <div style={{ display: 'flex', gap: 20, marginTop: 10 }}>
+                    <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 9.5, fontWeight: 700, color: ember, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8 }}>Education</div>
+                        {r.education.map((e, i) => <div key={i}><div style={{ fontWeight: 700, fontSize: 11, color: '#fff' }}>{e.degree}</div><div style={{ fontSize: 10.5, color: ember }}>{e.school} · {e.endDate}</div><div style={{ fontSize: 10, color: smoke, marginBottom: 8 }}></div></div>)}
+                        {r.certifications.length > 0 && <><div style={{ fontSize: 9.5, fontWeight: 700, color: ember, letterSpacing: 3, textTransform: 'uppercase', marginTop: 12, marginBottom: 8 }}>Certifications</div>{r.certifications.map((c: any, i) => <div key={i} style={{ fontSize: 10, color: '#A0A090', marginBottom: 5, paddingLeft: 12, position: 'relative' }}><span style={{ width: 5, height: 5, background: ember, borderRadius: '50%', position: 'absolute', left: 0, top: 5 }} />{c.name}</div>)}</>}
+                    </div>
+                    <div style={{ width: 220, flexShrink: 0 }}>
+                        <div style={{ fontSize: 9.5, fontWeight: 700, color: ember, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 8 }}>Skills</div>
+                        {r.skills.map((s, i) => <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}><span style={{ fontSize: 10, color: '#C0C0B0', flex: 1 }}>{s}</span><div style={{ width: 60, height: 3, background: ash, borderRadius: 2, overflow: 'hidden' }}><div style={{ height: '100%', background: `linear-gradient(90deg, ${ember}, #FF8A65)`, borderRadius: 2, width: `${70 + ((i * 17 + 11) % 30)}%` }} /></div></div>)}
+                    </div>
+                </div>
+            </div>
+        </div>)
+}
+
+
+// ─── PREVIEW MAP ───────────────────────────────────────────
 
 export const PREVIEW_MAP: Record<string, React.FC<PreviewProps>> = {
-
-  editorial_luxe: Resume1EditorialLuxePreview,
-  dark_architect: Resume2DarkArchitectPreview,
-  bauhaus_geometric: Resume3BauhausGeometricPreview,
-  soft_pastel: Resume4SoftPastelPreview,
-  swiss_grid: Resume5SwissGridPreview,
-
-  phd: PhdResumePreview,
-
-  dark: DarkPreview,
-
-  terminal: TerminalPreview,
-
-  corporate_slate: CorporateSlatePreview,
-  teal_wave: TealWavePreview,
-  purple_dusk: PurpleDuskPreview,
-  coral_bright: CoralBrightPreview,
-  ocean_deep: OceanDeepPreview,
-  sage_pro: SageProPreview,
-  carbon_noir: CarbonNoirPreview,
-  sand_dune: SandDunePreview,
-  indigo_sharp: IndigoSharpPreview,
-  platinum_elite: PlatinumElitePreview,
-  cascade_blue: CascadeBluePreview,
-  nordic_minimal: NordicMinimalPreview,
-  midnight_pro: MidnightProPreview,
-  blueprint: BlueprintPreview,
-  emerald_fresh: EmeraldFreshPreview,
-  sunset_warm: SunsetWarmPreview,
-  newspaper_classic: NewspaperClassicPreview,
-  ivory_marble: IvoryMarblePreview,
-  neon_cyber: NeonCyberPreview,
-  origami_zen: OrigamiZenPreview,
-  ...MONO_PREVIEW_MAP,
+  classic: ClassicTemplate,
+  executive: ExecutiveTemplate,
+  minimal: MinimalTemplate,
+  bold: BoldTemplate,
+  mono_clean: MonoCleanTemplate,
+  mono_sidebar: MonoSidebarTemplate,
+  mono_stack: MonoStackTemplate,
+  mono_type: MonoTypeTemplate,
+  mono_editorial: MonoEditorialTemplate,
+  exec_navy: ExecNavyTemplate,
+  exec_marble: ExecMarbleTemplate,
+  exec_copper: ExecCopperTemplate,
+  creative_neon: CreativeNeonTemplate,
+  creative_coral: CreativeCoralTemplate,
+  creative_blueprint: CreativeBlueprintTemplate,
+  creative_sunset: CreativeSunsetTemplate,
+  dark_obsidian: DarkObsidianTemplate,
+  dark_midnight: DarkMidnightTemplate,
+  dark_eclipse: DarkEclipseTemplate,
+  dark_void: DarkVoidTemplate,
+  dark_carbon: DarkCarbonTemplate,
+  prestige: PrestigeTemplate,
+  modern_sidebar: ModernSidebarTemplate,
+  coral_horizon: CoralHorizonTemplate,
+  swiss_grid: SwissGridTemplate,
+  ocean_breeze: OceanBreezeTemplate,
+  monochrome_editorial: MonochromeEditorialTemplate,
+  midnight_luxe: MidnightLuxeTemplate,
+  forest_canopy: ForestCanopyTemplate,
+  copper_deco: CopperDecoTemplate,
+  arctic_frost: ArcticFrostTemplate,
+  sunset_gradient: SunsetGradientTemplate,
+  metro_line: MetroLineTemplate,
+  rose_quartz: RoseQuartzTemplate,
+  concrete_brutalist: ConcreteBrutalistTemplate,
+  lavender_fields: LavenderFieldsTemplate,
+  steel_industrial: SteelIndustrialTemplate,
+  obsidian_executive: ObsidianExecutiveTemplate,
+  ivory_prestige: IvoryPrestigeTemplate,
+  aurora_borealis: AuroraBorealisTemplate,
+  blueprint_architect: BlueprintArchitectTemplate,
+  onyx_ember: OnyxEmberTemplate,
 }
+

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Resume 8 — Pillar</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Albert+Sans:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0e0e0e;
+    --dark: #1c1c1c;
+    --mid: #505050;
+    --light: #808080;
+    --faint: #c0c0c0;
+    --subtle: #ececec;
+    --offwhite: #f7f7f7;
+    --bg: #fff;
+    --serif: 'Lora', Georgia, serif;
+    --sans: 'Albert Sans', Helvetica, sans-serif;
+  }
+
+  @page { size: A4; margin: 0; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--dark);
+    background: #d5d5d5;
+    font-size: 12.5px;
+    line-height: 1.55;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .resume {
+    width: 794px;
+    min-height: 1123px;
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* ══════════════════════════════════════
+     LEFT COLUMN — Dark Sidebar
+     ══════════════════════════════════════ */
+  .sidebar {
+    background: var(--black);
+    color: var(--bg);
+    padding: 48px 32px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-name {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .sidebar-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    opacity: 0.5;
+    margin-bottom: 28px;
+  }
+
+  .sidebar-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255,255,255,0.12);
+    margin: 4px 0 24px;
+  }
+
+  .sidebar-section { margin-bottom: 28px; }
+
+  .sidebar-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    opacity: 0.35;
+    margin-bottom: 14px;
+  }
+
+  .sidebar-contact-item {
+    font-size: 12px;
+    font-weight: 300;
+    opacity: 0.7;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .contact-dot {
+    width: 5px;
+    height: 5px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Pillar competencies */
+  .pillar {
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+  }
+
+  .pillar-number {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 20px;
+    opacity: 0.2;
+    position: absolute;
+    top: 10px;
+    right: 12px;
+  }
+
+  .pillar-title {
+    font-weight: 600;
+    font-size: 12px;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .pillar-desc {
+    font-size: 10.5px;
+    font-weight: 300;
+    opacity: 0.55;
+    line-height: 1.5;
+  }
+
+  /* Board / Education in sidebar */
+  .sidebar-item {
+    margin-bottom: 14px;
+  }
+
+  .sidebar-item:last-child { margin-bottom: 0; }
+
+  .sidebar-item-title {
+    font-weight: 600;
+    font-size: 12.5px;
+    line-height: 1.3;
+  }
+
+  .sidebar-item-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    opacity: 0.5;
+  }
+
+  .sidebar-item-meta {
+    font-size: 10.5px;
+    opacity: 0.35;
+    font-weight: 300;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    font-size: 10px;
+    opacity: 0.2;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ══════════════════════════════════════
+     RIGHT COLUMN — Main Content
+     ══════════════════════════════════════ */
+  .main {
+    padding: 48px 44px;
+  }
+
+  /* ── Executive Summary ── */
+  .exec-summary {
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--black);
+  }
+
+  .exec-summary-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--light);
+    margin-bottom: 12px;
+  }
+
+  .exec-summary-text {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--mid);
+    font-weight: 400;
+  }
+
+  /* ── Section ── */
+  .section { margin-bottom: 28px; }
+
+  .section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3.5px;
+    color: var(--black);
+    margin-bottom: 20px;
+  }
+
+  /* ── Career Entry ── */
+  .career-block {
+    margin-bottom: 26px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .career-block:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .career-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    margin-bottom: 6px;
+    align-items: baseline;
+  }
+
+  .career-role {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--black);
+  }
+
+  .career-years {
+    font-size: 11px;
+    color: var(--light);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .career-company {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--mid);
+    margin-bottom: 2px;
+  }
+
+  .career-scope {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--light);
+    margin-bottom: 12px;
+  }
+
+  .achievement-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .achievement-list li {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 12px;
+    margin-bottom: 8px;
+    align-items: baseline;
+  }
+
+  .ach-metric {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--black);
+    text-align: right;
+    line-height: 1.2;
+  }
+
+  .ach-desc {
+    font-size: 12px;
+    color: var(--mid);
+    font-weight: 300;
+    line-height: 1.55;
+  }
+
+  /* ── Speaking & Publications ── */
+  .publist-item {
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--mid);
+    font-weight: 300;
+    line-height: 1.5;
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .publist-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 6px;
+    height: 1px;
+    background: var(--faint);
+  }
+
+  .publist-item strong {
+    font-weight: 500;
+    color: var(--dark);
+  }
+
+  .publist-venue {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--light);
+  }
+</style>
+</head>
+<body>
+<div class="resume">
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-name">Margaret<br>Chen-Watkins</div>
+    <div class="sidebar-title">Chief Technology Officer</div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Contact</div>
+      <div class="sidebar-contact-item"><div class="contact-dot"></div>m.chenwatkins@email.com</div>
+      <div class="sidebar-contact-item"><div class="contact-dot"></div>(206) 555-0534</div>
+      <div class="sidebar-contact-item"><div class="contact-dot"></div>Seattle, WA</div>
+      <div class="sidebar-contact-item"><div class="contact-dot"></div>linkedin.com/in/mcwatkins</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Strategic Pillars</div>
+      <div class="pillar">
+        <div class="pillar-number">01</div>
+        <div class="pillar-title">Platform Architecture</div>
+        <div class="pillar-desc">Designing systems for global scale and resilience</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-number">02</div>
+        <div class="pillar-title">AI & ML Strategy</div>
+        <div class="pillar-desc">Embedding intelligence across product portfolios</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-number">03</div>
+        <div class="pillar-title">Engineering Culture</div>
+        <div class="pillar-desc">Building high-autonomy, high-accountability teams</div>
+      </div>
+      <div class="pillar">
+        <div class="pillar-number">04</div>
+        <div class="pillar-title">Security & Compliance</div>
+        <div class="pillar-desc">Enterprise-grade trust and governance frameworks</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Education</div>
+      <div class="sidebar-item">
+        <div class="sidebar-item-title">Ph.D. Computer Science</div>
+        <div class="sidebar-item-sub">MIT</div>
+        <div class="sidebar-item-meta">2006, Distributed Systems</div>
+      </div>
+      <div class="sidebar-item">
+        <div class="sidebar-item-title">B.S. Electrical Engineering</div>
+        <div class="sidebar-item-sub">Caltech</div>
+        <div class="sidebar-item-meta">2001</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Board Seats</div>
+      <div class="sidebar-item">
+        <div class="sidebar-item-title">CloudNova Inc.</div>
+        <div class="sidebar-item-meta">Technology Committee, 2023–Present</div>
+      </div>
+      <div class="sidebar-item">
+        <div class="sidebar-item-title">Code.org</div>
+        <div class="sidebar-item-meta">Board Director, 2021–Present</div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">Résumé — Confidential</div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main">
+    <div class="exec-summary">
+      <div class="exec-summary-label">Executive Summary</div>
+      <p class="exec-summary-text">Technology executive with 19 years leading engineering organizations at scale. Expert in platform modernization, AI-driven product strategy, and building engineering cultures that attract and retain world-class talent. Track record of scaling teams from 50 to 2,000+ while maintaining speed and innovation.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Career History</div>
+
+      <div class="career-block">
+        <div class="career-header">
+          <span class="career-role">Chief Technology Officer</span>
+          <span class="career-years">2021 — Present</span>
+        </div>
+        <div class="career-company">Nimbus Cloud Platform</div>
+        <div class="career-scope">$2.6B multi-cloud infrastructure, 2,200 engineers, 40M+ end users</div>
+        <ul class="achievement-list">
+          <li>
+            <span class="ach-metric">2,200</span>
+            <span class="ach-desc">Engineers hired and organized into 85 autonomous squads across 12 countries</span>
+          </li>
+          <li>
+            <span class="ach-metric">99.99%</span>
+            <span class="ach-desc">Platform uptime achieved through microservices migration and chaos engineering</span>
+          </li>
+          <li>
+            <span class="ach-metric">$640M</span>
+            <span class="ach-desc">AI product revenue in first 2 years from new ML-powered features</span>
+          </li>
+          <li>
+            <span class="ach-metric">4x</span>
+            <span class="ach-desc">Deployment frequency improvement through platform engineering investment</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="career-block">
+        <div class="career-header">
+          <span class="career-role">VP of Engineering</span>
+          <span class="career-years">2016 — 2021</span>
+        </div>
+        <div class="career-company">Amazon Web Services</div>
+        <div class="career-scope">EC2 & Lambda divisions, 800+ engineers, mission-critical compute</div>
+        <ul class="achievement-list">
+          <li>
+            <span class="ach-metric">$18B</span>
+            <span class="ach-desc">Annual revenue for EC2 division under technical leadership</span>
+          </li>
+          <li>
+            <span class="ach-metric">800→1,400</span>
+            <span class="ach-desc">Engineering team scaled while reducing attrition to 8%</span>
+          </li>
+          <li>
+            <span class="ach-metric">Graviton</span>
+            <span class="ach-desc">Co-led architecture for custom ARM chips, 40% cost reduction for customers</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="career-block">
+        <div class="career-header">
+          <span class="career-role">Director of Engineering</span>
+          <span class="career-years">2010 — 2016</span>
+        </div>
+        <div class="career-company">Google</div>
+        <div class="career-scope">Cloud Infrastructure, Site Reliability Engineering</div>
+        <ul class="achievement-list">
+          <li>
+            <span class="ach-metric">Spanner</span>
+            <span class="ach-desc">Core contributor to globally distributed database serving 5B+ queries/day</span>
+          </li>
+          <li>
+            <span class="ach-metric">14</span>
+            <span class="ach-desc">Patents filed for distributed systems and fault-tolerance mechanisms</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Speaking & Publications</div>
+      <div class="publist-item">
+        <strong>"The End of Monoliths"</strong> — Keynote, <span class="publist-venue">AWS re:Invent 2023</span>
+      </div>
+      <div class="publist-item">
+        <strong>"Scaling Engineering Culture"</strong> — <span class="publist-venue">Harvard Business Review, 2022</span>
+      </div>
+      <div class="publist-item">
+        <strong>"AI Infrastructure at Scale"</strong> — Keynote, <span class="publist-venue">Google Cloud Next 2021</span>
+      </div>
+      <div class="publist-item">
+        <strong>14 patents</strong> in distributed systems, fault tolerance, and serverless computing
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

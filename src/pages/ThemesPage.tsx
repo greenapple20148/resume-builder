@@ -5,11 +5,6 @@ import { toast } from '../components/Toast'
 import { useStore } from '../lib/store'
 import { useSEO } from '../lib/useSEO'
 import { PREVIEW_MAP } from './ThemesPreviews'
-import '../styles/terminal.css'
-import '../styles/scifi.css'
-import '../styles/sophisticated.css'
-import '../styles/healthcare.css'
-import '../styles/futuristic.css'
 import { ResumeData } from '../types'
 
 export interface Theme {
@@ -18,51 +13,63 @@ export interface Theme {
 }
 
 export const THEMES: Theme[] = [
-
-  { id: 'editorial_luxe', name: 'Editorial Luxe', category: 'creative', desc: 'Luxe editorial layout', accent: '#dca47d', bg: '#fdfbf9', premium: true },
-  { id: 'dark_architect', name: 'Dark Architect', category: 'dark', desc: 'Dark tech aesthetic', accent: '#f5c800', bg: '#121212', premium: true },
-  { id: 'bauhaus_geometric', name: 'Bauhaus Geometric', category: 'creative', desc: 'Geometric design', accent: '#005bb5', bg: '#fafafa', premium: true },
-  { id: 'soft_pastel', name: 'Soft Pastel', category: 'creative', desc: 'Pastel aesthetic', accent: '#a29bfe', bg: '#fbf9fc' },
-  { id: 'swiss_grid', name: 'Swiss Grid', category: 'minimal', desc: 'Clean grid system', accent: '#e84118', bg: '#ffffff' },
-
-  { id: 'phd', name: 'PhD Academic', category: 'professional', desc: 'Academic focus', accent: '#1a4e8a', bg: '#ffffff' },
-
-  { id: 'dark', name: 'Dark Elegant', category: 'dark', desc: 'Gold accents on dark', accent: '#c9a84c', bg: '#0f0f14', premium: true },
-
-  { id: 'terminal', name: 'Terminal', category: 'creative', desc: 'Retro hacker aesthetic', accent: '#7ee787', bg: '#0a0e14', new: true },
-
-  { id: 'corporate_slate', name: 'Corporate Slate', category: 'professional', desc: 'Slate sidebar with blue accents', accent: '#3b82f6', bg: '#1e293b', new: true },
-  { id: 'teal_wave', name: 'Teal Wave', category: 'professional', desc: 'Teal gradient header with rounded cards', accent: '#0d9488', bg: '#ffffff', new: true },
-  { id: 'purple_dusk', name: 'Purple Dusk', category: 'creative', desc: 'Violet gradient sidebar with timeline', accent: '#8b5cf6', bg: '#2e1065', new: true },
-  { id: 'coral_bright', name: 'Coral Bright', category: 'creative', desc: 'Coral gradient header with stat strip', accent: '#f97316', bg: '#ffffff', new: true },
-  { id: 'ocean_deep', name: 'Ocean Deep', category: 'professional', desc: 'Deep ocean gradient with tag strip', accent: '#0284c7', bg: '#0c4a6e', new: true },
-  { id: 'sage_pro', name: 'Sage Pro', category: 'professional', desc: 'Clean green accents with impact metrics', accent: '#16a34a', bg: '#ffffff', new: true },
-  { id: 'carbon_noir', name: 'Carbon Noir', category: 'dark', desc: 'Dark zinc panels with slash bullets', accent: '#ffffff', bg: '#18181b', new: true },
-  { id: 'sand_dune', name: 'Sand Dune', category: 'creative', desc: 'Warm amber gradient with serif accents', accent: '#d97706', bg: '#fafaf9', new: true },
-  { id: 'indigo_sharp', name: 'Indigo Sharp', category: 'professional', desc: 'Bold indigo border with diamond markers', accent: '#4f46e5', bg: '#ffffff', new: true },
-  { id: 'platinum_elite', name: 'Platinum Elite', category: 'professional', desc: 'Executive two-panel with KPI bar', accent: '#94a3b8', bg: '#ffffff', new: true, premium: true },
-  { id: 'cascade_blue', name: 'Cascade Blue', category: 'professional', desc: 'Navy sidebar with gradient skill bars', accent: '#1a6fb5', bg: '#0f2a4a', new: true },
-  { id: 'nordic_minimal', name: 'Nordic Minimal', category: 'minimal', desc: 'Clean Scandinavian design with serif accents', accent: '#2d6a4f', bg: '#fafafa', new: true },
-  { id: 'midnight_pro', name: 'Midnight Pro', category: 'dark', desc: 'Luxurious dark with gold accents', accent: '#c9a84c', bg: '#0c0f1a', new: true, premium: true },
-  { id: 'blueprint', name: 'Blueprint', category: 'dark', desc: 'Engineering blueprint with grid overlay', accent: '#4a9eff', bg: '#0a1628', new: true, premium: true },
-  { id: 'emerald_fresh', name: 'Emerald Fresh', category: 'creative', desc: 'Green header with triangle bullets', accent: '#1a7a4a', bg: '#ffffff', new: true },
-  { id: 'sunset_warm', name: 'Sunset Warm', category: 'creative', desc: 'Amber sunset gradient with dot ratings', accent: '#c97c2a', bg: '#f7efe3', new: true },
-  { id: 'newspaper_classic', name: 'Newspaper Classic', category: 'minimal', desc: 'Editorial 3-column newspaper layout', accent: '#8b1a1a', bg: '#faf7f3', new: true },
-  { id: 'ivory_marble', name: 'Ivory Marble', category: 'professional', desc: 'Luxury navy sidebar with gold accents', accent: '#b8963c', bg: '#f9f6f0', new: true, premium: true },
-  { id: 'neon_cyber', name: 'Neon Cyber', category: 'dark', desc: 'Cyberpunk neon with stats strip', accent: '#00fff7', bg: '#04080f', new: true, premium: true },
-  { id: 'origami_zen', name: 'Origami Zen', category: 'minimal', desc: 'Japanese-inspired with fold marks', accent: '#b03030', bg: '#fdfcfa', new: true },
-
+  { id: 'classic', name: 'Classic', category: 'professional', desc: 'Traditional serif elegance', accent: '#1a1a1a', bg: '#ffffff', popular: true },
+  { id: 'executive', name: 'Executive', category: 'professional', desc: 'Bold header with photo', accent: '#0c4a6e', bg: '#ffffff', premium: true },
+  { id: 'minimal', name: 'Minimal', category: 'minimal', desc: 'Clean whitespace design', accent: '#111111', bg: '#ffffff' },
+  { id: 'bold', name: 'Bold', category: 'creative', desc: 'Dark header, strong type', accent: '#f59e0b', bg: '#ffffff', new: true },
   // Mono collection
-  { id: 'mono_slate', name: 'Mono Slate', category: 'mono', desc: 'Dark header with clean hairline rules', accent: '#111111', bg: '#ffffff', new: true },
-  { id: 'mono_edge', name: 'Mono Edge', category: 'mono', desc: 'Bold edge bar with monospace accents', accent: '#0a0a0a', bg: '#ffffff', new: true },
-  { id: 'mono_stack', name: 'Mono Stack', category: 'mono', desc: 'Stacked bands with alternating grays', accent: '#111111', bg: '#f7f7f7', new: true },
-  { id: 'mono_grid', name: 'Mono Grid', category: 'mono', desc: 'Dark sidebar grid with skill bars', accent: '#0a0a0a', bg: '#ffffff', new: true },
-  { id: 'mono_ink', name: 'Mono Ink', category: 'mono', desc: 'Editorial serif typography in grayscale', accent: '#111111', bg: '#ffffff', new: true },
+  { id: 'mono_clean', name: 'Mono Clean', category: 'mono', desc: 'Hairline rules, IBM Plex Mono', accent: '#111111', bg: '#ffffff', new: true },
+  { id: 'mono_sidebar', name: 'Mono Sidebar', category: 'mono', desc: 'Dark sidebar, monospace code feel', accent: '#111111', bg: '#ffffff', new: true },
+  { id: 'mono_stack', name: 'Mono Stack', category: 'mono', desc: 'Stacked bands, alternating grays', accent: '#111111', bg: '#f7f7f7', new: true },
+  { id: 'mono_type', name: 'Mono Type', category: 'mono', desc: 'Typography-focused, large name', accent: '#000000', bg: '#ffffff', new: true },
+  { id: 'mono_editorial', name: 'Mono Editorial', category: 'mono', desc: 'Serif editorial in grayscale', accent: '#111111', bg: '#fafafa', new: true },
+  // Executive collection
+  { id: 'exec_navy', name: 'Exec Navy', category: 'executive', desc: 'Navy header with gold accents', accent: '#c9a84c', bg: '#ffffff', premium: true },
+  { id: 'exec_marble', name: 'Exec Marble', category: 'executive', desc: 'Ivory luxury with gold rules', accent: '#b8963c', bg: '#f9f6f0', premium: true },
+  { id: 'exec_copper', name: 'Exec Copper', category: 'executive', desc: 'Warm bronze accents on cream', accent: '#b45309', bg: '#fffbf5', premium: true },
+  // Creative collection
+  { id: 'creative_neon', name: 'Neon', category: 'creative', desc: 'Dark mode with neon green', accent: '#22c55e', bg: '#0f0f0f', new: true },
+  { id: 'creative_coral', name: 'Coral', category: 'creative', desc: 'Warm terracotta, organic shapes', accent: '#dc6843', bg: '#fef7f3', new: true },
+  { id: 'creative_blueprint', name: 'Blueprint', category: 'creative', desc: 'Technical code-style layout', accent: '#38bdf8', bg: '#0c1929', new: true },
+  { id: 'creative_sunset', name: 'Sunset', category: 'creative', desc: 'Warm orange gradient header', accent: '#ea580c', bg: '#ffffff', new: true },
+  // Dark collection
+  { id: 'dark_obsidian', name: 'Obsidian', category: 'dark', desc: 'Pure black, clean white text', accent: '#e5e5e5', bg: '#0a0a0a', new: true },
+  { id: 'dark_midnight', name: 'Midnight', category: 'dark', desc: 'Deep blue with ice accents', accent: '#60a5fa', bg: '#0b1120', new: true },
+  { id: 'dark_eclipse', name: 'Eclipse', category: 'dark', desc: 'Amber sidebar on warm dark', accent: '#f59e0b', bg: '#12100e', new: true },
+  { id: 'dark_void', name: 'Void', category: 'dark', desc: 'OLED black with violet glow', accent: '#a78bfa', bg: '#000000', new: true },
+  { id: 'dark_carbon', name: 'Carbon', category: 'dark', desc: 'Carbon gray with teal accents', accent: '#2dd4bf', bg: '#141414', new: true },
+  // Signature collection
+  { id: 'prestige', name: 'Prestige', category: 'executive', desc: 'Gold accents, luxury two-column', accent: '#c5a572', bg: '#ffffff', premium: true },
+  { id: 'modern_sidebar', name: 'Modern Sidebar', category: 'professional', desc: 'Green accent, sidebar layout', accent: '#2D8C6F', bg: '#ffffff', new: true },
+  { id: 'coral_horizon', name: 'Coral Horizon', category: 'creative', desc: 'Warm coral gradient header', accent: '#E8634A', bg: '#ffffff', new: true },
+  { id: 'swiss_grid', name: 'Swiss Grid', category: 'minimal', desc: 'Bold black + red grid layout', accent: '#FF0000', bg: '#ffffff', new: true },
+  { id: 'ocean_breeze', name: 'Ocean Breeze', category: 'creative', desc: 'Centered sky-blue pill sections', accent: '#0EA5E9', bg: '#ffffff', new: true },
+  { id: 'monochrome_editorial', name: 'Editorial', category: 'mono', desc: 'Double-ruled masthead, justified', accent: '#0a0a0a', bg: '#ffffff', new: true },
+  { id: 'midnight_luxe', name: 'Midnight Luxe', category: 'dark', desc: 'Gold on navy, centered luxury', accent: '#C9A96E', bg: '#1A1A2E', premium: true },
+  { id: 'forest_canopy', name: 'Forest', category: 'creative', desc: 'Pine green timeline with leaf accents', accent: '#2D5016', bg: '#ffffff', new: true },
+  { id: 'copper_deco', name: 'Copper Deco', category: 'executive', desc: 'Art deco ornaments, warm copper', accent: '#B87333', bg: '#ffffff', premium: true },
+  { id: 'arctic_frost', name: 'Arctic Frost', category: 'professional', desc: 'Nord palette sidebar with cards', accent: '#5E81AC', bg: '#ffffff', new: true },
+  { id: 'sunset_gradient', name: 'Sunset', category: 'creative', desc: 'Orange-to-plum gradient header', accent: '#E85D26', bg: '#ffffff', new: true },
+  { id: 'metro_line', name: 'Metro Line', category: 'professional', desc: 'Blue metro timeline layout', accent: '#0078D4', bg: '#ffffff', new: true },
+  { id: 'rose_quartz', name: 'Rose Quartz', category: 'creative', desc: 'Soft pink centered elegance', accent: '#C77D8A', bg: '#ffffff', new: true },
+  { id: 'concrete_brutalist', name: 'Brutalist', category: 'creative', desc: 'Bold borders, yellow highlights', accent: '#FFD600', bg: '#ffffff', new: true },
+  { id: 'lavender_fields', name: 'Lavender', category: 'creative', desc: 'Purple badge sections, soft bg', accent: '#7C6DAF', bg: '#ffffff', new: true },
+  { id: 'steel_industrial', name: 'Steel', category: 'professional', desc: 'Iron header with orange rivets', accent: '#37474F', bg: '#ffffff', new: true },
+  { id: 'obsidian_executive', name: 'Obsidian Exec', category: 'dark', desc: 'Violet glow on deep black cards', accent: '#7C4DFF', bg: '#0D0D1A', premium: true },
+  { id: 'ivory_prestige', name: 'Ivory', category: 'executive', desc: 'Ornate ivory with tan filigree', accent: '#C4A97D', bg: '#FEFCF6', premium: true },
+  { id: 'aurora_borealis', name: 'Aurora', category: 'dark', desc: 'Teal-to-pink gradient dark cards', accent: '#00C9A7', bg: '#0B1622', new: true },
+  { id: 'blueprint_architect', name: 'Blueprint', category: 'dark', desc: 'Grid-paper dark blue, monospace', accent: '#4FC3F7', bg: '#0D2137', new: true },
+  { id: 'onyx_ember', name: 'Onyx Ember', category: 'dark', desc: 'Black with ember orange accents', accent: '#FF5722', bg: '#121212', new: true },
 ]
 
 const FILTERS = [
-  { id: 'all', label: 'All Themes' }, { id: 'minimal', label: 'Minimal' },
-  { id: 'professional', label: 'Professional' }, { id: 'creative', label: 'Creative' }, { id: 'dark', label: 'Dark' }, { id: 'mono', label: 'Mono' },
+  { id: 'all', label: 'All Themes' },
+  { id: 'professional', label: 'Professional' },
+  { id: 'minimal', label: 'Minimal' },
+  { id: 'creative', label: 'Creative' },
+  { id: 'mono', label: 'Mono' },
+  { id: 'executive', label: 'Executive' },
+  { id: 'dark', label: 'Dark' },
 ]
 
 function ThemePreview({ theme, data }: { theme: Theme; data: Partial<ResumeData> | undefined }) {
@@ -73,7 +80,7 @@ function ThemePreview({ theme, data }: { theme: Theme; data: Partial<ResumeData>
 
 export default function ThemesPage() {
   const [filter, setFilter] = useState('all')
-  const [selectedThemeId, setSelectedThemeId] = useState('editorial_luxe')
+  const [selectedThemeId, setSelectedThemeId] = useState('classic')
   const { user, createResume, currentResume } = useStore()
   const navigate = useNavigate()
   const visible = THEMES.filter((t) => filter === 'all' || t.category === filter)
@@ -82,7 +89,7 @@ export default function ThemesPage() {
 
   useSEO({
     title: 'Resume Themes & Templates',
-    description: 'Browse 30+ ATS-optimized, professionally designed resume themes. From minimalist to creative to dark — find the perfect template for your next job application.',
+    description: 'Browse ATS-optimized, professionally designed resume themes. Find the perfect template for your next job application.',
     path: '/themes',
   })
 
@@ -153,8 +160,8 @@ export default function ThemesPage() {
               </div>
               <button className="btn btn-gold" onClick={() => handleUseTheme(selectedTheme)} disabled={useThemeLoading}>{useThemeLoading ? 'Creating…' : 'Use This Theme →'}</button>
             </div>
-            <div className="flex-1 min-h-0 flex items-start justify-center px-8 py-7 overflow-hidden relative">
-              <div className="w-[816px] h-[1200px] bg-white shrink-0 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.06),0_12px_36px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_4px_12px_rgba(0,0,0,0.2),0_12px_36px_rgba(0,0,0,0.3)] preview-fill" style={{ zoom: 0.65, transformOrigin: 'top center' }} key={selectedTheme.id}>
+            <div className="flex-1 min-h-0 flex items-start justify-center px-8 py-7 overflow-auto relative">
+              <div className="w-[794px] bg-white shrink-0 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.06),0_12px_36px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_4px_12px_rgba(0,0,0,0.2),0_12px_36px_rgba(0,0,0,0.3)] preview-fill" style={{ zoom: 0.65, transformOrigin: 'top center' }} key={selectedTheme.id}>
                 <ThemePreview theme={selectedTheme} data={resumeData} />
               </div>
             </div>

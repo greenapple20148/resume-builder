@@ -82,44 +82,55 @@ function ResumeCard({ resume, onEdit, onDelete, onDuplicate, onDownload }: Resum
 }
 
 function ResumeThumb({ theme, data }: { theme: string; data: any }) {
-  const themes: Record<string, { bg: string; accent: string; sidebar: boolean; gradient?: boolean }> = {
-    editorial_luxe: { bg: '#fdfbf9', accent: '#dca47d', sidebar: false },
-    dark_architect: { bg: '#18181f', accent: '#64ffda', sidebar: true },
-    bauhaus_geometric: { bg: '#0d1b3e', accent: '#e8634a', sidebar: true },
-    soft_pastel: { bg: '#fdfbf8', accent: '#d4726a', sidebar: false },
-    swiss_grid: { bg: '#fff', accent: '#d63031', sidebar: false },
-    dark: { bg: '#0f0f14', accent: '#c9a84c', sidebar: false },
-
-    terminal: { bg: '#0a0e14', accent: '#7ee787', sidebar: false },
-
-    vintage: { bg: '#f5eed6', accent: '#5c4a32', sidebar: false }, graduate: { bg: '#fafbfe', accent: '#f43f5e', sidebar: false },
-    corporate_slate: { bg: '#1e293b', accent: '#3b82f6', sidebar: true },
-    teal_wave: { bg: '#ffffff', accent: '#0d9488', sidebar: false, gradient: true },
-    purple_dusk: { bg: '#2e1065', accent: '#8b5cf6', sidebar: true },
-    coral_bright: { bg: '#ffffff', accent: '#f97316', sidebar: false, gradient: true },
-    ocean_deep: { bg: '#0c4a6e', accent: '#0284c7', sidebar: false, gradient: true },
-    sage_pro: { bg: '#ffffff', accent: '#16a34a', sidebar: false },
-    carbon_noir: { bg: '#18181b', accent: '#ffffff', sidebar: false },
-    sand_dune: { bg: '#fafaf9', accent: '#d97706', sidebar: false, gradient: true },
-    indigo_sharp: { bg: '#ffffff', accent: '#4f46e5', sidebar: false },
-    platinum_elite: { bg: '#ffffff', accent: '#94a3b8', sidebar: true },
-    cascade_blue: { bg: '#0f2a4a', accent: '#1a6fb5', sidebar: true },
-    nordic_minimal: { bg: '#fafafa', accent: '#2d6a4f', sidebar: false },
-    midnight_pro: { bg: '#0c0f1a', accent: '#c9a84c', sidebar: true },
-    blueprint: { bg: '#0a1628', accent: '#4a9eff', sidebar: true },
-    emerald_fresh: { bg: '#ffffff', accent: '#1a7a4a', sidebar: false, gradient: true },
-    sunset_warm: { bg: '#f7efe3', accent: '#c97c2a', sidebar: false, gradient: true },
-    newspaper_classic: { bg: '#faf7f3', accent: '#8b1a1a', sidebar: false },
-    ivory_marble: { bg: '#f9f6f0', accent: '#b8963c', sidebar: true },
-    neon_cyber: { bg: '#04080f', accent: '#00fff7', sidebar: true },
-    origami_zen: { bg: '#fdfcfa', accent: '#b03030', sidebar: false },
+  const themes: Record<string, { bg: string; accent: string; sidebar: boolean }> = {
+    classic: { bg: '#ffffff', accent: '#1a1a1a', sidebar: false },
+    executive: { bg: '#ffffff', accent: '#0c4a6e', sidebar: false },
+    minimal: { bg: '#ffffff', accent: '#111111', sidebar: false },
+    bold: { bg: '#ffffff', accent: '#f59e0b', sidebar: false },
+    mono_clean: { bg: '#ffffff', accent: '#111111', sidebar: false },
+    mono_sidebar: { bg: '#ffffff', accent: '#111111', sidebar: true },
+    mono_stack: { bg: '#f7f7f7', accent: '#111111', sidebar: false },
+    mono_type: { bg: '#ffffff', accent: '#000000', sidebar: false },
+    mono_editorial: { bg: '#fafafa', accent: '#111111', sidebar: false },
+    exec_navy: { bg: '#ffffff', accent: '#c9a84c', sidebar: false },
+    exec_marble: { bg: '#f9f6f0', accent: '#b8963c', sidebar: false },
+    exec_copper: { bg: '#fffbf5', accent: '#b45309', sidebar: false },
+    creative_neon: { bg: '#0f0f0f', accent: '#22c55e', sidebar: false },
+    creative_coral: { bg: '#fef7f3', accent: '#dc6843', sidebar: false },
+    creative_blueprint: { bg: '#0c1929', accent: '#38bdf8', sidebar: false },
+    creative_sunset: { bg: '#ffffff', accent: '#ea580c', sidebar: false },
+    dark_obsidian: { bg: '#0a0a0a', accent: '#e5e5e5', sidebar: false },
+    dark_midnight: { bg: '#0b1120', accent: '#60a5fa', sidebar: false },
+    dark_eclipse: { bg: '#12100e', accent: '#f59e0b', sidebar: true },
+    dark_void: { bg: '#000000', accent: '#a78bfa', sidebar: false },
+    dark_carbon: { bg: '#141414', accent: '#2dd4bf', sidebar: false },
+    prestige: { bg: '#ffffff', accent: '#c5a572', sidebar: false },
+    modern_sidebar: { bg: '#ffffff', accent: '#2D8C6F', sidebar: true },
+    coral_horizon: { bg: '#ffffff', accent: '#E8634A', sidebar: false },
+    swiss_grid: { bg: '#ffffff', accent: '#FF0000', sidebar: false },
+    ocean_breeze: { bg: '#ffffff', accent: '#0EA5E9', sidebar: false },
+    monochrome_editorial: { bg: '#ffffff', accent: '#0a0a0a', sidebar: false },
+    midnight_luxe: { bg: '#1A1A2E', accent: '#C9A96E', sidebar: false },
+    forest_canopy: { bg: '#ffffff', accent: '#2D5016', sidebar: false },
+    copper_deco: { bg: '#ffffff', accent: '#B87333', sidebar: false },
+    arctic_frost: { bg: '#ffffff', accent: '#5E81AC', sidebar: true },
+    sunset_gradient: { bg: '#ffffff', accent: '#E85D26', sidebar: false },
+    metro_line: { bg: '#ffffff', accent: '#0078D4', sidebar: false },
+    rose_quartz: { bg: '#ffffff', accent: '#C77D8A', sidebar: false },
+    concrete_brutalist: { bg: '#ffffff', accent: '#FFD600', sidebar: false },
+    lavender_fields: { bg: '#ffffff', accent: '#7C6DAF', sidebar: false },
+    steel_industrial: { bg: '#ffffff', accent: '#37474F', sidebar: false },
+    obsidian_executive: { bg: '#0D0D1A', accent: '#7C4DFF', sidebar: false },
+    ivory_prestige: { bg: '#FEFCF6', accent: '#C4A97D', sidebar: false },
+    aurora_borealis: { bg: '#0B1622', accent: '#00C9A7', sidebar: false },
+    blueprint_architect: { bg: '#0D2137', accent: '#4FC3F7', sidebar: false },
+    onyx_ember: { bg: '#121212', accent: '#FF5722', sidebar: false },
   }
-  const t = themes[theme] || themes.editorial_luxe
+  const t = themes[theme] || themes.classic
   return (
     <div style={{ width: '100%', height: '100%', background: t.bg, display: 'flex', overflow: 'hidden' }}>
       {t.sidebar && <div style={{ width: '35%', background: t.accent === '#f5c800' ? '#1a1a1a' : t.accent, opacity: 0.9 }} />}
       <div style={{ flex: 1, padding: 10 }}>
-        {t.gradient && <div style={{ height: 30, background: `linear-gradient(135deg, ${t.accent}, #f9ca24)`, borderRadius: '3px 3px 0 0', marginBottom: 6 }} />}
         <div style={{ height: 8, width: '60%', background: t.accent, opacity: 0.7, borderRadius: 2, marginBottom: 4 }} />
         <div style={{ height: 6, width: '45%', background: t.accent, opacity: 0.4, borderRadius: 2, marginBottom: 10 }} />
         {[1, 0.8, 0.9, 0.7, 0.8].map((w, i) => (
@@ -148,7 +159,7 @@ export default function DashboardPage() {
   const handleCreate = async (initialData: any = null) => {
     try {
       const dataToPass = initialData?.nativeEvent ? null : initialData
-      const resume = await createResume('editorial_luxe', dataToPass)
+      const resume = await createResume('classic', dataToPass)
       navigate(`/editor/${resume.id}`)
     } catch (err: any) {
       if (err.message === 'LIMIT_REACHED') { toast.error('Resume limit reached. Upgrade your plan to create more.'); navigate('/pricing') }

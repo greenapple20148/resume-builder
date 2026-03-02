@@ -1036,7 +1036,7 @@ interface LivePreviewProps {
 }
 
 function LivePreview({ resumeData, themeId }: LivePreviewProps) {
-  const PreviewComponent = PREVIEW_MAP[themeId] || PREVIEW_MAP.editorial_luxe
+  const PreviewComponent = PREVIEW_MAP[themeId] || PREVIEW_MAP.classic
   const themeBg = THEMES.find(t => t.id === themeId)?.bg || '#fff'
   const containerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -1092,10 +1092,12 @@ function LivePreview({ resumeData, themeId }: LivePreviewProps) {
             <div ref={contentRef} id="resume-preview-root" style={{ width: PAGE_W_PX }}>
               {/* Prevent template root from forcing extra height */}
               <style>{`#resume-preview-root > div { min-height: auto !important; }`}</style>
-              {/* AI-generated custom theme CSS override */}
-              {resumeData.customThemeCSS && <style>{resumeData.customThemeCSS}</style>}
+
               {resumeData.customFont && (
                 <style>{`#resume-preview-root, #resume-preview-root * { font-family: ${resumeData.customFont} !important; }`}</style>
+              )}
+              {resumeData.customFontSize && resumeData.customFontSize !== 11 && (
+                <style>{`#resume-preview-root > div { zoom: ${resumeData.customFontSize / 11}; }`}</style>
               )}
               {resumeData.customColor && (
                 <style>{`#resume-preview-root [style*="color"] { --user-accent: ${resumeData.customColor}; }`}</style>
@@ -1207,7 +1209,7 @@ export default function EditorPage() {
 
   const [resumeData, setResumeData] = useState<Partial<ResumeData>>({})
   const [title, setTitle] = useState('My Resume')
-  const [themeId, setThemeId] = useState('editorial_luxe')
+  const [themeId, setThemeId] = useState('classic')
 
   const [activeSection, setActiveSection] = useState<SectionId>('personal')
   const [loading, setLoading] = useState(true)
@@ -1229,8 +1231,7 @@ export default function EditorPage() {
   const [analyzerError, setAnalyzerError] = useState<string | null>(null)
 
   // AI Theme Dictation
-  const [themePrompt, setThemePrompt] = useState('')
-  const [themeDictating, setThemeDictating] = useState(false)
+
   const analyzerAbortRef = useRef<AbortController | null>(null)
 
   const cancelAnalysis = () => {
@@ -1293,7 +1294,7 @@ export default function EditorPage() {
           }
           setResumeData(parsedData)
           setTitle(resume.title || 'My Resume')
-          setThemeId(resume.theme_id || 'editorial_luxe')
+          setThemeId(resume.theme_id || 'classic')
         } else {
           setError('Resume not found or access denied.')
         }
@@ -1349,30 +1350,7 @@ export default function EditorPage() {
     if (id) await updateResume(id, { theme_id: newThemeId })
   }
 
-  const handleThemeDictation = async () => {
-    if (!themePrompt.trim()) return
-    setThemeDictating(true)
-    try {
-      const { generateThemeFromDescription, buildThemeCSS } = await import('../lib/ai')
-      const result = await generateThemeFromDescription(themePrompt.trim())
-      const css = buildThemeCSS(result)
 
-      // Apply as custom CSS override + store accent/font for extras sections
-      setResumeData(prev => ({
-        ...prev,
-        customColor: result.accentColor,
-        customFont: result.bodyFont || prev.customFont,
-        customThemeCSS: css,
-      }))
-      toast.success(`✨ ${result.explanation}`)
-      setThemePrompt('')
-    } catch (err: any) {
-      toast.error('Theme generation failed: ' + (err.message || 'Unknown error'))
-      console.error(err)
-    } finally {
-      setThemeDictating(false)
-    }
-  }
 
   const handleDownload = async () => {
     setDownloading(true)
@@ -1685,19 +1663,63 @@ export default function EditorPage() {
                 style={{ fontFamily: resumeData.customFont || 'inherit' }}
               >
                 <option value="">Theme Default</option>
-                <optgroup label="Modern Sans-Serif">
+                <optgroup label="ATS-Friendly Sans-Serif">
                   <option value="Calibri, sans-serif" style={{ fontFamily: 'Calibri' }}>Calibri</option>
                   <option value="Arial, sans-serif" style={{ fontFamily: 'Arial' }}>Arial</option>
                   <option value="Helvetica, Arial, sans-serif" style={{ fontFamily: 'Helvetica' }}>Helvetica</option>
+                  <option value="'Segoe UI', sans-serif" style={{ fontFamily: 'Segoe UI' }}>Segoe UI</option>
+                  <option value="Verdana, sans-serif" style={{ fontFamily: 'Verdana' }}>Verdana</option>
+                  <option value="Tahoma, sans-serif" style={{ fontFamily: 'Tahoma' }}>Tahoma</option>
+                  <option value="'Trebuchet MS', sans-serif" style={{ fontFamily: 'Trebuchet MS' }}>Trebuchet MS</option>
                   <option value="Roboto, sans-serif" style={{ fontFamily: 'Roboto' }}>Roboto</option>
                   <option value="'Open Sans', sans-serif" style={{ fontFamily: 'Open Sans' }}>Open Sans</option>
+                  <option value="'Lato', sans-serif" style={{ fontFamily: 'Lato' }}>Lato</option>
+                  <option value="'Nunito Sans', sans-serif" style={{ fontFamily: 'Nunito Sans' }}>Nunito Sans</option>
+                  <option value="'Source Sans 3', 'Source Sans Pro', sans-serif" style={{ fontFamily: 'Source Sans Pro' }}>Source Sans Pro</option>
+                  <option value="'Inter', sans-serif" style={{ fontFamily: 'Inter' }}>Inter</option>
+                  <option value="'DM Sans', sans-serif" style={{ fontFamily: 'DM Sans' }}>DM Sans</option>
+                  <option value="'Raleway', sans-serif" style={{ fontFamily: 'Raleway' }}>Raleway</option>
+                  <option value="'Montserrat', sans-serif" style={{ fontFamily: 'Montserrat' }}>Montserrat</option>
                 </optgroup>
-                <optgroup label="Classic Serif">
+                <optgroup label="ATS-Friendly Serif">
                   <option value="Georgia, serif" style={{ fontFamily: 'Georgia' }}>Georgia</option>
+                  <option value="'Times New Roman', Times, serif" style={{ fontFamily: 'Times New Roman' }}>Times New Roman</option>
                   <option value="Garamond, 'EB Garamond', serif" style={{ fontFamily: 'Garamond' }}>Garamond</option>
                   <option value="Cambria, serif" style={{ fontFamily: 'Cambria' }}>Cambria</option>
+                  <option value="'Book Antiqua', 'Palatino Linotype', serif" style={{ fontFamily: 'Book Antiqua' }}>Book Antiqua</option>
+                  <option value="'Merriweather', Georgia, serif" style={{ fontFamily: 'Merriweather' }}>Merriweather</option>
+                  <option value="'Libre Baskerville', Georgia, serif" style={{ fontFamily: 'Libre Baskerville' }}>Libre Baskerville</option>
+                  <option value="'PT Serif', Georgia, serif" style={{ fontFamily: 'PT Serif' }}>PT Serif</option>
+                  <option value="'Lora', Georgia, serif" style={{ fontFamily: 'Lora' }}>Lora</option>
                 </optgroup>
               </select>
+            </div>
+
+            {/* Font Size */}
+            <div className="mb-3">
+              <label className="text-[10px] text-ink-30 block mb-1 px-1">Font Size</label>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-ink-10 bg-[var(--white)] text-ink cursor-pointer hover:border-gold hover:text-gold transition-colors text-sm font-bold"
+                  onClick={() => setResumeData(prev => ({ ...prev, customFontSize: Math.max(6, (prev.customFontSize || 11) - 0.5) }))}
+                  title="Decrease font size"
+                >−</button>
+                <span className="text-[12px] font-mono text-ink min-w-[40px] text-center">{resumeData.customFontSize || 11}pt</span>
+                <button
+                  type="button"
+                  className="w-7 h-7 flex items-center justify-center rounded-lg border border-ink-10 bg-[var(--white)] text-ink cursor-pointer hover:border-gold hover:text-gold transition-colors text-sm font-bold"
+                  onClick={() => setResumeData(prev => ({ ...prev, customFontSize: Math.min(18, (prev.customFontSize || 11) + 0.5) }))}
+                  title="Increase font size"
+                >+</button>
+                {resumeData.customFontSize && resumeData.customFontSize !== 11 && (
+                  <button
+                    type="button"
+                    className="text-[10px] text-ink-30 hover:text-rose cursor-pointer bg-transparent border-none transition-colors"
+                    onClick={() => setResumeData(prev => ({ ...prev, customFontSize: undefined }))}
+                  >Reset</button>
+                )}
+              </div>
             </div>
 
             {/* Accent Color */}
@@ -1748,43 +1770,7 @@ export default function EditorPage() {
               </div>
             </div>
 
-            {/* AI Theme Dictation */}
-            <div className="mb-2 mt-3 pt-3 border-t border-ink-10">
-              <label className="text-[10px] text-ink-30 flex items-center gap-1 mb-1.5 px-1">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" /></svg>
-                AI Theme
-              </label>
-              <div className="flex gap-1">
-                <input
-                  type="text"
-                  className="flex-1 text-[11px] px-2 py-1.5 rounded-lg border border-ink-10 bg-[var(--white)] text-ink outline-none focus:border-gold transition-colors"
-                  placeholder="e.g. dark with gold accents"
-                  value={themePrompt}
-                  onChange={(e) => setThemePrompt(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && !themeDictating && handleThemeDictation()}
-                  disabled={themeDictating}
-                />
-                <button
-                  type="button"
-                  className="shrink-0 text-[10px] font-semibold px-2 py-1.5 rounded-lg border-none cursor-pointer transition-all disabled:opacity-40"
-                  style={{ background: 'var(--gold)', color: '#fff' }}
-                  onClick={handleThemeDictation}
-                  disabled={themeDictating || !themePrompt.trim()}
-                  title="Generate theme from description"
-                >
-                  {themeDictating ? '…' : '✨'}
-                </button>
-              </div>
-              {resumeData.customThemeCSS && (
-                <button
-                  type="button"
-                  className="text-[10px] text-ink-30 hover:text-rose cursor-pointer bg-transparent border-none px-1 mt-1 transition-colors"
-                  onClick={() => setResumeData(prev => ({ ...prev, customThemeCSS: undefined }))}
-                >
-                  ✕ Reset AI theme
-                </button>
-              )}
-            </div>
+
           </div>
 
           {/* Progress */}

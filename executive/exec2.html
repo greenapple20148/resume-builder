@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Resume 7 — Prestige</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Sora:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0f0f0f;
+    --dark: #222;
+    --mid: #555;
+    --light: #888;
+    --faint: #ccc;
+    --subtle: #f4f4f4;
+    --bg: #fff;
+    --serif: 'EB Garamond', Georgia, serif;
+    --sans: 'Sora', Helvetica, sans-serif;
+  }
+
+  @page { size: A4; margin: 0; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--dark);
+    background: #d8d8d8;
+    font-size: 12.5px;
+    line-height: 1.55;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .resume {
+    width: 794px;
+    min-height: 1123px;
+    background: var(--bg);
+    padding: 60px 72px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+  }
+
+  /* ── Signature Header ── */
+  .header {
+    margin-bottom: 40px;
+  }
+
+  .name-line {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--black);
+    padding-bottom: 16px;
+    margin-bottom: 14px;
+  }
+
+  .header h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 44px;
+    color: var(--black);
+    letter-spacing: 2px;
+  }
+
+  .exec-badge {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--light);
+    border: 1.5px solid var(--faint);
+    padding: 6px 16px;
+  }
+
+  .contact-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: var(--light);
+    font-weight: 300;
+  }
+
+  /* ── Executive Profile ── */
+  .profile-section {
+    margin-bottom: 36px;
+    padding: 28px 32px;
+    border-left: 3px solid var(--black);
+    background: var(--subtle);
+  }
+
+  .profile-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--light);
+    margin-bottom: 10px;
+  }
+
+  .profile-text {
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--mid);
+    font-weight: 400;
+  }
+
+  /* ── Core Competencies ── */
+  .competencies {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-bottom: 36px;
+    border-top: 1px solid var(--faint);
+    border-bottom: 1px solid var(--faint);
+  }
+
+  .competency {
+    padding: 16px 16px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--dark);
+    letter-spacing: 0.5px;
+    border-right: 1px solid var(--faint);
+    line-height: 1.5;
+  }
+
+  .competency:last-child { border-right: none; }
+
+  .competency-icon {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--black);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* ── Section ── */
+  .section { margin-bottom: 32px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .section-header h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--black);
+    white-space: nowrap;
+  }
+
+  .section-header .rule {
+    flex: 1;
+    height: 1px;
+    background: var(--faint);
+  }
+
+  /* ── Career History ── */
+  .career-entry {
+    margin-bottom: 30px;
+  }
+
+  .career-entry:last-child { margin-bottom: 0; }
+
+  .career-top {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    margin-bottom: 6px;
+  }
+
+  .career-role {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--black);
+    line-height: 1.25;
+  }
+
+  .career-dates {
+    font-size: 11px;
+    color: var(--light);
+    font-weight: 400;
+    padding-top: 6px;
+  }
+
+  .career-org {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--mid);
+    margin-bottom: 2px;
+  }
+
+  .career-context {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--light);
+    margin-bottom: 12px;
+  }
+
+  .career-narrative {
+    font-size: 12.5px;
+    color: var(--mid);
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+
+  .impact-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .impact-card {
+    border: 1px solid var(--faint);
+    padding: 14px 16px;
+  }
+
+  .impact-number {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--black);
+    line-height: 1;
+  }
+
+  .impact-desc {
+    font-size: 10.5px;
+    color: var(--light);
+    font-weight: 400;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* ── Bottom Grid ── */
+  .bottom-three {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 36px;
+  }
+
+  .bottom-col-title {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: var(--black);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--black);
+  }
+
+  .bottom-item {
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--mid);
+    line-height: 1.5;
+  }
+
+  .bottom-item strong {
+    font-weight: 600;
+    color: var(--dark);
+    display: block;
+    font-size: 12.5px;
+  }
+
+  .bottom-item .meta {
+    font-size: 11px;
+    color: var(--light);
+  }
+</style>
+</head>
+<body>
+<div class="resume">
+  <header class="header">
+    <div class="name-line">
+      <h1>Robert K. Ellison</h1>
+      <div class="exec-badge">Chief Financial Officer</div>
+    </div>
+    <div class="contact-row">
+      <span>r.ellison@email.com</span>
+      <span>(312) 555-0782</span>
+      <span>Chicago, IL</span>
+      <span>linkedin.com/in/rkellison</span>
+    </div>
+  </header>
+
+  <div class="profile-section">
+    <div class="profile-label">Executive Profile</div>
+    <p class="profile-text">Transformative financial executive with 18 years of experience steering Fortune 500 companies through IPOs, mergers, and global expansion. Known for building world-class finance organizations, driving operational discipline, and serving as a trusted strategic partner to CEOs and boards.</p>
+  </div>
+
+  <div class="competencies">
+    <div class="competency">
+      <span class="competency-icon">I</span>
+      IPO Readiness &<br>Capital Markets
+    </div>
+    <div class="competency">
+      <span class="competency-icon">II</span>
+      M&A Due Diligence<br>& Integration
+    </div>
+    <div class="competency">
+      <span class="competency-icon">III</span>
+      FP&A & Strategic<br>Planning
+    </div>
+    <div class="competency">
+      <span class="competency-icon">IV</span>
+      Investor Relations<br>& Board Governance
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-header">
+      <h2>Career History</h2>
+      <div class="rule"></div>
+    </div>
+
+    <div class="career-entry">
+      <div class="career-top">
+        <span class="career-role">Chief Financial Officer</span>
+        <span class="career-dates">2019 — Present</span>
+      </div>
+      <div class="career-org">Arcturus Health Inc.</div>
+      <div class="career-context">$3.1B healthcare technology platform, 6,500 employees, NASDAQ listed</div>
+      <p class="career-narrative">Joined pre-IPO to build the finance function from ground up, led successful public offering, and now oversee all financial operations, investor relations, and strategic planning for a high-growth public company.</p>
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-number">$780M</div>
+          <div class="impact-desc">IPO raised, largest healthcare tech listing of 2021</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-number">68→74%</div>
+          <div class="impact-desc">Gross margin expansion over 4 years</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-number">$1.4B</div>
+          <div class="impact-desc">M&A transactions executed and integrated</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="career-entry">
+      <div class="career-top">
+        <span class="career-role">VP of Finance & Treasurer</span>
+        <span class="career-dates">2014 — 2019</span>
+      </div>
+      <div class="career-org">United Technologies Corporation</div>
+      <div class="career-context">$66B diversified industrial conglomerate, Fortune 50</div>
+      <p class="career-narrative">Oversaw treasury operations managing $8B in debt, led financial planning for the Carrier and Otis spin-offs, and built predictive analytics capabilities across the finance organization.</p>
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-number">$8B</div>
+          <div class="impact-desc">Debt portfolio managed, optimizing capital structure</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-number">2</div>
+          <div class="impact-desc">Major spin-offs planned and financially structured</div>
+        </div>
+        <div class="impact-card">
+          <div class="impact-number">$210M</div>
+          <div class="impact-desc">Annual cost savings identified through analytics</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-three">
+    <div>
+      <div class="bottom-col-title">Education</div>
+      <div class="bottom-item">
+        <strong>MBA, Finance</strong>
+        <span class="meta">Wharton School, UPenn — 2008</span>
+      </div>
+      <div class="bottom-item">
+        <strong>B.S. Accounting</strong>
+        <span class="meta">University of Illinois — 2004</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="bottom-col-title">Credentials</div>
+      <div class="bottom-item">
+        <strong>CPA (Active)</strong>
+        <span class="meta">State of Illinois</span>
+      </div>
+      <div class="bottom-item">
+        <strong>CFA Charterholder</strong>
+        <span class="meta">CFA Institute, 2010</span>
+      </div>
+      <div class="bottom-item">
+        <strong>NACD Directorship Certified</strong>
+        <span class="meta">Board governance, 2022</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="bottom-col-title">Board Service</div>
+      <div class="bottom-item">
+        <strong>Helios Biotech</strong>
+        <span class="meta">Audit Committee Chair, 2023–Present</span>
+      </div>
+      <div class="bottom-item">
+        <strong>Chicago CFO Alliance</strong>
+        <span class="meta">Board President, 2021–Present</span>
+      </div>
+      <div class="bottom-item">
+        <strong>Junior Achievement</strong>
+        <span class="meta">National Board Member, 2020–Present</span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

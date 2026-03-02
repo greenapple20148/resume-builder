@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Resume 9 — Regal</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Lexend:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0b0b0b;
+    --dark: #1e1e1e;
+    --mid: #4d4d4d;
+    --light: #7d7d7d;
+    --faint: #c5c5c5;
+    --subtle: #ededed;
+    --bg: #fff;
+    --serif: 'Crimson Pro', Georgia, serif;
+    --sans: 'Lexend', Helvetica, sans-serif;
+  }
+
+  @page { size: A4; margin: 0; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--dark);
+    background: #d5d5d5;
+    font-size: 12.5px;
+    line-height: 1.55;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .resume {
+    width: 794px;
+    min-height: 1123px;
+    background: var(--bg);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+  }
+
+  /* ── Regal Header ── */
+  .header {
+    text-align: center;
+    padding: 56px 72px 40px;
+    border-bottom: 3px double var(--black);
+  }
+
+  .header-rule-top {
+    width: 80px;
+    height: 1px;
+    background: var(--faint);
+    margin: 0 auto 20px;
+  }
+
+  .header h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 46px;
+    color: var(--black);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+
+  .header .title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 19px;
+    color: var(--light);
+    margin-top: 8px;
+    letter-spacing: 1px;
+  }
+
+  .contact-line {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 20px;
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--light);
+    letter-spacing: 0.5px;
+  }
+
+  .contact-line span + span {
+    position: relative;
+  }
+
+  .contact-line span + span::before {
+    content: '|';
+    position: absolute;
+    left: -18px;
+    color: var(--faint);
+    font-weight: 200;
+  }
+
+  /* ── Body ── */
+  .body {
+    padding: 36px 72px 48px;
+  }
+
+  /* ── Executive Snapshot ── */
+  .snapshot {
+    text-align: center;
+    margin-bottom: 36px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .snapshot-text {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--mid);
+    font-weight: 400;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ── Signature Strengths ── */
+  .strengths-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin-bottom: 36px;
+    border: 1px solid var(--faint);
+  }
+
+  .strength {
+    padding: 18px 20px;
+    text-align: center;
+    border-right: 1px solid var(--faint);
+  }
+
+  .strength:last-child { border-right: none; }
+
+  .strength-title {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--black);
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+
+  .strength-desc {
+    font-size: 10.5px;
+    color: var(--light);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  /* ── Section ── */
+  .section { margin-bottom: 30px; }
+
+  .section-title {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--black);
+    text-align: center;
+    margin-bottom: 22px;
+    position: relative;
+  }
+
+  .section-title::before,
+  .section-title::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 90px);
+    height: 1px;
+    background: var(--faint);
+  }
+
+  .section-title::before { left: 0; }
+  .section-title::after { right: 0; }
+
+  /* ── Career ── */
+  .career-entry {
+    margin-bottom: 26px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .career-entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .career-top-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+
+  .career-role {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--black);
+  }
+
+  .career-dates {
+    font-size: 11px;
+    color: var(--light);
+    font-weight: 300;
+  }
+
+  .career-company {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--mid);
+    margin-bottom: 2px;
+  }
+
+  .career-scope {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--light);
+    font-weight: 300;
+    margin-bottom: 12px;
+  }
+
+  .career-bullets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 28px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .career-bullets li {
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.6;
+    font-weight: 300;
+    padding-left: 12px;
+    position: relative;
+  }
+
+  .career-bullets li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    font-size: 5px;
+    top: 6px;
+    color: var(--faint);
+  }
+
+  /* ── Bottom Two Column ── */
+  .bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+
+  .bottom-section-title {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--black);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--black);
+  }
+
+  .edu-item { margin-bottom: 12px; }
+  .edu-item:last-child { margin-bottom: 0; }
+
+  .edu-degree {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--black);
+  }
+
+  .edu-school {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  .edu-year {
+    font-size: 11px;
+    color: var(--light);
+    font-weight: 300;
+  }
+
+  .affil-item {
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--mid);
+    font-weight: 300;
+    line-height: 1.45;
+  }
+
+  .affil-item strong {
+    font-weight: 600;
+    color: var(--dark);
+  }
+
+  .affil-role {
+    font-size: 11px;
+    color: var(--light);
+  }
+</style>
+</head>
+<body>
+<div class="resume">
+  <header class="header">
+    <div class="header-rule-top"></div>
+    <h1>William A. Thornton</h1>
+    <div class="title">Chief Operating Officer</div>
+    <div class="contact-line">
+      <span>w.thornton@email.com</span>
+      <span>(404) 555-0637</span>
+      <span>Atlanta, GA</span>
+      <span>linkedin.com/in/wthornton</span>
+    </div>
+  </header>
+
+  <div class="body">
+    <div class="snapshot">
+      <p class="snapshot-text">Operations executive with 22 years building and scaling global business units. Expertise in supply chain transformation, operational turnarounds, and integrating acquisitions. Consistently delivers margin improvement while maintaining growth trajectories at billion-dollar enterprises.</p>
+    </div>
+
+    <div class="strengths-row">
+      <div class="strength">
+        <div class="strength-title">Operational Turnarounds</div>
+        <div class="strength-desc">Restructuring underperforming units into profit centers</div>
+      </div>
+      <div class="strength">
+        <div class="strength-title">Supply Chain at Scale</div>
+        <div class="strength-desc">Global logistics across 30+ countries and 200+ facilities</div>
+      </div>
+      <div class="strength">
+        <div class="strength-title">Post-Merger Integration</div>
+        <div class="strength-desc">12 integrations with 95% talent retention rate</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Career History</div>
+
+      <div class="career-entry">
+        <div class="career-top-line">
+          <span class="career-role">Chief Operating Officer</span>
+          <span class="career-dates">2020 — Present</span>
+        </div>
+        <div class="career-company">Pinnacle Industrial Group</div>
+        <div class="career-scope">$5.8B diversified industrial conglomerate, 28,000 employees across 32 countries</div>
+        <ul class="career-bullets">
+          <li>Led operational overhaul driving EBITDA margin from 14% to 21% in 3 years</li>
+          <li>Consolidated 42 distribution centers into 28 regional hubs, saving $95M annually</li>
+          <li>Integrated 4 acquisitions totaling $2.1B within 18 months of close</li>
+          <li>Launched digital manufacturing initiative reducing defect rates by 62%</li>
+          <li>Built performance management system adopted across all 8 business divisions</li>
+          <li>Negotiated $340M in supplier contracts with improved terms and quality SLAs</li>
+        </ul>
+      </div>
+
+      <div class="career-entry">
+        <div class="career-top-line">
+          <span class="career-role">SVP, Global Operations</span>
+          <span class="career-dates">2015 — 2020</span>
+        </div>
+        <div class="career-company">Honeywell Performance Materials</div>
+        <div class="career-scope">$3.2B specialty chemicals division, 11,000 employees</div>
+        <ul class="career-bullets">
+          <li>Directed manufacturing operations across 45 plants in 18 countries</li>
+          <li>Implemented Honeywell Operating System across division, 28% productivity gain</li>
+          <li>Reduced workplace incidents by 74% through safety culture transformation</li>
+          <li>Delivered $180M in cost savings through lean manufacturing and Six Sigma</li>
+        </ul>
+      </div>
+
+      <div class="career-entry">
+        <div class="career-top-line">
+          <span class="career-role">VP, Supply Chain & Logistics</span>
+          <span class="career-dates">2009 — 2015</span>
+        </div>
+        <div class="career-company">Procter & Gamble</div>
+        <div class="career-scope">North America supply network, $22B in distributed goods annually</div>
+        <ul class="career-bullets">
+          <li>Oversaw end-to-end supply chain for 6 product categories across NA market</li>
+          <li>Reduced order-to-delivery time from 8.2 to 3.4 days through network optimization</li>
+          <li>Led $500M capital investment program for next-gen fulfillment infrastructure</li>
+          <li>Managed 4,200 employees and $1.8B operating budget</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bottom-row">
+      <div>
+        <div class="bottom-section-title">Education</div>
+        <div class="edu-item">
+          <div class="edu-degree">MBA, Operations Management</div>
+          <div class="edu-school">Kellogg School, Northwestern</div>
+          <div class="edu-year">2007</div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-degree">B.S. Industrial Engineering</div>
+          <div class="edu-school">Georgia Institute of Technology</div>
+          <div class="edu-year">2002</div>
+        </div>
+        <div class="edu-item" style="margin-top:14px;">
+          <div class="edu-degree" style="font-size:12px;">Lean Six Sigma Black Belt</div>
+          <div class="edu-year">ASQ Certified, 2008</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="bottom-section-title">Affiliations</div>
+        <div class="affil-item">
+          <strong>National Association of Manufacturers</strong><br>
+          <span class="affil-role">Executive Committee, 2022–Present</span>
+        </div>
+        <div class="affil-item">
+          <strong>Council of Supply Chain Mgmt Professionals</strong><br>
+          <span class="affil-role">Board of Directors, 2020–Present</span>
+        </div>
+        <div class="affil-item">
+          <strong>Georgia Tech Advisory Board</strong><br>
+          <span class="affil-role">Industrial Engineering, 2019–Present</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

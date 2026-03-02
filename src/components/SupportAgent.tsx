@@ -10,7 +10,7 @@ import {
     getFollowUpSuggestions,
 } from '../lib/supportAgent'
 import { sanitizeHtml, escapeHtml } from '../lib/sanitize'
-import '../styles/support-agent.css'
+
 
 /* ── Simple markdown-to-HTML for chat bubbles ──────────── */
 function renderMarkdown(text: string, role: 'user' | 'assistant' | 'system'): string {

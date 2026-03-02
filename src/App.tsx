@@ -3,14 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useStore } from './lib/store'
 import { useTheme } from './lib/useTheme'
 import './styles/global.css'
-import './styles/terminal.css'
-import './styles/healthcare.css'
-import './styles/nature.css'
-import './styles/scifi.css'
-import './styles/sophisticated.css'
-import './styles/vintage.css'
-import './styles/graduate.css'
-import './styles/futuristic.css'
 import { Analytics } from "@vercel/analytics/react"
 
 // Pages
