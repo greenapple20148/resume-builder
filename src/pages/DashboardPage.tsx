@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { toast } from '../components/Toast'
@@ -8,6 +8,7 @@ import { PLANS, openCustomerPortal, verifySubscription, cancelSubscription } fro
 import { Resume } from '../types'
 import { getResumeScore } from '../lib/resumeScore'
 import { LandingIcon } from '../components/LandingIcons'
+import { getEffectivePlan, isExpressUnlockActive } from '../lib/expressUnlock'
 
 interface ResumeCardProps {
   resume: Resume
@@ -125,6 +126,16 @@ function ResumeThumb({ theme, data }: { theme: string; data: any }) {
     aurora_borealis: { bg: '#0B1622', accent: '#00C9A7', sidebar: false },
     blueprint_architect: { bg: '#0D2137', accent: '#4FC3F7', sidebar: false },
     onyx_ember: { bg: '#121212', accent: '#FF5722', sidebar: false },
+    exec_authority: { bg: '#ffffff', accent: '#0a0a0a', sidebar: false },
+    exec_prestige: { bg: '#ffffff', accent: '#0f0f0f', sidebar: false },
+    exec_pillar: { bg: '#ffffff', accent: '#0e0e0e', sidebar: false },
+    exec_regal: { bg: '#ffffff', accent: '#0b0b0b', sidebar: false },
+    exec_apex: { bg: '#ffffff', accent: '#0c0c0c', sidebar: false },
+    exec_strata: { bg: '#ffffff', accent: '#0d0d0d', sidebar: false },
+    exec_counsel: { bg: '#ffffff', accent: '#0e0e0e', sidebar: false },
+    exec_monogram: { bg: '#ffffff', accent: '#0c0c0c', sidebar: true },
+    exec_ledger: { bg: '#ffffff', accent: '#0b0b0b', sidebar: false },
+    exec_architect: { bg: '#ffffff', accent: '#0a0a0a', sidebar: false },
   }
   const t = themes[theme] || themes.classic
   return (
@@ -151,6 +162,8 @@ export default function DashboardPage() {
   const [portalLoading, setPortalLoading] = useState(false)
   const [cancelConfirm, setCancelConfirm] = useState(false)
   const [cancelLoading, setCancelLoading] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const importInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { fetchResumes(); if (searchParams.get('upgraded') === 'true') toast.success('Welcome to Pro! All features unlocked.') }, [fetchResumes, searchParams])
   const { user, fetchProfile } = useStore()
@@ -166,6 +179,39 @@ export default function DashboardPage() {
       else toast.error(err.message || 'Could not create resume.')
     }
   }
+
+  const handleImportResume = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setImporting(true)
+    toast.info('Importing resume — extracting text…')
+    try {
+      const { extractTextFromPDF, extractTextFromDocx, parseResumeWithAI } = await import('../lib/ai')
+      let text = ''
+      if (file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf') {
+        text = await extractTextFromPDF(file)
+      } else if (file.name.toLowerCase().endsWith('.docx') || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        text = await extractTextFromDocx(file)
+      } else {
+        throw new Error('Unsupported file type. Please upload a PDF or DOCX file.')
+      }
+
+      if (!text.trim()) throw new Error('Could not extract any text from the file.')
+
+      toast.info('Parsing with AI…')
+      const parsed = await parseResumeWithAI(text)
+      toast.info('Creating resume…')
+      const resume = await createResume('classic', parsed)
+      toast.success('Resume imported successfully!')
+      navigate(`/editor/${resume.id}`)
+    } catch (err: any) {
+      console.error('Import error:', err)
+      toast.error('Import failed: ' + (err.message || 'Unknown error'))
+    } finally {
+      setImporting(false)
+      if (importInputRef.current) importInputRef.current.value = ''
+    }
+  }
   const handleEdit = (resume: Resume) => navigate(`/editor/${resume.id}`)
   const handleDelete = async (id: string) => { try { await deleteResume(id); toast.success('Resume deleted.') } catch (err: any) { toast.error('Could not delete resume: ' + err.message) } setDeleteConfirm(null) }
   const handleDuplicate = async (resume: Resume) => { try { await duplicateResume(resume); toast.success('Resume duplicated!') } catch { toast.error('Could not duplicate resume.') } }
@@ -175,7 +221,8 @@ export default function DashboardPage() {
     try { setPortalLoading(true); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setPortalLoading(false) }
   }
 
-  const planInfo = PLANS[profile?.plan || 'free']
+  const effectivePlan = getEffectivePlan(profile)
+  const planInfo = PLANS[effectivePlan] || PLANS.free
   const resumeCount = resumes.length
   const resumeLimit = planInfo?.resumeLimit || 3
 
@@ -203,16 +250,19 @@ export default function DashboardPage() {
             <Link to="/pricing" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5">
               <span className="text-ink-30"><LandingIcon name="star" size={14} /></span> Billing
             </Link>
-            {(profile?.plan === 'pro' || profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
+            {(effectivePlan === 'pro' || effectivePlan === 'premium' || effectivePlan === 'career_plus') && (
               <Link to="/tools/cover-letter" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5">
                 <span className="text-ink-30"><LandingIcon name="mail" size={14} /></span> Cover Letters
               </Link>
             )}
-            {(profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
+            {(effectivePlan === 'premium' || effectivePlan === 'career_plus') && (
               <>
                 <Link to="/tools/linkedin" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span className="text-ink-30"><LandingIcon name="linkedin" size={14} /></span> LinkedIn Toolkit</Link>
                 <Link to="/tools/interview" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span className="text-ink-30"><LandingIcon name="mic" size={14} /></span> Interview Toolkit</Link>
                 <Link to="/tools/mock-interview" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span className="text-ink-30"><LandingIcon name="brain" size={14} /></span> AI Mock Interview</Link>
+                {profile?.plan === 'career_plus' && (
+                  <Link to="/tools/career-dashboard" className="flex items-center gap-2.5 px-3 py-2 text-sm text-gold font-medium rounded-lg border-l-2 border-transparent transition-all hover:bg-gold/5 hover:border-gold no-underline mb-0.5"><span className="text-gold"><LandingIcon name="trending-up" size={14} /></span> ✦ Career Dashboard</Link>
+                )}
               </>
             )}
             <Link to="/tools/ai" className="flex items-center gap-2.5 px-3 py-2 text-sm text-ink-40 rounded-lg border-l-2 border-transparent transition-all hover:bg-ink-05 hover:text-ink no-underline mb-0.5"><span className="text-ink-30"><LandingIcon name="sparkles" size={14} /></span> AI Tools</Link>
@@ -220,8 +270,8 @@ export default function DashboardPage() {
 
           <div className="bg-[var(--white)] border border-ink-10 rounded-xl p-4 mt-4">
             <div className="mb-3">
-              <span className={`badge ${profile?.plan !== 'free' ? 'badge-gold' : 'badge-dark'}`}>
-                {profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
+              <span className={`badge ${effectivePlan !== 'free' ? 'badge-gold' : 'badge-dark'}`}>
+                {isExpressUnlockActive(profile) && profile?.plan === 'free' ? '⚡ EXPRESS' : profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
               </span>
             </div>
             <div className="mb-1">
@@ -230,7 +280,31 @@ export default function DashboardPage() {
                 <div className="h-full bg-gold rounded-full transition-all duration-400" style={{ width: `${Math.min((resumeCount / (resumeLimit === Infinity ? 1 : resumeLimit)) * 100, 100)}%` }} />
               </div>
             </div>
-            {profile?.plan === 'free' && <Link to="/pricing" className="btn btn-gold w-full mt-3 text-[13px]">Upgrade to Pro →</Link>}
+            {profile?.plan === 'free' && !isExpressUnlockActive(profile) && (
+              <>
+                <Link to="/pricing" className="btn btn-gold w-full mt-3 text-[13px]">Upgrade to Pro →</Link>
+                <Link to="/pricing" className="block mt-3 no-underline">
+                  <div style={{
+                    background: 'linear-gradient(135deg, rgba(212,163,88,0.1), rgba(212,163,88,0.04))',
+                    border: '1px solid rgba(212,163,88,0.25)',
+                    borderRadius: 10,
+                    padding: '10px 12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                  }}>
+                    <span style={{ fontSize: 18 }}>⚡</span>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--gold)', letterSpacing: '0.02em' }}>Express 24h Unlock</div>
+                      <div style={{ fontSize: 10, color: 'var(--ink-40)' }}>Full Pro access for 24 hours — $9.99</div>
+                    </div>
+                  </div>
+                </Link>
+              </>
+            )}
+            {profile?.plan === 'free' && isExpressUnlockActive(profile) && (
+              <Link to="/pricing" className="btn btn-gold w-full mt-3 text-[13px]">Upgrade to keep Pro access →</Link>
+            )}
             {profile?.plan !== 'free' && (
               <>
                 <button className="btn btn-ghost btn-sm w-full mt-2" onClick={handleBilling} disabled={portalLoading}>{portalLoading ? 'Opening…' : 'Manage Billing'}</button>
@@ -262,6 +336,19 @@ export default function DashboardPage() {
                   Delete All
                 </button>
               )}
+              <input type="file" ref={importInputRef} accept=".pdf,.docx" className="hidden" onChange={handleImportResume} />
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={() => importInputRef.current?.click()}
+                disabled={importing}
+                style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                {importing ? (
+                  <><div className="spinner" style={{ width: 14, height: 14 }} /> Importing…</>
+                ) : (
+                  <>↑ Import PDF/DOCX</>
+                )}
+              </button>
               <button className="btn btn-gold" onClick={() => handleCreate(null)}>+ New Resume</button>
             </div>
           </div>

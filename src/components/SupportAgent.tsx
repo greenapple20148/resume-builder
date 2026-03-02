@@ -340,7 +340,7 @@ export default function SupportAgent() {
 
                     {/* Powered By */}
                     <div className="support-powered">
-                        Powered by Gemini AI · resumebuildin
+                        Powered by AI · resumebuildin
                     </div>
                 </div>
             )}

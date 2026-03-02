@@ -6,11 +6,13 @@ import { PLANS, ADD_ONS, createCheckoutSession, openCustomerPortal } from '../li
 import { useStore } from '../lib/store'
 import { useSEO } from '../lib/useSEO'
 import { LandingIcon } from '../components/LandingIcons'
+import { purchaseExpressUnlock, isExpressUnlockActive, getExpressUnlockRemainingMs, formatExpressCountdown } from '../lib/expressUnlock'
+import { purchaseMockPack } from '../lib/mockPack'
 
 export default function PricingPage() {
   const [annual, setAnnual] = useState(true)
   const [loading, setLoading] = useState<string | null>(null)
-  const { user, profile } = useStore()
+  const { user, profile, fetchProfile } = useStore()
   const navigate = useNavigate()
 
   const currentPlanId = profile?.plan || 'free'
@@ -38,6 +40,62 @@ export default function PricingPage() {
   }
 
   const handleManageBilling = async () => { try { setLoading('portal'); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) } }
+
+  const handleAddonPurchase = async (addonId: string) => {
+    if (!user) { navigate('/auth?mode=signup'); return }
+    if (addonId === 'express_unlock') {
+      if (isExpressUnlockActive(profile)) {
+        toast.info('Express Unlock is already active!')
+        return
+      }
+      if (profile?.plan !== 'free') {
+        toast.info('You already have a paid plan — Express Unlock is for free users.')
+        return
+      }
+      try {
+        setLoading('express_unlock')
+        toast.info('Activating Express 24h Unlock…')
+        const result = await purchaseExpressUnlock()
+        if (result.success) {
+          toast.success('⚡ Express Unlock activated! Pro features enabled for 24 hours.')
+          if (user) await fetchProfile(user.id)
+        }
+      } catch (err: any) {
+        toast.error(err.message || 'Could not activate Express Unlock.')
+      } finally {
+        setLoading(null)
+      }
+      return
+    }
+    if (addonId === 'mock_pack_3') {
+      try {
+        setLoading('mock_pack_3')
+        toast.info('Purchasing Mock Interview Pack…')
+        const result = await purchaseMockPack()
+        if (result.success) {
+          toast.success(`🎤 Mock Pack purchased! You now have ${result.newTotal} bonus session${result.newTotal !== 1 ? 's' : ''}.`)
+          if (user) await fetchProfile(user.id)
+        }
+      } catch (err: any) {
+        toast.error(err.message || 'Could not purchase mock pack.')
+      } finally {
+        setLoading(null)
+      }
+      return
+    }
+    // For other add-ons, use Stripe checkout
+    const addon = ADD_ONS.find(a => a.id === addonId)
+    if (!addon?.stripePriceId) { toast.error('Add-on configuration missing.'); return }
+    try {
+      setLoading(addonId)
+      const { url } = await createCheckoutSession(addon.stripePriceId, addonId)
+      if (url) window.location.href = url
+    } catch (err: any) {
+      toast.error(err.message || 'Checkout failed.')
+    } finally {
+      setLoading(null)
+    }
+  }
 
   const getPlanBtnLabel = (planId: string) => {
     if (!user) return planId === 'free' ? 'Get Started Free' : ((PLANS as any)[planId].trialDays ? `Start ${(PLANS as any)[planId].trialDays}-Day Free Trial` : 'Upgrade Now')
@@ -155,6 +213,55 @@ export default function PricingPage() {
             </div>
           )}
 
+          {/* Express 24h Unlock Card for Free Users */}
+          {currentPlanId === 'free' && (
+            <div
+              className="mb-10"
+              style={{
+                background: 'linear-gradient(135deg, rgba(212,163,88,0.08), rgba(212,163,88,0.02))',
+                border: '1.5px solid rgba(212,163,88,0.3)',
+                borderRadius: 14,
+                padding: '24px 28px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 20,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{
+                  width: 48, height: 48, borderRadius: 12,
+                  background: 'linear-gradient(135deg, #d4a358, #c9923c)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 24,
+                  flexShrink: 0,
+                }}>
+                  ⚡
+                </div>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>Express 24h Unlock</div>
+                  <div style={{ fontSize: 13, color: 'var(--ink-40)', marginTop: 2 }}>
+                    {isExpressUnlockActive(profile)
+                      ? `Active — ${formatExpressCountdown(getExpressUnlockRemainingMs(profile))} remaining`
+                      : 'Unlock all Pro features for 24 hours. Download unlimited resumes, no watermark, cover letters, and more.'
+                    }
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--gold)' }}>$9.99</div>
+                <button
+                  className="btn btn-gold"
+                  onClick={() => handleAddonPurchase('express_unlock')}
+                  disabled={loading === 'express_unlock' || isExpressUnlockActive(profile)}
+                  style={{ whiteSpace: 'nowrap' }}
+                >
+                  {loading === 'express_unlock' ? 'Activating…' : isExpressUnlockActive(profile) ? '✓ Active' : 'Buy Now'}
+                </button>
+              </div>
+            </div>
+          )}
+
           {currentIndex > 0 && (
             <div className="text-center p-7 bg-ink-05 rounded-xl mb-10"><p className="text-sm text-ink-40 mb-4">Want to switch to a lower plan? You can downgrade or cancel through the billing portal.</p><button className="btn btn-outline" onClick={handleManageBilling} disabled={loading === 'portal'}>{loading === 'portal' ? 'Opening…' : 'Open Billing Portal'}</button></div>
           )}
@@ -211,9 +318,20 @@ export default function PricingPage() {
               <div key={addon.id} className="bg-surface border border-border rounded-[14px] p-5 flex flex-col gap-2">
                 <div className="text-gold"><LandingIcon name={addon.icon} size={26} /></div>
                 <div className="font-bold text-sm text-ink">{addon.name}</div>
-                <div className="text-xs text-ink-40 leading-relaxed flex-1">{addon.description}</div>
+                <div className="text-xs text-ink-40 leading-relaxed flex-1">
+                  {addon.description}
+                  {addon.id === 'mock_pack_3' && (profile?.mock_sessions_purchased || 0) > 0 && (
+                    <div className="mt-1 text-gold font-semibold">{profile?.mock_sessions_purchased} bonus session{(profile?.mock_sessions_purchased || 0) !== 1 ? 's' : ''} owned</div>
+                  )}
+                </div>
                 <div className="text-xl font-extrabold text-gold">${addon.price}</div>
-                <button className="btn btn-outline text-xs py-1.5 px-3.5 mt-1">Buy Now</button>
+                <button
+                  className={`btn ${addon.id === 'express_unlock' && isExpressUnlockActive(profile) ? 'btn-ghost' : 'btn-outline'} text-xs py-1.5 px-3.5 mt-1`}
+                  onClick={() => handleAddonPurchase(addon.id)}
+                  disabled={loading === addon.id || (addon.id === 'express_unlock' && isExpressUnlockActive(profile))}
+                >
+                  {loading === addon.id ? 'Processing\u2026' : addon.id === 'express_unlock' && isExpressUnlockActive(profile) ? `\u26a1 Active \u2014 ${formatExpressCountdown(getExpressUnlockRemainingMs(profile))}` : 'Buy Now'}
+                </button>
               </div>
             ))}
           </div>

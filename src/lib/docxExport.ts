@@ -49,6 +49,16 @@ export async function exportToDocx(resumeData: ResumeData, themeId = 'classic', 
         aurora_borealis: "00C9A7",
         blueprint_architect: "4FC3F7",
         onyx_ember: "FF5722",
+        exec_authority: "0a0a0a",
+        exec_prestige: "0f0f0f",
+        exec_pillar: "0e0e0e",
+        exec_regal: "0b0b0b",
+        exec_apex: "0c0c0c",
+        exec_strata: "0d0d0d",
+        exec_counsel: "0e0e0e",
+        exec_monogram: "0c0c0c",
+        exec_ledger: "0b0b0b",
+        exec_architect: "0a0a0a",
     };
 
     const accent = themeColors[themeId] || "1a1a1a";

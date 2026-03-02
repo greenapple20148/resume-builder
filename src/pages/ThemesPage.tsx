@@ -60,6 +60,16 @@ export const THEMES: Theme[] = [
   { id: 'aurora_borealis', name: 'Aurora', category: 'dark', desc: 'Teal-to-pink gradient dark cards', accent: '#00C9A7', bg: '#0B1622', new: true },
   { id: 'blueprint_architect', name: 'Blueprint', category: 'dark', desc: 'Grid-paper dark blue, monospace', accent: '#4FC3F7', bg: '#0D2137', new: true },
   { id: 'onyx_ember', name: 'Onyx Ember', category: 'dark', desc: 'Black with ember orange accents', accent: '#FF5722', bg: '#121212', new: true },
+  { id: 'exec_authority', name: 'Authority', category: 'executive', desc: 'Black header, commanding presence', accent: '#0a0a0a', bg: '#ffffff', premium: true },
+  { id: 'exec_prestige', name: 'Prestige', category: 'executive', desc: 'Serif header, impact cards', accent: '#0f0f0f', bg: '#ffffff', premium: true },
+  { id: 'exec_pillar', name: 'Pillar', category: 'executive', desc: 'Timeline dots, dark header band', accent: '#0e0e0e', bg: '#ffffff', premium: true },
+  { id: 'exec_regal', name: 'Regal', category: 'executive', desc: 'Centered serif, ornamental rules', accent: '#0b0b0b', bg: '#ffffff', premium: true },
+  { id: 'exec_apex', name: 'Apex', category: 'executive', desc: 'Angular black header, structured', accent: '#0c0c0c', bg: '#ffffff', premium: true },
+  { id: 'exec_strata', name: 'Strata', category: 'executive', desc: 'Layered horizontal bands', accent: '#0d0d0d', bg: '#ffffff', premium: true },
+  { id: 'exec_counsel', name: 'Counsel', category: 'executive', desc: 'Legal style, double-ruled header', accent: '#0e0e0e', bg: '#ffffff', premium: true },
+  { id: 'exec_monogram', name: 'Monogram', category: 'executive', desc: 'Initials badge, sidebar layout', accent: '#0c0c0c', bg: '#ffffff', premium: true },
+  { id: 'exec_ledger', name: 'Ledger', category: 'executive', desc: 'Three-column bottom, precision', accent: '#0b0b0b', bg: '#ffffff', premium: true },
+  { id: 'exec_architect', name: 'Architect', category: 'executive', desc: 'Grid layout, structured blueprint', accent: '#0a0a0a', bg: '#ffffff', premium: true },
 ]
 
 const FILTERS = [

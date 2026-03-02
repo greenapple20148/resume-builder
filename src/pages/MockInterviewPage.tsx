@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useStore } from '../lib/store'
+import { toast } from '../components/Toast'
 import {
     INTERVIEW_TYPES,
     MOCK_ROLES,
@@ -15,13 +16,26 @@ import {
     PracticeHistoryEntry,
 } from '../lib/ai'
 import { LandingIcon } from '../components/LandingIcons'
+import { canStartMockSession, getSessionsDisplay, consumeMockSession, purchaseMockPack } from '../lib/mockPack'
+
+// ── Mode access by plan ──────────────────────────────
+const PREMIUM_MODES = ['general', 'behavioral']
+const CAREER_PLUS_MODES = ['general', 'system_design', 'behavioral', 'salary', 'technical']
 
 type Phase = 'select' | 'configure' | 'interview' | 'summary'
 
 export default function MockInterviewPage() {
-    const { profile } = useStore()
+    const { profile, user, fetchProfile } = useStore()
     const plan = profile?.plan || 'free'
-    const canAccess = plan === 'premium' || plan === 'career_plus'
+    // Users can access if they have a premium/career+ plan OR purchased mock pack sessions
+    const hasPurchasedSessions = (profile?.mock_sessions_purchased || 0) > 0
+    const canAccess = plan === 'premium' || plan === 'career_plus' || hasPurchasedSessions
+    const isCareerPlus = plan === 'career_plus'
+    const availableModes = isCareerPlus ? CAREER_PLUS_MODES : hasPurchasedSessions && plan !== 'premium' ? PREMIUM_MODES : PREMIUM_MODES
+
+    // ── JD-based interview state (Career+ only)
+    const [jdText, setJdText] = useState('')
+    const [showJdInput, setShowJdInput] = useState(false)
 
     // ── State
     const [phase, setPhase] = useState<Phase>('select')
@@ -43,6 +57,10 @@ export default function MockInterviewPage() {
     const [error, setError] = useState('')
     const [practiceHistory, setPracticeHistory] = useState<PracticeHistoryEntry[]>([])
     const [showHistory, setShowHistory] = useState(false)
+    const [packLoading, setPackLoading] = useState(false)
+
+    // Session info
+    const sessionInfo = getSessionsDisplay(profile)
 
     // Load practice history on mount
     useEffect(() => {
@@ -53,6 +71,24 @@ export default function MockInterviewPage() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [canAccess])
+
+    // ── Buy mock pack handler
+    const handleBuyMockPack = async () => {
+        if (!user) return
+        setPackLoading(true)
+        toast.info('Purchasing Mock Interview Pack…')
+        try {
+            const result = await purchaseMockPack()
+            if (result.success) {
+                toast.success(`🎤 Mock Pack purchased! You now have ${result.newTotal} bonus session${result.newTotal !== 1 ? 's' : ''}.`)
+                await fetchProfile(user.id)
+            }
+        } catch (err: any) {
+            toast.error(err.message || 'Could not purchase mock pack.')
+        } finally {
+            setPackLoading(false)
+        }
+    }
 
     // ── Premium gate
     if (!canAccess) {
@@ -69,6 +105,29 @@ export default function MockInterviewPage() {
                         </div>
                         <div className="flex gap-4 items-start p-5 bg-[var(--white)] border border-ink-10 rounded-xl">
                             <div><strong className="text-[15px] block mb-1">Career+ — $34.99/mo</strong><span className="text-[13px] text-ink-40">20 mock interviews/month + JD match</span></div>
+                        </div>
+                        <div
+                            style={{
+                                background: 'linear-gradient(135deg, rgba(212,163,88,0.08), rgba(212,163,88,0.02))',
+                                border: '1.5px solid rgba(212,163,88,0.3)',
+                                borderRadius: 12,
+                                padding: '16px 20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: 12,
+                            }}
+                        >
+                            <div style={{ textAlign: 'left' }}>
+                                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--ink)' }}>🎤 3 Interview Mock Pack</div>
+                                <div style={{ fontSize: 12, color: 'var(--ink-40)', marginTop: 2 }}>One-time purchase — no subscription needed. 3 AI mock sessions.</div>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                                <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--gold)' }}>$12.99</div>
+                                <button className="btn btn-gold btn-sm" onClick={handleBuyMockPack} disabled={packLoading}>
+                                    {packLoading ? 'Purchasing…' : 'Buy Now'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <Link to="/pricing" className="btn btn-gold btn-lg">Unlock Mock Interviews →</Link>
@@ -87,6 +146,42 @@ export default function MockInterviewPage() {
     // ── Start interview
     const handleStart = async () => {
         if (!config.role) return
+        if (!canStartMockSession(profile)) {
+            toast.error('No sessions remaining. Purchase a Mock Pack or upgrade your plan.')
+            return
+        }
+        // Consume a session
+        try {
+            await consumeMockSession()
+            if (user) await fetchProfile(user.id)  // Refresh profile to update counts
+        } catch (err: any) {
+            toast.error(err.message || 'Could not start session.')
+            return
+        }
+        setPhase('interview')
+        setQuestions([])
+        setCurrentIndex(0)
+        setCurrentAnswer('')
+        setCurrentEvaluation(null)
+        setError('')
+        await loadNextQuestion(0, [])
+    }
+
+    // ── Start JD-based interview (Career+ only)
+    const handleStartJD = async () => {
+        if (!jdText.trim() || !config.role) return
+        if (!canStartMockSession(profile)) {
+            toast.error('No sessions remaining. Purchase a Mock Pack or upgrade your plan.')
+            return
+        }
+        try {
+            await consumeMockSession()
+            if (user) await fetchProfile(user.id)
+        } catch (err: any) {
+            toast.error(err.message || 'Could not start session.')
+            return
+        }
+        setConfig(prev => ({ ...prev, type: 'general' }))
         setPhase('interview')
         setQuestions([])
         setCurrentIndex(0)
@@ -199,16 +294,20 @@ export default function MockInterviewPage() {
                             <h1 className="text-3xl font-bold text-ink my-2">AI Mock <em className="not-italic bg-gradient-to-br from-gold to-gold-light bg-clip-text text-transparent">Interview</em></h1>
                             <p className="text-[15px] text-ink-40">Choose an interview mode and practice with AI-powered feedback.</p>
                             <div className="flex items-center justify-center gap-3 flex-wrap mt-4 px-5 py-3 bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-xl text-[13px] text-ink-60">
-                                {plan === 'career_plus' ? (
-                                    <><span className="font-bold text-gold text-[15px]">{20 - (profile?.mock_sessions_used || 0)}</span> of 20 sessions remaining</>
-                                ) : (
-                                    <><span className="font-bold text-gold text-[15px]">{3 - (profile?.mock_sessions_used || 0)}</span> sessions remaining this month</>
-                                )}
+                                <span className="font-bold text-gold text-[15px]">{sessionInfo.total}</span>
+                                <span>{sessionInfo.label}</span>
                                 {practiceHistory.length > 0 && (
                                     <button className="bg-[var(--bg)] border border-ink-10 text-ink-60 px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-all hover:border-gold hover:text-gold" onClick={() => setShowHistory(!showHistory)}>
                                         {showHistory ? 'Hide' : 'View'} History ({practiceHistory.length})
                                     </button>
                                 )}
+                                <button
+                                    className="bg-[var(--bg)] border border-ink-10 text-gold px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-all hover:border-gold hover:bg-gold/5 font-semibold"
+                                    onClick={handleBuyMockPack}
+                                    disabled={packLoading}
+                                >
+                                    {packLoading ? 'Purchasing…' : '🎤 Buy 3 More — $12.99'}
+                                </button>
                             </div>
                         </div>
 
@@ -250,15 +349,79 @@ export default function MockInterviewPage() {
                         )}
 
                         <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 mb-8">
-                            {Object.entries(INTERVIEW_TYPES).map(([id, type]) => (
-                                <div key={id} className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-2xl p-6 cursor-pointer transition-all text-left hover:border-gold hover:-translate-y-0.5 hover:shadow-xl" onClick={() => handleTypeSelect(id)}>
-                                    <span className="text-gold mb-3 block"><LandingIcon name={type.icon} size={30} /></span>
-                                    <div className="font-bold text-base text-ink mb-1.5">{type.name}</div>
-                                    <div className="text-[13px] text-ink-40 leading-relaxed">{type.description}</div>
-                                    <div className="mt-2.5 text-[11px] text-ink-20 uppercase tracking-wide font-semibold">{type.defaultQuestions} questions</div>
-                                </div>
-                            ))}
+                            {Object.entries(INTERVIEW_TYPES).map(([id, type]) => {
+                                const isLocked = !availableModes.includes(id)
+                                return (
+                                    <div key={id} className={`bg-white dark:bg-[var(--surface)] border rounded-2xl p-6 text-left transition-all ${isLocked ? 'border-ink-10 opacity-60 cursor-not-allowed' : 'border-ink-10 cursor-pointer hover:border-gold hover:-translate-y-0.5 hover:shadow-xl'}`} onClick={() => !isLocked && handleTypeSelect(id)}>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-gold"><LandingIcon name={type.icon} size={30} /></span>
+                                            {isLocked && <span className="badge badge-dark text-[9px]">Career+ Only</span>}
+                                        </div>
+                                        <div className="font-bold text-base text-ink mb-1.5">{type.name}</div>
+                                        <div className="text-[13px] text-ink-40 leading-relaxed">{type.description}</div>
+                                        <div className="mt-2.5 text-[11px] text-ink-20 uppercase tracking-wide font-semibold">{type.defaultQuestions} questions</div>
+                                        {isLocked && (
+                                            <Link to="/pricing" className="mt-3 text-[11px] text-gold font-semibold no-underline hover:underline block">Upgrade to Career+ →</Link>
+                                        )}
+                                    </div>
+                                )
+                            })}
                         </div>
+
+                        {/* JD-Based Interview — Career+ Only */}
+                        {isCareerPlus && (
+                            <div className="mb-8">
+                                <div className="flex items-center gap-2.5 mb-3">
+                                    <span className="badge badge-gold">Career+ Exclusive</span>
+                                    <span className="text-sm font-bold text-ink">JD-Based Interview Simulation</span>
+                                </div>
+                                {!showJdInput ? (
+                                    <button className="w-full p-5 bg-gradient-to-br from-gold/[0.06] to-gold/[0.02] border-[1.5px] border-gold/30 rounded-2xl text-left transition-all hover:border-gold hover:shadow-lg cursor-pointer" onClick={() => setShowJdInput(true)}>
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-gold"><LandingIcon name="file-text" size={28} /></span>
+                                            <div>
+                                                <div className="font-bold text-[15px] text-ink mb-0.5">Paste a Job Description</div>
+                                                <div className="text-[13px] text-ink-40">AI generates interview questions tailored to the specific job requirements</div>
+                                            </div>
+                                        </div>
+                                    </button>
+                                ) : (
+                                    <div className="bg-white dark:bg-[var(--surface)] border border-ink-10 rounded-2xl p-6">
+                                        <textarea
+                                            className="w-full min-h-[120px] p-3 border border-ink-10 rounded-xl bg-[var(--bg)] text-ink text-sm leading-relaxed resize-y mb-4 transition-colors focus:outline-none focus:border-gold"
+                                            placeholder="Paste the full job description here… The AI will generate targeted interview questions based on the role requirements, skills, and qualifications mentioned."
+                                            value={jdText}
+                                            onChange={e => setJdText(e.target.value)}
+                                        />
+                                        <div className="grid grid-cols-2 gap-3 mb-4">
+                                            <div>
+                                                <label className="block text-xs font-semibold text-ink-60 mb-1.5 uppercase tracking-wide">Target Role</label>
+                                                <select className="w-full px-3.5 py-2.5 border border-ink-10 rounded-xl bg-[var(--bg)] text-ink text-sm" value={config.role} onChange={e => setConfig(prev => ({ ...prev, role: e.target.value }))}>
+                                                    <option value="">Select a role…</option>
+                                                    {MOCK_ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs font-semibold text-ink-60 mb-1.5 uppercase tracking-wide">Questions</label>
+                                                <select className="w-full px-3.5 py-2.5 border border-ink-10 rounded-xl bg-[var(--bg)] text-ink text-sm" value={config.questionCount} onChange={e => setConfig(prev => ({ ...prev, questionCount: Number(e.target.value) }))}>
+                                                    {[3, 5, 6, 8, 10].map(n => <option key={n} value={n}>{n} questions</option>)}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2.5">
+                                            <button className="btn btn-gold" onClick={handleStartJD} disabled={!jdText.trim() || !config.role}>Start JD Interview →</button>
+                                            <button className="btn btn-ghost" onClick={() => setShowJdInput(false)}>Cancel</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        {!isCareerPlus && (
+                            <div className="p-5 bg-ink-05 rounded-2xl text-center mb-8">
+                                <div className="text-sm text-ink-60 mb-2">Want JD-Based Interviews, all 5 modes, and detailed AI coaching?</div>
+                                <Link to="/pricing" className="text-gold text-sm font-semibold no-underline hover:underline">Upgrade to Career+ →</Link>
+                            </div>
+                        )}
                     </>
                 )}
 
@@ -375,21 +538,35 @@ export default function MockInterviewPage() {
                                             </div>
                                         </div>
 
-                                        {/* Metric gauges */}
-                                        <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3 mb-4">
-                                            <ScoreGauge label="Clarity" value={currentEvaluation.clarity_score} />
-                                            <ScoreGauge label="Confidence" value={currentEvaluation.confidence_score} />
-                                            <ScoreGauge label="Keywords" value={currentEvaluation.keyword_relevance} />
-                                            {currentEvaluation.technical_accuracy !== undefined && (
-                                                <ScoreGauge label="Tech Accuracy" value={currentEvaluation.technical_accuracy} />
-                                            )}
-                                        </div>
+                                        {/* Metric gauges — Career+ gets full details */}
+                                        {isCareerPlus ? (
+                                            <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3 mb-4">
+                                                <ScoreGauge label="Clarity" value={currentEvaluation.clarity_score} />
+                                                <ScoreGauge label="Confidence" value={currentEvaluation.confidence_score} />
+                                                <ScoreGauge label="Keywords" value={currentEvaluation.keyword_relevance} />
+                                                {currentEvaluation.technical_accuracy !== undefined && (
+                                                    <ScoreGauge label="Tech Accuracy" value={currentEvaluation.technical_accuracy} />
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className="mb-4">
+                                                <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-3 mb-3">
+                                                    <ScoreGauge label="Clarity" value={currentEvaluation.clarity_score} />
+                                                    <ScoreGauge label="Confidence" value={currentEvaluation.confidence_score} />
+                                                </div>
+                                                <div className="px-3 py-2 bg-gold/[0.06] border border-gold/20 rounded-lg text-[11px] text-gold flex items-center gap-2">
+                                                    <LandingIcon name="star" size={12} />
+                                                    <span>Upgrade to Career+ for keyword analysis, STAR coaching, and AI answer suggestions</span>
+                                                    <Link to="/pricing" className="ml-auto text-gold font-semibold no-underline hover:underline shrink-0">Upgrade →</Link>
+                                                </div>
+                                            </div>
+                                        )}
 
-                                        {/* STAR Detection */}
+                                        {/* STAR Detection — Career+ gets coaching */}
                                         {currentEvaluation.star_detected && currentEvaluation.star_breakdown && (
                                             <div className="mb-4">
                                                 <div className="text-xs font-bold text-gold mb-2">STAR Structure Detected</div>
-                                                <div className="grid grid-cols-4 gap-2 mb-4">
+                                                <div className="grid grid-cols-4 gap-2 mb-3">
                                                     {Object.entries(currentEvaluation.star_breakdown).map(([key, val]) => (
                                                         <div key={key} className="text-center py-2.5 px-1.5 bg-[var(--bg)] rounded-lg border border-ink-10">
                                                             <div className="text-lg font-extrabold text-gold">{key[0].toUpperCase()}</div>
@@ -397,6 +574,29 @@ export default function MockInterviewPage() {
                                                         </div>
                                                     ))}
                                                 </div>
+                                                {/* STAR Coaching — Career+ only */}
+                                                {isCareerPlus && (
+                                                    <div className="p-3 bg-gradient-to-r from-gold/[0.04] to-transparent rounded-xl border border-gold/15">
+                                                        <div className="text-[11px] uppercase tracking-wide font-bold text-gold mb-2">✦ STAR Coaching</div>
+                                                        <ul className="list-none p-0 m-0 text-[12px] text-ink-60 space-y-1.5">
+                                                            {currentEvaluation.star_breakdown.situation < 7 && (
+                                                                <li className="pl-4 relative before:content-['→'] before:absolute before:left-0 before:text-gold">Situation: Add more context about when, where, and the challenge you faced.</li>
+                                                            )}
+                                                            {currentEvaluation.star_breakdown.task < 7 && (
+                                                                <li className="pl-4 relative before:content-['→'] before:absolute before:left-0 before:text-gold">Task: Clearly state YOUR specific responsibility, not just the team's goal.</li>
+                                                            )}
+                                                            {currentEvaluation.star_breakdown.action < 7 && (
+                                                                <li className="pl-4 relative before:content-['→'] before:absolute before:left-0 before:text-gold">Action: Detail the specific steps YOU took — be concrete, not vague.</li>
+                                                            )}
+                                                            {currentEvaluation.star_breakdown.result < 7 && (
+                                                                <li className="pl-4 relative before:content-['→'] before:absolute before:left-0 before:text-gold">Result: Quantify the outcome with numbers, percentages, or business impact.</li>
+                                                            )}
+                                                            {Object.values(currentEvaluation.star_breakdown).every(v => v >= 7) && (
+                                                                <li className="pl-4 relative before:content-['✓'] before:absolute before:left-0 before:text-green-500">Excellent STAR structure! All components are well-developed.</li>
+                                                            )}
+                                                        </ul>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                         {currentEvaluation.star_detected === false && config.type === 'behavioral' && (
@@ -405,8 +605,8 @@ export default function MockInterviewPage() {
                                             </div>
                                         )}
 
-                                        {/* Keywords */}
-                                        {(currentEvaluation.keywords_found?.length > 0 || currentEvaluation.keywords_missing?.length > 0) && (
+                                        {/* Keywords — Career+ only */}
+                                        {isCareerPlus && (currentEvaluation.keywords_found?.length > 0 || currentEvaluation.keywords_missing?.length > 0) && (
                                             <div className="mb-4 p-3 bg-[var(--bg)] rounded-xl border border-ink-10">
                                                 {currentEvaluation.keywords_found?.length > 0 && (
                                                     <div className="mb-2 last:mb-0">
@@ -450,19 +650,27 @@ export default function MockInterviewPage() {
                                             </div>
                                         )}
 
-                                        {/* Improved answer */}
-                                        {currentEvaluation.improved_answer && (
+                                        {/* Improved answer — Career+ only */}
+                                        {isCareerPlus && currentEvaluation.improved_answer && (
                                             <div className="mt-4 p-3.5 bg-gradient-to-br from-gold/[0.06] to-gold/[0.02] rounded-xl border border-gold/20">
-                                                <div className="text-[11px] uppercase tracking-wide font-bold text-gold mb-1.5">Suggested Improved Answer</div>
+                                                <div className="text-[11px] uppercase tracking-wide font-bold text-gold mb-1.5">✦ AI-Suggested Improved Answer</div>
                                                 <div className="text-[13px] text-ink-60 leading-relaxed">{currentEvaluation.improved_answer}</div>
                                             </div>
                                         )}
 
-                                        {/* Ideal answer */}
-                                        {currentEvaluation.sample_answer && (
+                                        {/* Ideal answer — Career+ only */}
+                                        {isCareerPlus && currentEvaluation.sample_answer && (
                                             <div className="mt-3 p-3.5 bg-[var(--bg)] rounded-xl border border-ink-10">
                                                 <div className="text-[11px] uppercase tracking-wide font-bold text-ink-40 mb-1.5">Ideal Answer</div>
                                                 <div className="text-[13px] text-ink-60 leading-relaxed">{currentEvaluation.sample_answer}</div>
+                                            </div>
+                                        )}
+
+                                        {/* Upgrade prompt for Premium users */}
+                                        {!isCareerPlus && (currentEvaluation.improved_answer || currentEvaluation.sample_answer) && (
+                                            <div className="mt-4 p-3 bg-ink-05 rounded-xl text-center">
+                                                <div className="text-[12px] text-ink-40 mb-1">AI answer suggestions and ideal answers available on Career+</div>
+                                                <Link to="/pricing" className="text-gold text-[12px] font-semibold no-underline hover:underline">Upgrade for full coaching →</Link>
                                             </div>
                                         )}
 
@@ -579,6 +787,7 @@ export default function MockInterviewPage() {
 
                         <div className="flex gap-3 justify-center">
                             <button className="btn btn-gold" onClick={handleReset}>Start New Interview</button>
+                            {isCareerPlus && <Link to="/tools/career-dashboard" className="btn btn-outline">View Scoring Dashboard</Link>}
                             <Link to="/dashboard" className="btn btn-ghost">Back to Dashboard</Link>
                         </div>
                     </div>

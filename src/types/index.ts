@@ -9,6 +9,7 @@ export interface Profile {
     subscription_period_end?: string
     mock_sessions_used?: number
     mock_sessions_purchased?: number
+    express_unlock_until?: string   // ISO datetime — when active, user gets Pro-level access
 }
 
 export interface PersonalInfo {

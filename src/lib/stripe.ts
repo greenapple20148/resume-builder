@@ -171,9 +171,11 @@ export const PLANS: Record<string, Plan> = {
       {
         label: 'AI Mock Interview', features: [
           { text: '3 AI-powered mock sessions/month', included: true },
-          { text: 'Role-specific questions', included: true },
-          { text: 'Real-time answer scoring', included: true },
+          { text: '2 interview modes (Role + Behavioral)', included: true },
+          { text: 'Basic answer scoring', included: true },
           { text: 'Clarity + confidence metrics', included: true },
+          { text: 'System Design, Technical, Salary modes', included: false },
+          { text: 'AI answer suggestions + coaching', included: false },
         ]
       },
       {
@@ -200,6 +202,13 @@ export const PLANS: Record<string, Plan> = {
         label: 'Interview Toolkit', features: [
           { text: '14 roles with 280+ questions', included: true },
           { text: 'STAR story builder', included: true },
+        ]
+      },
+      {
+        label: 'Career Intelligence', features: [
+          { text: 'JD-based interview simulation', included: false },
+          { text: 'Interview scoring dashboard', included: false },
+          { text: 'Resume score tracking over time', included: false },
         ]
       },
       {
@@ -250,7 +259,8 @@ export const PLANS: Record<string, Plan> = {
           { text: 'STAR answer coaching', included: true },
           { text: 'Detailed clarity + confidence scoring', included: true },
           { text: 'Keyword relevance analysis', included: true },
-          { text: 'Improved answer suggestions', included: true },
+          { text: 'AI-suggested improved answers', included: true },
+          { text: 'Ideal answer comparison', included: true },
         ]
       },
       {
@@ -258,6 +268,12 @@ export const PLANS: Record<string, Plan> = {
           { text: 'Interview scoring dashboard', included: true },
           { text: 'Resume score tracking over time', included: true },
           { text: 'JD-based interview simulation', included: true },
+          { text: 'Performance breakdown by type', included: true },
+        ]
+      },
+      {
+        label: 'Resume Builder', features: [
+          { text: 'Unlimited resume versions', included: true },
         ]
       },
       {

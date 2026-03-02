@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { useTheme } from '../lib/useTheme'
+import { getEffectivePlan, isExpressUnlockActive } from '../lib/expressUnlock'
 
 interface NavbarProps {
   variant?: 'default' | 'editor' | 'transparent'
@@ -104,8 +105,8 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
 
           {user ? (
             <>
-              {profile?.plan !== 'free' && (
-                <span className="badge badge-gold">{profile?.plan}</span>
+              {(getEffectivePlan(profile) !== 'free' || isExpressUnlockActive(profile)) && (
+                <span className="badge badge-gold">{isExpressUnlockActive(profile) && profile?.plan === 'free' ? '⚡ EXPRESS' : profile?.plan}</span>
               )}
               <Link to="/dashboard" className="btn btn-outline btn-sm">
                 Dashboard
@@ -132,12 +133,12 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                   <Link to="/profile" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                     Profile
                   </Link>
-                  {(profile?.plan === 'pro' || profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
+                  {(getEffectivePlan(profile) === 'pro' || getEffectivePlan(profile) === 'premium' || getEffectivePlan(profile) === 'career_plus') && (
                     <Link to="/tools/cover-letter" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                       Cover Letters
                     </Link>
                   )}
-                  {(profile?.plan === 'premium' || profile?.plan === 'career_plus') && (
+                  {(getEffectivePlan(profile) === 'premium' || getEffectivePlan(profile) === 'career_plus') && (
                     <>
                       <Link to="/tools/linkedin" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                         LinkedIn Toolkit
@@ -148,6 +149,11 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                       <Link to="/tools/mock-interview" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                         AI Mock Interview
                       </Link>
+                      {profile?.plan === 'career_plus' && (
+                        <Link to="/tools/career-dashboard" className="block w-full text-left px-4 py-2.5 text-sm text-gold font-medium no-underline transition-colors duration-150 hover:bg-gold/5" onClick={() => setMenuOpen(false)}>
+                          ✦ Career Dashboard
+                        </Link>
+                      )}
                       <Link to="/tools/ai" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                         AI Tools
                       </Link>

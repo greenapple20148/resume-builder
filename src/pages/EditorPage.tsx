@@ -8,6 +8,7 @@ import type { ResumeData, PersonalInfo, ExperienceEntry, EducationEntry, Languag
 import { useSEO } from '../lib/useSEO'
 import { useTheme } from '../lib/useTheme'
 import { THEMES } from './ThemesPage'
+import { getEffectivePlan } from '../lib/expressUnlock'
 
 const SECTIONS = [
   { id: 'personal', label: 'Personal Info', icon: '●' },
@@ -1399,8 +1400,9 @@ export default function EditorPage() {
       }
       stripFixedWidths(contentClone)
 
-      // Watermark for free users
-      const isFree = profile?.plan === 'free' || !profile?.plan
+      // Watermark for free users (not active if Express Unlock is on)
+      const effectivePlan = getEffectivePlan(profile)
+      const isFree = effectivePlan === 'free'
       const isLightBg = ['#ffffff', '#fff', '#fafafa', '#fdfbf9', '#fbf9fc', '#f7f7f7', '#f9f6f0', '#faf7f3', '#f7efe3', '#fdfcfa', '#f8f8f8'].includes(themeBg)
       const watermarkHTML = isFree
         ? `<div style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:4mm 0;font-size:9pt;color:${isLightBg ? '#828282' : '#b4b4b4'};background:${themeBg};font-family:sans-serif;">Made with ResumeBuildIn</div>`
@@ -1482,7 +1484,7 @@ export default function EditorPage() {
     toast.info('Generating DOCX...')
     try {
       const { exportToDocx } = await import('../lib/docxExport')
-      await exportToDocx(resumeData as ResumeData, themeId, profile?.plan || 'free')
+      await exportToDocx(resumeData as ResumeData, themeId, getEffectivePlan(profile))
       toast.success('DOCX downloaded!')
     } catch (err) {
       toast.error('DOCX failed.')
@@ -1493,18 +1495,27 @@ export default function EditorPage() {
     const file = e.target.files?.[0]
     if (!file) return
     setImporting(true)
-    toast.info('Importing...')
+    toast.info('Extracting text from file…')
     try {
       const { extractTextFromPDF, extractTextFromDocx, parseResumeWithAI } = await import('../lib/ai')
       let text = ''
-      if (file.type === 'application/pdf') text = await extractTextFromPDF(file)
-      else text = await extractTextFromDocx(file)
+      if (file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf') {
+        text = await extractTextFromPDF(file)
+      } else if (file.name.toLowerCase().endsWith('.docx') || file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        text = await extractTextFromDocx(file)
+      } else {
+        throw new Error('Unsupported file type. Please upload a PDF or DOCX.')
+      }
 
+      if (!text.trim()) throw new Error('No text could be extracted from the file.')
+
+      toast.info('Parsing resume with AI…')
       const parsed = await parseResumeWithAI(text)
       setResumeData(parsed)
-      toast.success('Imported!')
+      toast.success('Resume imported and parsed!')
     } catch (err: any) {
-      toast.error('Import failed: ' + err.message)
+      console.error('Import error:', err)
+      toast.error('Import failed: ' + (err.message || 'Unknown error'))
     } finally {
       setImporting(false)
       if (fileInputRef.current) fileInputRef.current.value = ''

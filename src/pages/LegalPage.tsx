@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useSEO } from '../lib/useSEO'
+import { useTheme } from '../lib/useTheme'
 
 const LEGAL_CONTENT: Record<string, { title: string; seoTitle: string; seoDesc: string; lastUpdated: string; sections: { heading: string; body: string }[] }> = {
     '/privacy': {
@@ -54,13 +55,15 @@ const LEGAL_CONTENT: Record<string, { title: string; seoTitle: string; seoDesc: 
 export default function LegalPage() {
     const location = useLocation()
     const content = LEGAL_CONTENT[location.pathname]
+    const { theme, toggleTheme } = useTheme()
+    const isDark = theme === 'dark'
 
     // Fallback if route doesn't match
     if (!content) {
         return (
-            <div className="min-h-screen bg-parchment dark:bg-ink flex items-center justify-center">
+            <div style={{ minHeight: '100vh', background: 'var(--parchment)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <div className="text-center">
-                    <h1 className="font-display text-3xl text-ink dark:text-parchment mb-4">Page Not Found</h1>
+                    <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 32, color: 'var(--ink)', marginBottom: 16 }}>Page Not Found</h1>
                     <Link to="/" className="btn btn-gold">Go Home</Link>
                 </div>
             </div>
@@ -70,35 +73,77 @@ export default function LegalPage() {
     useSEO({ title: content.seoTitle, description: content.seoDesc, path: location.pathname })
 
     return (
-        <div className="min-h-screen bg-parchment dark:bg-ink flex flex-col">
-            <header className="flex items-center justify-between px-8 py-5">
-                <Link to="/" className="font-display text-xl font-light text-ink dark:text-parchment no-underline tracking-tight">◈ Resume<em className="italic text-gold">BuildIn</em></Link>
-                <Link to="/" className="btn btn-ghost btn-sm">← Back</Link>
+        <div style={{ minHeight: '100vh', background: 'var(--parchment)', display: 'flex', flexDirection: 'column', transition: 'background 0.3s ease' }}>
+            {/* Header */}
+            <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 32px' }}>
+                <Link to="/" style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 300, color: 'var(--ink)', textDecoration: 'none', letterSpacing: '-0.02em' }}>
+                    <span style={{ color: 'var(--gold)', marginRight: 4 }}>◈</span>
+                    Resume<em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>BuildIn</em>
+                </Link>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {/* Theme toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                        style={{
+                            width: 34,
+                            height: 34,
+                            borderRadius: '50%',
+                            background: 'var(--ink-05)',
+                            border: '1px solid var(--ink-10)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--ink-40)',
+                            transition: 'all 0.2s ease',
+                        }}
+                    >
+                        {isDark ? (
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                            </svg>
+                        ) : (
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                            </svg>
+                        )}
+                    </button>
+                    <Link to="/" className="btn btn-ghost btn-sm">← Back</Link>
+                </div>
             </header>
 
-            <main className="flex-1 max-w-[720px] mx-auto w-full px-6 py-16">
-                <h1 className="font-display text-4xl font-light text-ink dark:text-parchment mb-3 tracking-tight">{content.title}</h1>
-                <p className="font-mono text-[11px] tracking-[0.1em] uppercase text-ink-20 mb-10">Last updated: {content.lastUpdated}</p>
-                <div className="h-px bg-ink-10 mb-10" />
+            {/* Content */}
+            <main style={{ flex: 1, maxWidth: 720, margin: '0 auto', width: '100%', padding: '64px 24px' }}>
+                <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px, 5vw, 40px)', fontWeight: 300, color: 'var(--ink)', marginBottom: 12, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                    {content.title}
+                </h1>
+                <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase' as const, color: 'var(--ink-40)', marginBottom: 40 }}>
+                    Last updated: {content.lastUpdated}
+                </p>
+                <div style={{ height: 1, background: 'var(--ink-10)', marginBottom: 40 }} />
 
-                <div className="space-y-8">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
                     {content.sections.map((s, i) => (
                         <section key={i}>
-                            <h2 className="text-[15px] font-semibold text-ink dark:text-parchment mb-2.5 flex items-center gap-2.5">
-                                <span className="text-gold text-xs">§{i + 1}</span>
+                            <h2 style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-body)', lineHeight: 1.4 }}>
+                                <span style={{ color: 'var(--gold)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>§{i + 1}</span>
                                 {s.heading}
                             </h2>
-                            <p className="text-[14px] text-ink-60 dark:text-[rgba(250,248,243,0.5)] leading-[1.8] m-0">{s.body}</p>
+                            <p style={{ fontSize: 14, color: 'var(--ink-40)', lineHeight: 1.8, margin: 0 }}>
+                                {s.body}
+                            </p>
                         </section>
                     ))}
                 </div>
 
-                <div className="mt-16 pt-8 border-t border-ink-10">
-                    <p className="text-[13px] text-ink-20 leading-relaxed">
+                {/* Footer contact */}
+                <div style={{ marginTop: 64, paddingTop: 32, borderTop: '1px solid var(--ink-10)' }}>
+                    <p style={{ fontSize: 13, color: 'var(--ink-40)', lineHeight: 1.7 }}>
                         If you have questions about this policy, please contact us at{' '}
-                        <a href="mailto:legal@resumebuildin.com" className="text-gold underline">legal@resumebuildin.com</a>.
+                        <a href="mailto:legal@resumebuildin.com" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>legal@resumebuildin.com</a>.
                     </p>
-                    <p className="text-[13px] text-ink-20 leading-relaxed mt-3">
+                    <p style={{ fontSize: 13, color: 'var(--ink-40)', lineHeight: 1.7, marginTop: 12 }}>
                         Resume BuildIn is operated by RZeal Solutions, United States.
                     </p>
                 </div>
@@ -106,3 +151,4 @@ export default function LegalPage() {
         </div>
     )
 }
+

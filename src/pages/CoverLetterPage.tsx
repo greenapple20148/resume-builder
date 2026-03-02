@@ -5,6 +5,7 @@ import { useStore } from '../lib/store'
 import { toast } from '../components/Toast'
 import { CoverLetter } from '../types'
 import { sanitizeHtml, escapeHtml } from '../lib/sanitize'
+import { getEffectivePlan } from '../lib/expressUnlock'
 
 type Phase = 'list' | 'editor'
 
@@ -20,7 +21,7 @@ export default function CoverLetterPage() {
         fetchResumes, fetchCoverLetters, createCoverLetter, updateCoverLetter, deleteCoverLetter,
     } = useStore()
 
-    const plan = profile?.plan || 'free'
+    const plan = getEffectivePlan(profile)
     const canAccess = plan !== 'free'
 
     const [phase, setPhase] = useState<Phase>('list')

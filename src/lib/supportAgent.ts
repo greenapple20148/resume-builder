@@ -1,5 +1,5 @@
-// src/lib/supportAgent.ts — AI Support Agent powered by Gemini
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY
+// src/lib/supportAgent.ts — AI Support Agent powered by Gemini / Claude
+import { callAIStream, isProviderConfigured, getSelectedProvider } from './aiProvider'
 
 const SYSTEM_PROMPT = `You are **Craft**, the friendly and knowledgeable AI Support Agent for **resumebuildin** — a premium AI-powered resume builder platform.
 
@@ -140,19 +140,20 @@ export async function sendSupportMessage(
     conversationHistory: SupportMessage[],
     onStream?: (partialText: string) => void,
 ): Promise<string> {
-    if (!GEMINI_API_KEY) {
+    const provider = getSelectedProvider()
+    if (!isProviderConfigured(provider) && !isProviderConfigured(provider === 'claude' ? 'gemini' : 'claude')) {
         throw new Error('AI Support is not configured. Please contact support.')
     }
 
-    // Build Gemini conversation contents
-    const contents = [
+    // Build conversation messages
+    const messages: { role: 'user' | 'assistant'; content: string }[] = [
         {
             role: 'user',
-            parts: [{ text: 'You are Craft, the resumebuildin AI Support Agent. Please acknowledge.' }],
+            content: 'You are Craft, the resumebuildin AI Support Agent. Please acknowledge.',
         },
         {
-            role: 'model',
-            parts: [{ text: "Hi there! I'm **Craft**, your resumebuildin support assistant. How can I help you today?" }],
+            role: 'assistant',
+            content: "Hi there! I'm **Craft**, your resumebuildin support assistant. How can I help you today?",
         },
     ]
 
@@ -160,84 +161,22 @@ export async function sendSupportMessage(
     const recentHistory = conversationHistory.slice(-20)
     for (const msg of recentHistory) {
         if (msg.role === 'system') continue
-        contents.push({
-            role: msg.role === 'user' ? 'user' : 'model',
-            parts: [{ text: msg.content }],
+        messages.push({
+            role: msg.role === 'user' ? 'user' : 'assistant',
+            content: msg.content,
         })
     }
 
     // Add current user message
-    contents.push({
-        role: 'user',
-        parts: [{ text: userMessage }],
+    messages.push({ role: 'user', content: userMessage })
+
+    return callAIStream({
+        systemPrompt: SYSTEM_PROMPT,
+        messages,
+        temperature: 0.7,
+        maxTokens: 1024,
+        onStream,
     })
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`
-
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            system_instruction: {
-                parts: [{ text: SYSTEM_PROMPT }],
-            },
-            contents,
-            generationConfig: {
-                temperature: 0.7,
-                topP: 0.9,
-                topK: 40,
-                maxOutputTokens: 1024,
-            },
-            safetySettings: [
-                { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-                { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-                { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-                { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-            ],
-        }),
-    })
-
-    if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Gemini API error:', errorText)
-        throw new Error('Failed to get AI response. Please try again.')
-    }
-
-    // Handle streaming response
-    const reader = response.body?.getReader()
-    if (!reader) throw new Error('No response stream')
-
-    const decoder = new TextDecoder()
-    let fullText = ''
-    let buffer = ''
-
-    while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-            if (!line.startsWith('data: ')) continue
-            const jsonStr = line.slice(6).trim()
-            if (!jsonStr || jsonStr === '[DONE]') continue
-
-            try {
-                const parsed = JSON.parse(jsonStr)
-                const text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text
-                if (text) {
-                    fullText += text
-                    onStream?.(fullText)
-                }
-            } catch {
-                // Skip malformed JSON chunks
-            }
-        }
-    }
-
-    return fullText || "I'm sorry, I couldn't generate a response. Please try again or contact our support team."
 }
 
 export function createWelcomeMessage(): SupportMessage {

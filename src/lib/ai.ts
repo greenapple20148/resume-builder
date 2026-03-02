@@ -1,5 +1,6 @@
 // src/lib/ai.ts — Client-side AI mock interview helpers
 import { supabase } from './supabase'
+import { callAI } from './aiProvider'
 
 export interface InterviewEvaluation {
     score: number
@@ -197,21 +198,9 @@ export async function getPracticeHistory(): Promise<PracticeHistoryEntry[]> {
 export async function enhanceTextWithAI(text: string): Promise<string> {
     if (!text.trim()) return text
 
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-    if (!apiKey) {
-        throw new Error('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your .env file.')
-    }
-
     try {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `You are a professional resume writer. Rewrite the following resume text to make it more impactful and professional.
+        const result = await callAI({
+            prompt: `You are a professional resume writer. Rewrite the following resume text to make it more impactful and professional.
 
 Rules:
 - Use strong action verbs (Led, Spearheaded, Architected, Delivered, Optimized, Streamlined, etc.)
@@ -225,33 +214,14 @@ Rules:
 - Do NOT add markdown formatting
 
 Text to improve:
-${text}`
-                        }]
-                    }],
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 1024,
-                    }
-                })
-            }
-        )
+${text}`,
+            temperature: 0.7,
+            maxTokens: 1024,
+        })
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}))
-            throw new Error(errorData?.error?.message || `Gemini API error: ${response.status}`)
-        }
-
-        const data = await response.json()
-        const result = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
-
-        if (!result) {
-            throw new Error('No response from AI')
-        }
-
-        return result
+        return result.text
     } catch (err: any) {
         console.error('AI rewrite failed, falling back to local enhancement:', err)
-        // Fallback to local rule-based enhancement
         return enhanceTextLocal(text)
     }
 }
@@ -325,11 +295,6 @@ export interface WeaknessAnalysis {
 }
 
 export async function analyzeResumeWeaknesses(resumeData: Record<string, any>): Promise<WeaknessAnalysis> {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-    if (!apiKey) {
-        throw new Error('Gemini API key not configured.')
-    }
-
     // Build a text representation of the resume
     const personal = resumeData.personal || {}
     const sections: string[] = []
@@ -410,46 +375,13 @@ Rules for analysis:
 - Empty or minimal sections should be flagged as critical.
 - Check for: quantified achievements, action verbs, ATS keywords, length, completeness, consistency.`
 
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 20000)
+    const result = await callAI({
+        prompt,
+        temperature: 0.4,
+        maxTokens: 2048,
+    })
 
-    let response: Response
-    try {
-        response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                signal: controller.signal,
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: {
-                        temperature: 0.4,
-                        maxOutputTokens: 2048,
-                    }
-                })
-            }
-        )
-    } catch (fetchErr: any) {
-        clearTimeout(timeoutId)
-        if (fetchErr.name === 'AbortError') {
-            throw new Error('Analysis timed out. Please try again.')
-        }
-        throw new Error('Network error — check your connection and try again.')
-    }
-    clearTimeout(timeoutId)
-
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData?.error?.message || `Gemini API error: ${response.status}`)
-    }
-
-    const data = await response.json()
-    const resultText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
-
-    if (!resultText) {
-        throw new Error('No response from AI')
-    }
+    const resultText = result.text
 
     // Parse JSON, stripping markdown fences if present
     const cleaned = resultText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
@@ -480,14 +412,40 @@ Rules for analysis:
 export async function extractTextFromPDF(file: File): Promise<string> {
     try {
         console.log('[extractTextFromPDF] Triggered on file size:', file.size)
-        // Correct implementation for Vite with pdfjs-dist > 5.x
         const pdfjs = await import('pdfjs-dist')
 
-        // Use a trusted unpkg or cdnjs URL for the worker identical to the module version
-        pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.mjs`
+        // Try multiple CDN sources for the worker (unpkg can be unreliable)
+        const version = pdfjs.version
+        const workerUrls = [
+            `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`,
+            `https://cdn.jsdelivr.net/npm/pdfjs-dist@${version}/build/pdf.worker.min.mjs`,
+            `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.mjs`,
+        ]
+
+        // Test which URL is reachable
+        let workerLoaded = false
+        for (const url of workerUrls) {
+            try {
+                const res = await fetch(url, { method: 'HEAD', mode: 'cors' })
+                if (res.ok) {
+                    pdfjs.GlobalWorkerOptions.workerSrc = url
+                    console.log('[extractTextFromPDF] Worker loaded from:', url)
+                    workerLoaded = true
+                    break
+                }
+            } catch {
+                console.warn('[extractTextFromPDF] Worker URL unreachable:', url)
+            }
+        }
+
+        // If no CDN works, disable the worker (runs on main thread — slower but functional)
+        if (!workerLoaded) {
+            console.warn('[extractTextFromPDF] No CDN worker available, running without worker')
+            pdfjs.GlobalWorkerOptions.workerSrc = ''
+        }
 
         const arrayBuffer = await file.arrayBuffer()
-        const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise
+        const pdf = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) }).promise
         const pages: string[] = []
 
         console.log('[extractTextFromPDF] Document opened successfully, total pages:', pdf.numPages)
@@ -498,11 +456,15 @@ export async function extractTextFromPDF(file: File): Promise<string> {
             pages.push(text)
         }
 
-        return pages.join('\n\n')
-    } catch (err) {
+        const result = pages.join('\n\n')
+        if (!result.trim()) {
+            throw new Error('PDF appears to be scanned/image-based — no selectable text found.')
+        }
+        console.log('[extractTextFromPDF] Extracted', result.length, 'characters')
+        return result
+    } catch (err: any) {
         console.error('PDF extraction error:', err)
-        // Fallback: try reading as text
-        return await file.text()
+        throw new Error(err?.message || 'Could not extract text from PDF. The file may be corrupted or image-based.')
     }
 }
 
@@ -514,82 +476,163 @@ export async function extractTextFromDocx(file: File): Promise<string> {
         const mammoth = await import('mammoth')
         const arrayBuffer = await file.arrayBuffer()
         const result = await mammoth.extractRawText({ arrayBuffer })
+        if (!result.value.trim()) {
+            throw new Error('DOCX file appears to be empty.')
+        }
+        console.log('[extractTextFromDocx] Extracted', result.value.length, 'characters')
         return result.value
-    } catch (err) {
+    } catch (err: any) {
         console.error('DOCX extraction error:', err)
-        return await file.text()
+        throw new Error(err?.message || 'Could not extract text from DOCX. The file may be corrupted.')
     }
 }
 
 /**
  * Parse raw resume text into structured ResumeData.
- * Uses Gemini AI for unmatched extraction accuracy.
+ * Uses AI for unmatched extraction accuracy.
  */
 export async function parseResumeWithAI(text: string): Promise<any> {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-    if (!apiKey) {
-        console.warn('VITE_GEMINI_API_KEY not found. Falling back to simple heuristic parsing (poor quality).')
-        return fallbackHeuristicParsing(text)
-    }
-
     try {
-        console.log('[parseResumeWithAI] Requesting JSON extraction from Gemini...')
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: `You are an expert ATS (Applicant Tracking System) parser. Parse the following raw resume text into a highly structured JSON object. Extract every detail accurately. Do NOT miss bullet points in experiences or education!
-Return ONLY a valid JSON object without markdown formatting, matching exactly this structure:
+        console.log('[parseResumeWithAI] Requesting JSON extraction from AI, text length:', text.length)
+
+        // Truncate if extremely long to avoid token limits
+        const truncated = text.length > 15000 ? text.slice(0, 15000) + '\n[...truncated]' : text
+
+        const result = await callAI({
+            prompt: `You are an expert ATS (Applicant Tracking System) parser. Parse the following raw resume text into a highly structured JSON object. Extract every detail accurately. Do NOT miss bullet points, skills, languages, certifications, or projects!
+
+Return ONLY a valid JSON object matching exactly this structure (omit empty arrays/fields):
 {
   "personal": { "fullName": "", "email": "", "phone": "", "location": "", "jobTitle": "", "website": "" },
   "summary": "Professional summary paragraph or objective...",
   "experience": [
-    { "company": "", "position": "", "startDate": "YYYY-MM or string", "endDate": "YYYY-MM or string or Present", "location": "", "description": "Bullet points combined with \n or • character..." }
+    { "company": "", "position": "", "startDate": "YYYY-MM or Mon YYYY", "endDate": "YYYY-MM or Mon YYYY or Present", "location": "", "description": "All bullet points for this role joined with newlines" }
   ],
   "education": [
-    { "institution": "", "degree": "", "field": "", "startDate": "YYYY-MM or string", "endDate": "YYYY-MM or string" }
+    { "institution": "", "degree": "", "field": "", "startDate": "", "endDate": "", "gpa": "" }
   ],
-  "skills": ["Skill 1", "Skill 2"]
+  "skills": ["Skill 1", "Skill 2", "..."],
+  "languages": [
+    { "language": "", "proficiency": "Native|Fluent|Professional|Intermediate|Basic" }
+  ],
+  "certifications": [
+    { "name": "", "issuer": "", "date": "" }
+  ],
+  "projects": [
+    { "name": "", "description": "", "url": "", "technologies": "" }
+  ]
 }
 
-Raw resume text to parse:
-"""
-${text}
-"""`
-                        }]
-                    }],
-                    generationConfig: {
-                        temperature: 0.1,
-                        responseMimeType: "application/json"
-                    }
-                })
-            }
-        )
+IMPORTANT RULES:
+1. Extract ALL bullet points under each job as a single "description" string separated by newlines
+2. If no summary/objective section exists, write a brief one based on the resume content
+3. Extract skills from any "Skills", "Technical Skills", or "Tools" sections
+4. Extract ALL languages found
+5. Extract certifications, awards, and licenses
+6. Do NOT invent data — only extract what's present
 
-        if (!response.ok) {
-            throw new Error(`Gemini API error status: ${response.status}`)
+Raw resume text:
+"""
+${truncated}
+"""`,
+            temperature: 0.1,
+            maxTokens: 4096,
+            jsonMode: true,
+        })
+
+        const resultText = result.text
+        if (!resultText) throw new Error('Empty response from AI')
+
+        // Strip markdown fences if present
+        const cleaned = resultText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+        console.log('[parseResumeWithAI] AI returned', cleaned.length, 'chars, parsing JSON...')
+        const parsed = JSON.parse(cleaned)
+
+        // ── Normalize AI output to match ResumeData types ──────────
+        // The AI returns flexible field names — we map them to the exact
+        // shape the editor, templates, and preview panel expect.
+
+        const personal = parsed.personal || {}
+        const normalizedPersonal = {
+            fullName: personal.fullName || personal.name || personal.full_name || '',
+            jobTitle: personal.jobTitle || personal.job_title || personal.title || '',
+            email: personal.email || '',
+            phone: personal.phone || personal.telephone || '',
+            location: personal.location || personal.address || personal.city || '',
+            website: personal.website || personal.url || personal.linkedin || '',
+            summary: '',   // summary lives at top level, not inside personal
+            photo: '',
         }
 
-        const data = await response.json()
-        const resultText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
-        if (!resultText) throw new Error("Empty response from AI")
+        const normalizedExperience = (parsed.experience || []).map((exp: any, i: number) => ({
+            id: exp.id || i + 1,
+            title: exp.title || exp.position || exp.role || '',
+            company: exp.company || exp.employer || exp.organization || '',
+            location: exp.location || '',
+            startDate: exp.startDate || exp.start_date || exp.start || '',
+            endDate: exp.endDate || exp.end_date || exp.end || '',
+            current: !!(exp.current || (exp.endDate || exp.end_date || '').toLowerCase() === 'present'),
+            description: exp.description || exp.details || exp.responsibilities || '',
+        }))
 
-        const parsed = JSON.parse(resultText)
+        const normalizedEducation = (parsed.education || []).map((edu: any, i: number) => {
+            const degree = edu.degree || ''
+            const field = edu.field || edu.major || edu.concentration || ''
+            return {
+                id: edu.id || i + 1,
+                degree: field ? `${degree}${degree && field ? ' in ' : ''}${field}` : degree,
+                school: edu.school || edu.institution || edu.university || edu.college || '',
+                location: edu.location || '',
+                startDate: edu.startDate || edu.start_date || edu.start || '',
+                endDate: edu.endDate || edu.end_date || edu.end || edu.year || edu.graduation || '',
+                gpa: edu.gpa || '',
+                notes: edu.notes || edu.honors || edu.activities || '',
+            }
+        })
 
-        // Clean up empty fields and return
+        const normalizedLanguages = (parsed.languages || []).map((lang: any, i: number) => ({
+            id: lang.id || i + 1,
+            language: lang.language || lang.name || '',
+            level: lang.level || lang.proficiency || lang.fluency || '',
+        }))
+
+        const normalizedCertifications = (parsed.certifications || []).map((cert: any, i: number) => ({
+            id: cert.id || i + 1,
+            name: cert.name || cert.title || cert.certification || '',
+            issuer: cert.issuer || cert.organization || cert.provider || '',
+            date: cert.date || cert.year || cert.issued || '',
+            url: cert.url || cert.link || '',
+        }))
+
+        const normalizedProjects = (parsed.projects || []).map((proj: any, i: number) => ({
+            id: proj.id || i + 1,
+            name: proj.name || proj.title || '',
+            description: proj.description || proj.details || '',
+            url: proj.url || proj.link || '',
+            tech: proj.tech || proj.technologies || proj.stack || '',
+        }))
+
+        const normalizedSummary = parsed.summary || personal.summary || ''
+
+        console.log('[parseResumeWithAI] Normalized data:', {
+            personalName: normalizedPersonal.fullName,
+            experienceCount: normalizedExperience.length,
+            educationCount: normalizedEducation.length,
+            skillsCount: (parsed.skills || []).length,
+        })
+
         return {
-            personal: parsed.personal || {},
-            summary: parsed.summary || '',
-            experience: parsed.experience || [],
-            education: parsed.education || [],
-            skills: parsed.skills || []
+            personal: normalizedPersonal,
+            summary: normalizedSummary,
+            experience: normalizedExperience,
+            education: normalizedEducation,
+            skills: parsed.skills || [],
+            languages: normalizedLanguages,
+            certifications: normalizedCertifications,
+            projects: normalizedProjects,
         }
     } catch (err) {
-        console.error('[parseResumeWithAI] Gemini extraction failed:', err)
+        console.error('[parseResumeWithAI] AI extraction failed:', err)
         return fallbackHeuristicParsing(text)
     }
 }
@@ -598,11 +641,14 @@ ${text}
 function fallbackHeuristicParsing(text: string): any {
     const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
     const result: any = {
-        personal: { fullName: '', email: '', phone: '', location: '', jobTitle: '', website: '' },
+        personal: { fullName: '', jobTitle: '', email: '', phone: '', location: '', website: '', summary: '', photo: '' },
         summary: '',
         experience: [],
         education: [],
         skills: [],
+        languages: [],
+        certifications: [],
+        projects: [],
     }
 
     const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.]+/)
@@ -624,7 +670,7 @@ function fallbackHeuristicParsing(text: string): any {
 
     for (const line of lines) {
         if (sectionHeaders.test(line) && line.length < 40) {
-            currentSection = line.toLowerCase().replace(/[:\\s]/g, '')
+            currentSection = line.toLowerCase().replace(/[:\s]/g, '')
             if (currentSection.startsWith('experience') || currentSection.startsWith('work') || currentSection.startsWith('employment')) currentSection = 'experience'
             if (currentSection.startsWith('summary') || currentSection.startsWith('profile') || currentSection.startsWith('objective')) currentSection = 'summary'
             if (currentSection.startsWith('skill') || currentSection.startsWith('expertise')) currentSection = 'skills'
@@ -739,11 +785,6 @@ export function buildThemeCSS(t: AIThemeResult): string {
  * Returns color tokens, fonts, and a CSS override stylesheet.
  */
 export async function generateThemeFromDescription(description: string): Promise<AIThemeResult> {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-    if (!apiKey) {
-        throw new Error('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your .env file.')
-    }
-
     const prompt = `You are a world-class resume designer. Generate a COMPLETELY CUSTOM color theme for a resume based on the user's description. Be creative — design unique, harmonious color palettes.
 
 User's description: "${description}"
@@ -770,26 +811,13 @@ Rules:
 - Be creative with the palette — don't just use basic primary colors
 - Include appropriate font-family fallbacks (e.g. "Georgia, serif" or "'Inter', sans-serif")`
 
-    const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.8, maxOutputTokens: 512 },
-            }),
-        }
-    )
+    const aiResult = await callAI({
+        prompt,
+        temperature: 0.8,
+        maxTokens: 512,
+    })
 
-    if (!response.ok) {
-        const err = await response.json().catch(() => ({}))
-        throw new Error(err?.error?.message || `Gemini API error: ${response.status}`)
-    }
-
-    const data = await response.json()
-    let raw = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
-    if (!raw) throw new Error('No response from AI')
+    let raw = aiResult.text
 
     // Strip markdown code fences if present
     raw = raw.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()

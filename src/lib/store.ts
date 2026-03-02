@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { supabase } from './supabase'
 import { Profile, Resume, CoverLetter, SaveStatus } from '../types'
+import { getEffectivePlan } from './expressUnlock'
 
 interface StoreState {
   user: any | null
@@ -226,7 +227,7 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   createResume: async (themeId = 'classic', initialData = null) => {
-    const { user } = get()
+    const { user, profile } = get()
     if (!user) throw new Error('Not authenticated')
 
     // Ensure we have a valid session before making API calls
@@ -235,14 +236,20 @@ export const useStore = create<StoreState>((set, get) => ({
     if (sessionError) console.warn('[store] Session refresh warning:', sessionError.message)
     console.log('[store] Step 2: Checking resume count...')
 
-    // Check resume limit with a simple count instead of RPC
-    const { count, error: countError } = await supabase
-      .from('resumes')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
+    // Check resume limit based on user's effective plan (accounts for Express Unlock)
+    const planLimits: Record<string, number> = { free: 1, pro: 5, premium: 10, career_plus: Infinity }
+    const currentPlan = getEffectivePlan(profile)
+    const resumeLimit = planLimits[currentPlan] || 1
 
-    if (!countError && count !== null && count >= 10) {
-      throw new Error('LIMIT_REACHED')
+    if (resumeLimit !== Infinity) {
+      const { count, error: countError } = await supabase
+        .from('resumes')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+
+      if (!countError && count !== null && count >= resumeLimit) {
+        throw new Error('LIMIT_REACHED')
+      }
     }
 
     const defaultData = initialData || {

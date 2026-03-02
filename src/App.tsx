@@ -19,6 +19,7 @@ import InterviewToolkitPage from './pages/InterviewToolkitPage'
 import MockInterviewPage from './pages/MockInterviewPage'
 import CoverLetterPage from './pages/CoverLetterPage'
 import AIToolsPage from './pages/AIToolsPage'
+import CareerDashboardPage from './pages/CareerDashboardPage'
 import WelcomePage from './pages/WelcomePage'
 import NotFoundPage from './pages/NotFoundPage'
 import AboutPage from './pages/AboutPage'
@@ -29,6 +30,7 @@ import LegalPage from './pages/LegalPage'
 // Components
 import { Toast } from './components/Toast'
 import SupportAgent from './components/SupportAgent'
+import ExpressUnlockBanner from './components/ExpressUnlockBanner'
 
 interface RouteProps {
   children: React.ReactNode
@@ -84,6 +86,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Toast />
+      <ExpressUnlockBanner />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
@@ -99,6 +102,7 @@ export default function App() {
         <Route path="/tools/mock-interview" element={<ProtectedRoute><MockInterviewPage /></ProtectedRoute>} />
         <Route path="/tools/cover-letter" element={<ProtectedRoute><CoverLetterPage /></ProtectedRoute>} />
         <Route path="/tools/ai" element={<AIToolsPage />} />
+        <Route path="/tools/career-dashboard" element={<ProtectedRoute><CareerDashboardPage /></ProtectedRoute>} />
         <Route path="/welcome" element={<ProtectedRoute><WelcomePage /></ProtectedRoute>} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/blog" element={<BlogPage />} />
