@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Resume 14 — Ledger</title>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Urbanist:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0b0b0b;
+    --dark: #1b1b1b;
+    --mid: #4c4c4c;
+    --light: #7f7f7f;
+    --faint: #c3c3c3;
+    --subtle: #eaeaea;
+    --offwhite: #f5f5f5;
+    --bg: #fff;
+    --serif: 'Bitter', Georgia, serif;
+    --sans: 'Urbanist', Helvetica, sans-serif;
+  }
+
+  @page { size: A4; margin: 0; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--dark);
+    background: #d5d5d5;
+    font-size: 12.5px;
+    line-height: 1.55;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .resume {
+    width: 794px;
+    min-height: 1123px;
+    background: var(--bg);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* ── Top Bar ── */
+  .top-bar {
+    background: var(--black);
+    height: 8px;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 48px 60px 36px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: end;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .header h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 40px;
+    color: var(--black);
+    line-height: 1.08;
+    letter-spacing: -0.3px;
+  }
+
+  .header .subtitle {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 17px;
+    color: var(--light);
+    margin-top: 4px;
+  }
+
+  .header-contact {
+    text-align: right;
+    font-size: 11.5px;
+    color: var(--mid);
+    font-weight: 400;
+    line-height: 1.85;
+  }
+
+  /* ── Revenue Banner ── */
+  .revenue-banner {
+    background: var(--offwhite);
+    padding: 24px 60px;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+    border-bottom: 2px solid var(--black);
+  }
+
+  .rev-stat {
+    text-align: center;
+    padding: 4px 8px;
+    border-right: 1px solid var(--subtle);
+  }
+
+  .rev-stat:last-child { border-right: none; }
+
+  .rev-num {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--black);
+    line-height: 1;
+  }
+
+  .rev-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--light);
+    margin-top: 4px;
+    line-height: 1.25;
+  }
+
+  /* ── Body ── */
+  .body {
+    padding: 32px 60px 48px;
+  }
+
+  /* ── Summary ── */
+  .summary {
+    margin-bottom: 30px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .summary p {
+    font-family: var(--serif);
+    font-size: 14.5px;
+    line-height: 1.8;
+    color: var(--mid);
+    font-weight: 400;
+  }
+
+  /* ── Section ── */
+  .section { margin-bottom: 28px; }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .section-head h2 {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--black);
+    white-space: nowrap;
+  }
+
+  .section-head .line {
+    flex: 1;
+    height: 1px;
+    background: var(--faint);
+  }
+
+  /* ── Numbered Career Blocks ── */
+  .numbered-entry {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .numbered-entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .entry-number {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 48px;
+    color: var(--subtle);
+    line-height: 1;
+    text-align: center;
+    padding-top: 2px;
+  }
+
+  .entry-content {}
+
+  .entry-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3px;
+  }
+
+  .entry-role {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--black);
+  }
+
+  .entry-years {
+    font-size: 11px;
+    color: var(--light);
+    font-weight: 400;
+  }
+
+  .entry-org {
+    font-weight: 500;
+    font-size: 13.5px;
+    color: var(--mid);
+    margin-bottom: 2px;
+  }
+
+  .entry-context {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--light);
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+
+  .entry-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px 24px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .entry-grid li {
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.6;
+    font-weight: 300;
+    padding-left: 12px;
+    position: relative;
+  }
+
+  .entry-grid li::before {
+    content: '›';
+    position: absolute;
+    left: 0;
+    color: var(--faint);
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  /* ── Bottom 3-col ── */
+  .bottom-three {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+
+  .btm-heading {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--black);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--black);
+  }
+
+  .btm-item {
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--mid);
+    line-height: 1.5;
+  }
+
+  .btm-item strong {
+    font-weight: 600;
+    color: var(--dark);
+    display: block;
+  }
+
+  .btm-item .sub {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--light);
+  }
+
+  .btm-item .yr {
+    font-size: 10.5px;
+    color: var(--faint);
+  }
+
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  .tech-tag {
+    font-size: 10.5px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border: 1px solid var(--faint);
+    color: var(--mid);
+  }
+
+  /* ── Footer ── */
+  .footer-bar {
+    background: var(--black);
+    padding: 10px 60px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<div class="resume">
+  <div class="top-bar"></div>
+
+  <div class="header">
+    <div>
+      <h1>Marcus D. Sullivan</h1>
+      <div class="subtitle">Chief Revenue Officer</div>
+    </div>
+    <div class="header-contact">
+      m.sullivan@email.com<br>
+      (512) 555-0394<br>
+      Austin, TX<br>
+      linkedin.com/in/mdsullivan
+    </div>
+  </div>
+
+  <div class="revenue-banner">
+    <div class="rev-stat">
+      <div class="rev-num">$1.8B</div>
+      <div class="rev-label">Peak ARR<br>Managed</div>
+    </div>
+    <div class="rev-stat">
+      <div class="rev-num">3x</div>
+      <div class="rev-label">Avg. Revenue<br>Growth</div>
+    </div>
+    <div class="rev-stat">
+      <div class="rev-num">600+</div>
+      <div class="rev-label">Sales Org<br>Size</div>
+    </div>
+    <div class="rev-stat">
+      <div class="rev-num">140%</div>
+      <div class="rev-label">Net Revenue<br>Retention</div>
+    </div>
+    <div class="rev-stat">
+      <div class="rev-num">$2.4M</div>
+      <div class="rev-label">Avg. ACV<br>Enterprise</div>
+    </div>
+    <div class="rev-stat">
+      <div class="rev-num">2</div>
+      <div class="rev-label">IPOs as<br>CRO</div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="summary">
+      <p>Revenue architect with 17 years building and scaling go-to-market engines at enterprise SaaS companies. Expert in transforming founder-led sales into repeatable, data-driven revenue machines. Track record of 3x+ growth across two IPOs and multiple category-defining products.</p>
+    </div>
+
+    <div class="section">
+      <div class="section-head">
+        <h2>Career Trajectory</h2>
+        <div class="line"></div>
+      </div>
+
+      <div class="numbered-entry">
+        <div class="entry-number">01</div>
+        <div class="entry-content">
+          <div class="entry-top">
+            <span class="entry-role">Chief Revenue Officer</span>
+            <span class="entry-years">2021 — Present</span>
+          </div>
+          <div class="entry-org">Dataforge Analytics</div>
+          <div class="entry-context">$1.8B ARR data platform, 620-person GTM org, NYSE listed since 2023</div>
+          <ul class="entry-grid">
+            <li>Scaled ARR from $480M to $1.8B in 4 years through enterprise expansion and product-led growth</li>
+            <li>Built 620-person global sales organization across 14 offices in 8 countries</li>
+            <li>Designed land-and-expand motion growing avg. account value from $120K to $2.4M</li>
+            <li>Led GTM strategy for IPO achieving 42% first-day pop and $18B valuation</li>
+            <li>Achieved 140% net revenue retention through customer success transformation</li>
+            <li>Negotiated 8 deals exceeding $10M ACV including $28M largest deal in company history</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="numbered-entry">
+        <div class="entry-number">02</div>
+        <div class="entry-content">
+          <div class="entry-top">
+            <span class="entry-role">SVP, Global Sales</span>
+            <span class="entry-years">2017 — 2021</span>
+          </div>
+          <div class="entry-org">Snowflake</div>
+          <div class="entry-context">Pre-IPO through public offering, cloud data warehouse</div>
+          <ul class="entry-grid">
+            <li>Grew enterprise sales from $60M to $390M ARR during critical pre-IPO scaling phase</li>
+            <li>Hired and coached 280+ sales professionals with 90-day ramp-to-quota program</li>
+            <li>Established strategic accounts program managing top 50 clients at $5M+ ACV</li>
+            <li>Contributed to record-breaking IPO ($3.4B raised) through revenue predictability</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="numbered-entry">
+        <div class="entry-number">03</div>
+        <div class="entry-content">
+          <div class="entry-top">
+            <span class="entry-role">VP, Enterprise Sales</span>
+            <span class="entry-years">2012 — 2017</span>
+          </div>
+          <div class="entry-org">Salesforce — Service Cloud</div>
+          <div class="entry-context">$2.5B product line, Fortune 500 accounts</div>
+          <ul class="entry-grid">
+            <li>Managed $420M quota across 85 enterprise account executives in NA</li>
+            <li>Achieved 118% average quota attainment over 5-year tenure</li>
+            <li>Launched industry vertical sales motion for healthcare and financial services</li>
+            <li>Promoted 22 AEs to management, building strong internal leadership pipeline</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-three">
+      <div>
+        <div class="btm-heading">Education</div>
+        <div class="btm-item">
+          <strong>MBA, Marketing & Strategy</strong>
+          <span class="sub">UT Austin McCombs</span><br>
+          <span class="yr">2010</span>
+        </div>
+        <div class="btm-item">
+          <strong>B.S. Business Administration</strong>
+          <span class="sub">University of Texas</span><br>
+          <span class="yr">2006</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="btm-heading">GTM Stack</div>
+        <div class="tech-tags">
+          <span class="tech-tag">Salesforce</span>
+          <span class="tech-tag">Gong</span>
+          <span class="tech-tag">Clari</span>
+          <span class="tech-tag">Outreach</span>
+          <span class="tech-tag">6sense</span>
+          <span class="tech-tag">Tableau</span>
+          <span class="tech-tag">Marketo</span>
+          <span class="tech-tag">MEDDPICC</span>
+          <span class="tech-tag">Command of Message</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="btm-heading">Advisory & Speaking</div>
+        <div class="btm-item">
+          <strong>SaaStr Advisory Board</strong>
+          <span class="yr">2023–Present</span>
+        </div>
+        <div class="btm-item">
+          <strong>Pavilion CRO Council</strong>
+          <span class="yr">Member, 2022–Present</span>
+        </div>
+        <div class="btm-item">
+          <strong>SaaStr Annual Keynote</strong>
+          <span class="yr">"The $1B ARR Playbook" — 2024</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <span>Marcus D. Sullivan — Résumé</span>
+    <span>Confidential — Feb 2026</span>
+  </div>
+</div>
+</body>
+</html>

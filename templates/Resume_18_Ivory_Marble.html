@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Isabelle Fontaine</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ivory: #f9f6f0;
+    --cream: #f2ece2;
+    --marble: #e8e0d4;
+    --veins: #c8bfb0;
+    --navy: #1a2640;
+    --navy-mid: #2a3a56;
+    --gold: #b8963c;
+    --gold-light: #d4af6a;
+    --text: #2a1e14;
+    --muted: #6a5a48;
+    --light: #9a8a78;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; }
+    @page { margin: 0.4in; size: A4; }
+  }
+
+  body {
+    background: #ddd8ce;
+    font-family: 'Raleway', sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 40px auto;
+    background: var(--ivory);
+    box-shadow: 0 8px 60px rgba(26,22,14,0.15);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Marble veining effect on sidebar */
+  .sidebar {
+    background: var(--navy);
+    padding: 52px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 60px,
+        rgba(255,255,255,0.02) 60px,
+        rgba(255,255,255,0.02) 61px
+      );
+  }
+
+  /* Top gold line */
+  .gold-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+    margin-bottom: 0;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+  }
+
+  /* Sidebar content */
+  .sidebar-inner { position: relative; z-index: 1; }
+
+  .monogram {
+    width: 70px;
+    height: 70px;
+    border: 1px solid rgba(184,150,60,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .monogram::before, .monogram::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-color: var(--gold);
+    border-style: solid;
+    opacity: 0.5;
+  }
+  .monogram::before { top: -2px; left: -2px; border-width: 1px 0 0 1px; }
+  .monogram::after { bottom: -2px; right: -2px; border-width: 0 1px 1px 0; }
+
+  .monogram-text {
+    font-family: 'Cormorant', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 2px;
+  }
+
+  .sidebar-name {
+    font-family: 'Cormorant', serif;
+    font-size: 26px;
+    font-weight: 300;
+    color: white;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-name strong {
+    font-weight: 600;
+    display: block;
+  }
+
+  .sidebar-role {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+
+  .gold-divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    margin: 22px 0;
+    opacity: 0.4;
+  }
+
+  .s-section-title {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  .contact-item {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.9;
+    font-weight: 300;
+  }
+
+  .skill-item {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.8;
+    padding-left: 12px;
+    position: relative;
+    margin-bottom: 2px;
+    font-weight: 300;
+  }
+
+  .skill-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 5px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .edu-item { margin-bottom: 16px; }
+  .edu-item h4 {
+    font-family: 'Cormorant', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.3;
+  }
+  .edu-item p {
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.45);
+    margin-top: 3px;
+    line-height: 1.5;
+  }
+
+  /* Main */
+  .main {
+    padding: 52px 48px;
+  }
+
+  .main-name {
+    font-family: 'Cormorant', serif;
+    font-size: 50px;
+    font-weight: 300;
+    color: var(--navy);
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+    margin-bottom: 28px;
+  }
+
+  .main-name em {
+    font-style: italic;
+    font-weight: 600;
+    color: var(--gold);
+  }
+
+  .section { margin-bottom: 36px; }
+
+  .section-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--marble);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::before {
+    content: '';
+    width: 16px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .summary {
+    font-family: 'Cormorant', serif;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--muted);
+    line-height: 1.85;
+  }
+
+  .entry { margin-bottom: 26px; }
+
+  .entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+  }
+
+  .entry-title {
+    font-family: 'Cormorant', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .entry-date {
+    font-size: 11px;
+    color: var(--light);
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  .entry-company {
+    font-size: 12.5px;
+    color: var(--gold);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .entry ul { list-style: none; }
+
+  .entry ul li {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.75;
+    padding-left: 18px;
+    position: relative;
+    margin-bottom: 4px;
+    font-weight: 400;
+  }
+
+  .entry ul li::before {
+    content: '◇';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 9px;
+    top: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="gold-line"></div>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-inner">
+        <div class="monogram">
+          <div class="monogram-text">IF</div>
+        </div>
+
+        <div class="sidebar-name">
+          <strong>Isabelle</strong>
+          Fontaine
+        </div>
+        <div class="sidebar-role">Chief Marketing Officer</div>
+
+        <div class="gold-divider"></div>
+
+        <div class="s-section-title">Contact</div>
+        <div class="contact-item">
+          Paris, France<br>
+          +33 6 12 34 56 78<br>
+          isabelle@fontaine.co<br>
+          linkedin.com/in/ifontaine
+        </div>
+
+        <div class="gold-divider"></div>
+
+        <div class="s-section-title">Expertise</div>
+        <div class="skill-item">Brand Architecture</div>
+        <div class="skill-item">Growth Strategy</div>
+        <div class="skill-item">Digital Marketing</div>
+        <div class="skill-item">P&L Management</div>
+        <div class="skill-item">Consumer Insights</div>
+        <div class="skill-item">Retail & E-commerce</div>
+        <div class="skill-item">Global Team Leadership</div>
+        <div class="skill-item">Agency Management</div>
+
+        <div class="gold-divider"></div>
+
+        <div class="s-section-title">Education</div>
+        <div class="edu-item">
+          <h4>MBA, Marketing</h4>
+          <p>INSEAD<br>Fontainebleau · 2008</p>
+        </div>
+        <div class="edu-item">
+          <h4>B.A. Communication</h4>
+          <p>Sciences Po Paris<br>2006</p>
+        </div>
+
+        <div class="gold-divider"></div>
+
+        <div class="s-section-title">Languages</div>
+        <div class="contact-item">
+          French — Native<br>
+          English — Fluent<br>
+          Spanish — Professional<br>
+          Italian — Conversational
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="main-name">Isabelle<br><em>Fontaine</em></div>
+
+      <div class="section">
+        <div class="section-title">Profile</div>
+        <p class="summary">
+          Luxury brand executive with 16 years building category-defining marketing organizations
+          across fashion, beauty, and lifestyle. Proven record growing premium brands from regional
+          presence to global icons. Adept at fusing heritage brand storytelling with modern
+          performance marketing to deliver sustainable growth.
+        </p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Experience</div>
+
+        <div class="entry">
+          <div class="entry-header">
+            <div class="entry-title">Chief Marketing Officer</div>
+            <div class="entry-date">2021 — Present</div>
+          </div>
+          <div class="entry-company">Chloé · Paris, France</div>
+          <ul>
+            <li>Repositioned Chloé as sustainability-led luxury brand, growing brand equity score 42 points in 3 years</li>
+            <li>Led €140M integrated marketing budget across 62 markets with team of 85 globally</li>
+            <li>Launched "Chloé Unlimited" campaign earning 4 Cannes Lions and driving 28% DTC revenue growth</li>
+            <li>Expanded brand into Gen-Z audience segment increasing under-35 customer acquisition by 55%</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="entry-header">
+            <div class="entry-title">VP, Global Brand Marketing</div>
+            <div class="entry-date">2016 — 2021</div>
+          </div>
+          <div class="entry-company">L'Oréal Luxe · Paris, France</div>
+          <ul>
+            <li>Oversaw global brand strategy for Lancôme, Giorgio Armani Beauty, and YSL Beauté</li>
+            <li>Led digital transformation doubling e-commerce penetration from 18% to 36% of total revenues</li>
+            <li>Managed €80M agency ecosystem renegotiating contracts saving €12M annually</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="entry-header">
+            <div class="entry-title">Brand Director</div>
+            <div class="entry-date">2012 — 2016</div>
+          </div>
+          <div class="entry-company">LVMH / Dior · Paris, France</div>
+          <ul>
+            <li>Directed Dior Beauty's Asia-Pacific expansion across 14 new markets</li>
+            <li>Orchestrated 360° launch of "Rouge Dior" franchise generating €180M in first-year sales</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Yuki Tanaka</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1714;
+    --mid: #4a4540;
+    --light: #9a9590;
+    --rule: #e0dbd5;
+    --red: #b03030;
+    --bg: #f8f5f0;
+    --white: #fdfcfa;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; }
+    @page { margin: 0.5in; size: A4; }
+  }
+
+  body {
+    background: #ddd8d0;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 800px;
+    margin: 40px auto;
+    background: var(--white);
+    box-shadow: 0 2px 40px rgba(0,0,0,0.1);
+  }
+
+  /* Red stripe */
+  .red-stripe {
+    height: 3px;
+    background: var(--red);
+  }
+
+  /* Header */
+  header {
+    padding: 56px 64px 44px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: end;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .name-block {}
+
+  /* Folded corner effect */
+  .name-box {
+    position: relative;
+    display: inline-block;
+  }
+
+  .name {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 42px;
+    font-weight: 300;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: 2px;
+  }
+
+  .name strong {
+    font-weight: 700;
+    display: block;
+    font-size: 44px;
+  }
+
+  .jp-accent {
+    display: block;
+    font-size: 12px;
+    color: var(--red);
+    letter-spacing: 4px;
+    margin-top: 10px;
+    font-weight: 400;
+  }
+
+  .role {
+    font-size: 12px;
+    color: var(--light);
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    margin-top: 14px;
+    font-weight: 400;
+  }
+
+  .contact-block {
+    text-align: right;
+  }
+
+  .contact-item {
+    font-size: 12.5px;
+    color: var(--mid);
+    line-height: 2.2;
+    font-weight: 300;
+  }
+
+  .contact-item a { color: var(--red); text-decoration: none; }
+
+  /* Body */
+  .body {
+    display: grid;
+    grid-template-columns: 1fr 40px 200px;
+    padding: 0;
+  }
+
+  .main { padding: 48px 48px 56px 64px; }
+
+  /* Center divider with fold mark */
+  .center-rule {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 48px;
+    gap: 0;
+  }
+
+  .center-rule::before {
+    content: '';
+    flex: 1;
+    width: 1px;
+    background: var(--rule);
+  }
+
+  .fold-mark {
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--red);
+    transform: rotate(45deg);
+    margin: 12px 0;
+    flex-shrink: 0;
+  }
+
+  .center-rule::after {
+    content: '';
+    flex: 1;
+    width: 1px;
+    background: var(--rule);
+  }
+
+  .sidebar { padding: 48px 40px 56px 0; }
+
+  /* Sections */
+  .section { margin-bottom: 40px; }
+
+  .section-title {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--red);
+    font-weight: 500;
+    margin-bottom: 20px;
+    position: relative;
+    padding-left: 16px;
+  }
+
+  .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--red);
+    transform: rotate(45deg);
+    top: 1px;
+  }
+
+  .summary {
+    font-size: 14px;
+    color: var(--mid);
+    line-height: 2;
+    font-weight: 300;
+  }
+
+  .entry { margin-bottom: 28px; }
+
+  .entry-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 5px;
+  }
+
+  .entry-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .entry-date {
+    font-size: 11.5px;
+    color: var(--light);
+    font-weight: 300;
+  }
+
+  .entry-company {
+    font-size: 12.5px;
+    color: var(--red);
+    font-weight: 500;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .entry ul { list-style: none; }
+
+  .entry ul li {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.85;
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 3px;
+    font-weight: 300;
+  }
+
+  .entry ul li::before {
+    content: '一';
+    position: absolute;
+    left: 0;
+    color: var(--light);
+    font-size: 11px;
+    top: 2px;
+  }
+
+  /* Sidebar */
+  .sidebar .section { margin-bottom: 32px; }
+
+  .sidebar-item {
+    font-size: 12.5px;
+    color: var(--mid);
+    line-height: 1.85;
+    font-weight: 300;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 6px;
+  }
+
+  .sidebar-item:last-child { border-bottom: none; }
+
+  .sidebar-item strong {
+    display: block;
+    font-size: 12px;
+    color: var(--ink);
+    font-weight: 500;
+    margin-bottom: 1px;
+  }
+
+  .edu-item { margin-bottom: 16px; }
+  .edu-item h4 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .edu-item p {
+    font-size: 12px;
+    color: var(--light);
+    margin-top: 3px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* Bottom ornament */
+  .foot-ornament {
+    padding: 20px 64px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .ornament-mark {
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--rule);
+    transform: rotate(45deg);
+  }
+
+  .ornament-line {
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+    max-width: 80px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="red-stripe"></div>
+
+  <header>
+    <div class="name-block">
+      <div class="name">
+        Yuki
+        <strong>Tanaka</strong>
+      </div>
+      <span class="jp-accent">田中 幸</span>
+      <div class="role">Product Design Lead</div>
+    </div>
+    <div class="contact-block">
+      <div class="contact-item">
+        Tokyo, Japan / Remote<br>
+        +81 90-1234-5678<br>
+        <a href="#">yuki@tanaka.design</a><br>
+        <a href="#">yukitanaka.design</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="body">
+    <div class="main">
+      <div class="section">
+        <div class="section-title">Philosophy</div>
+        <p class="summary">
+          Product designer with 9 years creating human-centered digital experiences across mobile,
+          web, and emerging platforms. Deeply influenced by principles of ma (間) — the beauty of
+          intentional negative space — and crafting interfaces that feel inevitable in their simplicity.
+        </p>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Experience</div>
+
+        <div class="entry">
+          <div class="entry-meta">
+            <div class="entry-title">Principal Product Designer</div>
+            <div class="entry-date">2022 — Present</div>
+          </div>
+          <div class="entry-company">Figma · San Francisco / Remote</div>
+          <ul>
+            <li>Led design of Developer Handoff 2.0 feature, adopted by 1.2M developers in 6 months</li>
+            <li>Established Figma's interaction design principles and motion language used company-wide</li>
+            <li>Facilitated 40+ design critiques and bi-weekly design reviews across 6 product teams</li>
+            <li>Hired and onboarded 8 product designers; built team career growth frameworks</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="entry-meta">
+            <div class="entry-title">Senior Product Designer</div>
+            <div class="entry-date">2019 — 2022</div>
+          </div>
+          <div class="entry-company">Mercari · Tokyo, Japan</div>
+          <ul>
+            <li>Redesigned seller onboarding flow increasing listing completion rate from 58% to 84%</li>
+            <li>Defined Mercari's global design system used across iOS, Android, and Web</li>
+            <li>Conducted 180+ user research sessions in Japan, US, and UK markets</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="entry-meta">
+            <div class="entry-title">Product Designer</div>
+            <div class="entry-date">2016 — 2019</div>
+          </div>
+          <div class="entry-company">Sony Interactive Entertainment · Tokyo</div>
+          <ul>
+            <li>Designed PlayStation 5 quick menu and cross-game social features</li>
+            <li>Shipped 3 major PS4 system software updates affecting 100M+ console owners</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="center-rule">
+      <div class="fold-mark"></div>
+    </div>
+
+    <div class="sidebar">
+      <div class="section">
+        <div class="section-title">Craft</div>
+        <div class="sidebar-item"><strong>Interaction Design</strong>Motion, transitions, micro-interactions</div>
+        <div class="sidebar-item"><strong>Design Systems</strong>Tokens, components, governance</div>
+        <div class="sidebar-item"><strong>User Research</strong>Usability testing, contextual inquiry</div>
+        <div class="sidebar-item"><strong>Prototyping</strong>Figma, Principle, Framer</div>
+        <div class="sidebar-item"><strong>Visual Design</strong>Typography, color, layout</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Education</div>
+        <div class="edu-item">
+          <h4>M.Des. Interaction Design</h4>
+          <p>Keio University<br>Tokyo · 2016</p>
+        </div>
+        <div class="edu-item">
+          <h4>B.A. Visual Design</h4>
+          <p>Tokyo University of the Arts<br>2014</p>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Recognition</div>
+        <div class="sidebar-item">Red Dot Award · 2023</div>
+        <div class="sidebar-item">iF Design Award · 2022</div>
+        <div class="sidebar-item">Awwwards SOTD · ×12</div>
+        <div class="sidebar-item">CSS Design Awards</div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Languages</div>
+        <div class="sidebar-item">Japanese — Native</div>
+        <div class="sidebar-item">English — Fluent</div>
+        <div class="sidebar-item">Mandarin — Basic</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-ornament">
+    <div class="ornament-line"></div>
+    <div class="ornament-mark"></div>
+    <div class="ornament-line"></div>
+  </div>
+</div>
+</body>
+</html>

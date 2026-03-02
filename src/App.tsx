@@ -3,14 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useStore } from './lib/store'
 import { useTheme } from './lib/useTheme'
 import './styles/global.css'
-import './styles/terminal.css'
-import './styles/healthcare.css'
-import './styles/nature.css'
-import './styles/scifi.css'
-import './styles/sophisticated.css'
-import './styles/vintage.css'
-import './styles/graduate.css'
-import './styles/futuristic.css'
 import { Analytics } from "@vercel/analytics/react"
 
 // Pages
@@ -22,10 +14,24 @@ import EditorPage from './pages/EditorPage'
 import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
 import PricingPage from './pages/PricingPage'
+import LinkedInToolkitPage from './pages/LinkedInToolkitPage'
+import InterviewToolkitPage from './pages/InterviewToolkitPage'
+import MockInterviewPage from './pages/MockInterviewPage'
+import CoverLetterPage from './pages/CoverLetterPage'
+import AIToolsPage from './pages/AIToolsPage'
+import CareerDashboardPage from './pages/CareerDashboardPage'
+import WelcomePage from './pages/WelcomePage'
 import NotFoundPage from './pages/NotFoundPage'
+import AboutPage from './pages/AboutPage'
+import BlogPage from './pages/BlogPage'
+import ContactPage from './pages/ContactPage'
+import LegalPage from './pages/LegalPage'
+import TestTemplatePage from './pages/TestTemplatePage'
 
 // Components
 import { Toast } from './components/Toast'
+import SupportAgent from './components/SupportAgent'
+import ExpressUnlockBanner from './components/ExpressUnlockBanner'
 
 interface RouteProps {
   children: React.ReactNode
@@ -81,6 +87,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Toast />
+      <ExpressUnlockBanner />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<PublicRoute><AuthPage /></PublicRoute>} />
@@ -91,9 +98,24 @@ export default function App() {
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/editor/new" element={<ProtectedRoute><EditorPage /></ProtectedRoute>} />
         <Route path="/editor/:id" element={<ProtectedRoute><EditorPage /></ProtectedRoute>} />
+        <Route path="/tools/linkedin" element={<ProtectedRoute><LinkedInToolkitPage /></ProtectedRoute>} />
+        <Route path="/tools/interview" element={<ProtectedRoute><InterviewToolkitPage /></ProtectedRoute>} />
+        <Route path="/tools/mock-interview" element={<ProtectedRoute><MockInterviewPage /></ProtectedRoute>} />
+        <Route path="/tools/cover-letter" element={<ProtectedRoute><CoverLetterPage /></ProtectedRoute>} />
+        <Route path="/tools/ai" element={<AIToolsPage />} />
+        <Route path="/tools/career-dashboard" element={<ProtectedRoute><CareerDashboardPage /></ProtectedRoute>} />
+        <Route path="/welcome" element={<ProtectedRoute><WelcomePage /></ProtectedRoute>} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/blog" element={<BlogPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy" element={<LegalPage />} />
+        <Route path="/terms" element={<LegalPage />} />
+        <Route path="/cookies" element={<LegalPage />} />
+        <Route path="/test-template" element={<TestTemplatePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-      <Analytics />
+      <SupportAgent />
+      {/* <Analytics /> */}
     </BrowserRouter>
   )
 }

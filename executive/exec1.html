@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Resume 6 — Authority</title>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;0,6..96,700;1,6..96,400&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0a0a0a;
+    --dark: #1a1a1a;
+    --mid: #4a4a4a;
+    --light: #7a7a7a;
+    --faint: #c8c8c8;
+    --subtle: #eaeaea;
+    --bg: #fff;
+    --display: 'Bodoni Moda', 'Times New Roman', serif;
+    --body: 'Karla', Helvetica, sans-serif;
+  }
+
+  @page { size: A4; margin: 0; }
+
+  body {
+    font-family: var(--body);
+    color: var(--dark);
+    background: #d8d8d8;
+    font-size: 13px;
+    line-height: 1.55;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .resume {
+    width: 794px;
+    min-height: 1123px;
+    background: var(--bg);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* ── Commanding Header ── */
+  .header {
+    background: var(--black);
+    color: var(--bg);
+    padding: 56px 64px 48px;
+    position: relative;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 64px;
+    right: 64px;
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .header h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 48px;
+    line-height: 1.05;
+    letter-spacing: 1px;
+  }
+
+  .header .executive-title {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 20px;
+    opacity: 0.55;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .header-contact {
+    text-align: right;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 2;
+    opacity: 0.6;
+    padding-top: 6px;
+  }
+
+  /* ── Executive Summary Band ── */
+  .summary-band {
+    background: var(--black);
+    color: var(--bg);
+    padding: 28px 64px 36px;
+  }
+
+  .summary-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    opacity: 0.35;
+    margin-bottom: 10px;
+  }
+
+  .summary-text {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 15.5px;
+    line-height: 1.75;
+    opacity: 0.8;
+    max-width: 600px;
+  }
+
+  /* ── Key Metrics Strip ── */
+  .metrics-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 2px solid var(--black);
+  }
+
+  .metric {
+    padding: 22px 24px;
+    text-align: center;
+    border-right: 1px solid var(--subtle);
+  }
+
+  .metric:last-child { border-right: none; }
+
+  .metric-value {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--black);
+    line-height: 1;
+  }
+
+  .metric-label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--light);
+    margin-top: 6px;
+  }
+
+  /* ── Body ── */
+  .body {
+    padding: 36px 64px 52px;
+  }
+
+  .section { margin-bottom: 32px; }
+
+  .section-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3.5px;
+    color: var(--black);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--faint);
+  }
+
+  /* ── Experience ── */
+  .exec-entry {
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .exec-entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .exec-entry-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+
+  .exec-role {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--black);
+    letter-spacing: 0.3px;
+  }
+
+  .exec-dates {
+    font-size: 11.5px;
+    color: var(--light);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+
+  .exec-org {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mid);
+    margin-bottom: 4px;
+  }
+
+  .exec-org-detail {
+    font-size: 12px;
+    color: var(--light);
+    font-weight: 300;
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+
+  .exec-achievements {
+    list-style: none;
+    padding: 0;
+    columns: 2;
+    column-gap: 32px;
+  }
+
+  .exec-achievements li {
+    font-size: 12.5px;
+    color: var(--mid);
+    line-height: 1.6;
+    margin-bottom: 6px;
+    padding-left: 14px;
+    position: relative;
+    font-weight: 300;
+    break-inside: avoid;
+  }
+
+  .exec-achievements li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 7px;
+    width: 6px;
+    height: 2px;
+    background: var(--faint);
+  }
+
+  /* ── Two column bottom ── */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+
+  .edu-entry { margin-bottom: 14px; }
+  .edu-entry:last-child { margin-bottom: 0; }
+
+  .edu-degree {
+    font-weight: 600;
+    font-size: 13.5px;
+    color: var(--black);
+  }
+
+  .edu-school {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--mid);
+  }
+
+  .edu-year {
+    font-size: 11px;
+    color: var(--light);
+    font-weight: 300;
+  }
+
+  .board-item {
+    margin-bottom: 10px;
+    font-size: 12.5px;
+    color: var(--mid);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .board-item strong {
+    font-weight: 600;
+    color: var(--dark);
+  }
+
+  .board-role {
+    font-size: 11px;
+    color: var(--light);
+  }
+</style>
+</head>
+<body>
+<div class="resume">
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <h1>Catherine<br>Hargrove</h1>
+        <div class="executive-title">Chief Executive Officer</div>
+      </div>
+      <div class="header-contact">
+        c.hargrove@email.com<br>
+        (212) 555-0401<br>
+        New York, NY<br>
+        linkedin.com/in/chargrove
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-band">
+    <div class="summary-label">Executive Summary</div>
+    <p class="summary-text">Visionary C-suite leader with 20+ years transforming global enterprises through digital innovation, strategic M&A, and operational excellence. Proven track record of driving double-digit revenue growth while building high-performance cultures across Fortune 500 organizations.</p>
+  </div>
+
+  <div class="metrics-strip">
+    <div class="metric">
+      <div class="metric-value">$4.2B</div>
+      <div class="metric-label">Revenue Managed</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">12,000+</div>
+      <div class="metric-label">Team Size</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">8</div>
+      <div class="metric-label">Acquisitions Led</div>
+    </div>
+    <div class="metric">
+      <div class="metric-value">340%</div>
+      <div class="metric-label">Stock Appreciation</div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="section">
+      <div class="section-title">Leadership Experience</div>
+
+      <div class="exec-entry">
+        <div class="exec-entry-header">
+          <span class="exec-role">Chief Executive Officer</span>
+          <span class="exec-dates">2020 — Present</span>
+        </div>
+        <div class="exec-org">Meridian Technologies Inc.</div>
+        <div class="exec-org-detail">$4.2B enterprise SaaS company, 12,000 employees, NYSE listed</div>
+        <ul class="exec-achievements">
+          <li>Orchestrated turnaround strategy growing annual revenue from $2.8B to $4.2B in 4 years</li>
+          <li>Led 3 strategic acquisitions totaling $1.6B expanding market share by 22%</li>
+          <li>Launched AI product line generating $380M in first-year revenue</li>
+          <li>Drove stock price from $48 to $210 through consistent execution on growth roadmap</li>
+          <li>Restructured global operations saving $120M annually while improving NPS by 18 points</li>
+          <li>Built executive team of 8 C-level hires from Google, Microsoft, and Salesforce</li>
+        </ul>
+      </div>
+
+      <div class="exec-entry">
+        <div class="exec-entry-header">
+          <span class="exec-role">Chief Operating Officer</span>
+          <span class="exec-dates">2016 — 2020</span>
+        </div>
+        <div class="exec-org">Vantage Cloud Solutions</div>
+        <div class="exec-org-detail">$1.8B cloud infrastructure provider, acquired by Oracle in 2020</div>
+        <ul class="exec-achievements">
+          <li>Scaled operations from 2,400 to 7,500 employees across 14 countries</li>
+          <li>Implemented operational framework that improved gross margins from 58% to 71%</li>
+          <li>Negotiated and executed sale to Oracle for $6.2B, 3.4x revenue multiple</li>
+          <li>Established enterprise sales motion growing average deal size from $180K to $1.2M ARR</li>
+        </ul>
+      </div>
+
+      <div class="exec-entry">
+        <div class="exec-entry-header">
+          <span class="exec-role">SVP, Strategy & Business Development</span>
+          <span class="exec-dates">2011 — 2016</span>
+        </div>
+        <div class="exec-org">IBM Corporation</div>
+        <div class="exec-org-detail">Global technology and consulting, Cloud & Cognitive Software division</div>
+        <ul class="exec-achievements">
+          <li>Led $2.4B portfolio strategy for hybrid cloud, identifying key growth vectors</li>
+          <li>Closed 5 acquisitions totaling $890M creating new market category leadership</li>
+          <li>Built strategic partnerships with AWS, Salesforce, and SAP driving $400M in co-sell revenue</li>
+          <li>Managed P&L for $1.1B business unit with 3,200 employees</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="section">
+        <div class="section-title">Education</div>
+        <div class="edu-entry">
+          <div class="edu-degree">MBA, Finance & Strategy</div>
+          <div class="edu-school">Harvard Business School</div>
+          <div class="edu-year">2009</div>
+        </div>
+        <div class="edu-entry">
+          <div class="edu-degree">B.S. Computer Science</div>
+          <div class="edu-school">Stanford University</div>
+          <div class="edu-year">2003</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Board & Advisory</div>
+        <div class="board-item">
+          <strong>Datastream Analytics</strong> <span class="board-role">— Board Director, 2022–Present</span>
+        </div>
+        <div class="board-item">
+          <strong>TechBridge Foundation</strong> <span class="board-role">— Board Chair, 2021–Present</span>
+        </div>
+        <div class="board-item">
+          <strong>National AI Council</strong> <span class="board-role">— Advisory Member, 2023–Present</span>
+        </div>
+        <div class="board-item">
+          <strong>YC Growth Fund</strong> <span class="board-role">— Venture Partner, 2020–Present</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

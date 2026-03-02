@@ -21,8 +21,8 @@ A production-ready resume builder with Supabase backend and Stripe payments.
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/yourname/resumecraft.git
-cd resumecraft
+git clone https://github.com/yourname/resumebuildin.git
+cd resumebuildin
 npm install
 ```
 
@@ -115,7 +115,7 @@ Visit `http://localhost:5173`
 ## Project Structure
 
 ```
-resumecraft/
+resumebuildin/
 ├── src/
 │   ├── components/
 │   │   ├── Navbar.jsx          # Shared navigation

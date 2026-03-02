@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { supabase } from './supabase'
-import { Profile, Resume, SaveStatus } from '../types'
+import { Profile, Resume, CoverLetter, SaveStatus } from '../types'
+import { getEffectivePlan } from './expressUnlock'
+import { cacheUserPlan } from './aiProvider'
 
 interface StoreState {
   user: any | null
@@ -10,6 +12,8 @@ interface StoreState {
   currentResume: Resume | null
   resumesLoading: boolean
   saveStatus: SaveStatus
+  coverLetters: CoverLetter[]
+  coverLettersLoading: boolean
   setUser: (user: any) => void
   setProfile: (profile: Profile | null) => void
   setAuthLoading: (loading: boolean) => void
@@ -28,7 +32,12 @@ interface StoreState {
   setCurrentResume: (resume: Resume | null) => void
   updateResume: (id: string, updates: Partial<Resume>) => Promise<void>
   deleteResume: (id: string) => Promise<void>
+  deleteAllResumes: () => Promise<void>
   duplicateResume: (resume: Resume) => Promise<Resume>
+  fetchCoverLetters: () => Promise<CoverLetter[] | undefined>
+  createCoverLetter: (data: Partial<CoverLetter>) => Promise<CoverLetter>
+  updateCoverLetter: (id: string, updates: Partial<CoverLetter>) => Promise<void>
+  deleteCoverLetter: (id: string) => Promise<void>
 }
 
 export const useStore = create<StoreState>((set, get) => ({
@@ -41,6 +50,10 @@ export const useStore = create<StoreState>((set, get) => ({
   resumes: [],
   currentResume: null,
   resumesLoading: false,
+
+  // Cover Letters
+  coverLetters: [],
+  coverLettersLoading: false,
 
   // UI
   saveStatus: 'saved',
@@ -77,8 +90,37 @@ export const useStore = create<StoreState>((set, get) => ({
       .eq('id', userId)
       .single()
 
-    if (!error && data) set({ profile: data as Profile })
-    return data as Profile
+    if (!error && data) {
+      const profile = data as Profile
+      set({ profile })
+      cacheUserPlan(getEffectivePlan(profile))
+      return profile
+    }
+
+    // Profile doesn't exist — auto-create it (trigger may have failed)
+    if (error?.code === 'PGRST116') {
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (authUser) {
+        const { data: newProfile } = await supabase
+          .from('profiles')
+          .upsert({
+            id: userId,
+            email: authUser.email || '',
+            full_name: authUser.user_metadata?.full_name || '',
+            plan: 'free',
+          }, { onConflict: 'id' })
+          .select()
+          .single()
+
+        if (newProfile) {
+          const profile = newProfile as Profile
+          set({ profile })
+          cacheUserPlan(getEffectivePlan(profile))
+          return profile
+        }
+      }
+    }
+    return null
   },
 
   updateProfile: async (updates) => {
@@ -115,7 +157,10 @@ export const useStore = create<StoreState>((set, get) => ({
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        data: { full_name: fullName },
+        emailRedirectTo: `${window.location.origin}/dashboard`,
+      },
     })
     if (error) throw error
     return data
@@ -168,25 +213,49 @@ export const useStore = create<StoreState>((set, get) => ({
     if (!user) return
 
     set({ resumesLoading: true })
-    const { data, error } = await supabase
+
+    // Race against a timeout so loading never hangs forever
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 10000))
+    const query = supabase
       .from('resumes')
       .select('*')
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false })
 
-    if (!error) set({ resumes: (data as Resume[]) || [] })
+    const result = await Promise.race([query, timeout])
+
+    if (result && 'data' in result && !result.error) {
+      set({ resumes: (result.data as Resume[]) || [] })
+    }
     set({ resumesLoading: false })
-    return data as Resume[]
+    return (result && 'data' in result ? result.data : get().resumes) as Resume[]
   },
 
   createResume: async (themeId = 'classic', initialData = null) => {
-    const { user } = get()
+    const { user, profile } = get()
     if (!user) throw new Error('Not authenticated')
 
-    const { data: canCreate } = await supabase.rpc('can_create_resume', {
-      user_uuid: user.id,
-    })
-    if (!canCreate) throw new Error('LIMIT_REACHED')
+    // Ensure we have a valid session before making API calls
+    console.log('[store] Step 1: Refreshing session...')
+    const { error: sessionError } = await supabase.auth.refreshSession()
+    if (sessionError) console.warn('[store] Session refresh warning:', sessionError.message)
+    console.log('[store] Step 2: Checking resume count...')
+
+    // Check resume limit based on user's effective plan (accounts for Express Unlock)
+    const planLimits: Record<string, number> = { free: 1, pro: 5, premium: 10, career_plus: Infinity }
+    const currentPlan = getEffectivePlan(profile)
+    const resumeLimit = planLimits[currentPlan] || 1
+
+    if (resumeLimit !== Infinity) {
+      const { count, error: countError } = await supabase
+        .from('resumes')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+
+      if (!countError && count !== null && count >= resumeLimit) {
+        throw new Error('LIMIT_REACHED')
+      }
+    }
 
     const defaultData = initialData || {
       personal: {
@@ -207,6 +276,7 @@ export const useStore = create<StoreState>((set, get) => ({
       projects: [],
     }
 
+    console.log('[store] Step 3: Inserting resume...')
     const { data, error } = await supabase
       .from('resumes')
       .insert({
@@ -218,6 +288,7 @@ export const useStore = create<StoreState>((set, get) => ({
       .select()
       .single()
 
+    console.log('[store] Step 4: Insert result:', { data, error })
     if (error) throw error
     const newResume = data as Resume
     set((state) => ({ resumes: [newResume, ...state.resumes], currentResume: newResume }))
@@ -246,12 +317,39 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   deleteResume: async (id) => {
-    const { error } = await supabase.from('resumes').delete().eq('id', id)
-    if (error) throw error
+    const { user } = get()
+    if (!user) throw new Error('Not authenticated')
+    console.log('[store] Deleting resume:', id)
+    const { error } = await supabase
+      .from('resumes')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id)
+    if (error) {
+      console.error('[store] Delete error:', error)
+      throw error
+    }
+    console.log('[store] Delete successful')
     set((state) => ({
       resumes: state.resumes.filter((r) => r.id !== id),
       currentResume: state.currentResume?.id === id ? null : state.currentResume,
     }))
+  },
+
+  deleteAllResumes: async () => {
+    const { user } = get()
+    if (!user) throw new Error('Not authenticated')
+    console.log('[store] Deleting all resumes for user:', user.id)
+    const { error } = await supabase
+      .from('resumes')
+      .delete()
+      .eq('user_id', user.id)
+    if (error) {
+      console.error('[store] Delete all error:', error)
+      throw error
+    }
+    console.log('[store] Delete all successful')
+    set({ resumes: [], currentResume: null })
   },
 
   duplicateResume: async (resume) => {
@@ -271,5 +369,65 @@ export const useStore = create<StoreState>((set, get) => ({
     const duplicated = data as Resume
     set((state) => ({ resumes: [duplicated, ...state.resumes] }))
     return duplicated
+  },
+  // ── Cover Letters ────────────────────────────
+  fetchCoverLetters: async () => {
+    const { user } = get()
+    if (!user) return
+    set({ coverLettersLoading: true })
+    const { data, error } = await supabase
+      .from('cover_letters')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+    if (!error) set({ coverLetters: (data as CoverLetter[]) || [] })
+    set({ coverLettersLoading: false })
+    return data as CoverLetter[]
+  },
+
+  createCoverLetter: async (data) => {
+    const { user } = get()
+    if (!user) throw new Error('Not authenticated')
+    const { data: newCL, error } = await supabase
+      .from('cover_letters')
+      .insert({
+        user_id: user.id,
+        title: data.title || `Cover Letter — ${data.company_name || 'Untitled'}`,
+        company_name: data.company_name || '',
+        job_title: data.job_title || '',
+        recipient_name: data.recipient_name || '',
+        body: data.body || '',
+        tone: data.tone || 'professional',
+        resume_id: data.resume_id || null,
+      })
+      .select()
+      .single()
+    if (error) throw error
+    const cl = newCL as CoverLetter
+    set((state) => ({ coverLetters: [cl, ...state.coverLetters] }))
+    return cl
+  },
+
+  updateCoverLetter: async (id, updates) => {
+    set({ saveStatus: 'saving' })
+    set((state) => ({
+      coverLetters: state.coverLetters.map((cl) =>
+        cl.id === id ? { ...cl, ...updates } : cl
+      ),
+    }))
+    const { error } = await supabase
+      .from('cover_letters')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+    set({ saveStatus: error ? 'error' : 'saved' })
+    if (error) throw error
+  },
+
+  deleteCoverLetter: async (id) => {
+    const { error } = await supabase.from('cover_letters').delete().eq('id', id)
+    if (error) throw error
+    set((state) => ({
+      coverLetters: state.coverLetters.filter((cl) => cl.id !== id),
+    }))
   },
 }))

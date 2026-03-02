@@ -57,6 +57,20 @@ Deno.serve(async (req: Request) => {
       await supabaseAdmin.from("profiles")
         .update({ stripe_customer_id: customerId })
         .eq("id", user.id);
+    } else {
+      // Cancel any existing subscriptions to prevent duplicates
+      const existingSubs = await stripe.subscriptions.list({
+        customer: customerId,
+        status: "active",
+      });
+      const trialSubs = await stripe.subscriptions.list({
+        customer: customerId,
+        status: "trialing",
+      });
+      const allSubs = [...existingSubs.data, ...trialSubs.data];
+      for (const sub of allSubs) {
+        await stripe.subscriptions.cancel(sub.id);
+      }
     }
     // ------------------------------
 
@@ -67,7 +81,7 @@ Deno.serve(async (req: Request) => {
       mode: "subscription",
       payment_method_types: ["card"],
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${appUrl}/dashboard?upgraded=true`,
+      success_url: `${appUrl}/welcome`,
       cancel_url: `${appUrl}/pricing?cancelled=true`,
       subscription_data: {
         metadata: { supabase_user_id: user.id, plan },

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Resume 13 — Monogram</title>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,300;1,7..72,400&family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0c0c0c;
+    --dark: #1c1c1c;
+    --mid: #4e4e4e;
+    --light: #7c7c7c;
+    --faint: #c2c2c2;
+    --subtle: #e8e8e8;
+    --offwhite: #f5f5f5;
+    --bg: #fff;
+    --serif: 'Literata', Georgia, serif;
+    --sans: 'Plus Jakarta Sans', Helvetica, sans-serif;
+  }
+
+  @page { size: A4; margin: 0; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--dark);
+    background: #d5d5d5;
+    font-size: 12.5px;
+    line-height: 1.55;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .resume {
+    width: 794px;
+    min-height: 1123px;
+    background: var(--bg);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 270px 1fr;
+  }
+
+  /* ══════════════════════════════════════
+     LEFT COLUMN
+     ══════════════════════════════════════ */
+  .left-col {
+    background: var(--offwhite);
+    padding: 48px 32px;
+    border-right: 1px solid var(--subtle);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Monogram */
+  .monogram {
+    width: 100px;
+    height: 100px;
+    border: 3px solid var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 36px;
+    color: var(--black);
+    margin-bottom: 24px;
+    letter-spacing: 2px;
+  }
+
+  .left-name {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 24px;
+    color: var(--black);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .left-title {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--light);
+    margin-bottom: 24px;
+  }
+
+  .left-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--faint);
+    margin-bottom: 24px;
+  }
+
+  .left-section { margin-bottom: 26px; }
+
+  .left-section-title {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--light);
+    margin-bottom: 14px;
+  }
+
+  .left-contact-item {
+    font-size: 12px;
+    color: var(--mid);
+    font-weight: 400;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  /* Board Matrix */
+  .board-entry {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .board-entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .board-company {
+    font-weight: 600;
+    font-size: 12.5px;
+    color: var(--dark);
+    line-height: 1.3;
+  }
+
+  .board-role-text {
+    font-size: 11px;
+    color: var(--light);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  .board-detail {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--faint);
+    margin-top: 2px;
+  }
+
+  /* Education */
+  .edu-item { margin-bottom: 14px; }
+  .edu-item:last-child { margin-bottom: 0; }
+
+  .edu-deg {
+    font-weight: 600;
+    font-size: 12.5px;
+    color: var(--dark);
+  }
+
+  .edu-sch {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--light);
+  }
+
+  .edu-yr {
+    font-size: 10.5px;
+    color: var(--faint);
+    font-weight: 300;
+  }
+
+  .left-footer {
+    margin-top: auto;
+    font-size: 9.5px;
+    color: var(--faint);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* ══════════════════════════════════════
+     RIGHT COLUMN
+     ══════════════════════════════════════ */
+  .right-col {
+    padding: 48px 44px;
+  }
+
+  /* Executive Summary */
+  .exec-summary {
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--black);
+  }
+
+  .summary-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--light);
+    margin-bottom: 12px;
+  }
+
+  .summary-text {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--mid);
+    font-weight: 400;
+  }
+
+  /* Key Figures */
+  .key-figures {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .figure-box {
+    border: 1px solid var(--subtle);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .figure-num {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--black);
+    line-height: 1;
+  }
+
+  .figure-label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--light);
+    margin-top: 5px;
+    line-height: 1.3;
+  }
+
+  /* Section */
+  .section { margin-bottom: 28px; }
+
+  .section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--black);
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--faint);
+  }
+
+  /* Career */
+  .career-entry {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .career-entry:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .career-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3px;
+  }
+
+  .career-role {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 16.5px;
+    color: var(--black);
+  }
+
+  .career-years {
+    font-size: 11px;
+    color: var(--light);
+    font-weight: 400;
+  }
+
+  .career-org {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--mid);
+    margin-bottom: 2px;
+  }
+
+  .career-scope {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--light);
+    font-weight: 300;
+    margin-bottom: 10px;
+  }
+
+  .career-bullets {
+    list-style: none;
+    padding: 0;
+  }
+
+  .career-bullets li {
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.6;
+    margin-bottom: 4px;
+    padding-left: 14px;
+    position: relative;
+    font-weight: 300;
+  }
+
+  .career-bullets li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--faint);
+    font-size: 10px;
+  }
+
+  /* Recognition */
+  .recog-item {
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: var(--mid);
+    font-weight: 300;
+  }
+
+  .recog-item strong {
+    font-weight: 600;
+    color: var(--dark);
+  }
+
+  .recog-item .yr {
+    color: var(--light);
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+<div class="resume">
+  <!-- ── LEFT COLUMN ── -->
+  <aside class="left-col">
+    <div class="monogram">EW</div>
+    <div class="left-name">Elizabeth<br>Worthington</div>
+    <div class="left-title">Board Director & CEO Advisor</div>
+
+    <div class="left-divider"></div>
+
+    <div class="left-section">
+      <div class="left-section-title">Contact</div>
+      <div class="left-contact-item">e.worthington@email.com</div>
+      <div class="left-contact-item">(617) 555-0412</div>
+      <div class="left-contact-item">Boston, MA</div>
+      <div class="left-contact-item">linkedin.com/in/eworthington</div>
+    </div>
+
+    <div class="left-section">
+      <div class="left-section-title">Current Board Seats</div>
+      <div class="board-entry">
+        <div class="board-company">Meridian Technologies</div>
+        <div class="board-role-text">Lead Independent Director</div>
+        <div class="board-detail">NYSE, $4.2B market cap</div>
+      </div>
+      <div class="board-entry">
+        <div class="board-company">Beacon Capital Advisors</div>
+        <div class="board-role-text">Audit Committee Chair</div>
+        <div class="board-detail">Private, $1.8B AUM</div>
+      </div>
+      <div class="board-entry">
+        <div class="board-company">NovaBridge Health</div>
+        <div class="board-role-text">Compensation Committee</div>
+        <div class="board-detail">NASDAQ, $2.1B market cap</div>
+      </div>
+      <div class="board-entry">
+        <div class="board-company">MIT Sloan School</div>
+        <div class="board-role-text">Executive Board Member</div>
+        <div class="board-detail">Academic governance</div>
+      </div>
+    </div>
+
+    <div class="left-section">
+      <div class="left-section-title">Education</div>
+      <div class="edu-item">
+        <div class="edu-deg">MBA, Strategy & Finance</div>
+        <div class="edu-sch">Harvard Business School</div>
+        <div class="edu-yr">Baker Scholar, 1998</div>
+      </div>
+      <div class="edu-item">
+        <div class="edu-deg">B.A. Economics, Summa</div>
+        <div class="edu-sch">Wellesley College</div>
+        <div class="edu-yr">Phi Beta Kappa, 1994</div>
+      </div>
+    </div>
+
+    <div class="left-footer">Confidential</div>
+  </aside>
+
+  <!-- ── RIGHT COLUMN ── -->
+  <main class="right-col">
+    <div class="exec-summary">
+      <div class="summary-label">Executive Profile</div>
+      <p class="summary-text">Seasoned C-suite leader turned professional board director with 25+ years of operational and strategic experience across technology, healthcare, and financial services. Recognized for governance expertise, CEO mentorship, and guiding companies through transformational growth, IPOs, and complex transactions.</p>
+    </div>
+
+    <div class="key-figures">
+      <div class="figure-box">
+        <div class="figure-num">$50B+</div>
+        <div class="figure-label">Enterprise Value Overseen</div>
+      </div>
+      <div class="figure-box">
+        <div class="figure-num">7</div>
+        <div class="figure-label">Public Company Boards</div>
+      </div>
+      <div class="figure-box">
+        <div class="figure-num">3</div>
+        <div class="figure-label">IPOs Guided as Director</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Executive Career</div>
+
+      <div class="career-entry">
+        <div class="career-head">
+          <span class="career-role">Chief Executive Officer</span>
+          <span class="career-years">2012 — 2022</span>
+        </div>
+        <div class="career-org">Helion Financial Group</div>
+        <div class="career-scope">$8.2B financial technology platform, 4,600 employees, NYSE listed</div>
+        <ul class="career-bullets">
+          <li>Grew revenue from $1.9B to $8.2B through organic growth and 5 strategic acquisitions</li>
+          <li>Expanded from US-only to 22 international markets with 1,800 global employees</li>
+          <li>Delivered 280% total shareholder return over tenure vs. 140% S&P 500</li>
+          <li>Named to Fortune "Most Powerful Women in Business" list, 2018–2021</li>
+        </ul>
+      </div>
+
+      <div class="career-entry">
+        <div class="career-head">
+          <span class="career-role">President & COO</span>
+          <span class="career-years">2006 — 2012</span>
+        </div>
+        <div class="career-org">Fidelity Investments — Institutional Services</div>
+        <div class="career-scope">$2.4T assets under administration, 8,000 employees</div>
+        <ul class="career-bullets">
+          <li>Oversaw operations for institutional platform serving 22,000 plan sponsors</li>
+          <li>Led digital transformation investing $400M in platform modernization</li>
+          <li>Grew institutional AUA from $1.6T to $2.4T through client acquisition and deepening</li>
+        </ul>
+      </div>
+
+      <div class="career-entry">
+        <div class="career-head">
+          <span class="career-role">SVP, Corporate Strategy</span>
+          <span class="career-years">2000 — 2006</span>
+        </div>
+        <div class="career-org">McKinsey & Company → Fidelity Investments</div>
+        <div class="career-scope">Strategy consulting and corporate development</div>
+        <ul class="career-bullets">
+          <li>McKinsey engagement manager in Financial Institutions Group (2000–2003)</li>
+          <li>Led Fidelity's corporate development function executing $600M in acquisitions</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Recognition</div>
+      <div class="recog-item"><strong>NACD Directorship 100</strong> <span class="yr">— 2023, 2024</span></div>
+      <div class="recog-item"><strong>Fortune Most Powerful Women</strong> <span class="yr">— 2018–2021</span></div>
+      <div class="recog-item"><strong>WomenInc. Top Corporate Directors</strong> <span class="yr">— 2022</span></div>
+      <div class="recog-item"><strong>HBS Alumni Achievement Award</strong> <span class="yr">— 2020</span></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

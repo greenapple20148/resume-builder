@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resume — Mei Chen</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+  body { font-family: 'Plus Jakarta Sans', sans-serif; }
+  .emerald-header { position: relative; overflow: hidden; }
+  .emerald-header::before { content: ''; position: absolute; top: -60px; right: -60px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.05); }
+  .emerald-header::after { content: ''; position: absolute; bottom: -40px; right: 100px; width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,0.04); }
+  .section-rule { display: flex; align-items: center; gap: 10px; }
+  .section-rule::after { content: ''; flex: 1; height: 2px; background: #d4f0e2; border-radius: 1px; }
+  .triangle-li li { position: relative; padding-left: 16px; margin-bottom: 4px; }
+  .triangle-li li::before { content: ''; position: absolute; left: 4px; top: 8px; width: 5px; height: 5px; background: #2d9e65; clip-path: polygon(50% 0%, 100% 100%, 0% 100%); }
+  .chip-dot { display: inline-flex; align-items: center; gap: 6px; }
+  .chip-dot::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #2d9e65; flex-shrink: 0; }
+</style>
+</head>
+<body class="bg-[#dbeee5] min-h-screen py-10">
+<div class="max-w-[850px] mx-auto bg-white shadow-[0_4px_40px_rgba(26,122,74,0.12)] overflow-hidden">
+
+  <!-- Green header -->
+  <div class="emerald-header bg-[#1a7a4a] px-14 py-11">
+    <div class="relative z-10 grid grid-cols-[1fr_auto] items-center gap-10">
+      <div>
+        <div class="text-[44px] font-bold text-white tracking-tight leading-tight">Mei <em class="font-light text-white/70">Chen</em></div>
+        <div class="text-[13px] text-white/60 tracking-[2.5px] uppercase mt-2.5">Environmental Consultant</div>
+      </div>
+      <div class="flex flex-col gap-1.5 items-end">
+        <div class="bg-white/12 border border-white/20 text-white/85 text-[12px] px-3 py-1 rounded-full whitespace-nowrap">mei.chen@eco.com</div>
+        <div class="bg-white/12 border border-white/20 text-white/85 text-[12px] px-3 py-1 rounded-full whitespace-nowrap">(617) 334-9821</div>
+        <div class="bg-white/12 border border-white/20 text-white/85 text-[12px] px-3 py-1 rounded-full whitespace-nowrap">Boston, MA</div>
+        <div class="bg-white/12 border border-white/20 text-white/85 text-[12px] px-3 py-1 rounded-full whitespace-nowrap">meiichen.com</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="grid grid-cols-[1fr_230px]">
+    <!-- Main -->
+    <div class="px-12 py-10 border-r border-[#c8e8d6]">
+      <div class="mb-9">
+        <div class="section-rule text-[11px] font-bold tracking-[2.5px] uppercase text-[#1a7a4a] mb-4">Profile</div>
+        <p class="text-[14px] text-[#4a6e5a] leading-[1.85]">
+          Environmental scientist and sustainability consultant with 8 years advising Fortune 500 companies
+          on ESG strategy, carbon accounting, and regulatory compliance. Led projects resulting in
+          verified emissions reductions of 240,000 tCO₂e across 12 corporate clients.
+        </p>
+      </div>
+
+      <div class="mb-9">
+        <div class="section-rule text-[11px] font-bold tracking-[2.5px] uppercase text-[#1a7a4a] mb-4">Experience</div>
+
+        <div class="mb-7">
+          <div class="flex justify-between items-start mb-1">
+            <div class="text-[15px] font-semibold text-[#1a2b23]">Senior Sustainability Consultant</div>
+            <div class="text-[11.5px] text-[#7aa88c] bg-[#d4f0e2] px-2 py-0.5 rounded-sm font-medium whitespace-nowrap">2021 — Present</div>
+          </div>
+          <div class="text-[13px] text-[#2d9e65] font-semibold mb-2.5">ERM Group · Boston, MA</div>
+          <ul class="triangle-li text-[13px] text-[#3a5a47] leading-relaxed">
+            <li>Led net-zero transition roadmaps for 6 manufacturing clients covering 180 facilities globally</li>
+            <li>Managed Scope 1, 2 & 3 emissions inventories for clients with $20B+ annual revenues</li>
+            <li>Developed SBTi-aligned target-setting frameworks adopted across firm's North America practice</li>
+            <li>Generated $2.4M in new business from client referrals over 3-year period</li>
+          </ul>
+        </div>
+
+        <div class="mb-7">
+          <div class="flex justify-between items-start mb-1">
+            <div class="text-[15px] font-semibold text-[#1a2b23]">Environmental Analyst</div>
+            <div class="text-[11.5px] text-[#7aa88c] bg-[#d4f0e2] px-2 py-0.5 rounded-sm font-medium whitespace-nowrap">2018 — 2021</div>
+          </div>
+          <div class="text-[13px] text-[#2d9e65] font-semibold mb-2.5">WSP Global · Chicago, IL</div>
+          <ul class="triangle-li text-[13px] text-[#3a5a47] leading-relaxed">
+            <li>Performed LEED certification assessments for 28 commercial and residential projects</li>
+            <li>Conducted lifecycle assessments using SimaPro for CPG clients reducing packaging impact 34%</li>
+            <li>Authored ESG disclosure reports aligned with GRI, SASB, and TCFD frameworks</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-start mb-1">
+            <div class="text-[15px] font-semibold text-[#1a2b23]">Research Associate</div>
+            <div class="text-[11.5px] text-[#7aa88c] bg-[#d4f0e2] px-2 py-0.5 rounded-sm font-medium whitespace-nowrap">2016 — 2018</div>
+          </div>
+          <div class="text-[13px] text-[#2d9e65] font-semibold mb-2.5">MIT Climate Initiative · Cambridge, MA</div>
+          <ul class="triangle-li text-[13px] text-[#3a5a47] leading-relaxed">
+            <li>Published 2 peer-reviewed papers on urban heat island mitigation strategies</li>
+            <li>Collaborated with Boston city government on climate resilience planning</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="bg-[#f0faf5] px-7 py-10 space-y-8">
+      <div>
+        <div class="text-[11px] font-bold tracking-[2.5px] uppercase text-[#1a7a4a] mb-3">Skills</div>
+        <span class="chip-dot inline-flex text-[12px] text-[#1a7a4a] bg-[#d4f0e2] px-2.5 py-1 rounded font-medium m-0.5">Carbon Accounting</span>
+        <span class="chip-dot inline-flex text-[12px] text-[#1a7a4a] bg-[#d4f0e2] px-2.5 py-1 rounded font-medium m-0.5">ESG Strategy</span>
+        <span class="chip-dot inline-flex text-[12px] text-[#1a7a4a] bg-[#d4f0e2] px-2.5 py-1 rounded font-medium m-0.5">TCFD</span>
+        <span class="chip-dot inline-flex text-[12px] text-[#1a7a4a] bg-[#d4f0e2] px-2.5 py-1 rounded font-medium m-0.5">GRI / SASB</span>
+        <span class="chip-dot inline-flex text-[12px] text-[#1a7a4a] bg-[#d4f0e2] px-2.5 py-1 rounded font-medium m-0.5">LCA</span>
+        <span class="chip-dot inline-flex text-[12px] text-[#1a7a4a] bg-[#d4f0e2] px-2.5 py-1 rounded font-medium m-0.5">SimaPro</span>
+        <span class="chip-dot inline-flex text-[12px] text-[#1a7a4a] bg-[#d4f0e2] px-2.5 py-1 rounded font-medium m-0.5">SBTi</span>
+        <span class="chip-dot inline-flex text-[12px] text-[#1a7a4a] bg-[#d4f0e2] px-2.5 py-1 rounded font-medium m-0.5">LEED</span>
+        <span class="chip-dot inline-flex text-[12px] text-[#1a7a4a] bg-[#d4f0e2] px-2.5 py-1 rounded font-medium m-0.5">Python</span>
+        <span class="chip-dot inline-flex text-[12px] text-[#1a7a4a] bg-[#d4f0e2] px-2.5 py-1 rounded font-medium m-0.5">ArcGIS</span>
+      </div>
+
+      <div class="border-t border-[#c8e8d6] pt-8">
+        <div class="text-[11px] font-bold tracking-[2.5px] uppercase text-[#1a7a4a] mb-4">Education</div>
+        <div class="mb-4">
+          <h4 class="text-[13.5px] font-semibold text-[#1a2b23] leading-snug">M.S. Environmental Engineering</h4>
+          <p class="text-[12px] text-[#7aa88c] mt-0.5 leading-snug">MIT<br>Cambridge, MA · 2016</p>
+        </div>
+        <div>
+          <h4 class="text-[13.5px] font-semibold text-[#1a2b23] leading-snug">B.S. Earth Systems Science</h4>
+          <p class="text-[12px] text-[#7aa88c] mt-0.5 leading-snug">Stanford University<br>2014</p>
+        </div>
+      </div>
+
+      <div class="border-t border-[#c8e8d6] pt-8">
+        <div class="text-[11px] font-bold tracking-[2.5px] uppercase text-[#1a7a4a] mb-4">Awards</div>
+        <div class="bg-white rounded border-l-[3px] border-[#2d9e65] px-3 py-2.5 mb-2.5">
+          <div class="text-[12.5px] font-semibold text-[#1a2b23]">40 Under 40 in Sustainability</div>
+          <div class="text-[11.5px] text-[#7aa88c] mt-0.5">GreenBiz · 2024</div>
+        </div>
+        <div class="bg-white rounded border-l-[3px] border-[#2d9e65] px-3 py-2.5">
+          <div class="text-[12.5px] font-semibold text-[#1a2b23]">Best ESG Report</div>
+          <div class="text-[11.5px] text-[#7aa88c] mt-0.5">Corporate Knights · 2023</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

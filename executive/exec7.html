@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Resume 12 — Counsel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;1,6..12,300;1,6..12,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0e0e0e;
+    --dark: #1d1d1d;
+    --mid: #4f4f4f;
+    --light: #808080;
+    --faint: #c0c0c0;
+    --subtle: #ebebeb;
+    --offwhite: #f6f6f6;
+    --bg: #fff;
+    --display: 'DM Serif Display', Georgia, serif;
+    --body: 'Nunito Sans', Helvetica, sans-serif;
+  }
+
+  @page { size: A4; margin: 0; }
+
+  body {
+    font-family: var(--body);
+    color: var(--dark);
+    background: #d5d5d5;
+    font-size: 12.5px;
+    line-height: 1.55;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .resume {
+    width: 794px;
+    min-height: 1123px;
+    background: var(--bg);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 52px 60px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 4px solid var(--black);
+  }
+
+  .header-left h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: 42px;
+    color: var(--black);
+    line-height: 1.05;
+  }
+
+  .header-left .role {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--light);
+    margin-top: 4px;
+  }
+
+  .header-right {
+    text-align: right;
+    font-size: 11.5px;
+    color: var(--light);
+    font-weight: 400;
+    line-height: 1.9;
+  }
+
+  /* ── Pull Quote Summary ── */
+  .pull-quote {
+    background: var(--offwhite);
+    padding: 32px 60px;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .pull-quote p {
+    font-family: var(--display);
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--mid);
+    position: relative;
+    padding-left: 28px;
+  }
+
+  .pull-quote p::before {
+    content: '"';
+    font-family: var(--display);
+    font-size: 64px;
+    position: absolute;
+    left: -8px;
+    top: -16px;
+    color: var(--faint);
+    line-height: 1;
+  }
+
+  /* ── Areas Grid ── */
+  .areas-bar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-bottom: 2px solid var(--black);
+  }
+
+  .area-cell {
+    padding: 16px 14px;
+    text-align: center;
+    border-right: 1px solid var(--subtle);
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--dark);
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+  }
+
+  .area-cell:last-child { border-right: none; }
+
+  .area-icon {
+    font-family: var(--display);
+    font-size: 20px;
+    color: var(--black);
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  /* ── Body ── */
+  .body {
+    padding: 32px 60px 48px;
+  }
+
+  .section { margin-bottom: 28px; }
+
+  .section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: var(--black);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .section-title::before {
+    content: '';
+    width: 20px;
+    height: 3px;
+    background: var(--black);
+  }
+
+  /* ── Career ── */
+  .career-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--subtle);
+  }
+
+  .career-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .career-info {}
+
+  .career-role {
+    font-family: var(--display);
+    font-size: 17px;
+    color: var(--black);
+    margin-bottom: 3px;
+  }
+
+  .career-org {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--mid);
+  }
+
+  .career-meta {
+    font-size: 11.5px;
+    color: var(--light);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  .career-scope {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--light);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .career-impact {}
+
+  .career-impact li {
+    font-size: 12.5px;
+    color: var(--mid);
+    line-height: 1.6;
+    margin-bottom: 5px;
+    list-style: none;
+    padding-left: 14px;
+    position: relative;
+    font-weight: 300;
+  }
+
+  .career-impact li::before {
+    content: '▪';
+    position: absolute;
+    left: 0;
+    color: var(--faint);
+    font-size: 8px;
+    top: 3px;
+  }
+
+  /* ── Three Column Bottom ── */
+  .bottom-three {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+    padding-top: 4px;
+  }
+
+  .col-header {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--black);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--black);
+  }
+
+  .col-item {
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--mid);
+    line-height: 1.5;
+  }
+
+  .col-item strong {
+    font-weight: 600;
+    color: var(--dark);
+    display: block;
+  }
+
+  .col-item .detail {
+    font-size: 11px;
+    color: var(--light);
+  }
+
+  .bar-admit {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .bar-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border: 1px solid var(--faint);
+    color: var(--mid);
+    letter-spacing: 0.3px;
+  }
+</style>
+</head>
+<body>
+<div class="resume">
+  <div class="header">
+    <div class="header-left">
+      <h1>Thomas J. Nakamura</h1>
+      <div class="role">General Counsel & Corporate Secretary</div>
+    </div>
+    <div class="header-right">
+      t.nakamura@email.com<br>
+      (202) 555-0843<br>
+      Washington, DC<br>
+      linkedin.com/in/tjnakamura
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    <p>Strategic legal executive with 20 years advising boards, managing global legal teams, and navigating complex regulatory landscapes. Known for turning legal departments into business accelerators — reducing risk while enabling growth through pragmatic counsel and operational excellence.</p>
+  </div>
+
+  <div class="areas-bar">
+    <div class="area-cell"><span class="area-icon">§</span>Corporate Governance</div>
+    <div class="area-cell"><span class="area-icon">&</span>M&A Transactions</div>
+    <div class="area-cell"><span class="area-icon">©</span>Intellectual Property</div>
+    <div class="area-cell"><span class="area-icon">¶</span>Regulatory & Compliance</div>
+    <div class="area-cell"><span class="area-icon">†</span>Litigation Management</div>
+  </div>
+
+  <div class="body">
+    <div class="section">
+      <div class="section-title">Professional Experience</div>
+
+      <div class="career-row">
+        <div class="career-info">
+          <div class="career-role">General Counsel & Corporate Secretary</div>
+          <div class="career-org">Apex Therapeutics Inc.</div>
+          <div class="career-meta">Washington, DC — 2019 to Present</div>
+          <div class="career-scope">$4.8B biotech, 5,200 employees, NASDAQ listed. Reporting to CEO with board reporting line.</div>
+        </div>
+        <ul class="career-impact">
+          <li>Built 45-person global legal department from 12, establishing IP, regulatory, and commercial practices</li>
+          <li>Led legal due diligence on 6 acquisitions totaling $2.3B in deal value</li>
+          <li>Managed $180M patent portfolio with 340+ active patents across 28 jurisdictions</li>
+          <li>Negotiated $800M licensing agreement, largest in company history</li>
+          <li>Resolved 3 material litigation matters saving estimated $420M in exposure</li>
+        </ul>
+      </div>
+
+      <div class="career-row">
+        <div class="career-info">
+          <div class="career-role">Deputy General Counsel</div>
+          <div class="career-org">Johnson & Johnson</div>
+          <div class="career-meta">New Brunswick, NJ — 2014 to 2019</div>
+          <div class="career-scope">$82B pharmaceutical and consumer health conglomerate, Medical Devices division.</div>
+        </div>
+        <ul class="career-impact">
+          <li>Oversaw legal operations for $27B medical devices division across 60 countries</li>
+          <li>Managed 80-person legal team and $65M annual legal budget</li>
+          <li>Led regulatory strategy for 12 FDA product approvals and 30+ global filings</li>
+          <li>Developed compliance program recognized by DOJ as industry best practice</li>
+        </ul>
+      </div>
+
+      <div class="career-row">
+        <div class="career-info">
+          <div class="career-role">Partner, Corporate & Securities</div>
+          <div class="career-org">Sullivan & Cromwell LLP</div>
+          <div class="career-meta">New York, NY — 2006 to 2014</div>
+          <div class="career-scope">AmLaw 10 firm, Life Sciences and Healthcare practice.</div>
+        </div>
+        <ul class="career-impact">
+          <li>Counseled Fortune 500 clients on $15B+ in M&A transactions and capital markets offerings</li>
+          <li>Named to Law360 "Rising Stars" list for Healthcare M&A in 2012</li>
+          <li>Built pro bono practice serving 40+ immigration clients annually</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bottom-three">
+      <div>
+        <div class="col-header">Education</div>
+        <div class="col-item">
+          <strong>J.D., Magna Cum Laude</strong>
+          <span class="detail">Georgetown Law — 2006</span><br>
+          <span class="detail">Law Review, Order of the Coif</span>
+        </div>
+        <div class="col-item">
+          <strong>B.A. Political Science</strong>
+          <span class="detail">Yale University — 2003</span><br>
+          <span class="detail">Phi Beta Kappa</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="col-header">Bar & Credentials</div>
+        <div class="bar-admit">
+          <span class="bar-tag">New York</span>
+          <span class="bar-tag">DC</span>
+          <span class="bar-tag">New Jersey</span>
+          <span class="bar-tag">US Patent Bar</span>
+        </div>
+        <div class="col-item" style="margin-top: 14px;">
+          <strong>ACC Value Champion</strong>
+          <span class="detail">Association of Corporate Counsel, 2023</span>
+        </div>
+        <div class="col-item">
+          <strong>NACD Board Governance Fellow</strong>
+          <span class="detail">National Assoc. of Corporate Directors</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="col-header">Board & Civic</div>
+        <div class="col-item">
+          <strong>BioTech Legal Leaders Forum</strong>
+          <span class="detail">Steering Committee, 2022–Present</span>
+        </div>
+        <div class="col-item">
+          <strong>Georgetown Law Board of Visitors</strong>
+          <span class="detail">Member, 2020–Present</span>
+        </div>
+        <div class="col-item">
+          <strong>DC Volunteer Lawyers Project</strong>
+          <span class="detail">Board Director, 2018–Present</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

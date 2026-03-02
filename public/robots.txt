@@ -1,0 +1,11 @@
+# ResumeBuildIn — robots.txt
+User-agent: *
+Allow: /
+Disallow: /editor/
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /welcome
+Disallow: /confirm-email
+
+# Sitemap
+Sitemap: https://resumebuildin.io/sitemap.xml
