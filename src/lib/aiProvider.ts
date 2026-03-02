@@ -1,4 +1,5 @@
 // src/lib/aiProvider.ts — Unified AI Provider abstraction (Gemini + Claude)
+import { guardAICall } from './aiRateLimit'
 
 export type AIProvider = 'gemini' | 'claude'
 
@@ -10,7 +11,7 @@ export function getSelectedProvider(): AIProvider {
     try {
         const stored = localStorage.getItem(STORAGE_KEY)
         if (stored === 'claude' || stored === 'gemini') return stored
-    } catch {}
+    } catch { }
     return 'gemini' // default
 }
 
@@ -38,6 +39,25 @@ export function isProviderConfigured(provider: AIProvider): boolean {
     return !!key && key.length > 5
 }
 
+// ── Plan lookup for rate limiting ─────────────────────────
+
+/** Read the user's plan from the Zustand store's persisted state or localStorage profile cache. */
+function _getStoredPlan(): string {
+    try {
+        // Try reading from the profile cached in localStorage by the store
+        const stored = localStorage.getItem('rc_user_plan')
+        if (stored) return stored
+    } catch { }
+    return 'free' // default to most restrictive
+}
+
+/** Called by the store when the profile is loaded to cache the plan for the rate limiter. */
+export function cacheUserPlan(plan: string): void {
+    try {
+        localStorage.setItem('rc_user_plan', plan)
+    } catch { }
+}
+
 // ── Unified non-streaming call ────────────────────────────
 
 export interface AICallOptions {
@@ -46,6 +66,10 @@ export interface AICallOptions {
     temperature?: number
     maxTokens?: number
     jsonMode?: boolean
+    /** Feature identifier for per-feature cooldown tracking */
+    feature?: string
+    /** User's plan for daily limit check. Defaults to reading from localStorage. */
+    plan?: string
 }
 
 export interface AICallResult {
@@ -58,6 +82,13 @@ export interface AICallResult {
  * Falls back to the other provider if the selected one has no API key.
  */
 export async function callAI(options: AICallOptions): Promise<AICallResult> {
+    // ── AI abuse protection ──────────────────────────
+    const plan = options.plan || _getStoredPlan()
+    const guard = guardAICall(plan, options.feature || 'default')
+    if (!guard.allowed) {
+        throw new Error(guard.message || 'AI rate limit exceeded.')
+    }
+
     let provider = getSelectedProvider()
 
     // Fallback logic: if selected provider isn't configured, try the other
@@ -177,12 +208,23 @@ export interface AIStreamOptions {
     temperature?: number
     maxTokens?: number
     onStream?: (partialText: string) => void
+    /** Feature identifier for per-feature cooldown tracking */
+    feature?: string
+    /** User's plan for daily limit check */
+    plan?: string
 }
 
 /**
  * Make a streaming AI call. Used by the support agent chatbot.
  */
 export async function callAIStream(options: AIStreamOptions): Promise<string> {
+    // ── AI abuse protection ──────────────────────────
+    const plan = options.plan || _getStoredPlan()
+    const guard = guardAICall(plan, options.feature || 'chat')
+    if (!guard.allowed) {
+        throw new Error(guard.message || 'AI rate limit exceeded.')
+    }
+
     let provider = getSelectedProvider()
 
     if (!isProviderConfigured(provider)) {

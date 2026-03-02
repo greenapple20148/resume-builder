@@ -132,7 +132,7 @@ export default function AuthPage() {
         </Link>
         <div className="flex-1">
           <h2 className="text-parchment text-[clamp(32px,4vw,52px)] mb-4">Your next job<br /><em className="italic text-gold-light">starts here</em></h2>
-          <p className="text-[rgba(250,248,243,0.45)] text-[15px] leading-[1.7] mb-10">Join 47,000+ professionals who've built their dream resume with ResumeBuildIn.</p>
+          <p className="text-[rgba(250,248,243,0.45)] text-[15px] leading-[1.7] mb-10">Build a stunning, ATS-optimized resume in minutes with ResumeBuildIn.</p>
           <div className="hidden md:flex gap-3">
             {['#f5c800', '#2b9db3', '#c9a84c'].map((c, i) => (
               <div key={i} className="flex-1 bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.08)] rounded-xl overflow-hidden animate-[fadeUp_0.5s_ease_both]" style={{ animationDelay: `${i * 0.15}s` }}>

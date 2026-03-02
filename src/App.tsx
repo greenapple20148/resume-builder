@@ -26,6 +26,7 @@ import AboutPage from './pages/AboutPage'
 import BlogPage from './pages/BlogPage'
 import ContactPage from './pages/ContactPage'
 import LegalPage from './pages/LegalPage'
+import TestTemplatePage from './pages/TestTemplatePage'
 
 // Components
 import { Toast } from './components/Toast'
@@ -110,6 +111,7 @@ export default function App() {
         <Route path="/privacy" element={<LegalPage />} />
         <Route path="/terms" element={<LegalPage />} />
         <Route path="/cookies" element={<LegalPage />} />
+        <Route path="/test-template" element={<TestTemplatePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <SupportAgent />

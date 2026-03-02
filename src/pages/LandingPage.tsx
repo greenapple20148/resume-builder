@@ -4,12 +4,7 @@ import Navbar from '../components/Navbar'
 import { useSEO } from '../lib/useSEO'
 import { LandingIcon } from '../components/LandingIcons'
 
-const STATS = [
-  { num: '47,000+', label: 'Resumes Created' },
-  { num: '30', label: 'Professional Themes' },
-  { num: '94%', label: 'Interview Rate' },
-  { num: '180+', label: 'Countries' },
-]
+
 
 const FEATURES = [
   { icon: 'target', title: 'Built to Pass ATS', desc: 'Not just pretty — every resume is engineered to pass applicant tracking systems and reach real humans.' },
@@ -333,15 +328,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── STATS ────────────────────────────── */}
-        <section aria-label="Statistics" className="bg-[#0e0d0b] dark:bg-[#0e0d0b] flex justify-center flex-wrap p-10">
-          {STATS.map((s, i) => (
-            <div key={i} className={`flex-1 max-w-[220px] text-center px-5 py-4 sm:py-0 ${i < STATS.length - 1 ? 'sm:border-r sm:border-[rgba(255,255,255,0.08)]' : ''}`}>
-              <div className="font-display text-4xl font-light text-gold-light mb-1.5">{s.num}</div>
-              <div className="text-xs text-[rgba(250,248,243,0.4)] font-mono uppercase tracking-widest">{s.label}</div>
-            </div>
-          ))}
-        </section>
+
 
         {/* ── FEATURES ─────────────────────────── */}
         <section aria-label="Features" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
@@ -597,7 +584,7 @@ export default function LandingPage() {
         <section aria-label="Call to action" className="bg-gradient-to-br from-[#0e0d0b] to-[#3a3830] dark:from-[#0e0d0b] dark:to-[#3a3830] px-10 py-24 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,rgba(201,146,60,0.15),transparent_70%)]" />
           <h2 className="text-parchment dark:text-[#e8e6e0] relative mb-3">Start building<br /><em className="italic text-gold-light">for free today</em></h2>
-          <p className="text-[rgba(250,248,243,0.5)] relative text-base">Join 47,000+ professionals who've landed jobs with ResumeBuildIn.</p>
+          <p className="text-[rgba(250,248,243,0.5)] relative text-base">Build a beautiful, ATS-optimized resume and land your next interview.</p>
           <Link to="/auth?mode=signup" className="btn btn-gold btn-lg mt-6 relative">Create Your Resume →</Link>
         </section>
 

@@ -217,6 +217,7 @@ Text to improve:
 ${text}`,
             temperature: 0.7,
             maxTokens: 1024,
+            feature: 'enhance',
         })
 
         return result.text
@@ -379,6 +380,7 @@ Rules for analysis:
         prompt,
         temperature: 0.4,
         maxTokens: 2048,
+        feature: 'analyze',
     })
 
     const resultText = result.text
@@ -538,6 +540,7 @@ ${truncated}
             temperature: 0.1,
             maxTokens: 4096,
             jsonMode: true,
+            feature: 'parse',
         })
 
         const resultText = result.text
@@ -815,6 +818,7 @@ Rules:
         prompt,
         temperature: 0.8,
         maxTokens: 512,
+        feature: 'theme_generate',
     })
 
     let raw = aiResult.text

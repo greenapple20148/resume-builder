@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { supabase } from './supabase'
 import { Profile, Resume, CoverLetter, SaveStatus } from '../types'
 import { getEffectivePlan } from './expressUnlock'
+import { cacheUserPlan } from './aiProvider'
 
 interface StoreState {
   user: any | null
@@ -90,8 +91,10 @@ export const useStore = create<StoreState>((set, get) => ({
       .single()
 
     if (!error && data) {
-      set({ profile: data as Profile })
-      return data as Profile
+      const profile = data as Profile
+      set({ profile })
+      cacheUserPlan(getEffectivePlan(profile))
+      return profile
     }
 
     // Profile doesn't exist — auto-create it (trigger may have failed)
@@ -110,8 +113,10 @@ export const useStore = create<StoreState>((set, get) => ({
           .single()
 
         if (newProfile) {
-          set({ profile: newProfile as Profile })
-          return newProfile as Profile
+          const profile = newProfile as Profile
+          set({ profile })
+          cacheUserPlan(getEffectivePlan(profile))
+          return profile
         }
       }
     }
