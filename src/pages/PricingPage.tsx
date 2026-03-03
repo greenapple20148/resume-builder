@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { toast } from '../components/Toast'
@@ -16,10 +16,30 @@ export default function PricingPage() {
   const { user, profile, fetchProfile } = useStore()
   const navigate = useNavigate()
 
+  const [spotsLeft, setSpotsLeft] = useState<number | null>(null)
+
+  useEffect(() => {
+    async function fetchSpots() {
+      try {
+        const { data, error } = await supabase.rpc('get_founding_spots_left')
+        if (!error && typeof data === 'number') {
+          setSpotsLeft(data)
+          if (data <= 0) {
+            localStorage.removeItem('resumebuildin_offer')
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching spots:', err)
+      }
+    }
+    fetchSpots()
+  }, [])
+
   const currentPlanId = profile?.plan || 'free'
   const currentPlan = (PLANS as any)[currentPlanId] || PLANS.free
-  const planOrder = ['free', 'pro', 'premium', 'career_plus']
-  const currentIndex = planOrder.indexOf(currentPlanId)
+  const hasFoundingOffer = typeof window !== 'undefined' && localStorage.getItem('resumebuildin_offer') === 'founding' && (spotsLeft === null || spotsLeft > 0)
+  const planOrder = hasFoundingOffer && profile?.plan !== 'pro' ? ['free', 'founding', 'premium', 'career_plus'] : ['free', 'pro', 'premium', 'career_plus']
+  const currentIndex = planOrder.indexOf(currentPlanId) !== -1 ? planOrder.indexOf(currentPlanId) : ['free', 'pro', 'premium', 'career_plus'].indexOf(currentPlanId)
 
   useSEO({
     title: user ? 'Manage Your Plan' : 'Pricing — Simple, Honest Plans',
@@ -34,7 +54,7 @@ export default function PricingPage() {
     if (!user) { navigate('/auth?mode=signup'); return }
     if (plan === 'free') return
     if (profile?.plan === plan) { try { setLoading(plan); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) }; return }
-    const billing = annual ? 'annual' : 'monthly'
+    const billing = plan === 'founding' ? 'annual' : (annual ? 'annual' : 'monthly')
     try { setLoading(plan); const { url } = await createCheckoutSession(plan, billing as 'monthly' | 'annual'); if (url) window.location.href = url } catch (err: any) { toast.error(err.message || 'Checkout failed.') } finally { setLoading(null) }
   }
 
@@ -327,7 +347,8 @@ export default function PricingPage() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-5 max-w-[1000px] mx-auto px-5 md:px-10 pb-20 items-start">
-        {Object.values(PLANS).map((plan: any) => {
+        {planOrder.map((planId: string) => {
+          const plan = (PLANS as any)[planId]
           const price = annual ? parseFloat((plan.priceAnnual / 12).toFixed(2)) : plan.priceMonthly
           return (
             <div key={plan.id} className={`flex-1 bg-[var(--white)] border-[1.5px] ${plan.popular ? 'border-gold shadow-[0_0_0_1px_var(--gold),var(--shadow-lg)] -translate-y-2 md:-translate-y-2' : 'border-ink-10'} rounded-xl p-8 relative transition-all hover:shadow-lg hover:-translate-y-0.5`}>

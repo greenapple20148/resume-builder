@@ -148,6 +148,64 @@ export const PLANS: Record<string, Plan> = {
     popular: true,
     trialDays: 7,
   },
+  founding: {
+    id: 'founding',
+    name: 'Pro (Founding)',
+    price: 19,
+    priceMonthly: 19,
+    priceAnnual: 19,
+
+    tagline: 'Founding Member Offer. Unlimited downloads + DOCX.',
+    cta: 'Claim Founding Spot',
+    features: [
+      { text: 'All resume templates (100+)', included: true },
+      { text: 'Unlimited PDF + DOCX downloads', included: true },
+      { text: 'Cover letter builder', included: true },
+      { text: 'Basic ATS scan (format + keyword coverage)', included: true },
+      { text: '5 saved resume versions', included: true },
+      { text: 'Email support', included: true },
+      { text: 'AI mock interviews', included: false },
+      { text: 'JD match analysis', included: false },
+      { text: 'AI rewrite suggestions', included: false },
+      { text: 'LinkedIn toolkit', included: false },
+      { text: 'Share resume via QR code', included: false },
+    ],
+    featureGroups: [
+      {
+        label: 'Builder', features: [
+          { text: 'All resume templates (100+)', included: true },
+          { text: '5 saved resume versions', included: true },
+          { text: 'Auto-format (spacing, alignment, bullets)', included: true },
+          { text: 'Resume version history (last 10 saves)', included: true },
+        ]
+      },
+      {
+        label: 'Export', features: [
+          { text: 'Unlimited PDF downloads (no watermark)', included: true },
+          { text: 'DOCX export', included: true },
+          { text: 'Cover letter builder + export', included: true },
+        ]
+      },
+      {
+        label: 'ATS & Optimization', features: [
+          { text: 'Format issue detection', included: true },
+          { text: 'Keyword coverage check', included: true },
+          { text: 'Readability score', included: true },
+        ]
+      },
+      {
+        label: 'Support', features: [
+          { text: 'Skip-the-Line Priority Support', included: true },
+          { text: 'Guaranteed 12-hour response time', included: true },
+          { text: 'Front-of-queue priority', included: true },
+          { text: 'Direct assistance with edits & formatting', included: true },
+        ]
+      },
+    ],
+    resumeLimit: 5,
+    themeLimit: Infinity,
+    watermark: false,
+  },
   premium: {
     id: 'premium',
     name: 'Premium',

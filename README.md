@@ -284,11 +284,3 @@ const ack = getTicketAckEmail('career_plus', 'Jane')
 - 3-layer AI abuse protection: token bucket rate limiting, daily usage caps, per-feature cooldowns
 
 
-supabase secrets set STRIPE_PRO_MONTHLY_PRICE_ID=price_xxx
-supabase secrets set STRIPE_PRO_ANNUAL_PRICE_ID=price_xxx
-supabase secrets set STRIPE_PREMIUM_MONTHLY_PRICE_ID=price_xxx
-supabase secrets set STRIPE_PREMIUM_ANNUAL_PRICE_ID=price_xxx
-supabase secrets set STRIPE_CAREER_PLUS_MONTHLY_PRICE_ID=price_xxx
-supabase secrets set STRIPE_CAREER_PLUS_ANNUAL_PRICE_ID=price_xxx
-supabase secrets set MOCK_PACK_PRICE_ID=price_xxx
-supabase secrets set EXPRESS_UNLOCK_PRICE_ID=price_xxx

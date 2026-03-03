@@ -25,6 +25,7 @@ function resolvePriceId(plan: string, billing: string): string | null {
     "premium_annual": "STRIPE_PREMIUM_ANNUAL_PRICE_ID",
     "career_plus_monthly": "STRIPE_CAREER_PLUS_MONTHLY_PRICE_ID",
     "career_plus_annual": "STRIPE_CAREER_PLUS_ANNUAL_PRICE_ID",
+    "founding_annual": "STRIPE_FOUNDING_ANNUAL_PRICE_ID",
   };
 
   const key = `${plan}_${billing}`;
@@ -87,6 +88,17 @@ Deno.serve(async (req: Request) => {
       .select("stripe_customer_id, email, full_name")
       .eq("id", user.id)
       .single();
+
+    if (plan === "founding") {
+      const { count } = await supabaseAdmin
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .eq("plan", "founding");
+
+      if (count !== null && count >= 100) {
+        throw new Error("The Founding Member offer has sold out. Please choose another plan.");
+      }
+    }
 
     let customerId = profile?.stripe_customer_id;
 

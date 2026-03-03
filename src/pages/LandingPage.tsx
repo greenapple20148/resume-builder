@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { useSEO } from '../lib/useSEO'
 import { LandingIcon } from '../components/LandingIcons'
+import { supabase } from '../lib/supabase'
 
 
 
@@ -149,7 +150,7 @@ function FoundingMemberOffer({ spotsLeft, setSpotsLeft }: { spotsLeft: number; s
             {/* CTA */}
             <div className="text-center">
               <Link
-                to="/auth?mode=signup"
+                to="/auth?mode=signup&offer=founding"
                 id="founding-offer-cta"
                 className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-xl text-[16px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden group"
                 style={{
@@ -202,21 +203,26 @@ export default function LandingPage() {
     path: '/',
   })
 
-  const [spotsLeft, setSpotsLeft] = useState(50)
+  const [spotsLeft, setSpotsLeft] = useState<number | null>(null)
 
-  // Real-time countdown — starts immediately on page load
+  // Fetch real remaining spots
   useEffect(() => {
-    const tick = () => {
-      setSpotsLeft(prev => {
-        if (prev <= 12) return prev
-        return prev - 1
-      })
+    async function fetchSpots() {
+      try {
+        const { data, error } = await supabase.rpc('get_founding_spots_left')
+        if (!error && typeof data === 'number') {
+          setSpotsLeft(data)
+          if (data <= 0) {
+            localStorage.removeItem('resumebuildin_offer')
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching spots:', err)
+      }
     }
-    // First tick after a short random delay
-    const firstTimeout = setTimeout(tick, 3000 + Math.random() * 5000)
-    // Then tick every 8-20 seconds
-    const interval = setInterval(tick, 8000 + Math.random() * 12000)
-    return () => { clearTimeout(firstTimeout); clearInterval(interval) }
+    fetchSpots()
+    const interval = setInterval(fetchSpots, 30000)
+    return () => clearInterval(interval)
   }, [])
 
   return (
@@ -259,41 +265,65 @@ export default function LandingPage() {
             </div>
 
             {/* ── Founding Member Mini Banner ── */}
-            <a
-              href="#founding-offer"
-              className="mt-6 block max-w-[480px] mx-auto lg:mx-0 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg no-underline group bg-ink-05 dark:bg-[rgba(26,20,8,0.6)]"
-              style={{ border: '1px solid var(--gold-pale, rgba(201,146,60,0.25))' }}
-            >
-              <div className="px-5 py-3.5 flex items-center gap-4">
-                <div className="flex-shrink-0">
-                  <div className="flex items-baseline gap-1">
-                    <span className="font-display text-[28px] font-light leading-none text-gold">$19</span>
-                    <span className="text-[11px] text-ink-30 font-mono">/yr</span>
+            {(spotsLeft === null || spotsLeft > 0) && (
+              <a
+                href="#founding-offer"
+                className="mt-6 block max-w-[480px] mx-auto lg:mx-0 rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_24px_-8px_rgba(201,146,60,0.35)] no-underline group relative"
+                style={{ padding: '1.5px', background: 'linear-gradient(135deg, rgba(201,146,60,0.5) 0%, rgba(201,146,60,0.1) 25%, rgba(201,146,60,0.4) 50%, rgba(201,146,60,0.1) 75%, rgba(201,146,60,0.5) 100%)', backgroundSize: '400% 400%', animation: 'foundingBorderGlow 6s ease infinite' }}
+              >
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(201,146,60,0.15),transparent_60%)] pointer-events-none" />
+                <div className="bg-ink-05 dark:bg-[#0e0d0b] relative w-full h-full rounded-[10.5px] overflow-hidden">
+                  <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(201,146,60,1) 2px, rgba(201,146,60,1) 3px)', backgroundSize: '100% 4px' }} />
+                  <div className="px-5 py-4 flex items-center gap-4 relative">
+                    <div className="flex-shrink-0">
+                      <div className="flex items-baseline gap-1">
+                        <span className="font-display text-[32px] font-light leading-none text-gold drop-shadow-md">$19</span>
+                        <span className="text-[12px] text-ink-30 font-mono">/yr</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-ink-40 bg-ink-10 dark:bg-[rgba(0,0,0,0.3)] px-1.5 py-0.5 rounded-md mt-1 inline-block"><span className="line-through opacity-70">$79</span> → $19/yr</span>
+                    </div>
+
+                    <div className="flex-1 min-w-0 border-l border-ink-10 pl-4">
+                      <div className="text-[13px] font-semibold text-ink leading-tight mb-1 flex items-center gap-1.5">
+                        Founding Member Offer
+                        <span className="flex h-1.5 w-1.5 relative">
+                          <span className="absolute inline-flex h-full w-full rounded-full bg-gold opacity-75 animate-ping" />
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-gold" />
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-ink-40 font-mono">75% off Pro plan — first year</div>
+                    </div>
+
+                    <div className="flex-shrink-0 text-[12px] font-semibold px-4 py-2 rounded-lg transition-all group-hover:scale-105 group-hover:shadow-[0_0_15px_rgba(201,146,60,0.4)] relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #c9923c, #e8b76a)', color: '#fff' }}>
+                      <span className="relative z-10 transition-transform group-hover:translate-x-0.5 inline-block text-white">Claim →</span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transition-opacity z-0" style={{ transform: 'skewX(-20deg)', animation: 'foundingBtnShimmer 2s ease-in-out infinite' }} />
+                    </div>
                   </div>
-                  <span className="text-[9px] font-mono text-ink-20"><span className="line-through">$79</span> → $19/yr</span>
+
+                  <div className="px-5 pb-3.5 pt-0.5 relative">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10.5px] font-mono text-ink-40">
+                        {100 - (spotsLeft || 0)}/100 spots claimed
+                      </span>
+                      <span className="text-[10.5px] font-mono font-bold" style={{ color: spotsLeft && spotsLeft <= 20 ? '#ef4444' : '#e8b76a' }}>
+                        {spotsLeft || 100} left
+                      </span>
+                    </div>
+                    <div className="h-1.5 bg-ink-10 dark:bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden relative shadow-inner">
+                      <div
+                        className="h-full rounded-full transition-all duration-1000 relative overflow-hidden"
+                        style={{
+                          width: `${100 - (spotsLeft || 0)}%`,
+                          background: spotsLeft && spotsLeft <= 20 ? 'linear-gradient(90deg, #f59e0b, #ef4444)' : 'linear-gradient(90deg, #c9923c, #e8b76a)'
+                        }}
+                      >
+                        <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)', animation: 'foundingShimmer 2s ease-in-out infinite' }} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[12px] font-semibold text-ink leading-tight mb-0.5">Founding Member Offer</div>
-                  <div className="text-[10px] text-ink-40 font-mono">75% off Pro — first year</div>
-                </div>
-                <div className="flex-shrink-0 text-[11px] font-semibold px-3 py-1.5 rounded-lg transition-all group-hover:scale-105" style={{ background: 'linear-gradient(135deg, #c9923c, #e8b76a)', color: '#fff' }}>
-                  Claim →
-                </div>
-              </div>
-              <div className="px-5 pb-2.5 flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-[10px] font-mono text-ink-30">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-gold opacity-75 animate-ping" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-gold" />
-                  </span>
-                  {100 - spotsLeft}/100 spots claimed
-                </span>
-                <span className="text-[10px] font-mono font-semibold text-gold">{spotsLeft} left</span>
-              </div>
-              <div className="h-1 bg-ink-10">
-                <div className="h-full rounded-full" style={{ width: `${100 - spotsLeft}%`, background: 'linear-gradient(90deg, #c9923c, #e8b76a)' }} />
-              </div>
-            </a>
+              </a>
+            )}
           </div>
 
           <div className="relative">
@@ -579,7 +609,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── FOUNDING MEMBER LAUNCH OFFER ──────── */}
-        <FoundingMemberOffer spotsLeft={spotsLeft} setSpotsLeft={setSpotsLeft} />
+        {(spotsLeft === null || spotsLeft > 0) && <FoundingMemberOffer spotsLeft={spotsLeft || 100} setSpotsLeft={setSpotsLeft as React.Dispatch<React.SetStateAction<number>>} />}
 
         {/* ── CTA BANNER ───────────────────────── */}
         <section aria-label="Call to action" className="bg-gradient-to-br from-[#0e0d0b] to-[#3a3830] dark:from-[#0e0d0b] dark:to-[#3a3830] px-10 py-24 text-center relative overflow-hidden">
