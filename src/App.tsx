@@ -26,6 +26,7 @@ import AboutPage from './pages/AboutPage'
 import BlogPage from './pages/BlogPage'
 import ContactPage from './pages/ContactPage'
 import LegalPage from './pages/LegalPage'
+import PublicResumePage from './pages/PublicResumePage'
 import TestTemplatePage from './pages/TestTemplatePage'
 
 // Components
@@ -113,6 +114,7 @@ export default function App() {
         <Route path="/cookies" element={<LegalPage />} />
         <Route path="/refund-policy" element={<LegalPage />} />
         <Route path="/test-template" element={<TestTemplatePage />} />
+        <Route path="/resume/:id" element={<PublicResumePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <SupportAgent />

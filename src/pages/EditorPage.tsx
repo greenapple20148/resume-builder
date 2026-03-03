@@ -10,6 +10,7 @@ import { useTheme } from '../lib/useTheme'
 import { THEMES } from './ThemesPage'
 import { getEffectivePlan } from '../lib/expressUnlock'
 import { getVersionHistory, restoreVersion, getVersionTimeLabel, type ResumeVersion } from '../lib/resumeVersions'
+import ShareResumeModal from '../components/ShareResumeModal'
 
 const SECTIONS = [
   { id: 'personal', label: 'Personal Info', icon: '●' },
@@ -1238,6 +1239,7 @@ export default function EditorPage() {
   const [versions, setVersions] = useState<ResumeVersion[]>([])
   const [restoringId, setRestoringId] = useState<string | null>(null)
   const isPro = getEffectivePlan(profile) !== 'free'
+  const [shareOpen, setShareOpen] = useState(false)
 
   const openHistory = async () => {
     if (!id || !isPro) return
@@ -1685,6 +1687,18 @@ export default function EditorPage() {
             {downloading ? 'Generating…' : 'PDF'}
           </button>
           <button className="btn btn-outline btn-sm" onClick={handleDocxDownload}>DOCX</button>
+          <div className="w-px h-5 bg-ink-10" />
+          {(getEffectivePlan(profile) === 'premium' || getEffectivePlan(profile) === 'career_plus') ? (
+            <button className="btn btn-outline btn-sm" onClick={() => setShareOpen(true)} title="Share via QR code">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
+              Share
+            </button>
+          ) : (
+            <button className="btn btn-outline btn-sm" onClick={() => { toast.info('Share via QR code is a Premium feature.'); navigate('/pricing') }} title="Share via QR code (Premium)" style={{ opacity: 0.6 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
+              Share <span style={{ fontSize: 9, color: 'var(--gold)', marginLeft: 2 }}>✦</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -2205,6 +2219,13 @@ export default function EditorPage() {
           to { transform: rotate(360deg); }
         }
       `}</style>
+      {shareOpen && id && (
+        <ShareResumeModal
+          resumeId={id}
+          resumeTitle={title}
+          onClose={() => setShareOpen(false)}
+        />
+      )}
     </div >
   )
 }
