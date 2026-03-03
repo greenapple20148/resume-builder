@@ -16,21 +16,24 @@ CREATE TABLE IF NOT EXISTS resume_versions (
 );
 
 -- Indexes
-CREATE INDEX resume_versions_resume_id_idx ON resume_versions(resume_id);
-CREATE INDEX resume_versions_user_id_idx ON resume_versions(user_id);
-CREATE INDEX resume_versions_created_at_idx ON resume_versions(resume_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS resume_versions_resume_id_idx ON resume_versions(resume_id);
+CREATE INDEX IF NOT EXISTS resume_versions_user_id_idx ON resume_versions(user_id);
+CREATE INDEX IF NOT EXISTS resume_versions_created_at_idx ON resume_versions(resume_id, created_at DESC);
 
 -- Row Level Security
 ALTER TABLE resume_versions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own resume versions" ON resume_versions;
 CREATE POLICY "Users can view own resume versions"
   ON resume_versions FOR SELECT
   USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can insert own resume versions" ON resume_versions;
 CREATE POLICY "Users can insert own resume versions"
   ON resume_versions FOR INSERT
   WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can delete own resume versions" ON resume_versions;
 CREATE POLICY "Users can delete own resume versions"
   ON resume_versions FOR DELETE
   USING (auth.uid() = user_id);
@@ -52,6 +55,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger to prune after insert
+DROP TRIGGER IF EXISTS prune_old_versions ON resume_versions;
 CREATE TRIGGER prune_old_versions
   AFTER INSERT ON resume_versions
   FOR EACH ROW EXECUTE FUNCTION prune_resume_versions();
