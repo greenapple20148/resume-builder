@@ -164,6 +164,9 @@ export const useStore = create<StoreState>((set, get) => ({
       },
     })
     if (error) throw error
+    if (data?.user && data.user.identities && data.user.identities.length === 0) {
+      throw new Error('User already registered')
+    }
     return data
   },
 

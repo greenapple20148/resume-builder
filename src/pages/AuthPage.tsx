@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useStore } from '../lib/store'
 import { toast } from '../components/Toast'
 import { useSEO } from '../lib/useSEO'
+import { supabase } from '../lib/supabase'
 
 type AuthMode = 'signup' | 'signin' | 'forgot-password' | 'reset-password'
 
@@ -22,6 +23,26 @@ export default function AuthPage() {
   const navigate = useNavigate()
 
   useEffect(() => { if (mode === 'reset-password') { /* Supabase redirects here */ } }, [mode])
+
+  // Save offer param across auth flows (like Google OAuth)
+  useEffect(() => {
+    async function checkOffer() {
+      const offer = searchParams.get('offer')
+      if (offer === 'founding') {
+        try {
+          const { data } = await supabase.rpc('get_founding_spots_left')
+          if (typeof data === 'number' && data <= 0) {
+            localStorage.removeItem('resumebuildin_offer')
+            return
+          }
+        } catch (err) { }
+      }
+      if (offer) {
+        localStorage.setItem('resumebuildin_offer', offer)
+      }
+    }
+    checkOffer()
+  }, [searchParams])
 
   const pwChecks = {
     length: form.password.length >= 8,
@@ -54,12 +75,7 @@ export default function AuthPage() {
     setLoading(true)
     try {
       if (mode === 'signup') {
-        const result = await signUp(form.email, form.password, form.fullName)
-        if (result?.user && result.user.identities?.length === 0) {
-          setErrors({ email: 'This email is already registered' })
-          toast.error('An account with this email already exists. Try signing in instead.')
-          return
-        }
+        await signUp(form.email, form.password, form.fullName)
         navigate('/confirm-email')
       } else if (mode === 'signin') {
         await signIn(form.email, form.password)
