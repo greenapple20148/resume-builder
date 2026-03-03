@@ -5,7 +5,13 @@ let stripePromise: Promise<Stripe | null> | null = null
 
 export const getStripe = () => {
   if (!stripePromise) {
-    stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+    // Check both VITE_ prefixed and standard prefix in case of specific Vercel setups
+    const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || import.meta.env.STRIPE_PUBLISHABLE_KEY
+    if (!key) {
+      console.warn("Stripe publishable key is missing. Billing features will not work.")
+      return null
+    }
+    stripePromise = loadStripe(key)
   }
   return stripePromise
 }
