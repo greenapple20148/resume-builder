@@ -22,7 +22,7 @@ export default function ConfirmEmailPage() {
                         {[
                             { n: '1', title: 'Open your email', desc: 'Look for an email from ResumeBuildIn' },
                             { n: '2', title: 'Click "Confirm My Email"', desc: 'This verifies your account' },
-                            { n: '3', title: 'Start building', desc: "You'll be redirected to your dashboard" },
+                            { n: '3', title: 'Start building', desc: "You'll be taken to your welcome screen" },
                         ].map((step, i) => (
                             <div key={i}>
                                 {i > 0 && <div className="w-0.5 h-5 bg-ink-10 ml-[15px]" />}

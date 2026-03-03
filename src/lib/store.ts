@@ -160,7 +160,7 @@ export const useStore = create<StoreState>((set, get) => ({
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}/welcome`,
       },
     })
     if (error) throw error
