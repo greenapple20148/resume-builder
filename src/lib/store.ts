@@ -65,23 +65,43 @@ export const useStore = create<StoreState>((set, get) => ({
   setAuthLoading: (authLoading) => set({ authLoading }),
 
   initAuth: async () => {
+    // Check if we are handling an async OAuth callback or Email link (PKCE ?code= or Implicit #access_token=)
+    const isAuthCallback = typeof window !== 'undefined' &&
+      (window.location.search.includes('code=') ||
+        window.location.hash.includes('access_token=') ||
+        window.location.hash.includes('error_description='))
+
+    // Set up the listener first so we don't miss any events from the auth exchange
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        set({ user: session.user })
+        await get().fetchProfile(session.user.id)
+        if (isAuthCallback) set({ authLoading: false })
+      } else if (event === 'SIGNED_OUT') {
+        set({ user: null, profile: null, resumes: [], currentResume: null })
+      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+        set({ user: session.user })
+      } else if (event === 'INITIAL_SESSION') {
+        if (isAuthCallback && !session?.user) {
+          // Callback failed or returned null session
+          set({ authLoading: false })
+        }
+      }
+    })
+
     const { data: { session } } = await supabase.auth.getSession()
     if (session?.user) {
       set({ user: session.user })
       await get().fetchProfile(session.user.id)
     }
-    set({ authLoading: false })
 
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        set({ user: session.user })
-        await get().fetchProfile(session.user.id)
-      } else if (event === 'SIGNED_OUT') {
-        set({ user: null, profile: null, resumes: [], currentResume: null })
-      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        set({ user: session.user })
-      }
-    })
+    // Only stop loading immediately if we aren't waiting on a URL auth callback exchange
+    if (!isAuthCallback) {
+      set({ authLoading: false })
+    } else {
+      // Safety release timeout in case the auth event never fires or throws silently
+      setTimeout(() => set({ authLoading: false }), 4000)
+    }
   },
 
   fetchProfile: async (userId) => {
