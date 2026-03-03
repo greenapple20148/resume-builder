@@ -75,12 +75,7 @@ export default function AuthPage() {
     setLoading(true)
     try {
       if (mode === 'signup') {
-        const result = await signUp(form.email, form.password, form.fullName)
-        if (result?.user && result.user.identities?.length === 0) {
-          setErrors({ email: 'This email is already registered' })
-          toast.error('An account with this email already exists. Try signing in instead.')
-          return
-        }
+        await signUp(form.email, form.password, form.fullName)
         navigate('/confirm-email')
       } else if (mode === 'signin') {
         await signIn(form.email, form.password)
