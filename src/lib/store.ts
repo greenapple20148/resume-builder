@@ -155,6 +155,15 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   signUp: async (email, password, fullName) => {
+    // 1. Securely check if email already exists using our RPC
+    // (Bypasses Supabase's default email enumeration shielding)
+    const { data: emailExists, error: checkError } = await supabase.rpc('check_email_exists', { lookup_email: email })
+    if (checkError) throw checkError
+    if (emailExists) {
+      throw new Error('User already registered')
+    }
+
+    // 2. Perform the actual signup
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -163,10 +172,8 @@ export const useStore = create<StoreState>((set, get) => ({
         emailRedirectTo: `${window.location.origin}/welcome`,
       },
     })
+
     if (error) throw error
-    if (data?.user && data.user.identities && data.user.identities.length === 0) {
-      throw new Error('User already registered')
-    }
     return data
   },
 
