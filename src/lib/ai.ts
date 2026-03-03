@@ -415,36 +415,8 @@ export async function extractTextFromPDF(file: File): Promise<string> {
     try {
         console.log('[extractTextFromPDF] Triggered on file size:', file.size)
         const pdfjs = await import('pdfjs-dist')
-
-        // Try multiple CDN sources for the worker (unpkg can be unreliable)
-        const version = pdfjs.version
-        const workerUrls = [
-            `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.mjs`,
-            `https://cdn.jsdelivr.net/npm/pdfjs-dist@${version}/build/pdf.worker.min.mjs`,
-            `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.mjs`,
-        ]
-
-        // Test which URL is reachable
-        let workerLoaded = false
-        for (const url of workerUrls) {
-            try {
-                const res = await fetch(url, { method: 'HEAD', mode: 'cors' })
-                if (res.ok) {
-                    pdfjs.GlobalWorkerOptions.workerSrc = url
-                    console.log('[extractTextFromPDF] Worker loaded from:', url)
-                    workerLoaded = true
-                    break
-                }
-            } catch {
-                console.warn('[extractTextFromPDF] Worker URL unreachable:', url)
-            }
-        }
-
-        // If no CDN works, disable the worker (runs on main thread — slower but functional)
-        if (!workerLoaded) {
-            console.warn('[extractTextFromPDF] No CDN worker available, running without worker')
-            pdfjs.GlobalWorkerOptions.workerSrc = ''
-        }
+        const workerSrc = await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
+        pdfjs.GlobalWorkerOptions.workerSrc = workerSrc.default
 
         const arrayBuffer = await file.arrayBuffer()
         const pdf = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) }).promise
