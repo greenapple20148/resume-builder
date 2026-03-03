@@ -58,6 +58,7 @@ export const PLANS: Record<string, Plan> = {
       { text: 'DOCX export', included: false },
       { text: 'Cover letter builder', included: false },
       { text: 'Full ATS feedback', included: false },
+      { text: 'Share resume via QR code', included: false },
     ],
     featureGroups: [
       {
@@ -107,6 +108,7 @@ export const PLANS: Record<string, Plan> = {
       { text: 'JD match analysis', included: false },
       { text: 'AI rewrite suggestions', included: false },
       { text: 'LinkedIn toolkit', included: false },
+      { text: 'Share resume via QR code', included: false },
     ],
     featureGroups: [
       {
@@ -164,6 +166,7 @@ export const PLANS: Record<string, Plan> = {
       { text: 'Advanced ATS feedback (section-level)', included: true },
       { text: '10 saved resume versions', included: true },
       { text: 'Interview toolkit', included: true },
+      { text: 'Share resume via QR code', included: true },
       { text: 'Priority support', included: true },
     ],
     featureGroups: [
@@ -205,6 +208,12 @@ export const PLANS: Record<string, Plan> = {
         ]
       },
       {
+        label: 'Sharing', features: [
+          { text: 'Share resume via QR code', included: true },
+          { text: 'Public resume link', included: true },
+        ]
+      },
+      {
         label: 'Career Intelligence', features: [
           { text: 'JD-based interview simulation', included: false },
           { text: 'Interview scoring dashboard', included: false },
@@ -240,6 +249,7 @@ export const PLANS: Record<string, Plan> = {
       { text: 'Interview scoring dashboard', included: true },
       { text: 'Resume score tracking over time', included: true },
       { text: 'Unlimited resume versions', included: true },
+      { text: 'Share resume via QR code', included: true },
       { text: 'Priority support + early access', included: true },
     ],
     featureGroups: [
@@ -274,6 +284,8 @@ export const PLANS: Record<string, Plan> = {
       {
         label: 'Resume Builder', features: [
           { text: 'Unlimited resume versions', included: true },
+          { text: 'Share resume via QR code', included: true },
+          { text: 'Public resume link', included: true },
         ]
       },
       {

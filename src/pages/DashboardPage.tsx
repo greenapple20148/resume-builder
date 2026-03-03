@@ -9,6 +9,7 @@ import { Resume } from '../types'
 import { getResumeScore } from '../lib/resumeScore'
 import { LandingIcon } from '../components/LandingIcons'
 import { getEffectivePlan, isExpressUnlockActive } from '../lib/expressUnlock'
+import ShareResumeModal from '../components/ShareResumeModal'
 
 interface ResumeCardProps {
   resume: Resume
@@ -16,9 +17,10 @@ interface ResumeCardProps {
   onDelete: (id: string) => void
   onDuplicate: (resume: Resume) => void
   onDownload: (resume: Resume) => void
+  onShare: (resume: Resume) => void
 }
 
-function ResumeCard({ resume, onEdit, onDelete, onDuplicate, onDownload }: ResumeCardProps) {
+function ResumeCard({ resume, onEdit, onDelete, onDuplicate, onDownload, onShare }: ResumeCardProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   return (
     <div className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden transition-all shadow-sm hover:shadow-lg hover:-translate-y-0.5">
@@ -42,6 +44,7 @@ function ResumeCard({ resume, onEdit, onDelete, onDuplicate, onDownload }: Resum
                 <button className="block w-full text-left px-3.5 py-2.5 text-[13px] text-ink-70 bg-transparent border-none cursor-pointer transition-colors hover:bg-ink-05 hover:text-ink" onClick={() => { onEdit(resume); setMenuOpen(false) }}>✎ Edit</button>
                 <button className="block w-full text-left px-3.5 py-2.5 text-[13px] text-ink-70 bg-transparent border-none cursor-pointer transition-colors hover:bg-ink-05 hover:text-ink" onClick={() => { onDuplicate(resume); setMenuOpen(false) }}>⧉ Duplicate</button>
                 <button className="block w-full text-left px-3.5 py-2.5 text-[13px] text-ink-70 bg-transparent border-none cursor-pointer transition-colors hover:bg-ink-05 hover:text-ink" onClick={() => { onDownload(resume); setMenuOpen(false) }}>↓ Download PDF</button>
+                <button className="block w-full text-left px-3.5 py-2.5 text-[13px] text-ink-70 bg-transparent border-none cursor-pointer transition-colors hover:bg-ink-05 hover:text-ink" onClick={() => { onShare(resume); setMenuOpen(false) }}>⤴ Share QR <span className="badge badge-gold" style={{ fontSize: 8, marginLeft: 4, verticalAlign: 'middle' }}>PREMIUM</span></button>
                 <div className="h-px bg-ink-10" />
                 <button className="block w-full text-left px-3.5 py-2.5 text-[13px] text-rose bg-transparent border-none cursor-pointer transition-colors hover:bg-ink-05" onClick={() => { onDelete(resume.id); setMenuOpen(false) }}>✕ Delete</button>
               </div>
@@ -164,6 +167,7 @@ export default function DashboardPage() {
   const [cancelLoading, setCancelLoading] = useState(false)
   const [importing, setImporting] = useState(false)
   const importInputRef = useRef<HTMLInputElement>(null)
+  const [shareResume, setShareResume] = useState<Resume | null>(null)
 
   useEffect(() => { fetchResumes(); if (searchParams.get('upgraded') === 'true') toast.success('Welcome to Pro! All features unlocked.') }, [fetchResumes, searchParams])
   const { user, fetchProfile } = useStore()
@@ -365,7 +369,11 @@ export default function DashboardPage() {
           ) : (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
               {resumes.map((resume) => (
-                <ResumeCard key={resume.id} resume={resume} onEdit={handleEdit} onDelete={(id) => setDeleteConfirm(id)} onDuplicate={handleDuplicate} onDownload={handleDownload} />
+                <ResumeCard key={resume.id} resume={resume} onEdit={handleEdit} onDelete={(id) => setDeleteConfirm(id)} onDuplicate={handleDuplicate} onDownload={handleDownload} onShare={(r) => {
+                  const canShare = effectivePlan === 'premium' || effectivePlan === 'career_plus'
+                  if (!canShare) { toast.info('Share via QR code is available on Premium and Career+ plans.'); navigate('/pricing'); return }
+                  setShareResume(r)
+                }} />
               ))}
               {(resumeLimit === Infinity || resumeCount < resumeLimit) && (
                 <button className="h-[220px] border-2 border-dashed border-ink-10 rounded-xl bg-transparent cursor-pointer flex flex-col items-center justify-center gap-2.5 text-sm text-ink-20 transition-all hover:border-gold hover:text-gold hover:bg-gold-pale" onClick={() => handleCreate(null)}>
@@ -454,6 +462,14 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {shareResume && (
+        <ShareResumeModal
+          resumeId={shareResume.id}
+          resumeTitle={shareResume.title}
+          onClose={() => setShareResume(null)}
+        />
       )}
     </div>
   )

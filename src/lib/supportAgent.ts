@@ -32,7 +32,7 @@ resumebuildin is a modern resume builder with these key features:
 - Unlimited PDF (no watermark) + DOCX + cover letter builder
 - ATS: format detection, keyword coverage, readability score
 - Skip-the-Line Priority Support, 12hr response, front-of-queue
-- NOT included: AI mock interviews, JD match, AI rewrite, LinkedIn toolkit
+- NOT included: AI mock interviews, JD match, AI rewrite, LinkedIn toolkit, Share via QR code
 
 ### Premium Plan ($24.99/mo or $119/yr)
 Everything in Pro, plus:
@@ -41,6 +41,7 @@ Everything in Pro, plus:
 - **Advanced ATS**: Section-level feedback, ATS simulation preview
 - **LinkedIn Toolkit**: Headline generator, About section generator, experience-to-LinkedIn rewrite
 - **Interview Toolkit**: 14 roles with 280+ questions, STAR story builder
+- **Share via QR code**: Generate a QR code to share your resume with anyone — they can view it instantly on any device
 - Save up to 10 resumes
 - NOT included: System Design/Technical/Salary mock modes, AI coaching, scoring dashboard
 
@@ -50,9 +51,17 @@ Everything in Premium, plus:
 - **AI Coaching**: STAR answer coaching, clarity/confidence scoring, keyword relevance, AI-suggested answers, ideal answer comparison
 - **Career Intelligence**: Interview scoring dashboard, resume score tracking, JD-based interview simulation, performance breakdown
 - Unlimited resumes & versions
+- Share via QR code
 - Same-business-day support, early access to new tools
 
 ## AI Tools — How to Use
+
+### Share Resume via QR Code (Premium+)
+From the **Dashboard**, click the ··· menu on any resume card and select **⤴ Share QR**. Or from the **Editor**, click the **Share** button in the top toolbar. A modal opens with:
+- **QR Code tab**: A scannable QR code that links to your resume. You can download it as a PNG image.
+- **Link tab**: Copy the shareable URL, or share via Email or LinkedIn.
+Anyone with the link can view your resume — no login required. The link stays active as long as the resume exists.
+This feature requires Premium or Career+ plan.
 
 ### AI Cover Letter Generator (Pro+)
 Go to **/tools/cover-letter**. Enter company name, job title, and optionally paste the job description. Select tone (professional/friendly/confident). Click Generate. Edit the result, then download as PDF or copy.
