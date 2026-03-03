@@ -12,6 +12,7 @@ const FEATURES = [
   { icon: 'trend-up', title: 'Recruiter Rejection Insights', desc: 'See exactly why recruiters pass on resumes like yours — and fix it before they ever see it.' },
   { icon: 'brain', title: 'AI-Powered Bullet Points', desc: 'Transform vague descriptions into quantified, metrics-driven achievements that prove your impact.' },
   { icon: 'trophy', title: 'Interview Conversion', desc: 'Designed to get you interviews, not just downloads. Every feature is optimized for real hiring outcomes.' },
+  { icon: 'zap', title: 'Skip-the-Line Priority Support', desc: 'When your deadline is close, waiting isn\'t an option. Pro users get 12-hour guaranteed response times and front-of-queue priority.' },
 ]
 
 const THEME_PREVIEWS = [
@@ -319,7 +320,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="absolute right-[-20px] top-1/2 -translate-y-1/2 flex-col gap-2.5 hidden lg:flex">
-              {['✓ ATS Friendly', '⚡ Instant PDF', '✦ 30 Themes'].map((text, i) => (
+              {['✓ ATS Friendly', 'Instant PDF', '✦ 30 Themes'].map((text, i) => (
                 <div key={i} className="bg-[var(--white)] border border-ink-10 rounded-full px-3.5 py-2 text-xs font-medium text-ink shadow-md whitespace-nowrap animate-[slideInRight_0.6s_ease_both]" style={{ animationDelay: `${i * 0.3}s` }}>
                   {text}
                 </div>
@@ -601,7 +602,7 @@ export default function LandingPage() {
             {[
               { title: 'Product', links: [{ to: '/themes', text: 'Themes' }, { to: '/pricing', text: 'Pricing' }, { to: '/dashboard', text: 'Dashboard' }] },
               { title: 'Company', links: [{ to: '/about', text: 'About' }, { to: '/blog', text: 'Blog' }, { to: '/contact', text: 'Contact' }] },
-              { title: 'Legal', links: [{ to: '/privacy', text: 'Privacy' }, { to: '/terms', text: 'Terms' }, { to: '/cookies', text: 'Cookies' }] },
+              { title: 'Legal', links: [{ to: '/privacy', text: 'Privacy' }, { to: '/terms', text: 'Terms' }, { to: '/cookies', text: 'Cookies' }, { to: '/refund-policy', text: 'Refund Policy' }] },
             ].map((col) => (
               <div key={col.title} className="flex flex-col gap-2.5">
                 <div className="font-mono text-[10px] tracking-[0.15em] uppercase text-[rgba(250,248,243,0.25)] dark:text-[rgba(250,248,243,0.4)] mb-1">{col.title}</div>

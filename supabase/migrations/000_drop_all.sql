@@ -57,6 +57,7 @@ DROP FUNCTION IF EXISTS handle_new_user();
 -- ────────────────────────────────────────────────────────────
 -- 7. TABLES  (order respects foreign-key dependencies)
 -- ────────────────────────────────────────────────────────────
+DROP TABLE IF EXISTS resume_versions CASCADE;
 DROP TABLE IF EXISTS stripe_events   CASCADE;
 DROP TABLE IF EXISTS cover_letters   CASCADE;
 DROP TABLE IF EXISTS resumes         CASCADE;

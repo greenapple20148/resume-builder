@@ -33,12 +33,95 @@ Deno.serve(async (req) => {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       const customerId = session.customer as string;
+
+      // ── ONE-TIME PAYMENT (Add-Ons) ─────────────────
+      if (session.mode === "payment") {
+        const addonType = session.metadata?.addon_type;
+        const supabaseUserId = session.metadata?.supabase_user_id;
+
+        if (!supabaseUserId) {
+          console.error("No supabase_user_id in session metadata for add-on purchase");
+          break;
+        }
+
+        if (addonType === "mock_pack") {
+          // Add 3 mock interview sessions
+          const { data: profile } = await supabaseAdmin
+            .from("profiles")
+            .select("mock_sessions_purchased")
+            .eq("id", supabaseUserId)
+            .single();
+
+          const currentSessions = profile?.mock_sessions_purchased || 0;
+          const sessionsToAdd = parseInt(session.metadata?.sessions_count || "3", 10);
+          const newTotal = currentSessions + sessionsToAdd;
+
+          const { error } = await supabaseAdmin
+            .from("profiles")
+            .update({
+              mock_sessions_purchased: newTotal,
+              stripe_customer_id: customerId,
+            })
+            .eq("id", supabaseUserId);
+
+          if (error) {
+            console.error("Error adding mock sessions:", error);
+          } else {
+            // Send confirmation email
+            try {
+              await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+                },
+                body: JSON.stringify({
+                  type: "mock_pack",
+                  userId: supabaseUserId,
+                  data: { sessions: String(sessionsToAdd) },
+                }),
+              });
+            } catch (e) { console.error("Mock pack email failed:", e); }
+          }
+
+        } else if (addonType === "express_unlock") {
+          // Activate 24-hour Pro access
+          const unlockUntil = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+          const { error } = await supabaseAdmin
+            .from("profiles")
+            .update({
+              express_unlock_until: unlockUntil,
+              stripe_customer_id: customerId,
+            })
+            .eq("id", supabaseUserId);
+
+          if (error) {
+            console.error("Error activating express unlock:", error);
+          } else {
+            // Send confirmation email
+            try {
+              await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+                },
+                body: JSON.stringify({
+                  type: "express_unlock",
+                  userId: supabaseUserId,
+                }),
+              });
+            } catch (e) { console.error("Express unlock email failed:", e); }
+          }
+        }
+
+        break;
+      }
+
+      // ── SUBSCRIPTION PURCHASE ──────────────────────
       const subscriptionId = session.subscription as string;
-
-      // Retrieve the subscription to get metadata and period info
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-
-      // Plan metadata is on the subscription (set via subscription_data.metadata in checkout)
       const plan = subscription.metadata?.plan || "pro";
       const supabaseUserId = subscription.metadata?.supabase_user_id;
 
@@ -50,7 +133,6 @@ Deno.serve(async (req) => {
         subscription_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
       };
 
-      // Try user ID first (most reliable), then fall back to customer ID
       let result;
       if (supabaseUserId) {
         result = await supabaseAdmin
@@ -64,7 +146,27 @@ Deno.serve(async (req) => {
           .eq("stripe_customer_id", customerId);
       }
 
-      if (result.error) console.error("Error updating profile:", result.error);
+      if (result.error) {
+        console.error("Error updating profile:", result.error);
+      } else {
+        // Send plan confirmation email (non-blocking)
+        try {
+          await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/send-email`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+            },
+            body: JSON.stringify({
+              type: "plan_confirmation",
+              userId: supabaseUserId,
+              plan,
+            }),
+          });
+        } catch (emailErr) {
+          console.error("Email send failed (non-blocking):", emailErr);
+        }
+      }
       break;
     }
 

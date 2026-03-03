@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import { toast } from '../components/Toast'
 import { PLANS, ADD_ONS, createCheckoutSession, openCustomerPortal } from '../lib/stripe'
+import { supabase } from '../lib/supabase'
 import { useStore } from '../lib/store'
 import { useSEO } from '../lib/useSEO'
 import { LandingIcon } from '../components/LandingIcons'
@@ -33,10 +34,8 @@ export default function PricingPage() {
     if (!user) { navigate('/auth?mode=signup'); return }
     if (plan === 'free') return
     if (profile?.plan === plan) { try { setLoading(plan); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) }; return }
-    const planData = (PLANS as any)[plan]
-    const priceId = annual ? planData.stripePriceIdAnnual : planData.stripePriceIdMonthly
-    if (!priceId) { toast.error('Price configuration missing.'); return }
-    try { setLoading(plan); const { url } = await createCheckoutSession(priceId, plan); if (url) window.location.href = url } catch (err: any) { toast.error(err.message || 'Checkout failed.') } finally { setLoading(null) }
+    const billing = annual ? 'annual' : 'monthly'
+    try { setLoading(plan); const { url } = await createCheckoutSession(plan, billing as 'monthly' | 'annual'); if (url) window.location.href = url } catch (err: any) { toast.error(err.message || 'Checkout failed.') } finally { setLoading(null) }
   }
 
   const handleManageBilling = async () => { try { setLoading('portal'); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) } }
@@ -57,7 +56,7 @@ export default function PricingPage() {
         toast.info('Activating Express 24h Unlock…')
         const result = await purchaseExpressUnlock()
         if (result.success) {
-          toast.success('⚡ Express Unlock activated! Pro features enabled for 24 hours.')
+          toast.success('Express Unlock activated! Pro features enabled for 24 hours.')
           if (user) await fetchProfile(user.id)
         }
       } catch (err: any) {
@@ -84,12 +83,16 @@ export default function PricingPage() {
       return
     }
     // For other add-ons, use Stripe checkout
-    const addon = ADD_ONS.find(a => a.id === addonId)
-    if (!addon?.stripePriceId) { toast.error('Add-on configuration missing.'); return }
     try {
       setLoading(addonId)
-      const { url } = await createCheckoutSession(addon.stripePriceId, addonId)
-      if (url) window.location.href = url
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) throw new Error('Not authenticated')
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: { plan: addonId, billing: 'one_time' },
+      })
+      if (error) throw error
+      if (data?.url) window.location.href = data.url
     } catch (err: any) {
       toast.error(err.message || 'Checkout failed.')
     } finally {
@@ -107,13 +110,22 @@ export default function PricingPage() {
   }
 
   const FAQ = [
-    { q: 'Can I cancel anytime?', a: 'Yes. Cancel anytime from your billing portal. You keep access until the end of your billing period.' },
-    { q: 'Is there a free trial?', a: 'The Free plan is forever free. Pro includes a 7-day free trial so you can try all features before being charged.' },
-    { q: "What's the difference between the plans?", a: 'Pro is for building great resumes. Premium adds AI mock interviews, JD matching, and LinkedIn tools. Career+ gives 20 mock sessions/month and priority support.' },
-    { q: 'What are AI Mock Interviews?', a: 'AI-powered practice interviews that ask role-specific questions, evaluate your answers in real-time, and give you detailed feedback.' },
-    { q: 'What are One-Time Add-Ons?', a: 'Boost your job search without a subscription change. Buy a Mock Interview Pack, get a Human Resume Review, or 24-hour Express Pro access.' },
-    { q: 'What payment methods do you accept?', a: 'All major credit and debit cards, Apple Pay, and Google Pay via Stripe.' },
-    { q: 'Do you offer refunds?', a: "We offer a full refund within 7 days of purchase. No questions asked. Contact support@resumebuildin.io." },
+    { q: 'What is ATS and why does it matter?', a: 'ATS stands for Applicant Tracking System — software that 95% of large companies use to filter resumes before a human ever sees them. If your resume isn\'t ATS-compatible, it gets rejected automatically. Every ResumeBuildIn template is engineered to pass ATS scanners with clean formatting, proper headings, and machine-readable text.' },
+    { q: 'What\'s your refund policy?', a: 'We offer a full, no-questions-asked refund within 7 days of any purchase — subscriptions or add-ons. After 7 days, you can cancel anytime and keep access until the end of your billing period, but refunds are not available. Contact support@resumebuildin.io to request a refund.' },
+    { q: 'Can I cancel anytime?', a: 'Yes. Cancel anytime from your billing portal. You keep full access to all features until the end of your current billing period. No cancellation fees, no penalties.' },
+    { q: 'Is there a free trial?', a: 'The Free plan is forever free — build 1 resume with any template. Pro includes a 7-day free trial so you can try all features (unlimited downloads, no watermark, cover letters) before being charged.' },
+    { q: "What's the difference between the plans?", a: 'Free gets you started with 1 resume. Pro unlocks unlimited downloads, no watermark, DOCX export, cover letters, and priority support. Premium adds AI mock interviews, interview prep toolkit, and LinkedIn optimization. Career+ gives you 20 mock sessions/month, same-business-day support, JD-based interview prep, and a career intelligence dashboard.' },
+    { q: 'What are AI Mock Interviews?', a: 'AI-powered practice sessions where you\'re asked role-specific questions, type your answers, and receive real-time evaluation — including scoring, improvement suggestions, and sample answers. Premium gives 3 sessions/month, Career+ gives 20, and you can buy additional packs anytime.' },
+    { q: 'What is Job Description Matching?', a: 'Paste any job description and our AI instantly analyzes how well your resume matches. You\'ll see a match score, missing keywords, and specific suggestions to close the gaps — so you can tailor your resume before you apply.' },
+    { q: 'What are One-Time Add-Ons?', a: 'Boost your job search without changing your plan. Options include a 3-session Mock Interview Pack ($4.99), and the Express 24h Unlock ($2.99) which gives full Pro access for 24 hours — perfect for last-minute applications.' },
+    { q: 'How does Priority Support work?', a: 'Pro and Premium users get Skip-the-Line Priority Support with a guaranteed 12-hour response time. Career+ users get same-business-day support with front-of-queue priority and direct assistance with resume edits. We guarantee response times Monday–Friday during business hours. No bots. Real help.' },
+    { q: 'Can I import my existing resume?', a: 'Yes. Upload a PDF or DOCX file and our AI parser will extract your information — contact details, experience, education, skills — and populate a new ResumeBuildIn resume automatically. You can then edit, enhance, and choose any template.' },
+    { q: 'What payment methods do you accept?', a: 'All major credit and debit cards (Visa, Mastercard, Amex), Apple Pay, and Google Pay. All payments are processed securely through Stripe. We never store your card details.' },
+    { q: 'Is my data safe and private?', a: 'Your resume data is stored securely with Supabase (built on PostgreSQL with row-level security). We never sell your data, share it with third parties, or use it for training AI models. You can delete your account and all data at any time.' },
+    { q: 'How accurate is the AI enhancement?', a: 'Our AI transforms vague bullet points into quantified, metrics-driven achievement statements. You always review and approve every suggestion before it\'s applied — the AI assists, you decide. You can choose between Gemini and Claude as your AI provider.' },
+    { q: 'Can I customize the resume themes?', a: 'All 30+ professional templates are fully customizable. Change colors, fonts, spacing, and layout. Pro users unlock all themes. You can even generate custom themes with AI by describing what you want.' },
+    { q: 'What is Express 24h Unlock?', a: 'A one-time purchase ($2.99) that gives you full Pro-level access for 24 hours — unlimited downloads, no watermark, DOCX export, and cover letters. Perfect when you need to submit a polished resume fast without committing to a subscription.' },
+    { q: 'Do you offer team or enterprise plans?', a: 'Not yet, but we\'re working on it. If you\'re a career center, staffing agency, or company interested in bulk licensing, reach out to hello@resumebuildin.com and we\'ll set something up.' },
   ]
 
   const Toggle = () => (
@@ -149,7 +161,7 @@ export default function PricingPage() {
     return (
       <div className="min-h-screen">
         <Navbar />
-        <div className="max-w-[800px] mx-auto px-5 sm:px-10 pt-10 pb-20">
+        <div className="max-w-[1100px] mx-auto px-5 sm:px-10 pt-10 pb-20">
           <div className="text-center mb-8"><h1 className="mb-2.5">Manage your <em className="italic text-gold">plan</em></h1><p className="text-base text-ink-40">You're currently on the <strong className="text-ink">{currentPlan.name}</strong> plan.</p></div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-6 px-8 py-7 bg-[var(--white)] border-[1.5px] border-gold-pale rounded-xl mb-7">
@@ -190,7 +202,7 @@ export default function PricingPage() {
               <div className="text-[22px] font-bold mb-1.5">Upgrade your plan</div>
               <p className="text-[15px] text-ink-40 mb-6">Unlock more features and tools to supercharge your job search.</p>
               <div className="mb-7"><Toggle /></div>
-              <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {planOrder.filter((_, idx) => idx > currentIndex).map(planId => {
                   const plan = (PLANS as any)[planId]; const price = annual ? parseFloat((plan.priceAnnual / 12).toFixed(2)) : plan.priceMonthly; const isLoading = loading === planId
                   return (
@@ -265,6 +277,33 @@ export default function PricingPage() {
           {currentIndex > 0 && (
             <div className="text-center p-7 bg-ink-05 rounded-xl mb-10"><p className="text-sm text-ink-40 mb-4">Want to switch to a lower plan? You can downgrade or cancel through the billing portal.</p><button className="btn btn-outline" onClick={handleManageBilling} disabled={loading === 'portal'}>{loading === 'portal' ? 'Opening…' : 'Open Billing Portal'}</button></div>
           )}
+
+          {/* ── One-Time Add-Ons (visible for logged-in users) ── */}
+          <div className="mb-10">
+            <div className="text-center mb-6"><h2>One-time <em className="italic text-gold">add-ons</em></h2><p className="mt-1.5 text-ink-40 text-sm">Boost your job search without changing your plan.</p></div>
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+              {ADD_ONS.filter(a => a.id !== 'express_unlock').map(addon => (
+                <div key={addon.id} className="bg-surface border border-border rounded-[14px] p-5 flex flex-col gap-2">
+                  <div className="text-gold"><LandingIcon name={addon.icon} size={26} /></div>
+                  <div className="font-bold text-sm text-ink">{addon.name}</div>
+                  <div className="text-xs text-ink-40 leading-relaxed flex-1">
+                    {addon.description}
+                    {addon.id === 'mock_pack_3' && (profile?.mock_sessions_purchased || 0) > 0 && (
+                      <div className="mt-1 text-gold font-semibold">{profile?.mock_sessions_purchased} bonus session{(profile?.mock_sessions_purchased || 0) !== 1 ? 's' : ''} owned</div>
+                    )}
+                  </div>
+                  <div className="text-xl font-extrabold text-gold">${addon.price}</div>
+                  <button
+                    className="btn btn-outline text-xs py-1.5 px-3.5 mt-1"
+                    onClick={() => handleAddonPurchase(addon.id)}
+                    disabled={loading === addon.id}
+                  >
+                    {loading === addon.id ? 'Processing…' : 'Buy Now'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className="py-10">
             <div className="text-center mb-12"><h2>Frequently asked<br /><em className="italic text-gold">questions</em></h2></div>
@@ -343,6 +382,15 @@ export default function PricingPage() {
         <a href="mailto:enterprise@resumebuildin.io" className="btn btn-outline shrink-0">Talk to Sales →</a>
       </div>
 
+      {/* Stripe Protection — Refund Policy Link */}
+      <div className="max-w-[900px] mx-auto px-5 md:px-10 mb-14 text-center">
+        <p className="text-[12px] text-ink-30 leading-relaxed">
+          By purchasing, you agree to our{' '}
+          <Link to="/refund-policy" className="text-gold underline hover:text-gold/80 transition-colors">Refund Policy</Link>,{' '}
+          <Link to="/terms" className="text-gold underline hover:text-gold/80 transition-colors">Terms of Service</Link>, and{' '}
+          <Link to="/privacy" className="text-gold underline hover:text-gold/80 transition-colors">Privacy Policy</Link>.
+        </p>
+      </div>
       <div className="max-w-[900px] mx-auto px-5 md:px-10 pb-20">
         <div className="text-center mb-12"><h2>Frequently asked<br /><em className="italic text-gold">questions</em></h2></div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

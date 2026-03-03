@@ -10,6 +10,7 @@ import {
     getFollowUpSuggestions,
 } from '../lib/supportAgent'
 import { sanitizeHtml, escapeHtml } from '../lib/sanitize'
+import { useStore } from '../lib/store'
 
 
 /* ── Simple markdown-to-HTML for chat bubbles ──────────── */
@@ -62,6 +63,8 @@ function TypingIndicator() {
 
 /* ── Main Support Agent Component ──────────────────────── */
 export default function SupportAgent() {
+    const { profile } = useStore()
+    const isFreeUser = !profile?.plan || profile.plan === 'free'
     const [isOpen, setIsOpen] = useState(false)
     const [isClosing, setIsClosing] = useState(false)
     const [messages, setMessages] = useState<SupportMessage[]>([createWelcomeMessage()])
@@ -263,6 +266,28 @@ export default function SupportAgent() {
                             </svg>
                         </button>
                     </div>
+
+                    {/* Priority Support Upsell (free users only) */}
+                    {isFreeUser && (
+                        <a
+                            href="/pricing"
+                            style={{
+                                display: 'flex', alignItems: 'center', gap: 10,
+                                padding: '10px 14px', margin: '0 12px',
+                                background: 'linear-gradient(135deg, rgba(212,163,88,0.1), rgba(212,163,88,0.04))',
+                                border: '1px solid rgba(212,163,88,0.25)',
+                                borderRadius: 10, textDecoration: 'none',
+                                transition: 'all 0.2s ease', flexShrink: 0,
+                            }}
+                        >
+                            <span style={{ fontSize: 18, flexShrink: 0 }}>⚡</span>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink)', lineHeight: 1.3 }}>Skip-the-Line Support</div>
+                                <div style={{ fontSize: 10, color: 'var(--ink-40)', lineHeight: 1.3, marginTop: 1 }}>Upgrade to Pro → 12hr response, front-of-queue priority</div>
+                            </div>
+                            <span style={{ fontSize: 11, color: 'var(--gold)', fontWeight: 600, flexShrink: 0 }}>Pro →</span>
+                        </a>
+                    )}
 
                     {/* Messages */}
                     <div className="support-messages" id="support-messages-scroll">

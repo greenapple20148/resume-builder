@@ -111,6 +111,7 @@ export default function App() {
         <Route path="/privacy" element={<LegalPage />} />
         <Route path="/terms" element={<LegalPage />} />
         <Route path="/cookies" element={<LegalPage />} />
+        <Route path="/refund-policy" element={<LegalPage />} />
         <Route path="/test-template" element={<TestTemplatePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

@@ -84,11 +84,15 @@ supabase secrets set STRIPE_WEBHOOK_SECRET=whsec_...
 supabase secrets set STRIPE_PRO_PRICE_ID=price_...
 supabase secrets set STRIPE_TEAM_PRICE_ID=price_...
 supabase secrets set APP_URL=https://yourapp.com
+supabase secrets set RESEND_API_KEY=re_...
+supabase secrets set FROM_EMAIL="ResumeBuildIn <hello@resumebuildin.com>"
 
 # Deploy functions
 supabase functions deploy create-checkout
 supabase functions deploy customer-portal
 supabase functions deploy stripe-webhook
+supabase functions deploy send-email
+supabase functions deploy contact-form
 ```
 
 ### 6. Configure Stripe Webhook
@@ -132,7 +136,12 @@ resumebuildin/
 │   ├── lib/
 │   │   ├── supabase.js         # Supabase client
 │   │   ├── stripe.js           # Stripe helpers + plan config
-│   │   └── store.js            # Zustand global state
+│   │   ├── store.js            # Zustand global state
+│   │   ├── emailTemplates.ts   # Automated email templates
+│   │   ├── aiProvider.ts       # AI provider abstraction (Gemini/Claude)
+│   │   ├── aiRateLimit.ts      # AI abuse protection (rate limit, caps, cooldowns)
+│   │   ├── expressUnlock.ts    # Express 24h Unlock logic
+│   │   └── mockPack.ts         # Mock Interview Pack logic
 │   └── styles/
 │       └── global.css          # Design system + base styles
 ├── supabase/
@@ -220,13 +229,49 @@ netlify deploy --prod --dir=dist
 
 ## Plan Limits
 
-Enforced at the database level via `can_create_resume()` PostgreSQL function:
+| Plan | Price | Resumes | Themes | PDF | Support |
+|------|-------|---------|--------|-----|---------|
+| Free | $0 | 1 | All | Watermarked | Standard (48hr) |
+| Pro | $9.99/mo | 5 | All 30+ | Clean | ⚡ Priority (12hr) |
+| Premium | $24.99/mo | 10 | All 30+ | Clean | ⚡ Priority (12hr) |
+| Career+ | $34.99/mo | ∞ | All 30+ | Clean | ⚡ Same-business-day |
 
-| Plan | Resumes | Themes | PDF |
-|------|---------|--------|-----|
-| Free | 3 | 4 | Watermarked |
-| Pro | 25 | All 12 | Clean |
-| Team | ∞ | All 12 | Clean |
+### One-Time Add-Ons
+
+| Add-On | Price | Access |
+|--------|-------|--------|
+| Express 24h Unlock | $2.99 | Full Pro access for 24 hours |
+| 3 Interview Mock Pack | $4.99 | 3 bonus AI mock interview sessions |
+
+---
+
+## Automated Email Templates
+
+Branded HTML email templates in `src/lib/emailTemplates.ts` for all transactional scenarios:
+
+| # | Template | Trigger | Key Content |
+|---|----------|---------|-------------|
+| 1 | `proConfirmation` | Pro plan purchase | 12-hour response, skip-the-line, dashboard CTA |
+| 2 | `premiumConfirmation` | Premium plan purchase | Mock interviews, interview toolkit, LinkedIn tools |
+| 3 | `careerPlusConfirmation` | Career+ plan purchase | Same-day support, 20 sessions, resume review invite |
+| 4 | `priorityTicketAck` | Support ticket (paid user) | Plan badge, expected response time, "no bots" |
+| 5 | `freeTicketAck` | Support ticket (free user) | 48hr timeline + soft upsell to Pro |
+| 6 | `expressUnlockConfirmation` | Express 24h purchase | 24hr countdown, unlocked features |
+| 7 | `mockPackConfirmation` | Mock Pack purchase | Session count, never-expire note |
+| 8 | `welcomeSignup` | New account created | Getting started steps, dashboard CTA |
+
+### Usage
+
+```typescript
+import { getConfirmationEmail, getTicketAckEmail } from './lib/emailTemplates'
+
+// Plan confirmation → returns { subject, html, text }
+const email = getConfirmationEmail('pro', 'Jane')
+
+// Support ticket ack → auto-selects template by plan
+const ack = getTicketAckEmail('career_plus', 'Jane')
+// → Same-business-day response time for Career+
+```
 
 ---
 
@@ -236,3 +281,14 @@ Enforced at the database level via `can_create_resume()` PostgreSQL function:
 - Row Level Security (RLS) ensures users can only access their own data
 - Webhook signature verification on every Stripe event
 - Idempotency table prevents duplicate event processing
+- 3-layer AI abuse protection: token bucket rate limiting, daily usage caps, per-feature cooldowns
+
+
+supabase secrets set STRIPE_PRO_MONTHLY_PRICE_ID=price_xxx
+supabase secrets set STRIPE_PRO_ANNUAL_PRICE_ID=price_xxx
+supabase secrets set STRIPE_PREMIUM_MONTHLY_PRICE_ID=price_xxx
+supabase secrets set STRIPE_PREMIUM_ANNUAL_PRICE_ID=price_xxx
+supabase secrets set STRIPE_CAREER_PLUS_MONTHLY_PRICE_ID=price_xxx
+supabase secrets set STRIPE_CAREER_PLUS_ANNUAL_PRICE_ID=price_xxx
+supabase secrets set MOCK_PACK_PRICE_ID=price_xxx
+supabase secrets set EXPRESS_UNLOCK_PRICE_ID=price_xxx

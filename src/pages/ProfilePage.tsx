@@ -105,7 +105,7 @@ export default function ProfilePage() {
                         </div>
                         <div className="font-display text-lg text-ink mb-0.5">{profile?.full_name || 'User'}</div>
                         <div className="font-mono text-[11px] text-ink-40">{user?.email}</div>
-                        <span className={`badge ${profile?.plan === 'pro' || profile?.plan === 'premium' ? 'badge-gold' : 'badge-dark'} mt-2 inline-block`}>{profile?.plan?.toUpperCase() || 'FREE'}</span>
+                        <span className={`badge ${profile?.plan === 'pro' || profile?.plan === 'premium' || profile?.plan === 'career_plus' ? 'badge-gold' : 'badge-dark'} mt-2 inline-block`}>{profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}</span>
                     </div>
                     <div className="flex flex-row md:flex-col gap-0.5 overflow-x-auto">
                         <button className={tab === 'general' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('general')}><span className="text-ink-40"><LandingIcon name="user" size={14} /></span> General</button>
@@ -286,7 +286,7 @@ export default function ProfilePage() {
                                         </thead>
                                         <tbody>
                                             {[
-                                                ['Speed', '⚡ Very Fast', '🏃 Fast'],
+                                                ['Speed', 'Very Fast', '🏃 Fast'],
                                                 ['Writing Quality', '🟢 Good', '🟢 Excellent'],
                                                 ['JSON Parsing', '🟢 Excellent', '🟢 Great'],
                                                 ['Creativity', '🟢 Good', '🟢 Excellent'],
