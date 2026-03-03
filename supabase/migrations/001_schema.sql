@@ -70,7 +70,7 @@ CREATE TRIGGER profiles_updated_at
 -- RESUMES TABLE
 -- ============================================================
 CREATE TABLE resumes (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   title TEXT NOT NULL DEFAULT 'Untitled Resume',
   theme_id TEXT NOT NULL DEFAULT 'editorial_luxe',
@@ -105,7 +105,7 @@ CREATE TABLE stripe_events (
 -- COVER LETTERS TABLE
 -- ============================================================
 CREATE TABLE cover_letters (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   title TEXT NOT NULL DEFAULT 'Untitled Cover Letter',
   company_name TEXT NOT NULL DEFAULT '',

@@ -65,7 +65,8 @@ export default function ContactPage() {
                 <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px, 5vw, 40px)', fontWeight: 300, color: 'var(--ink)', marginBottom: 12, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
                     Contact <em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>Us</em>
                 </h1>
-                <p style={{ fontSize: 15, color: 'var(--ink-40)', marginBottom: 40, marginTop: 0 }}>Have a question, suggestion, or just want to say hi? We{"'"}d love to hear from you.</p>
+                <p style={{ fontSize: 15, color: 'var(--ink-40)', marginBottom: 8, marginTop: 0 }}>Have a question, suggestion, or just want to say hi? We{"'"}d love to hear from you.</p>
+                <p style={{ fontSize: 13, color: 'var(--gold)', marginBottom: 40, marginTop: 0, fontWeight: 500 }}>We guarantee response times Monday–Friday during business hours. No bots. Real help.</p>
                 <div style={{ height: 1, background: 'var(--ink-10)', marginBottom: 40 }} />
 
                 {/* Contact cards */}
@@ -82,6 +83,51 @@ export default function ContactPage() {
                             <div style={{ fontSize: 11, color: 'var(--ink-20)', marginTop: 4 }}>{c.sub}</div>
                         </div>
                     ))}
+                </div>
+
+                {/* Priority Support Upsell */}
+                <div style={{
+                    background: 'linear-gradient(135deg, rgba(212,163,88,0.08), rgba(212,163,88,0.02))',
+                    border: '1.5px solid rgba(212,163,88,0.25)',
+                    borderRadius: 14,
+                    padding: '28px 32px',
+                    marginBottom: 48,
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
+                        <div style={{
+                            width: 44, height: 44, borderRadius: 12,
+                            background: 'linear-gradient(135deg, #d4a358, #c9923c)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: '#fff', flexShrink: 0,
+                        }}><LandingIcon name="zap" size={22} /></div>
+                        <div style={{ flex: 1 }}>
+                            <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--ink)', marginBottom: 4 }}>Skip-the-Line Priority Support</div>
+                            <p style={{ fontSize: 13, color: 'var(--ink-40)', margin: '0 0 14px 0', lineHeight: 1.6 }}>
+                                When your job application deadline is close, waiting 48 hours isn't an option.
+                            </p>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '8px 24px', marginBottom: 16 }}>
+                                {[
+                                    { icon: 'clock', text: 'Guaranteed 12-hour response time' },
+                                    { icon: 'rocket', text: 'Your request moves to the front of the queue' },
+                                    { icon: 'target', text: 'Direct assistance with resume edits & formatting' },
+                                    { icon: 'message-circle', text: 'Faster clarification on AI suggestions' },
+                                ].map((item, i) => (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--ink-70)' }}>
+                                        <span style={{ color: 'var(--gold)', flexShrink: 0, display: 'flex' }}><LandingIcon name={item.icon} size={16} /></span> {item.text}
+                                    </div>
+                                ))}
+                            </div>
+                            <Link to="/pricing" style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 6,
+                                padding: '8px 20px', borderRadius: 8,
+                                background: 'linear-gradient(135deg, #d4a358, #c9923c)',
+                                color: '#fff', fontSize: 13, fontWeight: 600,
+                                textDecoration: 'none', transition: 'all 0.2s ease',
+                            }}>
+                                Upgrade to Pro →
+                            </Link>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Contact form */}

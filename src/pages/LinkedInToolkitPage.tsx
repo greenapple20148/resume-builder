@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import { useStore } from '../lib/store'
 import { verifySubscription } from '../lib/stripe'
 import { LandingIcon } from '../components/LandingIcons'
+import { getEffectivePlan } from '../lib/expressUnlock'
 
 
 // ── Headline templates ──────────────────────────────
@@ -58,7 +59,8 @@ function rewriteExperienceForLinkedIn(title: string, company: string, bullets: s
 
 export default function LinkedInToolkitPage() {
     const { user, profile, fetchProfile } = useStore()
-    const isPremium = profile?.plan === 'premium' || profile?.plan === 'career_plus'
+    const effectivePlan = getEffectivePlan(profile)
+    const isPremium = effectivePlan === 'premium' || effectivePlan === 'career_plus'
 
     // Sync plan from Stripe on mount
     useEffect(() => {

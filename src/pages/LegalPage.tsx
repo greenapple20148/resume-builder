@@ -50,6 +50,20 @@ const LEGAL_CONTENT: Record<string, { title: string; seoTitle: string; seoDesc: 
             { heading: 'Managing Cookies', body: 'You can manage cookies through your browser settings. Disabling essential cookies may prevent you from using certain features of our service.' },
         ],
     },
+    '/refund-policy': {
+        title: 'Refund Policy',
+        seoTitle: 'Refund Policy',
+        seoDesc: 'Understand the refund policy for ResumeBuildIn digital services and subscriptions.',
+        lastUpdated: 'March 1, 2026',
+        sections: [
+            { heading: 'Overview', body: 'We want you to feel confident in your purchase. Because our product is a digital service, we offer a 7-day conditional refund policy.' },
+            { heading: 'Eligibility for Refund', body: 'You may request a refund within 7 days of purchase if:\n\n• You are unsatisfied with the service\n• You have not excessively downloaded or exported resume templates\n• No resume review or mock interview session has been fully delivered' },
+            { heading: 'Non-Refundable Situations', body: 'Refunds will not be issued if:\n\n• A professional resume review has already been completed\n• A mock interview session has been conducted\n• There is evidence of abuse or excessive use of the platform' },
+            { heading: 'How to Request a Refund', body: 'To request a refund, email support@resumebuildin.io with your account email and reason for the request. Please include your order confirmation or receipt if available.' },
+            { heading: 'Processing Time', body: 'Approved refunds are processed within 5–10 business days. The refund will be returned to the original payment method used at checkout.' },
+            { heading: 'Subscription Cancellations', body: 'You may cancel your subscription at any time from your account settings. Cancellation takes effect at the end of the current billing period. No partial refunds are given for unused time in the current billing cycle.' },
+        ],
+    },
 }
 
 export default function LegalPage() {
@@ -130,9 +144,13 @@ export default function LegalPage() {
                                 <span style={{ color: 'var(--gold)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>§{i + 1}</span>
                                 {s.heading}
                             </h2>
-                            <p style={{ fontSize: 14, color: 'var(--ink-40)', lineHeight: 1.8, margin: 0 }}>
-                                {s.body}
-                            </p>
+                            <div style={{ fontSize: 14, color: 'var(--ink-40)', lineHeight: 1.8, margin: 0 }}>
+                                {s.body.split('\n').map((line, li) => (
+                                    <p key={li} style={{ margin: line.startsWith('•') ? '6px 0 6px 4px' : li > 0 ? '8px 0 0' : '0' }}>
+                                        {line}
+                                    </p>
+                                ))}
+                            </div>
                         </section>
                     ))}
                 </div>

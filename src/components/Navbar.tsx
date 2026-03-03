@@ -106,7 +106,7 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
           {user ? (
             <>
               {(getEffectivePlan(profile) !== 'free' || isExpressUnlockActive(profile)) && (
-                <span className="badge badge-gold">{isExpressUnlockActive(profile) && profile?.plan === 'free' ? '⚡ EXPRESS' : profile?.plan}</span>
+                <span className="badge badge-gold">{isExpressUnlockActive(profile) && profile?.plan === 'free' ? 'EXPRESS' : profile?.plan}</span>
               )}
               <Link to="/dashboard" className="btn btn-outline btn-sm">
                 Dashboard

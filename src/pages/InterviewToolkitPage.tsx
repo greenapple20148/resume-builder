@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import { useStore } from '../lib/store'
 import { verifySubscription } from '../lib/stripe'
 import { LandingIcon } from '../components/LandingIcons'
+import { getEffectivePlan } from '../lib/expressUnlock'
 
 
 // ── Role-specific interview questions database ──────
@@ -688,7 +689,8 @@ function MockInterview({ role }: { role: string }) {
 
 export default function InterviewToolkitPage() {
     const { user, profile, fetchProfile } = useStore()
-    const isPremium = profile?.plan === 'premium' || profile?.plan === 'career_plus'
+    const effectivePlan = getEffectivePlan(profile)
+    const isPremium = effectivePlan === 'premium' || effectivePlan === 'career_plus'
 
     // Sync plan from Stripe on mount
     useEffect(() => {

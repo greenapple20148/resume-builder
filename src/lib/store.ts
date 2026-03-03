@@ -3,6 +3,7 @@ import { supabase } from './supabase'
 import { Profile, Resume, CoverLetter, SaveStatus } from '../types'
 import { getEffectivePlan } from './expressUnlock'
 import { cacheUserPlan } from './aiProvider'
+import { saveVersionSnapshot } from './resumeVersions'
 
 interface StoreState {
   user: any | null
@@ -314,6 +315,21 @@ export const useStore = create<StoreState>((set, get) => ({
 
     set({ saveStatus: error ? 'error' : 'saved' })
     if (error) throw error
+
+    // Auto-snapshot for version history (Pro+ only, non-blocking)
+    if (updates.data) {
+      const { user, profile, currentResume } = get()
+      const plan = getEffectivePlan(profile)
+      if (user && plan !== 'free') {
+        saveVersionSnapshot(
+          id,
+          user.id,
+          updates.data,
+          currentResume?.title,
+          currentResume?.theme_id,
+        ).catch(() => { }) // silent
+      }
+    }
   },
 
   deleteResume: async (id) => {

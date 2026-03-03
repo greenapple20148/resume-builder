@@ -1,4 +1,7 @@
 // supabase/functions/create-checkout/index.ts
+// Creates a Stripe Checkout session for subscription plans.
+// Price IDs are resolved server-side from secrets — never sent from the client.
+
 import Stripe from "npm:stripe@13.7.0";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
@@ -11,6 +14,33 @@ const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
 };
+
+// ── Resolve Stripe Price ID from secrets ─────────────────
+// Maps plan + billing period → Supabase secret name
+function resolvePriceId(plan: string, billing: string): string | null {
+  const map: Record<string, string> = {
+    "pro_monthly": "STRIPE_PRO_MONTHLY_PRICE_ID",
+    "pro_annual": "STRIPE_PRO_ANNUAL_PRICE_ID",
+    "premium_monthly": "STRIPE_PREMIUM_MONTHLY_PRICE_ID",
+    "premium_annual": "STRIPE_PREMIUM_ANNUAL_PRICE_ID",
+    "career_plus_monthly": "STRIPE_CAREER_PLUS_MONTHLY_PRICE_ID",
+    "career_plus_annual": "STRIPE_CAREER_PLUS_ANNUAL_PRICE_ID",
+  };
+
+  const key = `${plan}_${billing}`;
+  const secretName = map[key];
+  if (!secretName) return null;
+
+  return Deno.env.get(secretName) || null;
+}
+
+// ── Trial days per plan ──────────────────────────────────
+function getTrialDays(plan: string): number | undefined {
+  const trials: Record<string, number> = {
+    pro: 7,
+  };
+  return trials[plan];
+}
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -30,7 +60,22 @@ Deno.serve(async (req: Request) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { priceId, plan, trialDays } = await req.json();
+    // Accept both old format (priceId) and new format (plan + billing)
+    const body = await req.json();
+    const { plan, billing, trialDays: clientTrialDays } = body;
+    let priceId = body.priceId; // Legacy: client-provided priceId
+
+    // New secure flow: resolve price ID from secrets
+    if (!priceId && plan && billing) {
+      priceId = resolvePriceId(plan, billing);
+      if (!priceId) {
+        throw new Error(`Price not configured for ${plan}/${billing}. Set the secret: STRIPE_${plan.toUpperCase()}_${billing.toUpperCase()}_PRICE_ID`);
+      }
+    }
+
+    if (!priceId) {
+      throw new Error("Missing plan/billing or priceId");
+    }
 
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") as string,
@@ -75,6 +120,7 @@ Deno.serve(async (req: Request) => {
     // ------------------------------
 
     const appUrl = Deno.env.get("APP_URL") || "http://localhost:5173";
+    const trialPeriodDays = clientTrialDays || getTrialDays(plan) || undefined;
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -85,7 +131,7 @@ Deno.serve(async (req: Request) => {
       cancel_url: `${appUrl}/pricing?cancelled=true`,
       subscription_data: {
         metadata: { supabase_user_id: user.id, plan },
-        trial_period_days: trialDays || undefined,
+        trial_period_days: trialPeriodDays,
       },
       allow_promotion_codes: true,
     });

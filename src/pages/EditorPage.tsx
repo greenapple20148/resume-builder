@@ -9,6 +9,7 @@ import { useSEO } from '../lib/useSEO'
 import { useTheme } from '../lib/useTheme'
 import { THEMES } from './ThemesPage'
 import { getEffectivePlan } from '../lib/expressUnlock'
+import { getVersionHistory, restoreVersion, getVersionTimeLabel, type ResumeVersion } from '../lib/resumeVersions'
 
 const SECTIONS = [
   { id: 'personal', label: 'Personal Info', icon: '●' },
@@ -1231,6 +1232,56 @@ export default function EditorPage() {
   const [analysis, setAnalysis] = useState<WeaknessAnalysis | null>(null)
   const [analyzerError, setAnalyzerError] = useState<string | null>(null)
 
+  // Version History
+  const [historyOpen, setHistoryOpen] = useState(false)
+  const [historyLoading, setHistoryLoading] = useState(false)
+  const [versions, setVersions] = useState<ResumeVersion[]>([])
+  const [restoringId, setRestoringId] = useState<string | null>(null)
+  const isPro = getEffectivePlan(profile) !== 'free'
+
+  const openHistory = async () => {
+    if (!id || !isPro) return
+    setHistoryOpen(true)
+    setHistoryLoading(true)
+    try {
+      const v = await getVersionHistory(id)
+      setVersions(v)
+    } catch {
+      setVersions([])
+    } finally {
+      setHistoryLoading(false)
+    }
+  }
+
+  const handleRestore = async (version: ResumeVersion) => {
+    if (!id || !profile) return
+    setRestoringId(version.id)
+    try {
+      const result = await restoreVersion(
+        id,
+        profile.id || '',
+        version,
+        resumeData as ResumeData,
+        title,
+        themeId,
+      )
+      if (result.success) {
+        setResumeData(version.data)
+        if (version.theme_id) setThemeId(version.theme_id)
+        toast.success('Version restored!')
+        // Refresh versions list
+        const v = await getVersionHistory(id)
+        setVersions(v)
+      } else {
+        toast.error('Failed to restore version.')
+      }
+    } catch {
+      toast.error('Failed to restore version.')
+    } finally {
+      setRestoringId(null)
+    }
+  }
+
   // AI Theme Dictation
 
   const analyzerAbortRef = useRef<AbortController | null>(null)
@@ -1598,6 +1649,20 @@ export default function EditorPage() {
             {analyzerLoading ? 'Analyzing…' : 'Analyze'}
           </button>
           <div className="w-px h-5 bg-ink-10" />
+          {isPro && (
+            <>
+              <button
+                className="btn btn-ghost btn-sm flex items-center gap-1.5"
+                style={{ fontSize: 12, fontWeight: 500, padding: '6px 12px' }}
+                onClick={openHistory}
+                title="Version History"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                History
+              </button>
+              <div className="w-px h-5 bg-ink-10" />
+            </>
+          )}
           <button
             className="w-[34px] h-[34px] rounded-full bg-ink-05 border border-ink-10 cursor-pointer flex items-center justify-center transition-all duration-200 text-ink-40 shrink-0 hover:bg-ink-10 hover:text-gold hover:border-gold hover:rotate-[15deg]"
             onClick={toggleTheme}
@@ -2007,6 +2072,128 @@ export default function EditorPage() {
         </div>
       )
       }
+
+      {/* ── Version History Drawer ──────────────── */}
+      {historyOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setHistoryOpen(false)}>
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+          <div
+            className="relative w-[400px] max-w-[90vw] h-full bg-[var(--white)] shadow-2xl overflow-y-auto"
+            style={{ animation: 'slideInRight 0.25s ease-out' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="sticky top-0 z-10 bg-[var(--white)] border-b border-ink-10 px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--gold)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-ink">Version History</div>
+                  <div className="text-[11px] text-ink-30 font-mono">Last {versions.length} saves</div>
+                </div>
+              </div>
+              <button onClick={() => setHistoryOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-transparent border-none cursor-pointer text-ink-30 hover:bg-ink-05 hover:text-ink transition-colors">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+              </button>
+            </div>
+
+            {/* Loading */}
+            {historyLoading && (
+              <div className="flex flex-col items-center justify-center py-20 gap-4">
+                <div style={{ width: 48, height: 48, border: '3px solid #e5e7eb', borderTopColor: 'var(--gold)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <div className="text-sm text-ink-40 font-medium">Loading versions…</div>
+              </div>
+            )}
+
+            {/* Empty */}
+            {!historyLoading && versions.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-20 gap-4 text-center px-8">
+                <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--ink-05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ink-20)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                </div>
+                <div className="text-sm font-medium text-ink">No versions yet</div>
+                <div className="text-[12px] text-ink-30 leading-relaxed">Versions are automatically saved as you edit. Keep working and your history will appear here.</div>
+              </div>
+            )}
+
+            {/* Version List */}
+            {!historyLoading && versions.length > 0 && (
+              <div className="px-5 py-4 flex flex-col gap-2">
+                {versions.map((v, idx) => (
+                  <div
+                    key={v.id}
+                    className="rounded-xl border border-ink-10 px-4 py-3.5 transition-all hover:border-gold/30 hover:shadow-sm"
+                    style={{ background: idx === 0 ? 'rgba(201,146,60,0.04)' : 'transparent' }}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[13px] font-semibold text-ink">
+                          {idx === 0 ? 'Latest' : `Version ${v.version_number}`}
+                        </span>
+                        {idx === 0 && (
+                          <span style={{
+                            fontSize: 9,
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: 10,
+                            background: 'rgba(16,185,129,0.1)',
+                            color: '#059669',
+                            letterSpacing: 0.5,
+                            textTransform: 'uppercase' as const,
+                          }}>Current</span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-ink-30 font-mono">
+                        {getVersionTimeLabel(v.created_at)}
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-ink-30 mb-2.5">
+                      {v.title || 'Untitled'}
+                      {v.data?.personal?.fullName && (
+                        <span className="text-ink-20"> · {v.data.personal.fullName}</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 text-[10px] text-ink-20 mb-3 font-mono">
+                      {v.data?.experience && (
+                        <span>{(v.data.experience as any[]).length} exp</span>
+                      )}
+                      {v.data?.education && (
+                        <span>{(v.data.education as any[]).length} edu</span>
+                      )}
+                      {v.data?.skills && (
+                        <span>{(v.data.skills as any[]).length} skills</span>
+                      )}
+                    </div>
+                    {idx > 0 && (
+                      <button
+                        className="btn btn-sm w-full flex items-center justify-center gap-1.5"
+                        style={{
+                          background: 'transparent',
+                          border: '1px solid var(--ink-10)',
+                          color: 'var(--ink)',
+                          fontSize: 12,
+                          fontWeight: 600,
+                          padding: '7px 14px',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => handleRestore(v)}
+                        disabled={restoringId === v.id}
+                      >
+                        {restoringId === v.id ? (
+                          <><div className="spinner" style={{ width: 12, height: 12 }} /> Restoring…</>
+                        ) : (
+                          <><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg> Restore this version</>
+                        )}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Drawer animation */}
       <style>{`

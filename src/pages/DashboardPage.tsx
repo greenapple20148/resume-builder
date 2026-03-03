@@ -271,7 +271,7 @@ export default function DashboardPage() {
           <div className="bg-[var(--white)] border border-ink-10 rounded-xl p-4 mt-4">
             <div className="mb-3">
               <span className={`badge ${effectivePlan !== 'free' ? 'badge-gold' : 'badge-dark'}`}>
-                {isExpressUnlockActive(profile) && profile?.plan === 'free' ? '⚡ EXPRESS' : profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
+                {isExpressUnlockActive(profile) && profile?.plan === 'free' ? 'EXPRESS' : profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
               </span>
             </div>
             <div className="mb-1">

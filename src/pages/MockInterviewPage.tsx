@@ -17,6 +17,7 @@ import {
 } from '../lib/ai'
 import { LandingIcon } from '../components/LandingIcons'
 import { canStartMockSession, getSessionsDisplay, consumeMockSession, purchaseMockPack } from '../lib/mockPack'
+import { getEffectivePlan } from '../lib/expressUnlock'
 
 // ── Mode access by plan ──────────────────────────────
 const PREMIUM_MODES = ['general', 'behavioral']
@@ -26,7 +27,7 @@ type Phase = 'select' | 'configure' | 'interview' | 'summary'
 
 export default function MockInterviewPage() {
     const { profile, user, fetchProfile } = useStore()
-    const plan = profile?.plan || 'free'
+    const plan = getEffectivePlan(profile)
     // Users can access if they have a premium/career+ plan OR purchased mock pack sessions
     const hasPurchasedSessions = (profile?.mock_sessions_purchased || 0) > 0
     const canAccess = plan === 'premium' || plan === 'career_plus' || hasPurchasedSessions

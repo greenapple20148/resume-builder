@@ -26,8 +26,7 @@ export interface Plan {
   price: number
   priceMonthly: number
   priceAnnual: number
-  stripePriceIdMonthly?: string
-  stripePriceIdAnnual?: string
+
   features: PlanFeature[]
   featureGroups: PlanFeatureGroup[]
   tagline: string
@@ -94,8 +93,7 @@ export const PLANS: Record<string, Plan> = {
     price: 14.99,
     priceMonthly: 14.99,
     priceAnnual: 79,
-    stripePriceIdMonthly: import.meta.env.VITE_STRIPE_PRO_MONTHLY_PRICE_ID,
-    stripePriceIdAnnual: import.meta.env.VITE_STRIPE_PRO_ANNUAL_PRICE_ID,
+
     tagline: 'Everything job seekers need. Unlimited downloads + DOCX.',
     cta: 'Start 7-Day Free Trial',
     features: [
@@ -135,7 +133,10 @@ export const PLANS: Record<string, Plan> = {
       },
       {
         label: 'Support', features: [
-          { text: 'Email support (standard)', included: true },
+          { text: 'Skip-the-Line Priority Support', included: true },
+          { text: 'Guaranteed 12-hour response time', included: true },
+          { text: 'Front-of-queue priority', included: true },
+          { text: 'Direct assistance with edits & formatting', included: true },
         ]
       },
     ],
@@ -151,8 +152,7 @@ export const PLANS: Record<string, Plan> = {
     price: 24.99,
     priceMonthly: 24.99,
     priceAnnual: 119,
-    stripePriceIdMonthly: import.meta.env.VITE_STRIPE_TEAM_MONTHLY_PRICE_ID,
-    stripePriceIdAnnual: import.meta.env.VITE_STRIPE_TEAM_ANNUAL_PRICE_ID,
+
     tagline: 'AI-powered tools for serious job seekers.',
     cta: 'Go Premium',
     features: [
@@ -213,7 +213,8 @@ export const PLANS: Record<string, Plan> = {
       },
       {
         label: 'Support', features: [
-          { text: 'Priority support', included: true },
+          { text: 'Skip-the-Line Priority Support', included: true },
+          { text: '12-hour guaranteed response time', included: true },
         ]
       },
     ],
@@ -227,8 +228,7 @@ export const PLANS: Record<string, Plan> = {
     price: 34.99,
     priceMonthly: 34.99,
     priceAnnual: 149,
-    stripePriceIdMonthly: import.meta.env.VITE_STRIPE_CAREER_PLUS_MONTHLY_PRICE_ID,
-    stripePriceIdAnnual: import.meta.env.VITE_STRIPE_CAREER_PLUS_ANNUAL_PRICE_ID,
+
     tagline: 'Full AI coaching suite for active job hunters.',
     cta: 'Go Career+',
     features: [
@@ -278,7 +278,9 @@ export const PLANS: Record<string, Plan> = {
       },
       {
         label: 'Support', features: [
-          { text: 'Priority support', included: true },
+          { text: 'Same-business-day support', included: true },
+          { text: 'Front-of-queue priority', included: true },
+          { text: 'Direct assistance with edits & formatting', included: true },
           { text: 'Early access to new tools', included: true },
         ]
       },
@@ -296,7 +298,7 @@ export interface AddOn {
   price: number
   description: string
   icon: string
-  stripePriceId?: string
+
 }
 
 export const ADD_ONS: AddOn[] = [
@@ -306,7 +308,7 @@ export const ADD_ONS: AddOn[] = [
     price: 12.99,
     description: '3 AI-powered mock interview sessions. Use anytime, never expires.',
     icon: 'mic',
-    stripePriceId: import.meta.env.VITE_STRIPE_MOCK_PACK_PRICE_ID,
+
   },
   {
     id: 'human_review',
@@ -314,7 +316,7 @@ export const ADD_ONS: AddOn[] = [
     price: 49,
     description: 'Expert human review with personalized feedback within 48 hours.',
     icon: 'search',
-    stripePriceId: import.meta.env.VITE_STRIPE_HUMAN_REVIEW_PRICE_ID,
+
   },
   {
     id: 'linkedin_overhaul',
@@ -322,7 +324,7 @@ export const ADD_ONS: AddOn[] = [
     price: 99,
     description: 'Complete LinkedIn profile rewrite by a career branding expert.',
     icon: 'linkedin',
-    stripePriceId: import.meta.env.VITE_STRIPE_LINKEDIN_OVERHAUL_PRICE_ID,
+
   },
   {
     id: 'express_unlock',
@@ -330,11 +332,11 @@ export const ADD_ONS: AddOn[] = [
     price: 9.99,
     description: '24-hour full Pro access. Download unlimited resumes, no watermark.',
     icon: 'zap',
-    stripePriceId: import.meta.env.VITE_STRIPE_EXPRESS_UNLOCK_PRICE_ID,
+
   },
 ]
 
-export async function createCheckoutSession(priceId: string, plan: string) {
+export async function createCheckoutSession(plan: string, billing: 'monthly' | 'annual') {
   const { data: { session } } = await supabase.auth.getSession()
   if (!session) throw new Error('Not authenticated')
 
@@ -347,7 +349,7 @@ export async function createCheckoutSession(priceId: string, plan: string) {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
       },
-      body: { priceId, plan, trialDays: PLANS[plan]?.trialDays },
+      body: { plan, billing },
     })
 
     if (error) throw error
