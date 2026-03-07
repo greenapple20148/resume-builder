@@ -75,7 +75,7 @@ Deno.serve(async (req: Request) => {
     }
 
     // 5) Create Stripe Billing Portal Session
-    const appUrl = Deno.env.get("APP_URL") || "http://localhost:5173";
+    const appUrl = Deno.env.get("APP_URL") || "https://resumebuildin.com";
 
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: profile.stripe_customer_id,

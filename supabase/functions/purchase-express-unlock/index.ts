@@ -68,7 +68,7 @@ Deno.serve(async (req: Request) => {
         }
 
         // ── Create checkout session ──────────────────────
-        const appUrl = Deno.env.get("APP_URL") || "http://localhost:5173";
+        const appUrl = Deno.env.get("APP_URL") || "https://resumebuildin.com";
         const priceId = Deno.env.get("EXPRESS_UNLOCK_PRICE_ID");
 
         if (!priceId) {
