@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useSEO } from '../lib/useSEO'
 import { useTheme } from '../lib/useTheme'
 import { toast } from '../components/Toast'
-import { supabase } from '../lib/supabase'
+import { invokeEdgeFunction } from '../lib/supabase'
 import { LandingIcon } from '../components/LandingIcons'
 
 export default function ContactPage() {
@@ -20,11 +20,16 @@ export default function ContactPage() {
         e.preventDefault()
         setSending(true)
         try {
-            const { data, error } = await supabase.functions.invoke('contact-form', {
-                body: { ...form, _hp: honeypot, _ts: loadedAt.current },
+            // Contact form may not require auth — use direct fetch
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+            const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+            const res = await fetch(`${supabaseUrl}/functions/v1/contact-form`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'apikey': anonKey },
+                body: JSON.stringify({ ...form, _hp: honeypot, _ts: loadedAt.current }),
             })
-            if (error) throw error
-            if (data?.error) throw new Error(data.error)
+            const data = await res.json()
+            if (!res.ok) throw new Error(data.error || 'Failed to send message')
             toast.success('Message sent! We\'ll get back to you within 24 hours.')
             setForm({ name: '', email: '', subject: '', message: '' })
         } catch (err: any) {

@@ -1,5 +1,5 @@
 // src/lib/ai.ts — Client-side AI mock interview helpers
-import { supabase } from './supabase'
+import { invokeEdgeFunction } from './supabase'
 import { callAI } from './aiProvider'
 
 export interface InterviewEvaluation {
@@ -65,16 +65,7 @@ export interface PracticeHistoryEntry {
 }
 
 async function callMockInterview(body: Record<string, any>): Promise<any> {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) throw new Error('Not authenticated')
-
-    const { data, error } = await supabase.functions.invoke('ai-mock-interview', {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-        body,
-    })
-
-    if (error) throw error
-    if (data?.error) throw new Error(data.error)
+    const data = await invokeEdgeFunction('ai-mock-interview', { body })
     return data
 }
 

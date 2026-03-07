@@ -1,5 +1,5 @@
 // src/lib/mockPack.ts — Mock Interview Pack purchase & session tracking
-import { supabase } from './supabase'
+import { supabase, invokeEdgeFunction, getAccessToken } from './supabase'
 import type { Profile } from '../types'
 
 const PACK_SIZE = 3  // 3 Interview Mock Pack
@@ -77,27 +77,23 @@ export function getSessionsDisplay(profile: Profile | null): {
  * Adds 3 to mock_sessions_purchased in the profiles table.
  */
 export async function purchaseMockPack(): Promise<{ success: boolean; newTotal: number }> {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) throw new Error('Not authenticated')
-
     try {
         // Try edge function first (production Stripe flow)
-        const { data, error } = await supabase.functions.invoke('purchase-mock-pack', {
-            headers: { Authorization: `Bearer ${session.access_token}` },
-        })
-        if (!error && data?.success) {
-            return data as { success: boolean; newTotal: number }
-        }
+        return await invokeEdgeFunction<{ success: boolean; newTotal: number }>('purchase-mock-pack')
     } catch {
         // Edge function not deployed — activate directly (dev mode)
         console.warn('[mockPack] Edge function not available, adding directly (dev mode)')
     }
 
     // Dev fallback: add directly to profile
+    const accessToken = await getAccessToken()
+    const payload = JSON.parse(atob(accessToken.split('.')[1]))
+    const userId = payload.sub
+
     const { data: profile } = await supabase
         .from('profiles')
         .select('mock_sessions_purchased')
-        .eq('id', session.user.id)
+        .eq('id', userId)
         .single()
 
     const current = profile?.mock_sessions_purchased || 0
@@ -106,7 +102,7 @@ export async function purchaseMockPack(): Promise<{ success: boolean; newTotal: 
     const { error: updateError } = await supabase
         .from('profiles')
         .update({ mock_sessions_purchased: newTotal })
-        .eq('id', session.user.id)
+        .eq('id', userId)
 
     if (updateError) throw updateError
 
@@ -117,13 +113,14 @@ export async function purchaseMockPack(): Promise<{ success: boolean; newTotal: 
  * Consume one session. Deducts from purchased first, then from plan allowance.
  */
 export async function consumeMockSession(): Promise<void> {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) throw new Error('Not authenticated')
+    const accessToken = await getAccessToken()
+    const payload = JSON.parse(atob(accessToken.split('.')[1]))
+    const userId = payload.sub
 
     const { data: profile } = await supabase
         .from('profiles')
         .select('mock_sessions_used, mock_sessions_purchased, plan')
-        .eq('id', session.user.id)
+        .eq('id', userId)
         .single()
 
     if (!profile) throw new Error('Profile not found')
@@ -138,13 +135,13 @@ export async function consumeMockSession(): Promise<void> {
         await supabase
             .from('profiles')
             .update({ mock_sessions_purchased: purchased - 1 })
-            .eq('id', session.user.id)
+            .eq('id', userId)
     } else if (planRemaining > 0) {
         // Deduct from plan allowance
         await supabase
             .from('profiles')
             .update({ mock_sessions_used: used + 1 })
-            .eq('id', session.user.id)
+            .eq('id', userId)
     } else {
         throw new Error('No sessions remaining')
     }

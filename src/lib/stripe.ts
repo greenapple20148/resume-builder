@@ -1,5 +1,5 @@
 import { loadStripe, Stripe } from '@stripe/stripe-js'
-import { supabase } from './supabase'
+import { supabase, invokeEdgeFunction } from './supabase'
 
 let stripePromise: Promise<Stripe | null> | null = null
 
@@ -8,10 +8,13 @@ export const getStripe = () => {
     // Check both VITE_ prefixed and standard prefix in case of specific Vercel setups
     const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || import.meta.env.STRIPE_PUBLISHABLE_KEY
     if (!key) {
-      console.warn("Stripe publishable key is missing. Billing features will not work.")
+      console.warn("Stripe publishable key is missing. Set VITE_STRIPE_PUBLISHABLE_KEY in your environment. Billing features will not work.")
       return null
     }
-    stripePromise = loadStripe(key)
+    stripePromise = loadStripe(key).catch((err) => {
+      console.error("Failed to load Stripe.js:", err?.message || err, "— Check your CSP headers and network connectivity to js.stripe.com")
+      return null
+    })
   }
   return stripePromise
 }
@@ -413,84 +416,29 @@ export const ADD_ONS: AddOn[] = [
 ]
 
 export async function createCheckoutSession(plan: string, billing: 'monthly' | 'annual') {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) throw new Error('Not authenticated')
-
-  // Add timeout to prevent infinite spinning
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 15000)
-
-  try {
-    const { data, error } = await supabase.functions.invoke('create-checkout', {
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: { plan, billing },
-    })
-
-    if (error) throw error
-    if (!data?.url) throw new Error('No checkout URL returned. Please try again.')
-    return data as { url: string }
-  } finally {
-    clearTimeout(timeout)
-  }
+  const data = await invokeEdgeFunction<{ url: string }>('create-checkout', {
+    body: { plan, billing },
+  })
+  if (!data?.url) throw new Error('No checkout URL returned. Please try again.')
+  return data
 }
 
 export async function openCustomerPortal() {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) throw new Error('Not authenticated')
-
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 15000)
-
-  try {
-    const { data, error } = await supabase.functions.invoke('customer-portal', {
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
-    })
-    if (error) throw error
-    if (!data?.url) throw new Error('Could not open billing portal. Please try again.')
-    window.location.href = data.url
-  } finally {
-    clearTimeout(timeout)
-  }
+  const data = await invokeEdgeFunction<{ url: string }>('customer-portal')
+  if (!data?.url) throw new Error('Could not open billing portal. Please try again.')
+  window.location.href = data.url
 }
 
 export async function verifySubscription(): Promise<{ plan: string; synced: boolean }> {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) throw new Error('Not authenticated')
-
-  const { data, error } = await supabase.functions.invoke('verify-subscription', {
-    headers: {
-      Authorization: `Bearer ${session.access_token}`,
-    },
-  })
-
-  if (error) throw error
-  return data as { plan: string; synced: boolean }
+  return invokeEdgeFunction<{ plan: string; synced: boolean }>('verify-subscription')
 }
 
 export async function cancelSubscription(): Promise<{ success: boolean; message: string }> {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) throw new Error('Not authenticated')
-
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 15000)
-
   try {
-    const { data, error } = await supabase.functions.invoke('cancel-subscription', {
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-      },
-    })
-    if (error) {
-      // If the edge function doesn't exist, fall back to customer portal
-      await openCustomerPortal()
-      return { success: true, message: 'Redirecting to billing portal...' }
-    }
-    return data as { success: boolean; message: string }
-  } finally {
-    clearTimeout(timeout)
+    return await invokeEdgeFunction<{ success: boolean; message: string }>('cancel-subscription')
+  } catch {
+    // If the edge function doesn't exist, fall back to customer portal
+    await openCustomerPortal()
+    return { success: true, message: 'Redirecting to billing portal...' }
   }
 }

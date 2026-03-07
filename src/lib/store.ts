@@ -89,7 +89,28 @@ export const useStore = create<StoreState>((set, get) => ({
       }
     })
 
-    const { data: { session } } = await supabase.auth.getSession()
+    // getSession() can deadlock due to navigator.locks — race with a timeout
+    let session: any = null
+    try {
+      const result = await Promise.race([
+        supabase.auth.getSession(),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getSession_timeout')), 5000))
+      ])
+      session = result.data.session
+    } catch {
+      // Fallback: read session from localStorage
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
+      const raw = localStorage.getItem(`sb-${ref}-auth-token`)
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw)
+          // Build a minimal session-like object with the user
+          if (parsed?.user) session = parsed
+        } catch { /* ignore */ }
+      }
+    }
+
     if (session?.user) {
       set({ user: session.user })
       await get().fetchProfile(session.user.id)
@@ -120,7 +141,15 @@ export const useStore = create<StoreState>((set, get) => ({
 
     // Profile doesn't exist — auto-create it (trigger may have failed)
     if (error?.code === 'PGRST116') {
-      const { data: { user: authUser } } = await supabase.auth.getUser()
+      // getUser() can also deadlock — race with timeout
+      let authUser: any = null
+      try {
+        const result = await Promise.race([
+          supabase.auth.getUser(),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getUser_timeout')), 5000))
+        ])
+        authUser = result.data.user
+      } catch { /* timeout or error */ }
       if (authUser) {
         const { data: newProfile } = await supabase
           .from('profiles')
@@ -156,18 +185,28 @@ export const useStore = create<StoreState>((set, get) => ({
 
     if (profileError) throw profileError
 
-    // Update auth metadata
-    const { error: authError } = await supabase.auth.updateUser({
-      data: { full_name: updates.full_name },
-    })
-    if (authError) throw authError
+    // Update auth metadata (can deadlock — wrap with timeout)
+    try {
+      const authResult = await Promise.race([
+        supabase.auth.updateUser({ data: { full_name: updates.full_name } }),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('updateUser_timeout')), 5000))
+      ])
+      if (authResult.error) throw authResult.error
+    } catch (e: any) {
+      if (e.message !== 'updateUser_timeout') throw e
+    }
 
     // If email is being changed
     if (updates.email && updates.email !== user.email) {
-      const { error: emailError } = await supabase.auth.updateUser({
-        email: updates.email,
-      })
-      if (emailError) throw emailError
+      try {
+        const emailResult = await Promise.race([
+          supabase.auth.updateUser({ email: updates.email }),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('updateUser_timeout')), 5000))
+        ])
+        if (emailResult.error) throw emailResult.error
+      } catch (e: any) {
+        if (e.message !== 'updateUser_timeout') throw e
+      }
     }
 
     // Refresh profile
@@ -222,7 +261,19 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   signOut: async () => {
-    await supabase.auth.signOut()
+    // signOut() can also deadlock via getSession() — don't let it block the UI
+    try {
+      await Promise.race([
+        supabase.auth.signOut(),
+        new Promise((resolve) => setTimeout(resolve, 3000))
+      ])
+    } catch { /* ignore */ }
+    // Always clear local state regardless of whether signOut succeeded
+    const ref = import.meta.env.VITE_SUPABASE_URL?.split('//')[1]?.split('.')[0]
+    if (ref) {
+      localStorage.removeItem(`sb-${ref}-auth-token`)
+    }
+    set({ user: null, profile: null, resumes: [], currentResume: null, coverLetters: [] })
   },
 
   resetPassword: async (email) => {
@@ -233,10 +284,16 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   updatePassword: async (newPassword) => {
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword,
-    })
-    if (error) throw error
+    try {
+      const result = await Promise.race([
+        supabase.auth.updateUser({ password: newPassword }),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('updateUser_timeout')), 5000))
+      ])
+      if (result.error) throw result.error
+    } catch (e: any) {
+      if (e.message === 'updateUser_timeout') throw new Error('Password update timed out. Please try again.')
+      throw e
+    }
   },
 
   fetchResumes: async () => {
@@ -266,11 +323,13 @@ export const useStore = create<StoreState>((set, get) => ({
     const { user, profile } = get()
     if (!user) throw new Error('Not authenticated')
 
-    // Ensure we have a valid session before making API calls
-    console.log('[store] Step 1: Refreshing session...')
-    const { error: sessionError } = await supabase.auth.refreshSession()
-    if (sessionError) console.warn('[store] Session refresh warning:', sessionError.message)
-    console.log('[store] Step 2: Checking resume count...')
+    // Ensure we have a valid session before making API calls (can deadlock — skip if timeout)
+    try {
+      await Promise.race([
+        supabase.auth.refreshSession(),
+        new Promise((resolve) => setTimeout(resolve, 3000))
+      ])
+    } catch { /* ignore refresh failures */ }
 
     // Check resume limit based on user's effective plan (accounts for Express Unlock)
     const planLimits: Record<string, number> = { free: 1, pro: 5, premium: 10, career_plus: Infinity }

@@ -46,10 +46,13 @@ export default function ProfilePage() {
         try {
             const { error: signInError } = await supabase.auth.signInWithPassword({ email: user.email, password: currentPassword })
             if (signInError) { toast.error('Current password is incorrect'); setPasswordSaving(false); return }
-            const { error } = await supabase.auth.updateUser({ password: newPassword })
-            if (error) throw error
+            const result = await Promise.race([
+                supabase.auth.updateUser({ password: newPassword }),
+                new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+            ])
+            if (result.error) throw result.error
             toast.success('Password updated successfully!'); setCurrentPassword(''); setNewPassword(''); setConfirmPassword('')
-        } catch (err: any) { toast.error(err.message || 'Failed to update password') } finally { setPasswordSaving(false) }
+        } catch (err: any) { toast.error(err.message === 'timeout' ? 'Request timed out. Please try again.' : (err.message || 'Failed to update password')) } finally { setPasswordSaving(false) }
     }
 
     const handleSendInvite = async (e: React.FormEvent) => {

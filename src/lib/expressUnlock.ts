@@ -1,5 +1,5 @@
 // src/lib/expressUnlock.ts — Express 24h Unlock logic
-import { supabase } from './supabase'
+import { supabase, invokeEdgeFunction, getAccessToken } from './supabase'
 import type { Profile } from '../types'
 
 const EXPRESS_DURATION_MS = 24 * 60 * 60 * 1000  // 24 hours
@@ -48,15 +48,17 @@ export function getEffectivePlan(profile: Profile | null): string {
  * Sets express_unlock_until to 24 hours from now in the profiles table.
  */
 export async function activateExpressUnlock(): Promise<{ success: boolean; until: string }> {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) throw new Error('Not authenticated')
+    const accessToken = await getAccessToken()
+    // Decode the JWT to get the user ID (payload is the second segment)
+    const payload = JSON.parse(atob(accessToken.split('.')[1]))
+    const userId = payload.sub
 
     const until = new Date(Date.now() + EXPRESS_DURATION_MS).toISOString()
 
     const { error } = await supabase
         .from('profiles')
         .update({ express_unlock_until: until })
-        .eq('id', session.user.id)
+        .eq('id', userId)
 
     if (error) throw error
 
@@ -69,17 +71,9 @@ export async function activateExpressUnlock(): Promise<{ success: boolean; until
  * For now, we invoke a Supabase Edge Function for payment, or activate directly.
  */
 export async function purchaseExpressUnlock(): Promise<{ success: boolean; until: string }> {
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) throw new Error('Not authenticated')
-
     try {
         // Try edge function first (production flow)
-        const { data, error } = await supabase.functions.invoke('purchase-express-unlock', {
-            headers: { Authorization: `Bearer ${session.access_token}` },
-        })
-        if (!error && data?.success) {
-            return data as { success: boolean; until: string }
-        }
+        return await invokeEdgeFunction<{ success: boolean; until: string }>('purchase-express-unlock')
     } catch {
         // Edge function not deployed — activate directly (dev mode)
         console.warn('[expressUnlock] Edge function not available, activating directly (dev mode)')

@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import { toast } from '../components/Toast'
 import { PLANS, ADD_ONS, createCheckoutSession, openCustomerPortal } from '../lib/stripe'
 import { supabase } from '../lib/supabase'
+import { invokeEdgeFunction } from '../lib/supabase'
 import { useStore } from '../lib/store'
 import { useSEO } from '../lib/useSEO'
 import { LandingIcon } from '../components/LandingIcons'
@@ -55,7 +56,7 @@ export default function PricingPage() {
     if (plan === 'free') return
     if (profile?.plan === plan) { try { setLoading(plan); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) }; return }
     const billing = plan === 'founding' ? 'annual' : (annual ? 'annual' : 'monthly')
-    try { setLoading(plan); const { url } = await createCheckoutSession(plan, billing as 'monthly' | 'annual'); if (url) window.location.href = url } catch (err: any) { toast.error(err.message || 'Checkout failed.') } finally { setLoading(null) }
+    try { setLoading(plan); const { url } = await createCheckoutSession(plan, billing as 'monthly' | 'annual'); if (url) window.location.href = url } catch (err: any) { console.error('[handleUpgrade] error:', err); toast.error(err.message || 'Checkout failed.') } finally { setLoading(null) }
   }
 
   const handleManageBilling = async () => { try { setLoading('portal'); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) } }
@@ -105,13 +106,9 @@ export default function PricingPage() {
     // For other add-ons, use Stripe checkout
     try {
       setLoading(addonId)
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) throw new Error('Not authenticated')
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        headers: { Authorization: `Bearer ${session.access_token}` },
+      const data = await invokeEdgeFunction<{ url: string }>('create-checkout', {
         body: { plan: addonId, billing: 'one_time' },
       })
-      if (error) throw error
       if (data?.url) window.location.href = data.url
     } catch (err: any) {
       toast.error(err.message || 'Checkout failed.')
