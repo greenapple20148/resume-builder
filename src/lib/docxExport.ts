@@ -1,3 +1,4 @@
+'use client'
 import { Document, Packer, Paragraph, TextRun, AlignmentType, Footer, BorderStyle } from "docx";
 import { saveAs } from "file-saver";
 import { ResumeData } from "../types";

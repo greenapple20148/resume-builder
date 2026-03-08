@@ -1,3 +1,4 @@
+'use client'
 // src/components/ShareResumeModal.tsx — QR Code share modal
 import { useState, useEffect, useRef } from 'react'
 import { generateQRCodeSVG, generateQRCodeDataURL } from '../lib/qrcode'

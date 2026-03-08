@@ -1,12 +1,13 @@
+'use client'
 // src/components/ExpressUnlockBanner.tsx — Countdown banner for active Express 24h Unlock
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import { useStore } from '../lib/store'
 import { isExpressUnlockActive, getExpressUnlockRemainingMs, formatExpressCountdown } from '../lib/expressUnlock'
 
 export default function ExpressUnlockBanner() {
     const { profile } = useStore()
-    const [remaining, setRemaining] = useState(() => getExpressUnlockRemainingMs(profile))
+    const [remaining, setRemaining] = useState(0)
 
     useEffect(() => {
         if (!isExpressUnlockActive(profile)) return
@@ -67,7 +68,7 @@ export default function ExpressUnlockBanner() {
             </span>
             <span style={{ fontSize: 11, opacity: 0.8 }}>remaining</span>
             <Link
-                to="/pricing"
+                href="/pricing"
                 style={{
                     marginLeft: 8,
                     background: 'rgba(255,255,255,0.2)',

@@ -1,3 +1,4 @@
+'use client'
 // src/lib/aiRateLimit.ts — AI abuse protection: rate limiting, daily caps, cooldowns
 //
 // 3-layer defense:

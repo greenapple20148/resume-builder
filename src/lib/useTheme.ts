@@ -1,11 +1,21 @@
+'use client'
 import { useState, useEffect } from 'react'
 
 export function useTheme() {
-    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    // Always initialize to 'light' for SSR consistency.
+    // The beforeInteractive script in layout.tsx already sets data-theme
+    // on the HTML element to prevent FOUC. We sync React state in useEffect.
+    const [theme, setTheme] = useState<'light' | 'dark'>('light')
+
+    // Sync with stored/system preference after hydration
+    useEffect(() => {
         const saved = localStorage.getItem('resumebuildin-theme')
-        if (saved === 'light' || saved === 'dark') return saved
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    })
+        if (saved === 'light' || saved === 'dark') {
+            setTheme(saved)
+        } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setTheme('dark')
+        }
+    }, [])
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme)

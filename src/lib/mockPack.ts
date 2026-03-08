@@ -1,3 +1,4 @@
+'use client'
 // src/lib/mockPack.ts — Mock Interview Pack purchase & session tracking
 import { supabase, invokeEdgeFunction, getAccessToken } from './supabase'
 import type { Profile } from '../types'

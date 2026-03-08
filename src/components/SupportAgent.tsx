@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import {
     SupportMessage,
@@ -67,7 +68,7 @@ export default function SupportAgent() {
     const isFreeUser = !profile?.plan || profile.plan === 'free'
     const [isOpen, setIsOpen] = useState(false)
     const [isClosing, setIsClosing] = useState(false)
-    const [messages, setMessages] = useState<SupportMessage[]>([createWelcomeMessage()])
+    const [messages, setMessages] = useState<SupportMessage[]>([])
     const [inputValue, setInputValue] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [quickReplies, setQuickReplies] = useState<QuickReply[]>(INITIAL_QUICK_REPLIES)
@@ -76,6 +77,12 @@ export default function SupportAgent() {
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLTextAreaElement>(null)
     const isFirstOpen = useRef(true)
+
+    // Initialize welcome message after mount to avoid hydration mismatch
+    // (createWelcomeMessage uses Date.now() and Math.random())
+    useEffect(() => {
+        setMessages([createWelcomeMessage()])
+    }, [])
 
     /* ── Scroll to bottom when messages change ───────────── */
     const scrollToBottom = useCallback(() => {
@@ -203,6 +210,8 @@ export default function SupportAgent() {
         setMessages([createWelcomeMessage()])
         setQuickReplies(INITIAL_QUICK_REPLIES)
     }, [])
+
+
 
     return (
         <>

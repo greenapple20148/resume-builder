@@ -1,3 +1,4 @@
+'use client'
 import { create } from 'zustand'
 import { supabase } from './supabase'
 import { Profile, Resume, CoverLetter, SaveStatus } from '../types'
@@ -99,7 +100,7 @@ export const useStore = create<StoreState>((set, get) => ({
       session = result.data.session
     } catch {
       // Fallback: read session from localStorage
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
       const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
       const raw = localStorage.getItem(`sb-${ref}-auth-token`)
       if (raw) {
@@ -269,7 +270,7 @@ export const useStore = create<StoreState>((set, get) => ({
       ])
     } catch { /* ignore */ }
     // Always clear local state regardless of whether signOut succeeded
-    const ref = import.meta.env.VITE_SUPABASE_URL?.split('//')[1]?.split('.')[0]
+    const ref = process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]?.split('.')[0]
     if (ref) {
       localStorage.removeItem(`sb-${ref}-auth-token`)
     }

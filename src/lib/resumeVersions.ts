@@ -1,3 +1,4 @@
+'use client'
 // src/lib/resumeVersions.ts — Resume Version History
 // Auto-snapshots resume data on save. Pro+ users can browse and restore.
 

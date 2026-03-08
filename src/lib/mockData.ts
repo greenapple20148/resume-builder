@@ -1,3 +1,4 @@
+'use client'
 // ─── Mock Resume Data for Theme Previews ──────────────────────
 // Used to render realistic previews on the Themes page so users
 // can see how each template looks with actual content.

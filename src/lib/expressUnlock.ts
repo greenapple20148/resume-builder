@@ -1,3 +1,4 @@
+'use client'
 // src/lib/expressUnlock.ts — Express 24h Unlock logic
 import { supabase, invokeEdgeFunction, getAccessToken } from './supabase'
 import type { Profile } from '../types'
