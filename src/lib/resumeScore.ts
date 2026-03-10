@@ -1,3 +1,4 @@
+'use client'
 // src/lib/resumeScore.ts — Shared resume weakness analysis
 
 const WEAK_VERBS = ['helped', 'assisted', 'worked on', 'was responsible for', 'participated in', 'handled', 'dealt with', 'did', 'made', 'got', 'used', 'tried']

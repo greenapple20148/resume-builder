@@ -1,3 +1,4 @@
+'use client'
 // src/lib/ai.ts — Client-side AI mock interview helpers
 import { invokeEdgeFunction } from './supabase'
 import { callAI } from './aiProvider'
@@ -406,8 +407,7 @@ export async function extractTextFromPDF(file: File): Promise<string> {
     try {
         console.log('[extractTextFromPDF] Triggered on file size:', file.size)
         const pdfjs = await import('pdfjs-dist')
-        const workerSrc = await import('pdfjs-dist/build/pdf.worker.min.mjs?url')
-        pdfjs.GlobalWorkerOptions.workerSrc = workerSrc.default
+        pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`
 
         const arrayBuffer = await file.arrayBuffer()
         const pdf = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) }).promise

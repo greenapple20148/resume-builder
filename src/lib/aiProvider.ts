@@ -1,3 +1,4 @@
+'use client'
 // src/lib/aiProvider.ts — Unified AI Provider abstraction (Gemini + Claude)
 import { guardAICall } from './aiRateLimit'
 
@@ -22,11 +23,11 @@ export function setSelectedProvider(provider: AIProvider): void {
 // ── API Key helpers ───────────────────────────────────────
 
 export function getGeminiApiKey(): string {
-    return import.meta.env.VITE_GEMINI_API_KEY || ''
+    return process.env.NEXT_PUBLIC_GEMINI_API_KEY || ''
 }
 
 export function getClaudeApiKey(): string {
-    return import.meta.env.VITE_CLAUDE_API_KEY || ''
+    return process.env.NEXT_PUBLIC_CLAUDE_API_KEY || ''
 }
 
 export function getActiveApiKey(): string {

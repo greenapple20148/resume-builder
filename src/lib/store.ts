@@ -1,3 +1,4 @@
+'use client'
 import { create } from 'zustand'
 import { supabase } from './supabase'
 import { Profile, Resume, CoverLetter, SaveStatus } from '../types'
@@ -65,63 +66,80 @@ export const useStore = create<StoreState>((set, get) => ({
   setAuthLoading: (authLoading) => set({ authLoading }),
 
   initAuth: async () => {
-    // Check if we are handling an async OAuth callback or Email link (PKCE ?code= or Implicit #access_token=)
-    const isAuthCallback = typeof window !== 'undefined' &&
-      (window.location.search.includes('code=') ||
-        window.location.hash.includes('access_token=') ||
-        window.location.hash.includes('error_description='))
+    // Global safety net: authLoading MUST resolve within 8 seconds no matter what
+    const safetyTimeout = setTimeout(() => {
+      const state = get()
+      if (state.authLoading) {
+        console.warn('[auth] Safety timeout — forcing authLoading: false after 8s')
+        set({ authLoading: false })
+      }
+    }, 8000)
 
-    // Set up the listener first so we don't miss any events from the auth exchange
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        set({ user: session.user })
-        await get().fetchProfile(session.user.id)
-        if (isAuthCallback) set({ authLoading: false })
-      } else if (event === 'SIGNED_OUT') {
-        set({ user: null, profile: null, resumes: [], currentResume: null })
-      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        set({ user: session.user })
-      } else if (event === 'INITIAL_SESSION') {
-        if (isAuthCallback && !session?.user) {
-          // Callback failed or returned null session
-          set({ authLoading: false })
+    try {
+      const isAuthCallback = typeof window !== 'undefined' &&
+        (window.location.search.includes('code=') ||
+          window.location.hash.includes('access_token=') ||
+          window.location.hash.includes('error_description='))
+
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          set({ user: session.user })
+          // Fire-and-forget profile fetch in listener — don't block auth
+          get().fetchProfile(session.user.id).catch(() => { })
+          if (isAuthCallback) set({ authLoading: false })
+        } else if (event === 'SIGNED_OUT') {
+          set({ user: null, profile: null, resumes: [], currentResume: null })
+        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+          set({ user: session.user })
+        } else if (event === 'INITIAL_SESSION') {
+          if (isAuthCallback && !session?.user) {
+            set({ authLoading: false })
+          }
+        }
+      })
+
+      let session: any = null
+      try {
+        const result = await Promise.race([
+          supabase.auth.getSession(),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getSession_timeout')), 5000))
+        ])
+        session = result.data.session
+      } catch {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+        const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
+        const raw = localStorage.getItem(`sb-${ref}-auth-token`)
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw)
+            if (parsed?.user) session = parsed
+          } catch { /* ignore */ }
         }
       }
-    })
 
-    // getSession() can deadlock due to navigator.locks — race with a timeout
-    let session: any = null
-    try {
-      const result = await Promise.race([
-        supabase.auth.getSession(),
-        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getSession_timeout')), 5000))
-      ])
-      session = result.data.session
-    } catch {
-      // Fallback: read session from localStorage
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-      const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
-      const raw = localStorage.getItem(`sb-${ref}-auth-token`)
-      if (raw) {
+      if (session?.user) {
+        set({ user: session.user })
+        // Fetch profile with timeout — don't let it block authLoading
         try {
-          const parsed = JSON.parse(raw)
-          // Build a minimal session-like object with the user
-          if (parsed?.user) session = parsed
-        } catch { /* ignore */ }
+          await Promise.race([
+            get().fetchProfile(session.user.id),
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error('fetchProfile_timeout')), 5000))
+          ])
+        } catch {
+          console.warn('[auth] fetchProfile timed out — continuing without profile')
+        }
       }
-    }
 
-    if (session?.user) {
-      set({ user: session.user })
-      await get().fetchProfile(session.user.id)
-    }
-
-    // Only stop loading immediately if we aren't waiting on a URL auth callback exchange
-    if (!isAuthCallback) {
+      if (!isAuthCallback) {
+        set({ authLoading: false })
+      } else {
+        setTimeout(() => set({ authLoading: false }), 4000)
+      }
+    } catch (err) {
+      console.error('[auth] initAuth crashed:', err)
       set({ authLoading: false })
-    } else {
-      // Safety release timeout in case the auth event never fires or throws silently
-      setTimeout(() => set({ authLoading: false }), 4000)
+    } finally {
+      clearTimeout(safetyTimeout)
     }
   },
 
@@ -269,7 +287,7 @@ export const useStore = create<StoreState>((set, get) => ({
       ])
     } catch { /* ignore */ }
     // Always clear local state regardless of whether signOut succeeded
-    const ref = import.meta.env.VITE_SUPABASE_URL?.split('//')[1]?.split('.')[0]
+    const ref = process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]?.split('.')[0]
     if (ref) {
       localStorage.removeItem(`sb-${ref}-auth-token`)
     }

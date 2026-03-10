@@ -1,5 +1,7 @@
+'use client'
 import { useState, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { useStore } from '../lib/store'
 import { useTheme } from '../lib/useTheme'
 import { getEffectivePlan, isExpressUnlockActive } from '../lib/expressUnlock'
@@ -12,8 +14,8 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
   const { user, profile, signOut } = useStore()
   const { theme, toggleTheme } = useTheme()
   const isDark = theme === 'dark'
-  const location = useLocation()
-  const navigate = useNavigate()
+  const pathname = usePathname()
+  const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -28,10 +30,10 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
 
   const handleSignOut = async () => {
     await signOut()
-    navigate('/')
+    router.push('/')
   }
 
-  const isActive = (path: string) => location.pathname === path
+  const isActive = (path: string) => pathname === path
 
   // Build nav classes based on variant + scroll state
   const isTransparent = variant === 'transparent' && !scrolled
@@ -46,7 +48,7 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
     <nav className={navClasses} aria-label="Main navigation">
       <div className="max-w-[1200px] mx-auto px-5 sm:px-10 h-[60px] flex items-center gap-8">
         {/* Logo */}
-        <Link to="/" className="font-display text-[22px] font-light text-ink no-underline tracking-tight flex items-center gap-1.5 whitespace-nowrap shrink-0">
+        <Link href="/" className="font-display text-[22px] font-light text-ink no-underline tracking-tight flex items-center gap-1.5 whitespace-nowrap shrink-0">
           <span className="text-gold text-base leading-none">◈</span>
           Resume<em className="italic text-gold">BuildIn</em>
         </Link>
@@ -54,7 +56,7 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
         {/* Center links */}
         <div className="hidden sm:flex gap-1 flex-1">
           <Link
-            to="/themes"
+            href="/themes"
             className={`px-3.5 py-1.5 text-[13px] rounded-lg transition-all duration-200 ${isActive('/themes')
               ? 'text-ink font-medium bg-ink-05'
               : 'text-ink-40 hover:text-ink hover:bg-[rgba(0,0,0,0.04)]'
@@ -63,7 +65,7 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
             Themes
           </Link>
           <Link
-            to="/pricing"
+            href="/pricing"
             className={`px-3.5 py-1.5 text-[13px] rounded-lg transition-all duration-200 ${isActive('/pricing')
               ? 'text-ink font-medium bg-ink-05'
               : 'text-ink-40 hover:text-ink hover:bg-[rgba(0,0,0,0.04)]'
@@ -108,7 +110,7 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
               {(getEffectivePlan(profile) !== 'free' || isExpressUnlockActive(profile)) && (
                 <span className="badge badge-gold">{isExpressUnlockActive(profile) && profile?.plan === 'free' ? 'EXPRESS' : profile?.plan}</span>
               )}
-              <Link to="/dashboard" className="btn btn-outline btn-sm">
+              <Link href="/dashboard" className="btn btn-outline btn-sm">
                 Dashboard
               </Link>
               <button
@@ -127,39 +129,39 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
                     <div className="text-xs text-ink-40 font-mono">{user.email}</div>
                   </div>
                   <div className="h-px bg-ink-10" />
-                  <Link to="/dashboard" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
+                  <Link href="/dashboard" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                     My Resumes
                   </Link>
-                  <Link to="/profile" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
+                  <Link href="/profile" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                     Profile
                   </Link>
                   {(getEffectivePlan(profile) === 'pro' || getEffectivePlan(profile) === 'premium' || getEffectivePlan(profile) === 'career_plus') && (
-                    <Link to="/tools/cover-letter" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
+                    <Link href="/tools/cover-letter" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                       Cover Letters
                     </Link>
                   )}
                   {(getEffectivePlan(profile) === 'premium' || getEffectivePlan(profile) === 'career_plus') && (
                     <>
-                      <Link to="/tools/linkedin" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
+                      <Link href="/tools/linkedin" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                         LinkedIn Toolkit
                       </Link>
-                      <Link to="/tools/interview" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
+                      <Link href="/tools/interview" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                         Interview Toolkit
                       </Link>
-                      <Link to="/tools/mock-interview" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
+                      <Link href="/tools/mock-interview" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                         AI Mock Interview
                       </Link>
                       {profile?.plan === 'career_plus' && (
-                        <Link to="/tools/career-dashboard" className="block w-full text-left px-4 py-2.5 text-sm text-gold font-medium no-underline transition-colors duration-150 hover:bg-gold/5" onClick={() => setMenuOpen(false)}>
+                        <Link href="/tools/career-dashboard" className="block w-full text-left px-4 py-2.5 text-sm text-gold font-medium no-underline transition-colors duration-150 hover:bg-gold/5" onClick={() => setMenuOpen(false)}>
                           ✦ Career Dashboard
                         </Link>
                       )}
-                      <Link to="/tools/ai" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
+                      <Link href="/tools/ai" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                         AI Tools
                       </Link>
                     </>
                   )}
-                  <Link to="/pricing" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
+                  <Link href="/pricing" className="block w-full text-left px-4 py-2.5 text-sm text-ink-70 no-underline transition-colors duration-150 hover:bg-ink-05 hover:text-ink" onClick={() => setMenuOpen(false)}>
                     Billing & Plans
                   </Link>
                   <div className="h-px bg-ink-10" />
@@ -171,10 +173,10 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
             </>
           ) : (
             <>
-              <Link to="/auth" className="btn btn-ghost btn-sm">
+              <Link href="/auth" className="btn btn-ghost btn-sm">
                 Log In
               </Link>
-              <Link to="/auth?mode=signup" className="btn btn-primary btn-sm">
+              <Link href="/auth?mode=signup" className="btn btn-primary btn-sm">
                 Get Started
               </Link>
             </>

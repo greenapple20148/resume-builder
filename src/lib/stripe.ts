@@ -1,3 +1,4 @@
+'use client'
 import { loadStripe, Stripe } from '@stripe/stripe-js'
 import { supabase, invokeEdgeFunction } from './supabase'
 
@@ -6,7 +7,7 @@ let stripePromise: Promise<Stripe | null> | null = null
 export const getStripe = () => {
   if (!stripePromise) {
     // Check both VITE_ prefixed and standard prefix in case of specific Vercel setups
-    const key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || import.meta.env.STRIPE_PUBLISHABLE_KEY
+    const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
     if (!key) {
       console.warn("Stripe publishable key is missing. Set VITE_STRIPE_PUBLISHABLE_KEY in your environment. Billing features will not work.")
       return null

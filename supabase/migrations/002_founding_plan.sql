@@ -7,10 +7,10 @@ DECLARE
   claimed INTEGER;
 BEGIN
   SELECT COUNT(*)::INTEGER INTO claimed FROM profiles WHERE plan = 'founding';
-  IF claimed >= 100 THEN
+  IF claimed >= 200 THEN
     RETURN 0;
   ELSE
-    RETURN 100 - claimed;
+    RETURN 200 - claimed;
   END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

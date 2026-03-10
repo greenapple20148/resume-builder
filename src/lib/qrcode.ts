@@ -1,3 +1,4 @@
+'use client'
 // src/lib/qrcode.ts — Pure JavaScript QR Code generator (no dependencies)
 // Generates QR codes as SVG strings
 

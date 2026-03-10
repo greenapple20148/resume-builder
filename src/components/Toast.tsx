@@ -1,3 +1,4 @@
+'use client'
 import { useState, useEffect } from 'react'
 
 type ToastType = 'success' | 'error' | 'info' | 'default'

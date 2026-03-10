@@ -1,3 +1,4 @@
+'use client'
 /**
  * XSS sanitization utilities for ResumeBuildIn.
  *

@@ -1,10 +1,11 @@
+'use client'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. Check your .env file.')
+if ((!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) && typeof window !== 'undefined') {
+  console.error('Missing Supabase environment variables. Check your .env file.')
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -12,6 +13,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    // Disable navigator.locks — causes deadlocks in Next.js production
+    // (cross-tab session sync is not needed for this app)
+    lock: async (_name: string, _acquireTimeout: number, callback: () => Promise<any>) => {
+      return await callback()
+    },
   },
 })
 

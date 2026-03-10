@@ -1,3 +1,4 @@
+'use client'
 /**
  * Modern SVG icon map for the landing page.
  * Maps string keys to inline SVG React elements.

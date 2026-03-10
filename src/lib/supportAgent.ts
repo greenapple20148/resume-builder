@@ -1,3 +1,4 @@
+'use client'
 // src/lib/supportAgent.ts — AI Support Agent powered by Gemini / Claude
 import { callAIStream, isProviderConfigured, getSelectedProvider } from './aiProvider'
 
