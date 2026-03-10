@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import { ClientProviders } from './providers'
 import '@/styles/global.css'
 
@@ -163,15 +162,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
 
                 {/* Prevent flash of wrong theme on load */}
-                <Script id="theme-init" strategy="beforeInteractive">{`
-          (function () {
-            var t = localStorage.getItem('resumebuildin-theme');
-            if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-            document.documentElement.setAttribute('data-theme', t);
-          })();
-        `}</Script>
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `(function(){var t=localStorage.getItem('resumebuildin-theme');if(!t)t=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t)})();`,
+                    }}
+                />
             </head>
-            <body>
+            <body suppressHydrationWarning>
                 <ClientProviders>{children}</ClientProviders>
             </body>
         </html>

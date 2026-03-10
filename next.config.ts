@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-    // Enable Turbopack for faster dev
+    productionBrowserSourceMaps: true,
     // External packages for server components
     serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium'],
     // Security headers

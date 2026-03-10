@@ -66,63 +66,60 @@ export const useStore = create<StoreState>((set, get) => ({
   setAuthLoading: (authLoading) => set({ authLoading }),
 
   initAuth: async () => {
-    // Check if we are handling an async OAuth callback or Email link (PKCE ?code= or Implicit #access_token=)
-    const isAuthCallback = typeof window !== 'undefined' &&
-      (window.location.search.includes('code=') ||
-        window.location.hash.includes('access_token=') ||
-        window.location.hash.includes('error_description='))
+    try {
+      const isAuthCallback = typeof window !== 'undefined' &&
+        (window.location.search.includes('code=') ||
+          window.location.hash.includes('access_token=') ||
+          window.location.hash.includes('error_description='))
 
-    // Set up the listener first so we don't miss any events from the auth exchange
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        set({ user: session.user })
-        await get().fetchProfile(session.user.id)
-        if (isAuthCallback) set({ authLoading: false })
-      } else if (event === 'SIGNED_OUT') {
-        set({ user: null, profile: null, resumes: [], currentResume: null })
-      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        set({ user: session.user })
-      } else if (event === 'INITIAL_SESSION') {
-        if (isAuthCallback && !session?.user) {
-          // Callback failed or returned null session
-          set({ authLoading: false })
+      supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          set({ user: session.user })
+          await get().fetchProfile(session.user.id)
+          if (isAuthCallback) set({ authLoading: false })
+        } else if (event === 'SIGNED_OUT') {
+          set({ user: null, profile: null, resumes: [], currentResume: null })
+        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+          set({ user: session.user })
+        } else if (event === 'INITIAL_SESSION') {
+          if (isAuthCallback && !session?.user) {
+            set({ authLoading: false })
+          }
+        }
+      })
+
+      let session: any = null
+      try {
+        const result = await Promise.race([
+          supabase.auth.getSession(),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getSession_timeout')), 5000))
+        ])
+        session = result.data.session
+      } catch {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+        const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
+        const raw = localStorage.getItem(`sb-${ref}-auth-token`)
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw)
+            if (parsed?.user) session = parsed
+          } catch { /* ignore */ }
         }
       }
-    })
 
-    // getSession() can deadlock due to navigator.locks — race with a timeout
-    let session: any = null
-    try {
-      const result = await Promise.race([
-        supabase.auth.getSession(),
-        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getSession_timeout')), 5000))
-      ])
-      session = result.data.session
-    } catch {
-      // Fallback: read session from localStorage
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-      const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
-      const raw = localStorage.getItem(`sb-${ref}-auth-token`)
-      if (raw) {
-        try {
-          const parsed = JSON.parse(raw)
-          // Build a minimal session-like object with the user
-          if (parsed?.user) session = parsed
-        } catch { /* ignore */ }
+      if (session?.user) {
+        set({ user: session.user })
+        await get().fetchProfile(session.user.id)
       }
-    }
 
-    if (session?.user) {
-      set({ user: session.user })
-      await get().fetchProfile(session.user.id)
-    }
-
-    // Only stop loading immediately if we aren't waiting on a URL auth callback exchange
-    if (!isAuthCallback) {
+      if (!isAuthCallback) {
+        set({ authLoading: false })
+      } else {
+        setTimeout(() => set({ authLoading: false }), 4000)
+      }
+    } catch (err) {
+      console.error('[auth] initAuth crashed:', err)
       set({ authLoading: false })
-    } else {
-      // Safety release timeout in case the auth event never fires or throws silently
-      setTimeout(() => set({ authLoading: false }), 4000)
     }
   },
 

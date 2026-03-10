@@ -27,6 +27,7 @@ const THEME_PREVIEWS = [
 ]
 
 /* ── Founding Member Launch Offer Component ──────────── */
+const TOTAL_SPOTS = 200
 const FOUNDING_BENEFITS = [
   'Unlimited resume downloads',
   'Premium templates',
@@ -48,7 +49,8 @@ function FoundingMemberOffer({ spotsLeft, setSpotsLeft }: { spotsLeft: number; s
     return () => observer.disconnect()
   }, [])
 
-  const spotsPercentage = ((100 - spotsLeft) / 100) * 100
+  const claimed = Math.max(0, TOTAL_SPOTS - spotsLeft)
+  const spotsPercentage = Math.min(100, (claimed / TOTAL_SPOTS) * 100)
 
   return (
     <section
@@ -131,7 +133,7 @@ function FoundingMemberOffer({ spotsLeft, setSpotsLeft }: { spotsLeft: number; s
             <div className="mb-8">
               <div className="flex items-center justify-between mb-2.5">
                 <span className="text-[11px] font-mono tracking-wide uppercase text-[rgba(250,248,243,0.35)]">Spots claimed</span>
-                <span className="text-[12px] font-mono font-bold" style={{ color: spotsLeft <= 20 ? '#f87171' : '#e8b76a' }}>{spotsLeft} remaining</span>
+                <span className="text-[12px] font-mono font-bold" style={{ color: spotsLeft <= 20 ? '#f87171' : '#e8b76a' }}>{Math.max(0, spotsLeft)} remaining</span>
               </div>
               <div className="h-2 rounded-full bg-[rgba(255,255,255,0.06)] overflow-hidden">
                 <div
@@ -145,7 +147,7 @@ function FoundingMemberOffer({ spotsLeft, setSpotsLeft }: { spotsLeft: number; s
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)', animation: 'foundingShimmer 2s ease-in-out infinite' }} />
                 </div>
               </div>
-              <p className="text-center text-[11px] text-[rgba(250,248,243,0.25)] font-mono mt-2.5">Only 100 spots available</p>
+              <p className="text-center text-[11px] text-[rgba(250,248,243,0.25)] font-mono mt-2.5">Only {TOTAL_SPOTS} spots available</p>
             </div>
 
             {/* CTA */}
@@ -304,17 +306,17 @@ export default function LandingPage() {
                   <div className="px-5 pb-3.5 pt-0.5 relative">
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-[10.5px] font-mono text-ink-40">
-                        {100 - (spotsLeft ?? 100)}/100 spots claimed
+                        {Math.max(0, TOTAL_SPOTS - (spotsLeft ?? TOTAL_SPOTS))}/{TOTAL_SPOTS} spots claimed
                       </span>
                       <span className="text-[10.5px] font-mono font-bold" style={{ color: spotsLeft !== null && spotsLeft <= 20 ? '#ef4444' : '#e8b76a' }}>
-                        {spotsLeft ?? 100} left
+                        {Math.max(0, spotsLeft ?? TOTAL_SPOTS)} left
                       </span>
                     </div>
                     <div className="h-1.5 bg-ink-10 dark:bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden relative shadow-inner">
                       <div
                         className="h-full rounded-full transition-all duration-1000 relative overflow-hidden"
                         style={{
-                          width: `${100 - (spotsLeft ?? 100)}%`,
+                          width: `${Math.min(100, Math.max(0, TOTAL_SPOTS - (spotsLeft ?? TOTAL_SPOTS)) / TOTAL_SPOTS * 100)}%`,
                           background: spotsLeft !== null && spotsLeft <= 20 ? 'linear-gradient(90deg, #f59e0b, #ef4444)' : 'linear-gradient(90deg, #c9923c, #e8b76a)'
                         }}
                       >

@@ -66,6 +66,7 @@ function TypingIndicator() {
 export default function SupportAgent() {
     const { profile } = useStore()
     const isFreeUser = !profile?.plan || profile.plan === 'free'
+    const [mounted, setMounted] = useState(false)
     const [isOpen, setIsOpen] = useState(false)
     const [isClosing, setIsClosing] = useState(false)
     const [messages, setMessages] = useState<SupportMessage[]>([])
@@ -78,9 +79,9 @@ export default function SupportAgent() {
     const inputRef = useRef<HTMLTextAreaElement>(null)
     const isFirstOpen = useRef(true)
 
-    // Initialize welcome message after mount to avoid hydration mismatch
-    // (createWelcomeMessage uses Date.now() and Math.random())
+    // Mount guard to prevent hydration mismatch
     useEffect(() => {
+        setMounted(true)
         setMessages([createWelcomeMessage()])
     }, [])
 
@@ -212,6 +213,9 @@ export default function SupportAgent() {
     }, [])
 
 
+
+
+    if (!mounted) return null
 
     return (
         <>
