@@ -9,8 +9,9 @@ export default defineConfig({
     retries: process.env.CI ? 2 : 0,
     workers: 1,
     reporter: 'html',
+    outputDir: 'test-results',
     use: {
-        baseURL: 'http://localhost:5173',
+        baseURL: 'http://localhost:3002',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
     },
@@ -21,9 +22,9 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: 'npm run dev',
-        url: 'http://localhost:5173',
+        command: 'npm run dev -- -p 3002',
+        url: 'http://localhost:3002',
         reuseExistingServer: true,
-        timeout: 15000,
+        timeout: 30000,
     },
 })

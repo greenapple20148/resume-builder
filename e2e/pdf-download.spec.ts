@@ -5,7 +5,7 @@ import path from 'path'
 
 const ALL_TEMPLATES = [
   'classic', 'executive', 'minimal', 'bold',
-  'mono_clean', 'mono_sidebar', 'mono_stack', 'mono_type', 'mono_editorial',
+  'mono_sidebar', 'mono_stack', 'mono_type', 'mono_editorial',
   'exec_navy', 'exec_marble', 'exec_copper',
   'creative_neon', 'creative_coral', 'creative_blueprint', 'creative_sunset',
   'dark_obsidian', 'dark_midnight', 'dark_eclipse', 'dark_void', 'dark_carbon',
@@ -15,7 +15,7 @@ const ALL_TEMPLATES = [
   'concrete_brutalist', 'lavender_fields', 'steel_industrial',
   'obsidian_executive', 'ivory_prestige', 'aurora_borealis',
   'blueprint_architect', 'onyx_ember',
-  'exec_authority', 'exec_prestige', 'exec_pillar', 'exec_regal', 'exec_apex',
+  'exec_prestige', 'exec_pillar', 'exec_regal', 'exec_apex',
   'exec_strata', 'exec_counsel', 'exec_monogram', 'exec_ledger', 'exec_architect',
 ]
 
