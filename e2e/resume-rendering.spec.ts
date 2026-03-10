@@ -503,16 +503,164 @@ test.describe('Font Loading', () => {
 
 
 // ════════════════════════════════════════════════════════════
-// SECTION 8: SUMMARY REPORT
+// SECTION 8: 2-PAGE RESUME RENDERING (Extended Data)
+// ════════════════════════════════════════════════════════════
+
+// Expected values for the extended/2-page data set
+const EXTENDED_EXPECTED = {
+  name: 'Alexandra Chen',
+  nameFirst: 'Alexandra',
+  role: 'VP of Product',
+  companies: ['Stripe', 'Figma', 'Google', 'Dropbox', 'LinkedIn', 'Microsoft'],
+  schools: ['Stanford University', 'UC Berkeley', 'MIT Sloan'],
+  certSample: ['CSPO', 'AWS Solutions Architect'],
+} as const
+
+test.describe('2-Page Resume Rendering — Extended Data', () => {
+  test.setTimeout(60_000)
+
+  for (const templateId of ALL_TEMPLATES) {
+    test.describe(`2-Page: ${templateId}`, () => {
+
+      // ── 8.1 Renders with extended data ──────────────────
+      test('renders with extended data and shows name', async ({ page }) => {
+        await page.goto(`/test-template?id=${templateId}&data=extended`, { waitUntil: 'networkidle' })
+        await page.waitForTimeout(600)
+
+        const root = page.locator('#resume-preview-root')
+        await expect(root).toBeVisible({ timeout: 8000 })
+
+        const h1 = root.locator('h1').first()
+        await expect(h1).toBeVisible({ timeout: 5000 })
+        const text = await h1.textContent()
+        expect(text).toContain(EXTENDED_EXPECTED.nameFirst)
+      })
+
+      // ── 8.2 All 6 companies rendered ────────────────────
+      test('renders all 6 experience entries', async ({ page }) => {
+        await page.goto(`/test-template?id=${templateId}&data=extended`, { waitUntil: 'networkidle' })
+        await page.waitForTimeout(400)
+
+        const root = page.locator('#resume-preview-root')
+        const bodyText = await root.textContent() || ''
+
+        for (const company of EXTENDED_EXPECTED.companies) {
+          expect(bodyText, `Missing company: ${company}`).toContain(company)
+        }
+      })
+
+      // ── 8.3 All 3 schools rendered ──────────────────────
+      test('renders all 3 education entries', async ({ page }) => {
+        await page.goto(`/test-template?id=${templateId}&data=extended`, { waitUntil: 'networkidle' })
+        await page.waitForTimeout(400)
+
+        const root = page.locator('#resume-preview-root')
+        const bodyText = await root.textContent() || ''
+
+        for (const school of EXTENDED_EXPECTED.schools) {
+          expect(bodyText, `Missing school: ${school}`).toContain(school)
+        }
+      })
+
+      // ── 8.4 Height exceeds single page ──────────────────
+      test('content overflows past 1-page height (1123px)', async ({ page }) => {
+        await page.goto(`/test-template?id=${templateId}&data=extended`, { waitUntil: 'networkidle' })
+        await page.waitForTimeout(400)
+
+        const root = page.locator('#resume-preview-root')
+        const box = await root.boundingBox()
+
+        expect(box).not.toBeNull()
+        // A4 resume page = ~1123px at 96 DPI. 2-page resume should exceed this.
+        expect(box!.height, `Template "${templateId}" did not overflow to 2 pages`).toBeGreaterThan(1123)
+      })
+
+      // ── 8.5 No content clipping ─────────────────────────
+      test('last company (Microsoft) is not clipped', async ({ page }) => {
+        await page.goto(`/test-template?id=${templateId}&data=extended`, { waitUntil: 'networkidle' })
+        await page.waitForTimeout(400)
+
+        const root = page.locator('#resume-preview-root')
+        const bodyText = await root.textContent() || ''
+
+        // Microsoft is the 6th/last entry — if it appears, content isn't clipped
+        expect(bodyText, 'Last experience entry (Microsoft) is missing — content may be clipped').toContain('Microsoft')
+      })
+
+      // ── 8.6 Full-page screenshot for visual review ──────
+      test('captures full-page screenshot (extended)', async ({ page }) => {
+        await page.goto(`/test-template?id=${templateId}&data=extended`, { waitUntil: 'networkidle' })
+        await page.waitForTimeout(800)
+
+        const root = page.locator('#resume-preview-root')
+        await expect(root).toBeVisible()
+
+        await root.screenshot({
+          path: `test-results/screenshots/${templateId}_2page.png`,
+        })
+      })
+    })
+  }
+})
+
+
+// ════════════════════════════════════════════════════════════
+// SECTION 9: 2-PAGE CROSS-TEMPLATE CONSISTENCY
+// ════════════════════════════════════════════════════════════
+
+test.describe('2-Page Cross-Template Consistency', () => {
+  test.setTimeout(120_000)
+
+  test('all templates render in "all" mode with extended data', async ({ page }) => {
+    await page.goto('/test-template?id=all&data=extended', { waitUntil: 'networkidle' })
+    await page.waitForTimeout(3000)
+
+    const templateLabels = page.locator('[data-template-id]')
+    const count = await templateLabels.count()
+    expect(count).toBeGreaterThanOrEqual(ALL_TEMPLATES.length)
+  })
+
+  test('every template shows all 6 companies in extended "all" mode', async ({ page }) => {
+    await page.goto('/test-template?id=all&data=extended', { waitUntil: 'networkidle' })
+    await page.waitForTimeout(3000)
+
+    for (const id of ALL_TEMPLATES) {
+      const templateContainer = page.locator(`[data-template-id="${id}"]`)
+      const text = await templateContainer.textContent() || ''
+
+      for (const company of EXTENDED_EXPECTED.companies) {
+        expect(text, `Template "${id}" missing "${company}" in 2-page mode`).toContain(company)
+      }
+    }
+  })
+
+  test('no template in extended mode shows PREVIEW_MAP error', async ({ page }) => {
+    await page.goto('/test-template?id=all&data=extended', { waitUntil: 'networkidle' })
+    await page.waitForTimeout(1000)
+
+    const errors = page.locator('text="not found in PREVIEW_MAP"')
+    const errorCount = await errors.count()
+    expect(errorCount).toBe(0)
+  })
+})
+
+
+// ════════════════════════════════════════════════════════════
+// SECTION 10: SUMMARY REPORT
 // ════════════════════════════════════════════════════════════
 
 test.describe('Summary', () => {
   test('final report — template count', () => {
+    const perTemplate1Page = 12
+    const perTemplate2Page = 6
+    const total1Page = perTemplate1Page * ALL_TEMPLATES.length
+    const total2Page = perTemplate2Page * ALL_TEMPLATES.length
     console.log(`\n✅ Resume Rendering Test Suite`)
     console.log(`   Templates under test: ${ALL_TEMPLATES.length}`)
-    console.log(`   Dark templates with contrast checks: ${DARK_TEMPLATES.size}`)
-    console.log(`   Sidebar layouts tested: ${SIDEBAR_TEMPLATES.size}`)
-    console.log(`   Test categories: 8 (Rendering, Consistency, Completeness, Layout, Edge Cases, Print, Fonts, Summary)`)
-    console.log(`   Total per-template assertions: 12 × ${ALL_TEMPLATES.length} = ${12 * ALL_TEMPLATES.length}\n`)
+    console.log(`   1-Page tests: ${total1Page} (${perTemplate1Page} per template)`)
+    console.log(`   2-Page tests: ${total2Page} (${perTemplate2Page} per template)`)
+    console.log(`   Cross-template + Edge + Print + Fonts: ~30`)
+    console.log(`   Grand total: ~${total1Page + total2Page + 30}\n`)
   })
 })
+

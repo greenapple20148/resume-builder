@@ -152,10 +152,13 @@ export default function TestTemplatePage() {
             {showAll && (
                 <div style={{ textAlign: 'center', padding: '20px 0 30px', fontFamily: 'Inter, sans-serif' }}>
                     <h1 style={{ fontSize: 28, fontWeight: 700, color: '#1a1a1a', margin: 0 }}>
-                        All Templates ({ALL_TEMPLATE_IDS.length})
+                        All Templates ({ALL_TEMPLATE_IDS.length}) {dataMode === 'extended' && '— 2-Page Mode'}
                     </h1>
                     <p style={{ fontSize: 14, color: '#666', marginTop: 6 }}>
-                        Rendered with fake data — "Alexandra Chen, Senior Product Manager"
+                        {dataMode === 'extended'
+                            ? 'Extended data (2-page) — "Alexandra Chen, VP of Product & Engineering"'
+                            : 'Rendered with fake data — "Alexandra Chen, Senior Product Manager"'
+                        }
                     </p>
                 </div>
             )}
@@ -188,7 +191,7 @@ export default function TestTemplatePage() {
                             data-template-id={id}
                             style={{ width: 794, margin: '0 auto', boxShadow: showAll ? '0 4px 24px rgba(0,0,0,0.15)' : 'none' }}
                         >
-                            <Component data={FAKE_DATA} />
+                            <Component data={resumeData} />
                         </div>
                     </div>
                 )
