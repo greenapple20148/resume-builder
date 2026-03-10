@@ -13,6 +13,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    // Disable navigator.locks — causes deadlocks in Next.js production
+    // (cross-tab session sync is not needed for this app)
+    lock: async (_name: string, _acquireTimeout: number, callback: () => Promise<any>) => {
+      return await callback()
+    },
   },
 })
 

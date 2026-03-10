@@ -66,6 +66,15 @@ export const useStore = create<StoreState>((set, get) => ({
   setAuthLoading: (authLoading) => set({ authLoading }),
 
   initAuth: async () => {
+    // Global safety net: authLoading MUST resolve within 8 seconds no matter what
+    const safetyTimeout = setTimeout(() => {
+      const state = get()
+      if (state.authLoading) {
+        console.warn('[auth] Safety timeout — forcing authLoading: false after 8s')
+        set({ authLoading: false })
+      }
+    }, 8000)
+
     try {
       const isAuthCallback = typeof window !== 'undefined' &&
         (window.location.search.includes('code=') ||
@@ -75,7 +84,8 @@ export const useStore = create<StoreState>((set, get) => ({
       supabase.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
           set({ user: session.user })
-          await get().fetchProfile(session.user.id)
+          // Fire-and-forget profile fetch in listener — don't block auth
+          get().fetchProfile(session.user.id).catch(() => { })
           if (isAuthCallback) set({ authLoading: false })
         } else if (event === 'SIGNED_OUT') {
           set({ user: null, profile: null, resumes: [], currentResume: null })
@@ -109,7 +119,15 @@ export const useStore = create<StoreState>((set, get) => ({
 
       if (session?.user) {
         set({ user: session.user })
-        await get().fetchProfile(session.user.id)
+        // Fetch profile with timeout — don't let it block authLoading
+        try {
+          await Promise.race([
+            get().fetchProfile(session.user.id),
+            new Promise<never>((_, reject) => setTimeout(() => reject(new Error('fetchProfile_timeout')), 5000))
+          ])
+        } catch {
+          console.warn('[auth] fetchProfile timed out — continuing without profile')
+        }
       }
 
       if (!isAuthCallback) {
@@ -120,6 +138,8 @@ export const useStore = create<StoreState>((set, get) => ({
     } catch (err) {
       console.error('[auth] initAuth crashed:', err)
       set({ authLoading: false })
+    } finally {
+      clearTimeout(safetyTimeout)
     }
   },
 
