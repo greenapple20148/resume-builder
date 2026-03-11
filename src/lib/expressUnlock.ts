@@ -1,6 +1,7 @@
 'use client'
 // src/lib/expressUnlock.ts — Express 24h Unlock logic
 import { supabase, invokeEdgeFunction, getAccessToken } from './supabase'
+import { isCouponActive, getCouponPlan } from './coupon'
 import type { Profile } from '../types'
 
 const EXPRESS_DURATION_MS = 24 * 60 * 60 * 1000  // 24 hours
@@ -33,14 +34,18 @@ export function formatExpressCountdown(remainingMs: number): string {
 }
 
 /**
- * Get the effective plan considering the Express Unlock.
+ * Get the effective plan considering the Express Unlock and Coupons.
+ * Priority: paid plan → Express Unlock (pro) → Coupon (coupon plan) → free.
  * If the user is on ``free`` and Express Unlock is active, they get ``pro`` level access.
- * If the user is already on a paid plan, Express Unlock has no extra effect.
+ * If the user is on ``free`` and a coupon is active, they get the coupon's plan level.
+ * If the user is already on a paid plan, neither has any extra effect.
  */
 export function getEffectivePlan(profile: Profile | null): string {
     const basePlan = profile?.plan || 'free'
     if (basePlan !== 'free') return basePlan
     if (isExpressUnlockActive(profile)) return 'pro'
+    // Check for active coupon
+    if (isCouponActive(profile)) return getCouponPlan(profile) || 'pro'
     return 'free'
 }
 

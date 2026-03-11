@@ -6,11 +6,12 @@ import Navbar from '../components/Navbar'
 import { toast } from '../components/Toast'
 import { useStore } from '@/lib/store'
 import { useSEO } from '@/lib/useSEO'
-import { PLANS, openCustomerPortal, verifySubscription, cancelSubscription } from '@/lib/stripe'
+import { PLANS, openCustomerPortal, verifySubscription, cancelSubscription, createCheckoutSession } from '@/lib/stripe'
 import { Resume } from '../types'
 import { getResumeScore } from '@/lib/resumeScore'
 import { LandingIcon } from '../components/LandingIcons'
 import { getEffectivePlan, isExpressUnlockActive } from '@/lib/expressUnlock'
+import { isCouponActive, formatCouponCountdown, getCouponRemainingDays, shouldShowUpgradeNudge } from '@/lib/coupon'
 import ShareResumeModal from '../components/ShareResumeModal'
 
 interface ResumeCardProps {
@@ -175,6 +176,25 @@ export default function DashboardPage() {
   const { user, fetchProfile } = useStore()
   useEffect(() => { if (user) verifySubscription().then(() => fetchProfile(user.id)).catch(() => { }) }, [user?.id])
 
+  // Auto-resume pending checkout if user was redirected from pricing → signup → dashboard
+  useEffect(() => {
+    const raw = localStorage.getItem('resumebuildin_pending_plan')
+    if (!raw || !user) return
+    try {
+      const { plan, billing } = JSON.parse(raw)
+      localStorage.removeItem('resumebuildin_pending_plan')
+      if (plan && plan !== 'free') {
+        toast.info(`Resuming your ${plan === 'founding' ? 'Founding Member' : plan} checkout…`)
+        createCheckoutSession(plan, billing || 'annual')
+          .then(({ url }) => { if (url) window.location.href = url })
+          .catch((err: any) => {
+            console.error('[pending checkout] error:', err)
+            toast.error('Could not start checkout. Please try again from the pricing page.')
+          })
+      }
+    } catch { localStorage.removeItem('resumebuildin_pending_plan') }
+  }, [user])
+
   const handleCreate = async (initialData: any = null) => {
     try {
       const dataToPass = initialData?.nativeEvent ? null : initialData
@@ -277,7 +297,7 @@ export default function DashboardPage() {
           <div className="bg-[var(--white)] border border-ink-10 rounded-xl p-4 mt-4">
             <div className="mb-3">
               <span className={`badge ${effectivePlan !== 'free' ? 'badge-gold' : 'badge-dark'}`}>
-                {isExpressUnlockActive(profile) && profile?.plan === 'free' ? 'EXPRESS' : profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
+                {isCouponActive(profile) && profile?.plan === 'free' ? '🎁 COUPON' : isExpressUnlockActive(profile) && profile?.plan === 'free' ? 'EXPRESS' : profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
               </span>
             </div>
             <div className="mb-1">
@@ -286,7 +306,15 @@ export default function DashboardPage() {
                 <div className="h-full bg-gold rounded-full transition-all duration-400" style={{ width: `${Math.min((resumeCount / (resumeLimit === Infinity ? 1 : resumeLimit)) * 100, 100)}%` }} />
               </div>
             </div>
-            {profile?.plan === 'free' && !isExpressUnlockActive(profile) && (
+            {profile?.plan === 'free' && isCouponActive(profile) && (
+              <>
+                <div className="text-xs text-ink-20 font-mono mt-2">{formatCouponCountdown(profile)} remaining</div>
+                {shouldShowUpgradeNudge(profile) && (
+                  <Link href="/pricing" className="btn btn-gold w-full mt-3 text-[13px]">Upgrade before it expires →</Link>
+                )}
+              </>
+            )}
+            {profile?.plan === 'free' && !isExpressUnlockActive(profile) && !isCouponActive(profile) && (
               <>
                 <Link href="/pricing" className="btn btn-gold w-full mt-3 text-[13px]">Upgrade to Pro →</Link>
                 <Link href="/pricing" className="block mt-3 no-underline">
@@ -308,7 +336,7 @@ export default function DashboardPage() {
                 </Link>
               </>
             )}
-            {profile?.plan === 'free' && isExpressUnlockActive(profile) && (
+            {profile?.plan === 'free' && isExpressUnlockActive(profile) && !isCouponActive(profile) && (
               <Link href="/pricing" className="btn btn-gold w-full mt-3 text-[13px]">Upgrade to keep Pro access →</Link>
             )}
             {profile?.plan !== 'free' && (
@@ -358,6 +386,51 @@ export default function DashboardPage() {
               <button className="btn btn-gold" onClick={() => handleCreate(null)}>+ New Resume</button>
             </div>
           </div>
+
+          {/* ── Coupon Status Banner ── */}
+          {isCouponActive(profile) && profile?.plan === 'free' && (
+            <div
+              className="mb-6 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+              style={{
+                background: shouldShowUpgradeNudge(profile)
+                  ? 'linear-gradient(135deg, rgba(239,68,68,0.06), rgba(239,68,68,0.02))'
+                  : 'linear-gradient(135deg, rgba(76,175,122,0.08), rgba(76,175,122,0.02))',
+                border: shouldShowUpgradeNudge(profile)
+                  ? '1.5px solid rgba(239,68,68,0.25)'
+                  : '1.5px solid rgba(76,175,122,0.25)',
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+                  style={{
+                    background: shouldShowUpgradeNudge(profile)
+                      ? 'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.06))'
+                      : 'linear-gradient(135deg, rgba(76,175,122,0.12), rgba(76,175,122,0.06))',
+                  }}>
+                  {shouldShowUpgradeNudge(profile) ? '⏰' : '🎁'}
+                </div>
+                <div>
+                  <div className="text-[14px] font-semibold text-ink">
+                    {shouldShowUpgradeNudge(profile)
+                      ? `Your free ${planInfo.name} trial ends in ${getCouponRemainingDays(profile)} day${getCouponRemainingDays(profile) !== 1 ? 's' : ''}`
+                      : `Free ${planInfo.name} access · ${formatCouponCountdown(profile)} remaining`
+                    }
+                  </div>
+                  <div className="text-[12px] text-ink-40 mt-0.5">
+                    {shouldShowUpgradeNudge(profile)
+                      ? 'Upgrade now to keep all your premium features, or you\'ll be moved to the free plan.'
+                      : `Enjoying premium features via coupon code ${profile?.coupon_code || ''}.`
+                    }
+                  </div>
+                </div>
+              </div>
+              {shouldShowUpgradeNudge(profile) && (
+                <Link href="/pricing" className="btn btn-gold shrink-0 text-[13px] py-2 px-5">
+                  Upgrade Now →
+                </Link>
+              )}
+            </div>
+          )}
 
           {resumesLoading && resumes.length === 0 ? (
             <div className="flex items-center justify-center h-[300px]"><div className="spinner" style={{ color: 'var(--gold)' }} /></div>

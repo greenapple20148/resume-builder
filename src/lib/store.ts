@@ -6,6 +6,10 @@ import { getEffectivePlan } from './expressUnlock'
 import { cacheUserPlan } from './aiProvider'
 import { saveVersionSnapshot } from './resumeVersions'
 
+// Module-level flag to suppress onAuthStateChange during signup.
+// Prevents the SIGNED_IN event from racing with router.push('/confirm-email').
+let _suppressAuthEvent = false
+
 interface StoreState {
   user: any | null
   profile: Profile | null
@@ -83,11 +87,18 @@ export const useStore = create<StoreState>((set, get) => ({
 
       supabase.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
+          // If signup is in progress, skip setting user to prevent
+          // PublicRoute from racing with router.push('/confirm-email').
+          // This is the root fix for BUG-001 (removeChild crash).
+          if (_suppressAuthEvent) {
+            return
+          }
           set({ user: session.user })
           // Fire-and-forget profile fetch in listener — don't block auth
           get().fetchProfile(session.user.id).catch(() => { })
           if (isAuthCallback) set({ authLoading: false })
         } else if (event === 'SIGNED_OUT') {
+          if (_suppressAuthEvent) return
           set({ user: null, profile: null, resumes: [], currentResume: null })
         } else if (event === 'TOKEN_REFRESHED' && session?.user) {
           set({ user: session.user })
@@ -240,7 +251,12 @@ export const useStore = create<StoreState>((set, get) => ({
       throw new Error('User already registered')
     }
 
-    // 2. Perform the actual signup
+    // 2. Suppress onAuthStateChange to prevent navigation race.
+    // Without this, SIGNED_IN fires immediately and PublicRoute
+    // tries to redirect to /dashboard while we navigate to /confirm-email.
+    _suppressAuthEvent = true
+
+    // 3. Perform the actual signup
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -250,7 +266,14 @@ export const useStore = create<StoreState>((set, get) => ({
       },
     })
 
-    if (error) throw error
+    if (error) {
+      _suppressAuthEvent = false
+      throw error
+    }
+
+    // Safety: clear suppress flag after 5s in case navigation fails
+    setTimeout(() => { _suppressAuthEvent = false }, 5000)
+
     return data
   },
 
@@ -295,6 +318,15 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   resetPassword: async (email) => {
+    // BUG-005 fix: Check if the email actually exists before sending reset email.
+    // Supabase's resetPasswordForEmail() never errors for non-existent emails (by design),
+    // which would show a false "Check your inbox" success message.
+    const { data: emailExists, error: checkError } = await supabase.rpc('check_email_exists', { lookup_email: email })
+    if (checkError) throw checkError
+    if (!emailExists) {
+      throw new Error('No account found with this email address.')
+    }
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth?mode=reset-password`,
     })

@@ -10,6 +10,10 @@ export interface Profile {
     mock_sessions_used?: number
     mock_sessions_purchased?: number
     express_unlock_until?: string   // ISO datetime — when active, user gets Pro-level access
+    coupon_code?: string             // The coupon code that was redeemed
+    coupon_plan?: string             // The plan granted by the coupon (e.g. 'pro')
+    coupon_redeemed_at?: string      // ISO datetime — when the coupon was redeemed
+    coupon_expires_at?: string       // ISO datetime — when the coupon access expires
 }
 
 export interface PersonalInfo {

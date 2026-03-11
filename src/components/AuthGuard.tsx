@@ -53,6 +53,12 @@ export function PublicRoute({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         if (!authLoading && user) {
+            // TC-020 fix: Allow logged-in users to access forgot-password and reset-password flows
+            const params = new URLSearchParams(window.location.search)
+            const mode = params.get('mode')
+            if (mode === 'forgot-password' || mode === 'reset-password') {
+                return // Don't redirect — let them reset their password
+            }
             router.replace('/dashboard')
         }
     }, [user, authLoading, router])
@@ -85,6 +91,13 @@ export function PublicRoute({ children }: { children: React.ReactNode }) {
             </div>
         )
     }
-    if (user) return null
+    if (user) {
+        // Allow rendering for forgot-password/reset-password even when logged in
+        const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+        const mode = params?.get('mode')
+        if (mode !== 'forgot-password' && mode !== 'reset-password') {
+            return null
+        }
+    }
     return <>{children}</>
 }

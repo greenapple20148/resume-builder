@@ -55,14 +55,18 @@ export default function AuthPage() {
   }
   const pwStrength = Object.values(pwChecks).filter(Boolean).length
   const pwValid = pwStrength === 5
+  // BUG-004 fix: "Excellent" requires all 5 checks + 10+ char length
+  const pwLabel = !pwChecks.length ? 'Too Short' : pwStrength <= 2 ? 'Weak' : pwStrength <= 3 ? 'Fair' : pwStrength <= 4 ? 'Good' : form.password.length >= 10 ? 'Excellent' : 'Strong'
 
   const validate = () => {
     const errs: Record<string, string> = {}
     if (mode === 'signup' && !form.fullName.trim()) errs.fullName = 'Name is required'
-    if (mode !== 'reset-password' && !form.email.includes('@')) errs.email = 'Valid email required'
+    // TC-014 fix: Proper email format validation (abc@ no longer passes)
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
+    if (mode !== 'reset-password' && !emailValid) errs.email = 'Please enter a valid email address'
     if (mode === 'signin' && form.password.length < 8) errs.password = 'Password must be 8+ characters'
     if (mode === 'signup') { if (!pwValid) errs.password = 'Password does not meet all requirements' }
-    if (mode === 'forgot-password' && !form.email.includes('@')) errs.email = 'Valid email required'
+    if (mode === 'forgot-password' && !emailValid) errs.email = 'Please enter a valid email address'
     if (mode === 'reset-password') {
       if (!pwValid) errs.password = 'Password does not meet all requirements'
       if (form.password !== form.confirmPassword) errs.confirmPassword = 'Passwords do not match'
@@ -80,7 +84,12 @@ export default function AuthPage() {
         await signUp(form.email, form.password, form.fullName)
         router.push('/confirm-email')
       } else if (mode === 'signin') {
-        await signIn(form.email, form.password)
+        const result = await signIn(form.email, form.password)
+        // TC-041 fix: Explicitly set user in store before navigation
+        // so ProtectedRoute on /dashboard sees the user immediately
+        if (result?.user) {
+          useStore.setState({ user: result.user })
+        }
         toast.success('Welcome back!')
         router.push('/dashboard')
       } else if (mode === 'forgot-password') {
@@ -100,6 +109,10 @@ export default function AuthPage() {
       } else if (msg.includes('already registered') || msg.includes('already been registered')) {
         setErrors({ email: 'This email is already registered' })
         toast.error('An account with this email already exists. Try signing in.')
+      } else if (msg.includes('No account found')) {
+        // BUG-005: Show inline error for forgot-password with unregistered email
+        setErrors({ email: msg })
+        toast.error(msg)
       } else { toast.error(msg || 'Something went wrong. Try again.') }
     } finally { setLoading(false) }
   }
@@ -239,7 +252,7 @@ export default function AuthPage() {
                         ))}
                       </div>
                       <span className="text-[11px] font-semibold font-mono uppercase tracking-wide text-ink-40 whitespace-nowrap">
-                        {pwStrength <= 2 ? 'Weak' : pwStrength <= 3 ? 'Fair' : pwStrength <= 4 ? 'Strong' : 'Excellent'}
+                        {pwLabel}
                       </span>
                     </div>
                   )}
