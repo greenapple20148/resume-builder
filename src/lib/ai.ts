@@ -235,28 +235,75 @@ function enhanceTextLocal(text: string): string {
 
         content = content.charAt(0).toUpperCase() + content.slice(1)
 
+        // Expanded verb map for more impactful replacements
         const verbMap: Record<string, string> = {
             'helped with': 'Contributed to',
+            'helped to': 'Facilitated',
             'worked on': 'Developed',
             'was responsible for': 'Led',
-            'responsible for': 'Led',
+            'responsible for': 'Managed',
             'was part of': 'Collaborated on',
             'made improvements to': 'Optimized',
             'did work on': 'Executed',
             'assisted in': 'Supported',
-            'dealt with': 'Managed',
+            'assisted with': 'Supported',
+            'dealt with': 'Resolved',
             'took care of': 'Oversaw',
             'put together': 'Assembled',
             'came up with': 'Designed',
             'set up': 'Established',
             'looked into': 'Investigated',
             'got better at': 'Improved',
+            'participated in': 'Contributed to',
+            'was involved in': 'Drove',
+            'involved in': 'Drove',
+            'handled': 'Managed',
+            'did': 'Executed',
+            'used': 'Leveraged',
+            'made': 'Developed',
+            'worked with': 'Partnered with',
+            'talked to': 'Communicated with',
+            'ran': 'Directed',
+            'fixed': 'Resolved',
+            'changed': 'Transformed',
+            'started': 'Initiated',
+            'helped': 'Facilitated',
+            'improved': 'Enhanced',
+            'increased': 'Accelerated',
+            'decreased': 'Reduced',
+            'built': 'Architected',
+            'created': 'Developed',
+            'wrote': 'Authored',
+            'tested': 'Validated',
+            'checked': 'Evaluated',
+            'managed': 'Directed',
+            'organized': 'Orchestrated',
+            'planned': 'Strategized',
+            'trained': 'Mentored',
+            'taught': 'Mentored',
+            'maintained': 'Sustained',
         }
         for (const [weak, strong] of Object.entries(verbMap)) {
             const regex = new RegExp(`\\b${weak}\\b`, 'gi')
             if (regex.test(content)) {
                 content = content.replace(regex, strong)
+                break // only replace the first match to avoid awkward double replacements
             }
+        }
+
+        // Remove filler words
+        const fillers = ['very', 'really', 'just', 'basically', 'actually', 'simply', 'in order to']
+        for (const filler of fillers) {
+            const regex = new RegExp(`\\b${filler}\\b\\s*`, 'gi')
+            content = content.replace(regex, '')
+        }
+
+        // Clean up double spaces
+        content = content.replace(/\s{2,}/g, ' ').trim()
+
+        // Capitalize first letter again after replacements
+        if (content.length > 0) {
+            content = content.charAt(0).toUpperCase() + content.slice(1)
         }
 
         if (content.length > 10 && !/[.!?]$/.test(content)) {

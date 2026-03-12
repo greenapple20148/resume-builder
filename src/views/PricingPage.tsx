@@ -67,7 +67,9 @@ export default function PricingPage() {
         const billing = plan === 'founding' ? 'annual' : (annual ? 'annual' : 'monthly')
         localStorage.setItem('resumebuildin_pending_plan', JSON.stringify({ plan, billing }))
       }
-      router.push(plan === 'founding' ? '/auth?mode=signup&offer=founding' : '/auth?mode=signup')
+      // BUG-008 fix: Use hard navigation instead of client-side router.push
+      // to ensure the pricing page UI is fully replaced by the auth page
+      window.location.href = plan === 'founding' ? '/auth?mode=signup&offer=founding' : '/auth?mode=signup'
       return
     }
     if (plan === 'free') return
@@ -79,7 +81,7 @@ export default function PricingPage() {
   const handleManageBilling = async () => { try { setLoading('portal'); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) } }
 
   const handleAddonPurchase = async (addonId: string) => {
-    if (!user) { router.push('/auth?mode=signup'); return }
+    if (!user) { window.location.href = '/auth?mode=signup'; return }
     if (addonId === 'express_unlock') {
       if (isExpressUnlockActive(profile)) {
         toast.info('Express Unlock is already active!')
@@ -89,16 +91,20 @@ export default function PricingPage() {
         toast.info('You already have a paid plan — Express Unlock is for free users.')
         return
       }
+      // BUG-010 fix: Route through Stripe Checkout instead of direct activation.
+      // The previous code called purchaseExpressUnlock() which bypassed payment.
       try {
         setLoading('express_unlock')
-        toast.info('Activating Express 24h Unlock…')
-        const result = await purchaseExpressUnlock()
-        if (result.success) {
-          toast.success('Express Unlock activated! Pro features enabled for 24 hours.')
-          if (user) await fetchProfile(user.id)
+        const data = await invokeEdgeFunction<{ url: string }>('create-checkout', {
+          body: { plan: 'express_unlock', billing: 'one_time' },
+        })
+        if (data?.url) {
+          window.location.href = data.url
+        } else {
+          throw new Error('No checkout URL returned')
         }
       } catch (err: any) {
-        toast.error(err.message || 'Could not activate Express Unlock.')
+        toast.error(err.message || 'Could not start checkout for Express Unlock.')
       } finally {
         setLoading(null)
       }

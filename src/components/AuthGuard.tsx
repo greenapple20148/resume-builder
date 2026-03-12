@@ -54,7 +54,10 @@ export function PublicRoute({ children }: { children: React.ReactNode }) {
         if (!authLoading && user && !didRedirect.current) {
             const params = new URLSearchParams(window.location.search)
             const mode = params.get('mode')
-            if (mode === 'forgot-password' || mode === 'reset-password') {
+            const hash = window.location.hash || ''
+            // BUG-006 fix: Also check for recovery tokens in the URL hash
+            const isRecovery = hash.includes('type=recovery')
+            if (mode === 'forgot-password' || mode === 'reset-password' || isRecovery) {
                 return
             }
             didRedirect.current = true
@@ -93,8 +96,10 @@ export function PublicRoute({ children }: { children: React.ReactNode }) {
 
     if (user) {
         const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+        const hash = typeof window !== 'undefined' ? (window.location.hash || '') : ''
         const mode = params?.get('mode')
-        if (mode !== 'forgot-password' && mode !== 'reset-password') {
+        const isRecovery = hash.includes('type=recovery')
+        if (mode !== 'forgot-password' && mode !== 'reset-password' && !isRecovery) {
             return (
                 <div
                     style={{

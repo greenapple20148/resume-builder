@@ -1420,52 +1420,51 @@ export default function EditorPage() {
       return
     }
 
-    try {
-      // Look up theme background color
-      const themeBg = THEMES.find(t => t.id === themeId)?.bg || '#fff'
+    // Look up theme background color
+    const themeBg = THEMES.find(t => t.id === themeId)?.bg || '#fff'
 
-      // Collect Google Fonts links
-      const fontLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"][href*="fonts.googleapis.com"]'))
-        .map(el => el.outerHTML).join('\n')
+    // Collect Google Fonts links
+    const fontLinks = Array.from(document.querySelectorAll('link[rel="stylesheet"][href*="fonts.googleapis.com"]'))
+      .map(el => el.outerHTML).join('\n')
 
-      // Collect all stylesheets from the main document
-      const styles = Array.from(document.querySelectorAll('style'))
-        .map(s => s.outerHTML).join('\n')
+    // Collect all stylesheets from the main document
+    const styles = Array.from(document.querySelectorAll('style'))
+      .map(s => s.outerHTML).join('\n')
 
-      // Clone the preview content
-      const contentClone = previewEl.cloneNode(true) as HTMLElement
-      contentClone.id = 'resume-preview-root'
+    // Clone the preview content
+    const contentClone = previewEl.cloneNode(true) as HTMLElement
+    contentClone.id = 'resume-preview-root'
 
-      // Remove internal style overrides (min-height, etc.)
-      contentClone.querySelectorAll('style').forEach(s => {
-        if (s.textContent?.includes('min-height')) s.remove()
-      })
+    // Remove internal style overrides (min-height, etc.)
+    contentClone.querySelectorAll('style').forEach(s => {
+      if (s.textContent?.includes('min-height')) s.remove()
+    })
 
-      // Recursively strip all hardcoded 794px widths from the clone
-      const stripFixedWidths = (el: HTMLElement) => {
-        if (el.style?.width && (el.style.width === '794px' || el.style.width === '794')) {
-          el.style.width = '100%'
-        }
-        if (el.style?.minWidth && (el.style.minWidth === '794px' || el.style.minWidth === '794')) {
-          el.style.minWidth = '100%'
-        }
-        for (let i = 0; i < el.children.length; i++) {
-          const child = el.children[i]
-          if (child instanceof HTMLElement) stripFixedWidths(child)
-        }
+    // Recursively strip all hardcoded 794px widths from the clone
+    const stripFixedWidths = (el: HTMLElement) => {
+      if (el.style?.width && (el.style.width === '794px' || el.style.width === '794')) {
+        el.style.width = '100%'
       }
-      stripFixedWidths(contentClone)
+      if (el.style?.minWidth && (el.style.minWidth === '794px' || el.style.minWidth === '794')) {
+        el.style.minWidth = '100%'
+      }
+      for (let i = 0; i < el.children.length; i++) {
+        const child = el.children[i]
+        if (child instanceof HTMLElement) stripFixedWidths(child)
+      }
+    }
+    stripFixedWidths(contentClone)
 
-      // Watermark for free users (not active if Express Unlock is on)
-      const effectivePlan = getEffectivePlan(profile)
-      const isFree = effectivePlan === 'free'
-      const isLightBg = ['#ffffff', '#fff', '#fafafa', '#fdfbf9', '#fbf9fc', '#f7f7f7', '#f9f6f0', '#faf7f3', '#f7efe3', '#fdfcfa', '#f8f8f8'].includes(themeBg)
-      const watermarkHTML = isFree
-        ? `<div style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:4mm 0;font-size:9pt;color:${isLightBg ? '#828282' : '#b4b4b4'};background:${themeBg};font-family:sans-serif;">Made with ResumeBuildIn</div>`
-        : ''
+    // Watermark for free users (not active if Express Unlock is on)
+    const effectivePlan = getEffectivePlan(profile)
+    const isFree = effectivePlan === 'free'
+    const isLightBg = ['#ffffff', '#fff', '#fafafa', '#fdfbf9', '#fbf9fc', '#f7f7f7', '#f9f6f0', '#faf7f3', '#f7efe3', '#fdfcfa', '#f8f8f8'].includes(themeBg)
+    const watermarkHTML = isFree
+      ? `<div style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:4mm 0;font-size:9pt;color:${isLightBg ? '#828282' : '#b4b4b4'};background:${themeBg};font-family:sans-serif;">Made with ResumeBuildIn</div>`
+      : ''
 
-      // Build self-contained HTML document for Puppeteer
-      const fullHTML = `<!DOCTYPE html>
+    // Build self-contained HTML document
+    const fullHTML = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -1501,7 +1500,11 @@ export default function EditorPage() {
 </body>
 </html>`
 
-      // Call server-side PDF generation API
+    try {
+      // Try server-side PDF generation first (Puppeteer)
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 25000)
+
       const response = await fetch('/api/generate-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1509,7 +1512,9 @@ export default function EditorPage() {
           html: fullHTML,
           filename: `${title || 'resume'}.pdf`,
         }),
+        signal: controller.signal,
       })
+      clearTimeout(timeout)
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({}))
@@ -1528,9 +1533,42 @@ export default function EditorPage() {
       URL.revokeObjectURL(url)
 
       toast.success('PDF downloaded!')
-    } catch (err: any) {
-      console.error('PDF generation error:', err)
-      toast.error(err?.message || 'PDF generation failed.')
+    } catch (serverErr: any) {
+      // BUG-013 fix: Fallback to browser print-to-PDF when server API fails
+      console.warn('Server PDF generation failed, using browser print fallback:', serverErr?.message)
+
+      try {
+        // Add print-specific CSS for the fallback
+        const printCSS = `<style>
+          @page { size: A4; margin: 10mm 0; }
+          @page :first { margin: 0 0 10mm 0; }
+          @media print {
+            body { -webkit-print-color-adjust: exact !important; }
+          }
+        </style>`
+        const printHTML = fullHTML.replace('</head>', `${printCSS}</head>`)
+
+        const printWindow = window.open('', '_blank')
+        if (!printWindow) {
+          throw new Error('Pop-up blocked. Please allow pop-ups and try again.')
+        }
+        printWindow.document.write(printHTML)
+        printWindow.document.close()
+
+        // Wait for fonts and content to load
+        await new Promise(resolve => setTimeout(resolve, 1500))
+
+        printWindow.focus()
+        printWindow.print()
+
+        // Close the print window after a delay
+        setTimeout(() => { try { printWindow.close() } catch { } }, 2000)
+
+        toast.success('Print dialog opened — save as PDF to download.')
+      } catch (printErr: any) {
+        console.error('Browser print fallback also failed:', printErr)
+        toast.error(printErr?.message || 'PDF generation failed. Please try again.')
+      }
     } finally {
       setDownloading(false)
     }

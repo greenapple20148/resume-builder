@@ -101,7 +101,7 @@ export default function AuthPage() {
           }
         }
 
-        router.push('/confirm-email')
+        window.location.href = '/confirm-email'
       } else if (mode === 'signin') {
         const result = await signIn(form.email, form.password)
         if (result?.user) {
@@ -122,7 +122,7 @@ export default function AuthPage() {
       const msg = err.message || ''
       if (msg.includes('sending confirmation email')) {
         toast.info('Account created but confirmation email could not be sent.')
-        router.push('/confirm-email')
+        window.location.href = '/confirm-email'
       } else if (msg.includes('already registered') || msg.includes('already been registered')) {
         setErrors({ email: 'This email is already registered' })
         toast.error('An account with this email already exists. Try signing in.')

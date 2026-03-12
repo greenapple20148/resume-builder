@@ -109,6 +109,13 @@ export const useStore = create<StoreState>((set, get) => ({
           set({ user: null, profile: null, resumes: [], currentResume: null })
         } else if (event === 'TOKEN_REFRESHED' && session?.user) {
           set({ user: session.user })
+        } else if (event === 'PASSWORD_RECOVERY' && session?.user) {
+          // BUG-006 fix: Supabase fires PASSWORD_RECOVERY when a reset link is clicked.
+          // Redirect to the reset-password form instead of letting PublicRoute send to /dashboard.
+          set({ user: session.user, authLoading: false })
+          if (typeof window !== 'undefined' && !window.location.search.includes('mode=reset-password')) {
+            window.location.href = '/auth?mode=reset-password'
+          }
         } else if (event === 'INITIAL_SESSION') {
           if (isAuthCallback && !session?.user) {
             set({ authLoading: false })
@@ -340,14 +347,19 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   resetPassword: async (email) => {
-    // Security: Always show success regardless of whether email exists.
-    // Supabase silently ignores non-existent emails by design,
-    // preventing user enumeration attacks.
+    // Security: Always show success in the UI regardless of whether email exists,
+    // preventing user enumeration attacks through the response.
+    // However, only actually send the reset email if the email IS registered,
+    // to prevent sending emails to unregistered addresses (BUG-005).
     try {
-      await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth?mode=reset-password`,
-      })
-    } catch { /* silently ignore errors */ }
+      const { data: emailExists } = await supabase.rpc('check_email_exists', { lookup_email: email })
+      if (emailExists) {
+        await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth?mode=reset-password`,
+        })
+      }
+      // If email doesn't exist, silently do nothing — UI still shows "Check your inbox"
+    } catch { /* silently ignore errors to prevent enumeration */ }
   },
 
   updatePassword: async (newPassword) => {

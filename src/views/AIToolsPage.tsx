@@ -6,6 +6,7 @@ import { useStore } from '@/lib/store'
 import { useSEO } from '@/lib/useSEO'
 import { LandingIcon } from '../components/LandingIcons'
 import { analyzeResume, type ATSAnalysisResult } from '@/lib/atsAnalysis'
+import { getEffectivePlan } from '@/lib/expressUnlock'
 
 // ── Helper: extract text from resume ────────────────
 function getResumeText(resume: any): string {
@@ -343,7 +344,7 @@ function ScoreBadge({ score, label }: { score: number; label: string }) {
 export default function AIToolsPage() {
     useSEO({ title: 'AI Tools — ResumeBuildIn', description: 'Advanced AI-powered tools for interview prep, resume analysis, and job search optimization.', path: '/tools/ai' })
 
-    const { user, resumes, fetchResumes } = useStore()
+    const { user, resumes, fetchResumes, profile } = useStore()
     const [activeTool, setActiveTool] = useState<ToolId>('ats')
     const [selectedResume, setSelectedResume] = useState<string>('')
     const [inputText, setInputText] = useState('')
@@ -359,6 +360,9 @@ export default function AIToolsPage() {
 
     const isLoggedIn = !!user
     const needsResume = activeTool === 'ats' || activeTool === 'linkedin'
+    // BUG-017 fix: JD Match is a Premium/Career+ feature
+    const effectivePlan = getEffectivePlan(profile)
+    const hasJdMatchAccess = effectivePlan === 'premium' || effectivePlan === 'career_plus'
 
     useEffect(() => { if (isLoggedIn) fetchResumes() }, [isLoggedIn])
     useEffect(() => { if (resumes.length > 0 && !selectedResume) setSelectedResume(resumes[0].id) }, [resumes])
@@ -560,16 +564,29 @@ export default function AIToolsPage() {
                             </select>
                         )}
 
-                        {/* Optional JD textarea */}
-                        <div className="mb-4">
-                            <label className="text-sm font-medium text-ink-50 mb-2 block">Job Description <span className="text-ink-20 font-normal">(optional — for JD match)</span></label>
-                            <textarea
-                                value={atsJdText}
-                                onChange={e => setAtsJdText(e.target.value)}
-                                placeholder="Paste the full job description here to get a Job Match Score and missing keyword analysis..."
-                                className="w-full h-32 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors"
-                            />
-                        </div>
+                        {/* Optional JD textarea — Premium/Career+ only */}
+                        {hasJdMatchAccess ? (
+                            <div className="mb-4">
+                                <label className="text-sm font-medium text-ink-50 mb-2 block">Job Description <span className="text-ink-20 font-normal">(optional — for JD match)</span></label>
+                                <textarea
+                                    value={atsJdText}
+                                    onChange={e => setAtsJdText(e.target.value)}
+                                    placeholder="Paste the full job description here to get a Job Match Score and missing keyword analysis..."
+                                    className="w-full h-32 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors"
+                                />
+                            </div>
+                        ) : (
+                            <div className="mb-4 p-4 bg-[rgba(201,146,60,0.04)] border border-gold/20 rounded-xl">
+                                <div className="flex items-start gap-3">
+                                    <span className="text-gold mt-0.5 shrink-0"><LandingIcon name="lock" size={16} /></span>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-semibold text-ink mb-1">Job Description Match <span className="text-xs font-normal text-gold">Premium+</span></div>
+                                        <p className="text-xs text-ink-40 leading-relaxed mb-2">Paste a job description to see a match score and missing keywords. Available on Premium and Career+ plans.</p>
+                                        <Link href="/pricing" className="text-xs text-gold font-medium hover:underline">Upgrade to unlock →</Link>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Run button */}
                         <button

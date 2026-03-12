@@ -132,7 +132,19 @@ export default function ProfilePage() {
                             <div className="bg-[var(--white)] border border-ink-10 rounded-xl p-7 shadow-sm">
                                 <h4 className="font-display text-lg text-ink mb-5 pb-3.5 border-b border-ink-05">Account Overview</h4>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                                    {[{ val: resumeCount, label: 'Resumes Created' }, { val: resumeLimit === Infinity ? '∞' : resumeLimit, label: 'Resume Limit' }, { val: memberSince, label: 'Member Since' }, { val: profile?.plan || 'free', label: 'Current Plan' }].map((s, i) => (
+                                    {[
+                                        { val: resumeCount, label: 'Resumes Created' },
+                                        { val: resumeLimit === Infinity ? '∞' : resumeLimit, label: 'Resume Limit' },
+                                        { val: memberSince, label: 'Member Since' },
+                                        { val: profile?.plan || 'free', label: 'Current Plan' },
+                                        // BUG-019 fix: Show subscription period end for paid plans
+                                        ...(profile?.plan && profile.plan !== 'free' && profile.subscription_period_end
+                                            ? [{ val: new Date(profile.subscription_period_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), label: 'Renews On' }]
+                                            : []),
+                                        ...(profile?.plan && profile.plan !== 'free' && profile.subscription_status
+                                            ? [{ val: profile.subscription_status === 'active' ? 'Active' : profile.subscription_status === 'trialing' ? 'Trial' : profile.subscription_status === 'canceled' ? 'Canceled' : profile.subscription_status, label: 'Status' }]
+                                            : []),
+                                    ].map((s, i) => (
                                         <div key={i} className="text-center p-4 bg-parchment dark:bg-ink-05 rounded-lg">
                                             <div className="font-display text-[22px] text-ink mb-1 capitalize">{s.val}</div>
                                             <div className="font-mono text-[10px] tracking-wide uppercase text-ink-40">{s.label}</div>
