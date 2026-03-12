@@ -10,6 +10,17 @@ import { saveVersionSnapshot } from './resumeVersions'
 // Prevents the SIGNED_IN event from racing with router.push('/confirm-email').
 let _suppressAuthEvent = false
 
+// Helper to clear stale Supabase auth tokens from localStorage
+function _clearStaleSession() {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
+    if (ref) {
+      localStorage.removeItem(`sb-${ref}-auth-token`)
+    }
+  } catch { /* ignore in SSR */ }
+}
+
 interface StoreState {
   user: any | null
   profile: Profile | null
@@ -87,14 +98,10 @@ export const useStore = create<StoreState>((set, get) => ({
 
       supabase.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
-          // If signup is in progress, skip setting user to prevent
-          // PublicRoute from racing with router.push('/confirm-email').
-          // This is the root fix for BUG-001 (removeChild crash).
           if (_suppressAuthEvent) {
             return
           }
           set({ user: session.user })
-          // Fire-and-forget profile fetch in listener — don't block auth
           get().fetchProfile(session.user.id).catch(() => { })
           if (isAuthCallback) set({ authLoading: false })
         } else if (event === 'SIGNED_OUT') {
@@ -116,15 +123,30 @@ export const useStore = create<StoreState>((set, get) => ({
           new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getSession_timeout')), 5000))
         ])
         session = result.data.session
-      } catch {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-        const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
-        const raw = localStorage.getItem(`sb-${ref}-auth-token`)
-        if (raw) {
-          try {
-            const parsed = JSON.parse(raw)
-            if (parsed?.user) session = parsed
-          } catch { /* ignore */ }
+
+        // If getSession returned an error about refresh tokens, clear the stale session
+        if ((result as any).error?.message?.includes('Refresh Token')) {
+          console.warn('[auth] Stale refresh token detected — clearing session')
+          session = null
+          _clearStaleSession()
+          await supabase.auth.signOut().catch(() => { })
+        }
+      } catch (e: any) {
+        // Also catch refresh token errors thrown as exceptions
+        if (e?.message?.includes('Refresh Token') || e?.message?.includes('Invalid Refresh Token')) {
+          console.warn('[auth] Invalid refresh token — clearing session')
+          _clearStaleSession()
+          await supabase.auth.signOut().catch(() => { })
+        } else {
+          const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+          const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
+          const raw = localStorage.getItem(`sb-${ref}-auth-token`)
+          if (raw) {
+            try {
+              const parsed = JSON.parse(raw)
+              if (parsed?.user) session = parsed
+            } catch { /* ignore */ }
+          }
         }
       }
 
@@ -318,19 +340,14 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   resetPassword: async (email) => {
-    // BUG-005 fix: Check if the email actually exists before sending reset email.
-    // Supabase's resetPasswordForEmail() never errors for non-existent emails (by design),
-    // which would show a false "Check your inbox" success message.
-    const { data: emailExists, error: checkError } = await supabase.rpc('check_email_exists', { lookup_email: email })
-    if (checkError) throw checkError
-    if (!emailExists) {
-      throw new Error('No account found with this email address.')
-    }
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth?mode=reset-password`,
-    })
-    if (error) throw error
+    // Security: Always show success regardless of whether email exists.
+    // Supabase silently ignores non-existent emails by design,
+    // preventing user enumeration attacks.
+    try {
+      await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?mode=reset-password`,
+      })
+    } catch { /* silently ignore errors */ }
   },
 
   updatePassword: async (newPassword) => {

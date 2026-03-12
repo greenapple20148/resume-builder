@@ -11,7 +11,7 @@ import { Resume } from '../types'
 import { getResumeScore } from '@/lib/resumeScore'
 import { LandingIcon } from '../components/LandingIcons'
 import { getEffectivePlan, isExpressUnlockActive } from '@/lib/expressUnlock'
-import { isCouponActive, formatCouponCountdown, getCouponRemainingDays, shouldShowUpgradeNudge } from '@/lib/coupon'
+
 import ShareResumeModal from '../components/ShareResumeModal'
 
 interface ResumeCardProps {
@@ -297,7 +297,7 @@ export default function DashboardPage() {
           <div className="bg-[var(--white)] border border-ink-10 rounded-xl p-4 mt-4">
             <div className="mb-3">
               <span className={`badge ${effectivePlan !== 'free' ? 'badge-gold' : 'badge-dark'}`}>
-                {isCouponActive(profile) && profile?.plan === 'free' ? '🎁 COUPON' : isExpressUnlockActive(profile) && profile?.plan === 'free' ? 'EXPRESS' : profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
+                {isExpressUnlockActive(profile) && profile?.plan === 'free' ? 'EXPRESS' : profile?.subscription_status === 'cancelling' ? `${profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'} · CANCELLING` : profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
               </span>
             </div>
             <div className="mb-1">
@@ -306,15 +306,7 @@ export default function DashboardPage() {
                 <div className="h-full bg-gold rounded-full transition-all duration-400" style={{ width: `${Math.min((resumeCount / (resumeLimit === Infinity ? 1 : resumeLimit)) * 100, 100)}%` }} />
               </div>
             </div>
-            {profile?.plan === 'free' && isCouponActive(profile) && (
-              <>
-                <div className="text-xs text-ink-20 font-mono mt-2">{formatCouponCountdown(profile)} remaining</div>
-                {shouldShowUpgradeNudge(profile) && (
-                  <Link href="/pricing" className="btn btn-gold w-full mt-3 text-[13px]">Upgrade before it expires →</Link>
-                )}
-              </>
-            )}
-            {profile?.plan === 'free' && !isExpressUnlockActive(profile) && !isCouponActive(profile) && (
+            {profile?.plan === 'free' && !isExpressUnlockActive(profile) && (
               <>
                 <Link href="/pricing" className="btn btn-gold w-full mt-3 text-[13px]">Upgrade to Pro →</Link>
                 <Link href="/pricing" className="block mt-3 no-underline">
@@ -336,7 +328,7 @@ export default function DashboardPage() {
                 </Link>
               </>
             )}
-            {profile?.plan === 'free' && isExpressUnlockActive(profile) && !isCouponActive(profile) && (
+            {profile?.plan === 'free' && isExpressUnlockActive(profile) && (
               <Link href="/pricing" className="btn btn-gold w-full mt-3 text-[13px]">Upgrade to keep Pro access →</Link>
             )}
             {profile?.plan !== 'free' && (
@@ -387,48 +379,32 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* ── Coupon Status Banner ── */}
-          {isCouponActive(profile) && profile?.plan === 'free' && (
+          {/* ── Cancellation Notice Banner ── */}
+          {profile?.subscription_status === 'cancelling' && profile?.subscription_period_end && (
             <div
               className="mb-6 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
               style={{
-                background: shouldShowUpgradeNudge(profile)
-                  ? 'linear-gradient(135deg, rgba(239,68,68,0.06), rgba(239,68,68,0.02))'
-                  : 'linear-gradient(135deg, rgba(76,175,122,0.08), rgba(76,175,122,0.02))',
-                border: shouldShowUpgradeNudge(profile)
-                  ? '1.5px solid rgba(239,68,68,0.25)'
-                  : '1.5px solid rgba(76,175,122,0.25)',
+                background: 'linear-gradient(135deg, rgba(234,179,8,0.06), rgba(234,179,8,0.02))',
+                border: '1.5px solid rgba(234,179,8,0.25)',
               }}
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
-                  style={{
-                    background: shouldShowUpgradeNudge(profile)
-                      ? 'linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.06))'
-                      : 'linear-gradient(135deg, rgba(76,175,122,0.12), rgba(76,175,122,0.06))',
-                  }}>
-                  {shouldShowUpgradeNudge(profile) ? '⏰' : '🎁'}
+                  style={{ background: 'linear-gradient(135deg, rgba(234,179,8,0.12), rgba(234,179,8,0.06))' }}>
+                  ⏰
                 </div>
                 <div>
                   <div className="text-[14px] font-semibold text-ink">
-                    {shouldShowUpgradeNudge(profile)
-                      ? `Your free ${planInfo.name} trial ends in ${getCouponRemainingDays(profile)} day${getCouponRemainingDays(profile) !== 1 ? 's' : ''}`
-                      : `Free ${planInfo.name} access · ${formatCouponCountdown(profile)} remaining`
-                    }
+                    Your {planInfo.name} plan is set to cancel
                   </div>
                   <div className="text-[12px] text-ink-40 mt-0.5">
-                    {shouldShowUpgradeNudge(profile)
-                      ? 'Upgrade now to keep all your premium features, or you\'ll be moved to the free plan.'
-                      : `Enjoying premium features via coupon code ${profile?.coupon_code || ''}.`
-                    }
+                    You'll keep full access until {new Date(profile.subscription_period_end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. After that, you'll be moved to the Free plan.
                   </div>
                 </div>
               </div>
-              {shouldShowUpgradeNudge(profile) && (
-                <Link href="/pricing" className="btn btn-gold shrink-0 text-[13px] py-2 px-5">
-                  Upgrade Now →
-                </Link>
-              )}
+              <Link href="/pricing" className="btn btn-gold shrink-0 text-[13px] py-2 px-5">
+                Resubscribe →
+              </Link>
             </div>
           )}
 
@@ -507,10 +483,24 @@ export default function DashboardPage() {
 
       {cancelConfirm && (
         <div className="modal-overlay" onClick={() => setCancelConfirm(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
+          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
             <h3 className="mb-2">Cancel Subscription?</h3>
-            <p className="text-sm text-ink-40 mb-2">Your subscription will be cancelled at the end of the current billing period. You'll keep access until then.</p>
-            <p className="text-[12px] text-ink-30 mb-6">After cancellation, your plan will revert to Free with limited features.</p>
+            {profile?.subscription_period_end ? (
+              <p className="text-sm text-ink-40 mb-2">
+                Your subscription will remain active until <strong className="text-ink">{new Date(profile.subscription_period_end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>. After that, you'll be moved to the Free plan.
+              </p>
+            ) : (
+              <p className="text-sm text-ink-40 mb-2">Your subscription will be cancelled at the end of the current billing period. You'll keep access until then.</p>
+            )}
+            <div className="p-3 rounded-lg bg-ink-05 border border-ink-10 mb-5">
+              <p className="text-[12px] text-ink-40 m-0 leading-relaxed">
+                <strong className="text-ink-70">What happens next:</strong><br />
+                • You keep full {planInfo.name} access until the period ends<br />
+                • No more charges after cancellation<br />
+                • Your resumes and data are preserved<br />
+                • You can resubscribe anytime
+              </p>
+            </div>
             <div className="flex gap-2.5">
               <button
                 className="btn btn-danger flex-1"
@@ -531,9 +521,9 @@ export default function DashboardPage() {
                   }
                 }}
               >
-                {cancelLoading ? 'Cancelling…' : 'Yes, Cancel'}
+                {cancelLoading ? 'Cancelling…' : 'Yes, Cancel Subscription'}
               </button>
-              <button className="btn btn-outline flex-1" onClick={() => setCancelConfirm(false)}>Keep Plan</button>
+              <button className="btn btn-outline flex-1" onClick={() => setCancelConfirm(false)}>Keep My Plan</button>
             </div>
           </div>
         </div>

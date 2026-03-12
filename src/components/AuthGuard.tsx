@@ -1,20 +1,20 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useRef } from 'react'
 import { useStore } from '@/lib/store'
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { user, authLoading } = useStore()
-    const router = useRouter()
+    const didRedirect = useRef(false)
 
     useEffect(() => {
-        if (!authLoading && !user) {
-            router.replace('/auth')
+        if (!authLoading && !user && !didRedirect.current) {
+            didRedirect.current = true
+            window.location.href = '/auth'
         }
-    }, [user, authLoading, router])
+    }, [user, authLoading])
 
-    if (authLoading) {
+    if (authLoading || !user) {
         return (
             <div
                 style={{
@@ -43,25 +43,24 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
         )
     }
 
-    if (!user) return null
     return <>{children}</>
 }
 
 export function PublicRoute({ children }: { children: React.ReactNode }) {
     const { user, authLoading } = useStore()
-    const router = useRouter()
+    const didRedirect = useRef(false)
 
     useEffect(() => {
-        if (!authLoading && user) {
-            // TC-020 fix: Allow logged-in users to access forgot-password and reset-password flows
+        if (!authLoading && user && !didRedirect.current) {
             const params = new URLSearchParams(window.location.search)
             const mode = params.get('mode')
             if (mode === 'forgot-password' || mode === 'reset-password') {
-                return // Don't redirect — let them reset their password
+                return
             }
-            router.replace('/dashboard')
+            didRedirect.current = true
+            window.location.href = '/dashboard'
         }
-    }, [user, authLoading, router])
+    }, [user, authLoading])
 
     if (authLoading) {
         return (
@@ -91,13 +90,39 @@ export function PublicRoute({ children }: { children: React.ReactNode }) {
             </div>
         )
     }
+
     if (user) {
-        // Allow rendering for forgot-password/reset-password even when logged in
         const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
         const mode = params?.get('mode')
         if (mode !== 'forgot-password' && mode !== 'reset-password') {
-            return null
+            return (
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: '100vh',
+                        background: 'var(--parchment)',
+                    }}
+                >
+                    <div style={{ textAlign: 'center' }}>
+                        <div
+                            style={{
+                                fontFamily: 'var(--font-display)',
+                                fontSize: '32px',
+                                fontWeight: '300',
+                                marginBottom: '20px',
+                                color: 'var(--ink)',
+                            }}
+                        >
+                            Resume<em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>BuildIn</em>
+                        </div>
+                        <div className="spinner" style={{ margin: '0 auto', color: 'var(--gold)' }} />
+                    </div>
+                </div>
+            )
         }
     }
+
     return <>{children}</>
 }

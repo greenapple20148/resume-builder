@@ -1,9 +1,9 @@
 // supabase/functions/ai-mock-interview/index.ts
-// AI Mock Interview — powered by Gemini 2.0 Flash
+// AI Mock Interview — powered by Claude (primary) with Gemini fallback
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
-const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") as string;
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") || "";
+const CLAUDE_API_KEY = Deno.env.get("CLAUDE_API_KEY") || "";
 
 const corsHeaders: Record<string, string> = {
     "Access-Control-Allow-Origin": "*",
@@ -125,9 +125,35 @@ When ACTION is "generate_summary":
 - Return ONLY valid JSON: {"overall_score": <1-10>, "clarity_avg": <1-10>, "confidence_avg": <1-10>, "keyword_relevance_avg": <1-10>, "star_usage_rate": "N/A", "verdict": "...", "top_strengths": ["..."], "areas_to_improve": ["..."], "recommendation": "..."}`,
 };
 
-// ── Gemini API call ──────────────────────────────────────
+// ── AI call with Claude primary, Gemini fallback ─────────
+async function callClaude(systemPrompt: string, userMessage: string): Promise<string> {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-api-key": CLAUDE_API_KEY,
+            "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 1500,
+            system: systemPrompt,
+            messages: [{ role: "user", content: userMessage }],
+        }),
+    });
+
+    if (!response.ok) {
+        const err = await response.text();
+        throw new Error(`Claude API error: ${response.status} — ${err}`);
+    }
+
+    const data = await response.json();
+    return data.content?.[0]?.text || "";
+}
+
 async function callGemini(systemPrompt: string, userMessage: string): Promise<string> {
-    const response = await fetch(GEMINI_URL, {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -147,6 +173,22 @@ async function callGemini(systemPrompt: string, userMessage: string): Promise<st
 
     const data = await response.json();
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+}
+
+async function callAI(systemPrompt: string, userMessage: string): Promise<string> {
+    // Try Claude first
+    if (CLAUDE_API_KEY) {
+        try {
+            return await callClaude(systemPrompt, userMessage);
+        } catch (err) {
+            console.warn("[ai-mock-interview] Claude failed, trying Gemini:", (err as Error).message);
+        }
+    }
+    // Fallback to Gemini
+    if (GEMINI_API_KEY) {
+        return await callGemini(systemPrompt, userMessage);
+    }
+    throw new Error("No AI provider configured. Set CLAUDE_API_KEY or GEMINI_API_KEY.");
 }
 
 // ── Main handler ──────────────────────────────────────────
@@ -237,13 +279,13 @@ Deno.serve(async (req: Request) => {
                     ? `\n\nPrevious questions asked (don't repeat):\n${history.map((h: any, i: number) => `${i + 1}. ${h.question}`).join("\n")}`
                     : "";
                 userMessage = `ACTION: generate_question\nRole: ${role}\nDifficulty: ${difficulty || "medium"}\nQuestion ${(questionIndex || 0) + 1} of ${totalQuestions || 6}${historyContext}`;
-                result = await callGemini(systemPrompt, userMessage);
+                result = await callAI(systemPrompt, userMessage);
                 break;
             }
 
             case "evaluate_answer": {
                 userMessage = `ACTION: evaluate_answer\nRole: ${role}\nQuestion: ${question}\nCandidate's Answer: ${answer}\n\nEvaluate this answer thoroughly. Assess clarity, confidence, STAR structure, and keyword relevance. Provide an improved version of their answer. Respond with ONLY valid JSON.`;
-                result = await callGemini(systemPrompt, userMessage);
+                result = await callAI(systemPrompt, userMessage);
                 break;
             }
 
@@ -252,7 +294,7 @@ Deno.serve(async (req: Request) => {
                     `Q${i + 1}: ${h.question}\nA${i + 1}: ${h.answer}\nScore: ${h.evaluation?.score || "N/A"}/10\nClarity: ${h.evaluation?.clarity_score || "N/A"}/10\nConfidence: ${h.evaluation?.confidence_score || "N/A"}/10`
                 ).join("\n\n") || "";
                 userMessage = `ACTION: generate_summary\nInterview type: ${interviewType}\nRole: ${role}\n\nFull interview transcript:\n${allQA}\n\nGenerate a comprehensive summary with average scores. Respond with ONLY valid JSON.`;
-                result = await callGemini(systemPrompt, userMessage);
+                result = await callAI(systemPrompt, userMessage);
 
                 // Save session to history
                 try {

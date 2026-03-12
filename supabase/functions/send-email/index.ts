@@ -412,6 +412,7 @@ Deno.serve(async (req: Request) => {
         }
 
         const FROM_ADDRESS = Deno.env.get("FROM_EMAIL") || `${B.name} <hello@resumebuildin.com>`;
+        const REPLY_TO = Deno.env.get("REPLY_TO_EMAIL") || B.supportEmail;
 
         const resendResponse = await fetch("https://api.resend.com/emails", {
             method: "POST",
@@ -421,10 +422,18 @@ Deno.serve(async (req: Request) => {
             },
             body: JSON.stringify({
                 from: FROM_ADDRESS,
+                reply_to: [REPLY_TO],
                 to: [toEmail],
                 subject: emailContent.subject,
                 html: emailContent.html,
                 text: emailContent.text,
+                headers: {
+                    "List-Unsubscribe": `<mailto:${REPLY_TO}?subject=Unsubscribe>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
+                tags: [
+                    { name: "category", value: templateName || "transactional" },
+                ],
             }),
         });
 

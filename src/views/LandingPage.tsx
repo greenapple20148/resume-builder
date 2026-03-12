@@ -156,6 +156,10 @@ function FoundingMemberOffer({ spotsLeft, setSpotsLeft }: { spotsLeft: number; s
                 href="/auth?mode=signup&offer=founding"
                 id="founding-offer-cta"
                 className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-xl text-[16px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden group"
+                onClick={() => {
+                  localStorage.setItem('resumebuildin_offer', 'founding')
+                  localStorage.setItem('resumebuildin_pending_plan', JSON.stringify({ plan: 'founding', billing: 'annual' }))
+                }}
                 style={{
                   background: 'linear-gradient(135deg, #c9923c 0%, #e8b76a 50%, #c9923c 100%)',
                   backgroundSize: '200% 200%',
@@ -403,7 +407,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── ADVANCED AI FEATURES ───────────── */}
-        <section aria-label="Advanced AI Features" className="bg-[#0e0d0b] dark:bg-[#0e0d0b] px-5 sm:px-10 py-16 sm:py-24">
+        <section aria-label="Advanced AI Features" className="bg-[#0e0d0b] dark:bg-[#0e0d0b] px-5 sm:px-10 py-16 sm:py-24 mt-16 sm:mt-24">
           <div className="max-w-[1200px] mx-auto">
             <div className="text-center max-w-[620px] mx-auto mb-14">
               <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-4 opacity-70">

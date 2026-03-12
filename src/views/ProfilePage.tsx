@@ -8,12 +8,11 @@ import { toast } from '../components/Toast'
 import { PLANS, openCustomerPortal } from '@/lib/stripe'
 import { supabase } from '@/lib/supabase'
 import { LandingIcon } from '../components/LandingIcons'
-import { getSelectedProvider, setSelectedProvider, isProviderConfigured, PROVIDER_INFO, type AIProvider } from '@/lib/aiProvider'
 
 export default function ProfilePage() {
     const { user, profile, signOut, updateProfile, resetPassword, fetchResumes, resumes } = useStore()
     const router = useRouter()
-    const [tab, setTab] = useState<'general' | 'security' | 'ai' | 'invite'>('general')
+    const [tab, setTab] = useState<'general' | 'security' | 'invite'>('general')
     const [fullName, setFullName] = useState(profile?.full_name || '')
     const [email, setEmail] = useState(user?.email || '')
     const [saving, setSaving] = useState(false)
@@ -26,7 +25,6 @@ export default function ProfilePage() {
     const [inviteSending, setInviteSending] = useState(false)
     const [inviteSent, setInviteSent] = useState(false)
     const [portalLoading, setPortalLoading] = useState(false)
-    const [aiProvider, setAiProvider] = useState<AIProvider>(getSelectedProvider())
 
     useEffect(() => { fetchResumes() }, [fetchResumes])
     useEffect(() => { if (profile) setFullName(profile.full_name || ''); if (user) setEmail(user.email || '') }, [profile, user])
@@ -80,11 +78,7 @@ export default function ProfilePage() {
         } finally { setInviteSending(false) }
     }
 
-    const handleSelectProvider = (provider: AIProvider) => {
-        setSelectedProvider(provider)
-        setAiProvider(provider)
-        toast.success(`AI provider switched to ${PROVIDER_INFO[provider].name}`)
-    }
+
 
     const handleCopyLink = () => { navigator.clipboard.writeText(`${window.location.origin}/auth?mode=signup&ref=${user.id}`); toast.success('Invite link copied to clipboard!') }
     const handleBilling = async () => { if (!profile?.stripe_customer_id) { router.push('/pricing'); return }; try { setPortalLoading(true); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setPortalLoading(false) } }
@@ -115,7 +109,6 @@ export default function ProfilePage() {
                     <div className="flex flex-row md:flex-col gap-0.5 overflow-x-auto">
                         <button className={tab === 'general' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('general')}><span className="text-ink-40"><LandingIcon name="user" size={14} /></span> General</button>
                         <button className={tab === 'security' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('security')}><span className="text-ink-40"><LandingIcon name="lock" size={14} /></span> Security</button>
-                        <button className={tab === 'ai' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('ai')}><span className="text-ink-40"><LandingIcon name="sparkles" size={14} /></span> AI Provider</button>
                         <button className={tab === 'invite' ? sidebarItemActive : sidebarItemBase} onClick={() => setTab('invite')}><span className="text-ink-40"><LandingIcon name="gift" size={14} /></span> Invite a Friend</button>
                     </div>
                     <div className="mt-auto flex flex-row md:flex-col gap-0.5 border-t border-ink-10 pt-4 justify-center md:justify-start">
@@ -176,140 +169,7 @@ export default function ProfilePage() {
                         </div>
                     )}
 
-                    {tab === 'ai' && (
-                        <div className="flex flex-col gap-5 animate-[fadeUp_0.35s_ease_both]">
-                            <div className="mb-1">
-                                <h2 className="text-[clamp(24px,3vw,32px)] mb-1.5">AI Provider</h2>
-                                <p className="text-[15px] text-ink-40">Choose which AI model powers your resume tools, support agent, and content generation.</p>
-                            </div>
 
-                            {/* Provider Cards */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {(Object.entries(PROVIDER_INFO) as [AIProvider, typeof PROVIDER_INFO[AIProvider]][]).map(([key, info]) => {
-                                    const isActive = aiProvider === key
-                                    const isConfigured = isProviderConfigured(key)
-                                    return (
-                                        <button
-                                            key={key}
-                                            onClick={() => handleSelectProvider(key)}
-                                            className="text-left bg-[var(--white)] border rounded-xl p-6 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
-                                            style={{
-                                                borderColor: isActive ? info.color : 'var(--ink-10)',
-                                                borderWidth: isActive ? 2 : 1,
-                                                outline: isActive ? `2px solid ${info.color}20` : 'none',
-                                                outlineOffset: 2,
-                                                cursor: 'pointer',
-                                            }}
-                                        >
-                                            {/* Header row */}
-                                            <div className="flex items-center justify-between mb-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div
-                                                        className="w-11 h-11 rounded-xl flex items-center justify-center text-xl font-bold text-white"
-                                                        style={{ background: `linear-gradient(135deg, ${info.color}, ${info.color}CC)` }}
-                                                    >
-                                                        {info.icon}
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-display text-[15px] font-semibold text-ink">{info.name}</div>
-                                                        <div className="text-[11px] font-mono text-ink-30 mt-0.5">{info.models}</div>
-                                                    </div>
-                                                </div>
-                                                {/* Radio indicator */}
-                                                <div
-                                                    className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all"
-                                                    style={{
-                                                        borderColor: isActive ? info.color : 'var(--ink-20)',
-                                                    }}
-                                                >
-                                                    {isActive && (
-                                                        <div
-                                                            className="w-2.5 h-2.5 rounded-full"
-                                                            style={{ background: info.color }}
-                                                        />
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* Description */}
-                                            <p className="text-[13px] text-ink-50 leading-relaxed mb-4">{info.description}</p>
-
-                                            {/* Status */}
-                                            <div className="flex items-center gap-2">
-                                                <span
-                                                    className="w-2 h-2 rounded-full"
-                                                    style={{ background: isConfigured ? '#22c55e' : '#ef4444' }}
-                                                />
-                                                <span className="text-[11px] font-mono" style={{ color: isConfigured ? '#22c55e' : '#ef4444' }}>
-                                                    {isConfigured ? 'API key configured' : 'API key missing'}
-                                                </span>
-                                            </div>
-
-                                            {/* Active badge */}
-                                            {isActive && (
-                                                <div
-                                                    className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold"
-                                                    style={{ background: `${info.color}15`, color: info.color }}
-                                                >
-                                                    <span>✦</span> Active Provider
-                                                </div>
-                                            )}
-                                        </button>
-                                    )
-                                })}
-                            </div>
-
-                            {/* Info Card */}
-                            <div className="bg-[var(--white)] border border-ink-10 rounded-xl p-7 shadow-sm">
-                                <h4 className="font-display text-lg text-ink mb-5 pb-3.5 border-b border-ink-05">How It Works</h4>
-                                <div className="flex flex-col gap-3">
-                                    {[
-                                        { icon: '⚡', text: 'Select your preferred AI provider above. The change takes effect immediately for all AI features.' },
-                                        { icon: '🔄', text: 'If your selected provider\'s API key is missing, the app will automatically fall back to the other provider.' },
-                                        { icon: '🔑', text: 'API keys are configured in your project\'s .env file as VITE_GEMINI_API_KEY and VITE_CLAUDE_API_KEY.' },
-                                        { icon: '🎯', text: 'Both providers are used for: AI text enhancement, resume parsing, weakness analysis, theme generation, and the support chatbot.' },
-                                    ].map((item, i) => (
-                                        <div key={i} className="flex items-start gap-3 text-[13px] text-ink-70 leading-relaxed">
-                                            <span className="shrink-0 mt-0.5 text-base">{item.icon}</span>
-                                            <span>{item.text}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Provider Comparison */}
-                            <div className="bg-[var(--white)] border border-ink-10 rounded-xl p-7 shadow-sm">
-                                <h4 className="font-display text-lg text-ink mb-5 pb-3.5 border-b border-ink-05">Provider Comparison</h4>
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-[13px]" style={{ borderCollapse: 'collapse' }}>
-                                        <thead>
-                                            <tr className="border-b border-ink-05">
-                                                <th className="text-left py-2.5 px-3 font-mono text-[10px] tracking-wider uppercase text-ink-30 font-medium">Feature</th>
-                                                <th className="text-center py-2.5 px-3 font-mono text-[10px] tracking-wider uppercase font-medium" style={{ color: PROVIDER_INFO.gemini.color }}>Gemini</th>
-                                                <th className="text-center py-2.5 px-3 font-mono text-[10px] tracking-wider uppercase font-medium" style={{ color: PROVIDER_INFO.claude.color }}>Claude</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {[
-                                                ['Speed', 'Very Fast', '🏃 Fast'],
-                                                ['Writing Quality', '🟢 Good', '🟢 Excellent'],
-                                                ['JSON Parsing', '🟢 Excellent', '🟢 Great'],
-                                                ['Creativity', '🟢 Good', '🟢 Excellent'],
-                                                ['Streaming', '✅ Yes', '✅ Yes'],
-                                                ['Cost', '💰 Low', '💰 Moderate'],
-                                            ].map(([feature, gemini, claude], i) => (
-                                                <tr key={i} className="border-b border-ink-05 last:border-none">
-                                                    <td className="py-2.5 px-3 text-ink-60 font-medium">{feature}</td>
-                                                    <td className="py-2.5 px-3 text-center text-ink-50">{gemini}</td>
-                                                    <td className="py-2.5 px-3 text-center text-ink-50">{claude}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
                     {tab === 'invite' && (
                         <div className="flex flex-col gap-5 animate-[fadeUp_0.35s_ease_both]">

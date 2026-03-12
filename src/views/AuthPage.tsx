@@ -6,6 +6,7 @@ import { useStore } from '@/lib/store'
 import { toast } from '../components/Toast'
 import { useSEO } from '@/lib/useSEO'
 import { supabase } from '@/lib/supabase'
+import { createCheckoutSession } from '@/lib/stripe'
 
 type AuthMode = 'signup' | 'signin' | 'forgot-password' | 'reset-password'
 
@@ -23,6 +24,7 @@ export default function AuthPage() {
 
   const { signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useStore()
   const router = useRouter()
+  const isFoundingSignup = mode === 'signup' && searchParams.get('offer') === 'founding'
 
   useEffect(() => { if (mode === 'reset-password') { /* Supabase redirects here */ } }, [mode])
 
@@ -82,16 +84,31 @@ export default function AuthPage() {
     try {
       if (mode === 'signup') {
         await signUp(form.email, form.password, form.fullName)
+
+        // Founding member: save pending plan and try to skip email verification
+        if (isFoundingSignup) {
+          localStorage.setItem('resumebuildin_pending_plan', JSON.stringify({ plan: 'founding', billing: 'annual' }))
+          try {
+            const result = await signIn(form.email, form.password)
+            if (result?.user) {
+              useStore.setState({ user: result.user })
+              toast.info('Creating your Founding Member checkout…')
+              const { url } = await createCheckoutSession('founding', 'annual')
+              if (url) { window.location.href = url; return }
+            }
+          } catch {
+            // Email confirmation required — pending plan saved, will auto-resume after verification
+          }
+        }
+
         router.push('/confirm-email')
       } else if (mode === 'signin') {
         const result = await signIn(form.email, form.password)
-        // TC-041 fix: Explicitly set user in store before navigation
-        // so ProtectedRoute on /dashboard sees the user immediately
         if (result?.user) {
           useStore.setState({ user: result.user })
         }
         toast.success('Welcome back!')
-        router.push('/dashboard')
+        // Navigation handled by PublicRoute via window.location.href
       } else if (mode === 'forgot-password') {
         await resetPassword(form.email)
         setResetSent(true)
@@ -110,9 +127,8 @@ export default function AuthPage() {
         setErrors({ email: 'This email is already registered' })
         toast.error('An account with this email already exists. Try signing in.')
       } else if (msg.includes('No account found')) {
-        // BUG-005: Show inline error for forgot-password with unregistered email
-        setErrors({ email: msg })
-        toast.error(msg)
+        // Security: silently show success screen even if email not found
+        setResetSent(true)
       } else { toast.error(msg || 'Something went wrong. Try again.') }
     } finally { setLoading(false) }
   }
@@ -216,7 +232,7 @@ export default function AuthPage() {
             <div className="text-center p-8 bg-[var(--white)] border border-ink-10 rounded-xl mt-5">
               <div className="text-5xl mb-4">✉</div>
               <h4 className="font-display text-[22px] mb-3 text-ink">Check your inbox</h4>
-              <p className="text-sm leading-relaxed text-ink-40 mb-1">We've sent a password reset link to <strong className="text-ink">{form.email}</strong>. Click the link in your email to choose a new password.</p>
+              <p className="text-sm leading-relaxed text-ink-40 mb-1">If an account exists for <strong className="text-ink">{form.email}</strong>, we've sent a password reset link. Click the link in your email to choose a new password.</p>
               <p className="text-xs text-ink-20 mt-3">Didn't receive it? Check your spam folder or <button className="bg-transparent border-none text-gold font-body text-sm cursor-pointer font-medium underline p-0" onClick={() => setResetSent(false)}>try again</button></p>
               <button className="btn btn-outline w-full mt-4" onClick={() => switchMode('signin')}>← Back to Sign In</button>
             </div>
@@ -292,7 +308,7 @@ export default function AuthPage() {
               )}
 
               <button type="submit" className="btn btn-primary w-full py-3.5" disabled={loading}>
-                {loading ? <><div className="spinner" /> Processing…</> : mode === 'signup' ? 'Create Account →' : mode === 'signin' ? 'Sign In →' : mode === 'forgot-password' ? 'Send Reset Link →' : 'Update Password →'}
+                {loading ? <><div className="spinner" /> Processing…</> : mode === 'signup' ? (isFoundingSignup ? 'Create Account & Claim Spot →' : 'Create Account →') : mode === 'signin' ? 'Sign In →' : mode === 'forgot-password' ? 'Send Reset Link →' : 'Update Password →'}
               </button>
 
               {(mode === 'forgot-password' || mode === 'reset-password') && (
