@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import Navbar from '../components/Navbar'
 import { useStore } from '@/lib/store'
@@ -60,6 +60,71 @@ export default function MockInterviewPage() {
     const [practiceHistory, setPracticeHistory] = useState<PracticeHistoryEntry[]>([])
     const [showHistory, setShowHistory] = useState(false)
     const [packLoading, setPackLoading] = useState(false)
+
+    // ── Speech-to-Text ──────────────────────────────
+    const [isListening, setIsListening] = useState(false)
+    const [micError, setMicError] = useState<'not-allowed' | 'not-supported' | 'other' | null>(null)
+    const [recordingTime, setRecordingTime] = useState(0)
+    const recognitionRef = useRef<any>(null)
+    const timerRef = useRef<any>(null)
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (recognitionRef.current) recognitionRef.current.stop()
+            if (timerRef.current) clearInterval(timerRef.current)
+        }
+    }, [])
+
+    const toggleSpeech = useCallback(() => {
+        setMicError(null)
+        if (isListening && recognitionRef.current) {
+            recognitionRef.current.stop()
+            setIsListening(false)
+            if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+            return
+        }
+        const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+        if (!SR) { setMicError('not-supported'); return }
+
+        const recognition = new SR()
+        recognition.continuous = true
+        recognition.interimResults = true
+        recognition.lang = 'en-US'
+        let finalTranscript = currentAnswer
+        recognition.onresult = (event: any) => {
+            let interim = ''
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const t = event.results[i][0].transcript
+                if (event.results[i].isFinal) {
+                    finalTranscript += (finalTranscript ? ' ' : '') + t
+                    setCurrentAnswer(finalTranscript)
+                } else {
+                    interim += t
+                }
+            }
+            if (interim) setCurrentAnswer(finalTranscript + (finalTranscript ? ' ' : '') + interim)
+        }
+        recognition.onerror = (event: any) => {
+            setIsListening(false)
+            if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+            if (event.error === 'not-allowed') setMicError('not-allowed')
+            else if (event.error !== 'no-speech') setMicError('other')
+        }
+        recognition.onend = () => {
+            setIsListening(false)
+            if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+        }
+        recognitionRef.current = recognition
+        try {
+            recognition.start()
+            setIsListening(true)
+            setRecordingTime(0)
+            timerRef.current = setInterval(() => setRecordingTime(t => t + 1), 1000)
+        } catch {
+            setMicError('other')
+        }
+    }, [isListening, currentAnswer])
 
     // Session info
     const sessionInfo = getSessionsDisplay(profile)
@@ -303,13 +368,6 @@ export default function MockInterviewPage() {
                                         {showHistory ? 'Hide' : 'View'} History ({practiceHistory.length})
                                     </button>
                                 )}
-                                <button
-                                    className="bg-[var(--bg)] border border-ink-10 text-gold px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-all hover:border-gold hover:bg-gold/5 font-semibold"
-                                    onClick={handleBuyMockPack}
-                                    disabled={packLoading}
-                                >
-                                    {packLoading ? 'Purchasing…' : '🎤 Buy 3 More — $12.99'}
-                                </button>
                             </div>
                         </div>
 
@@ -460,9 +518,13 @@ export default function MockInterviewPage() {
                             </div>
                         </div>
 
-                        <div className="flex gap-3">
+                        <div className="flex items-center gap-3">
                             <button className="btn btn-gold" onClick={handleStart} disabled={!config.role}>Start Interview →</button>
                             <button className="btn btn-ghost" onClick={() => setPhase('select')}>← Back</button>
+                        </div>
+                        <div className="mt-3 flex items-center gap-2 text-[12px] text-ink-30">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                            Starting an interview uses 1 session credit, even if ended early.
                         </div>
                     </div>
                 )}
@@ -499,19 +561,99 @@ export default function MockInterviewPage() {
                                     <div className="text-[17px] font-semibold text-ink leading-relaxed">{currentQuestion}</div>
                                 </div>
 
-                                {/* Answer input */}
+                                {/* Answer input — voice-first */}
                                 {!currentEvaluation && (
                                     <div className="mb-5">
+                                        {/* Big mic button */}
+                                        <div className="flex flex-col items-center mb-4">
+                                            <button
+                                                type="button"
+                                                onClick={toggleSpeech}
+                                                disabled={isLoading}
+                                                className="group flex flex-col items-center justify-center gap-2 transition-all duration-200 cursor-pointer bg-transparent border-none"
+                                            >
+                                                <div
+                                                    className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 ${isListening ? 'bg-red-500 shadow-[0_0_30px_rgba(239,68,68,0.4)] scale-110' : 'bg-gradient-to-br from-gold to-gold-light shadow-lg group-hover:shadow-xl group-hover:scale-105'}`}
+                                                >
+                                                    {isListening ? (
+                                                        <div className="flex gap-1 items-center">
+                                                            <span className="w-1 h-5 bg-white rounded-full animate-[pulse_0.8s_ease_infinite]" />
+                                                            <span className="w-1 h-7 bg-white rounded-full animate-[pulse_0.8s_ease_0.2s_infinite]" />
+                                                            <span className="w-1 h-4 bg-white rounded-full animate-[pulse_0.8s_ease_0.4s_infinite]" />
+                                                            <span className="w-1 h-6 bg-white rounded-full animate-[pulse_0.8s_ease_0.1s_infinite]" />
+                                                            <span className="w-1 h-3 bg-white rounded-full animate-[pulse_0.8s_ease_0.3s_infinite]" />
+                                                        </div>
+                                                    ) : (
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                                                            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                                                            <line x1="12" y1="19" x2="12" y2="23" />
+                                                            <line x1="8" y1="23" x2="16" y2="23" />
+                                                        </svg>
+                                                    )}
+                                                </div>
+                                                <span className={`text-sm font-semibold ${isListening ? 'text-red-500' : 'text-ink-50'}`}>
+                                                    {isListening ? `Recording… ${Math.floor(recordingTime / 60)}:${String(recordingTime % 60).padStart(2, '0')}` : 'Tap to Speak'}
+                                                </span>
+                                            </button>
+                                            {isListening && (
+                                                <button
+                                                    onClick={toggleSpeech}
+                                                    className="mt-2 px-4 py-1.5 bg-red-500/10 text-red-500 text-xs font-semibold rounded-lg border border-red-500/30 cursor-pointer transition-all hover:bg-red-500/20"
+                                                >Stop Recording</button>
+                                            )}
+                                            {!isListening && !currentAnswer && (
+                                                <span className="text-[11px] text-ink-20 mt-1">or type your answer below</span>
+                                            )}
+                                        </div>
+
+                                        {/* Mic error guide */}
+                                        {micError && (
+                                            <div className="mb-3 p-4 rounded-xl border text-sm animate-[fadeUp_0.2s_ease]" style={{
+                                                background: micError === 'not-allowed' ? 'rgba(234,179,8,0.06)' : 'rgba(239,68,68,0.06)',
+                                                borderColor: micError === 'not-allowed' ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)',
+                                            }}>
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <div className="flex-1">
+                                                        {micError === 'not-allowed' && (
+                                                            <>
+                                                                <div className="font-semibold text-ink mb-2">Microphone Access Required</div>
+                                                                <ol className="text-ink-50 leading-relaxed space-y-1 pl-4 text-[13px]" style={{ listStyleType: 'decimal' }}>
+                                                                    <li>Click the <strong>lock icon 🔒</strong> in your browser&apos;s address bar</li>
+                                                                    <li>Set <strong>Microphone</strong> to <strong>Allow</strong></li>
+                                                                    <li>Refresh the page and try again</li>
+                                                                </ol>
+                                                            </>
+                                                        )}
+                                                        {micError === 'not-supported' && (
+                                                            <>
+                                                                <div className="font-semibold text-ink mb-1">Browser Not Supported</div>
+                                                                <p className="text-ink-50 text-[13px]">Speech recognition requires <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong>.</p>
+                                                            </>
+                                                        )}
+                                                        {micError === 'other' && (
+                                                            <>
+                                                                <div className="font-semibold text-ink mb-1">Microphone Error</div>
+                                                                <p className="text-ink-50 text-[13px]">Could not access microphone. Make sure no other app is using it.</p>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    <button onClick={() => setMicError(null)} className="text-ink-30 hover:text-ink bg-transparent border-none cursor-pointer p-1">✕</button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Textarea — also editable by typing */}
                                         <textarea
-                                            className="w-full min-h-[150px] p-4 border border-ink-10 rounded-xl bg-white dark:bg-[var(--surface)] text-ink text-sm leading-relaxed resize-y transition-colors focus:outline-none focus:border-gold"
-                                            placeholder={config.type === 'salary' ? 'Type your negotiation response…' : 'Type your answer here… Be specific and use examples where possible.'}
+                                            className="w-full min-h-[120px] p-4 border border-ink-10 rounded-xl bg-white dark:bg-[var(--surface)] text-ink text-sm leading-relaxed resize-y transition-colors focus:outline-none focus:border-gold"
+                                            placeholder={config.type === 'salary' ? 'Your spoken answer will appear here, or type your response…' : 'Your spoken answer will appear here, or type your answer…'}
                                             value={currentAnswer}
                                             onChange={e => setCurrentAnswer(e.target.value)}
                                             disabled={isLoading}
                                         />
                                         <div className="flex gap-2.5 mt-3">
                                             <button className="btn btn-gold" onClick={handleSubmitAnswer} disabled={!currentAnswer.trim() || isLoading}>Submit Answer</button>
-                                            <button className="btn btn-ghost btn-sm" onClick={handleReset}>End Interview</button>
+                                            <button className="btn btn-ghost btn-sm" onClick={() => { if (window.confirm('End this interview? Your session credit has already been used.')) handleReset() }}>End Interview</button>
                                         </div>
                                         <div className="text-xs text-ink-20 mt-2">
                                             {config.type === 'behavioral' && 'Tip: Use the STAR method (Situation → Task → Action → Result)'}

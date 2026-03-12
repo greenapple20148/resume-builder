@@ -1,10 +1,11 @@
 'use client'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import Navbar from '../components/Navbar'
 import { useStore } from '@/lib/store'
 import { useSEO } from '@/lib/useSEO'
 import { LandingIcon } from '../components/LandingIcons'
+import { analyzeResume, type ATSAnalysisResult } from '@/lib/atsAnalysis'
 
 // ── Helper: extract text from resume ────────────────
 function getResumeText(resume: any): string {
@@ -293,15 +294,14 @@ function findMissingKeywords(resumeText: string, jobDescription: string): { foun
 
 
 // ── Tool type ─────────────────────────────────
-type ToolId = 'star' | 'confidence' | 'followup' | 'weakness' | 'linkedin' | 'keywords'
+type ToolId = 'ats' | 'star' | 'confidence' | 'followup' | 'linkedin'
 
 const TOOLS: { id: ToolId; icon: string; title: string; desc: string }[] = [
+    { id: 'ats', icon: 'target', title: 'AI ATS Scanner', desc: 'ATS simulation + weakness analysis + keyword matching' },
     { id: 'star', icon: 'brain', title: 'STAR Answer Detection', desc: 'Check if your interview answers follow the STAR framework' },
     { id: 'confidence', icon: 'trend-down', title: 'Confidence & Clarity Score', desc: 'Analyze tone, filler words, and assertiveness' },
     { id: 'followup', icon: 'mic', title: 'Follow-Up Question Sim', desc: 'Predict what interviewers will ask next' },
-    { id: 'weakness', icon: 'clipboard', title: 'Resume Weakness Analyzer', desc: 'Find gaps, weak verbs, and missing metrics' },
     { id: 'linkedin', icon: 'linkedin', title: 'Resume → LinkedIn', desc: 'Auto-convert your resume to a LinkedIn profile' },
-    { id: 'keywords', icon: 'search', title: 'Missing Keyword Detector', desc: 'Compare your resume against any job description' },
 ]
 
 // ── Score Bar Component ─────────────────────────────
@@ -344,14 +344,21 @@ export default function AIToolsPage() {
     useSEO({ title: 'AI Tools — ResumeBuildIn', description: 'Advanced AI-powered tools for interview prep, resume analysis, and job search optimization.', path: '/tools/ai' })
 
     const { user, resumes, fetchResumes } = useStore()
-    const [activeTool, setActiveTool] = useState<ToolId>('star')
+    const [activeTool, setActiveTool] = useState<ToolId>('ats')
     const [selectedResume, setSelectedResume] = useState<string>('')
     const [inputText, setInputText] = useState('')
-    const [jdText, setJdText] = useState('')
     const [copied, setCopied] = useState('')
+    const [isListening, setIsListening] = useState(false)
+    const recognitionRef = useRef<any>(null)
+
+    // ATS AI Scanner state
+    const [atsResult, setAtsResult] = useState<ATSAnalysisResult | null>(null)
+    const [atsLoading, setAtsLoading] = useState(false)
+    const [atsError, setAtsError] = useState('')
+    const [atsJdText, setAtsJdText] = useState('')
 
     const isLoggedIn = !!user
-    const needsResume = activeTool === 'weakness' || activeTool === 'linkedin' || activeTool === 'keywords'
+    const needsResume = activeTool === 'ats' || activeTool === 'linkedin'
 
     useEffect(() => { if (isLoggedIn) fetchResumes() }, [isLoggedIn])
     useEffect(() => { if (resumes.length > 0 && !selectedResume) setSelectedResume(resumes[0].id) }, [resumes])
@@ -370,7 +377,7 @@ export default function AIToolsPage() {
     // LinkedIn convert
     const linkedInResult = useMemo(() => currentResume ? convertToLinkedIn(currentResume) : null, [currentResume])
     // Keyword match
-    const keywordResult = useMemo(() => resumeText && jdText.length > 30 ? findMissingKeywords(resumeText, jdText) : null, [resumeText, jdText])
+    const keywordResult = useMemo(() => resumeText && atsJdText.length > 30 ? findMissingKeywords(resumeText, atsJdText) : null, [resumeText, atsJdText])
 
     const copyText = (text: string, id: string) => {
         navigator.clipboard.writeText(text)
@@ -390,15 +397,401 @@ export default function AIToolsPage() {
         </div>
     )
 
+    // ── Speech-to-Text ──────────────────────────────
+    const [micError, setMicError] = useState<'not-allowed' | 'not-supported' | 'other' | null>(null)
+
+    const toggleSpeech = useCallback(() => {
+        setMicError(null)
+        if (isListening && recognitionRef.current) {
+            recognitionRef.current.stop()
+            setIsListening(false)
+            return
+        }
+        const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+        if (!SR) {
+            setMicError('not-supported')
+            return
+        }
+        const recognition = new SR()
+        recognition.continuous = true
+        recognition.interimResults = true
+        recognition.lang = 'en-US'
+        let finalTranscript = inputText
+        recognition.onresult = (event: any) => {
+            let interim = ''
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const t = event.results[i][0].transcript
+                if (event.results[i].isFinal) {
+                    finalTranscript += (finalTranscript ? ' ' : '') + t
+                    setInputText(finalTranscript)
+                } else {
+                    interim += t
+                }
+            }
+            if (interim) setInputText(finalTranscript + (finalTranscript ? ' ' : '') + interim)
+        }
+        recognition.onerror = (event: any) => {
+            setIsListening(false)
+            if (event.error === 'not-allowed') {
+                setMicError('not-allowed')
+            } else if (event.error !== 'no-speech') {
+                setMicError('other')
+            }
+        }
+        recognition.onend = () => setIsListening(false)
+        recognitionRef.current = recognition
+        try {
+            recognition.start()
+            setIsListening(true)
+        } catch {
+            setMicError('other')
+        }
+    }, [isListening, inputText])
+
+    const micSetupGuide = micError && (
+        <div className="mt-3 p-4 rounded-xl border text-sm animate-[fadeUp_0.2s_ease]" style={{
+            background: micError === 'not-allowed' ? 'rgba(234,179,8,0.06)' : 'rgba(239,68,68,0.06)',
+            borderColor: micError === 'not-allowed' ? 'rgba(234,179,8,0.2)' : 'rgba(239,68,68,0.2)',
+        }}>
+            <div className="flex items-start justify-between gap-3">
+                <div className="flex-1">
+                    {micError === 'not-allowed' && (
+                        <>
+                            <div className="font-semibold text-ink mb-2 flex items-center gap-2">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                                Microphone Access Required
+                            </div>
+                            <p className="text-ink-50 leading-relaxed mb-3">Your browser has blocked microphone access. Follow these steps to enable it:</p>
+                            <ol className="text-ink-50 leading-relaxed space-y-1.5 pl-4" style={{ listStyleType: 'decimal' }}>
+                                <li>Click the <strong>lock icon 🔒</strong> (or tune icon) in your browser&apos;s address bar</li>
+                                <li>Find <strong>Microphone</strong> and set it to <strong>Allow</strong></li>
+                                <li>Refresh the page, then click <strong>Speak Answer</strong> again</li>
+                            </ol>
+                        </>
+                    )}
+                    {micError === 'not-supported' && (
+                        <>
+                            <div className="font-semibold text-ink mb-2">Browser Not Supported</div>
+                            <p className="text-ink-50 leading-relaxed">Speech recognition requires <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong>. Safari and Firefox are not supported.</p>
+                        </>
+                    )}
+                    {micError === 'other' && (
+                        <>
+                            <div className="font-semibold text-ink mb-2">Microphone Error</div>
+                            <p className="text-ink-50 leading-relaxed">Could not start speech recognition. Make sure no other tab or app is using your microphone, then try again.</p>
+                        </>
+                    )}
+                </div>
+                <button onClick={() => setMicError(null)} className="text-ink-30 hover:text-ink transition-colors shrink-0 bg-transparent border-none cursor-pointer p-1" aria-label="Dismiss">✕</button>
+            </div>
+        </div>
+    )
+
+    const micButton = (
+        <div>
+            <button
+                type="button"
+                onClick={toggleSpeech}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 border cursor-pointer"
+                style={isListening ? {
+                    background: 'rgba(239,68,68,0.08)',
+                    borderColor: '#ef4444',
+                    color: '#ef4444',
+                } : {
+                    background: 'var(--white)',
+                    borderColor: 'var(--ink-10)',
+                    color: 'var(--ink-50)',
+                }}
+            >
+                {isListening ? (
+                    <>
+                        <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#ef4444', animation: 'pulse 1.5s ease infinite' }} />
+                        Stop Recording
+                    </>
+                ) : (
+                    <>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                            <line x1="12" y1="19" x2="12" y2="23" />
+                            <line x1="8" y1="23" x2="16" y2="23" />
+                        </svg>
+                        Speak Answer
+                    </>
+                )}
+            </button>
+            {micSetupGuide}
+        </div>
+    )
+
+    // ── ATS AI Scan handler ──────────────────────────
+    const runAtsScan = async () => {
+        if (!currentResume?.data) return
+        setAtsLoading(true)
+        setAtsError('')
+        setAtsResult(null)
+        try {
+            const result = await analyzeResume(
+                currentResume.data,
+                atsJdText.trim().length > 30 ? atsJdText.trim() : undefined
+            )
+            setAtsResult(result)
+        } catch (err: any) {
+            setAtsError(err.message || 'Analysis failed. Please try again.')
+        } finally {
+            setAtsLoading(false)
+        }
+    }
+
     const renderTool = () => {
         switch (activeTool) {
+            // ── AI ATS Scanner ──
+            case 'ats':
+                if (!isLoggedIn) return signUpPrompt
+                return (
+                    <div>
+                        <h3 className="text-xl font-semibold mb-1">AI ATS Scanner</h3>
+                        <p className="text-sm text-ink-40 mb-5">Complete resume analysis — ATS simulation, weakness detection, and keyword matching in one scan. Add a job description for JD match scoring.</p>
+
+                        {/* Resume selector */}
+                        {resumes.length > 0 && (
+                            <select value={selectedResume} onChange={e => setSelectedResume(e.target.value)} className="w-full p-3 bg-[var(--white)] border border-ink-10 rounded-xl text-sm mb-3 focus:outline-none focus:border-gold">
+                                {resumes.map(r => <option key={r.id} value={r.id}>{r.title || 'Untitled Resume'}</option>)}
+                            </select>
+                        )}
+
+                        {/* Optional JD textarea */}
+                        <div className="mb-4">
+                            <label className="text-sm font-medium text-ink-50 mb-2 block">Job Description <span className="text-ink-20 font-normal">(optional — for JD match)</span></label>
+                            <textarea
+                                value={atsJdText}
+                                onChange={e => setAtsJdText(e.target.value)}
+                                placeholder="Paste the full job description here to get a Job Match Score and missing keyword analysis..."
+                                className="w-full h-32 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors"
+                            />
+                        </div>
+
+                        {/* Run button */}
+                        <button
+                            onClick={runAtsScan}
+                            disabled={atsLoading || !currentResume}
+                            className="btn btn-gold w-full mb-6 text-sm"
+                            style={{ opacity: atsLoading || !currentResume ? 0.6 : 1 }}
+                        >
+                            {atsLoading ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    Analyzing with AI…
+                                </span>
+                            ) : 'Run ATS Scan →'}
+                        </button>
+
+                        {/* Error */}
+                        {atsError && (
+                            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-600 mb-6">{atsError}</div>
+                        )}
+
+                        {/* Results */}
+                        {atsResult && (
+                            <div className="animate-[fadeUp_0.3s_ease] space-y-6">
+                                {/* Score badges */}
+                                <div className="flex items-center gap-6 flex-wrap">
+                                    <ScoreBadge score={atsResult.ats_score} label="ATS Score" />
+                                    {atsResult.job_match_score !== null && (
+                                        <ScoreBadge score={atsResult.job_match_score} label="JD Match" />
+                                    )}
+                                </div>
+
+                                {/* Section detection grid */}
+                                <div>
+                                    <div className="text-xs font-mono uppercase tracking-widest text-ink-30 mb-3">Section Detection</div>
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                        {Object.entries(atsResult.detected_sections).map(([section, detected]) => (
+                                            <div key={section} className={`text-center p-3 rounded-xl border text-xs font-medium ${detected ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-600'}`}>
+                                                <div className="flex justify-center mb-1">{detected ? <LandingIcon name="check-circle" size={20} /> : <LandingIcon name="alert-circle" size={20} />}</div>
+                                                {section.charAt(0).toUpperCase() + section.slice(1)}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Strengths */}
+                                {atsResult.strengths.length > 0 && (
+                                    <div>
+                                        <div className="text-xs font-mono uppercase tracking-widest text-green-600 mb-2.5">Strengths</div>
+                                        <div className="space-y-2">
+                                            {atsResult.strengths.map((s, i) => (
+                                                <div key={i} className="flex items-start gap-2.5 p-3 bg-green-50 rounded-xl text-sm text-green-800 leading-relaxed">
+                                                    <span className="text-green-500 mt-0.5 shrink-0"><LandingIcon name="check-circle" size={14} /></span>
+                                                    {s}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Issues */}
+                                {atsResult.issues.length > 0 && (
+                                    <div>
+                                        <div className="text-xs font-mono uppercase tracking-widest text-red-500 mb-2.5">Issues Found</div>
+                                        <div className="space-y-2">
+                                            {atsResult.issues.map((issue, i) => (
+                                                <div key={i} className="flex items-start gap-2.5 p-3 bg-red-50 rounded-xl text-sm text-red-700 leading-relaxed">
+                                                    <span className="text-red-400 mt-0.5 shrink-0"><LandingIcon name="alert-circle" size={14} /></span>
+                                                    {issue}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Missing keywords */}
+                                {atsResult.missing_keywords.length > 0 && (
+                                    <div>
+                                        <div className="text-xs font-mono uppercase tracking-widest text-red-500 mb-2.5">Missing Keywords — Add These</div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {atsResult.missing_keywords.map((kw, i) => (
+                                                <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-red-50 text-red-600 border border-red-100 font-medium">{kw}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Suggested improvements */}
+                                {atsResult.suggested_improvements.length > 0 && (
+                                    <div>
+                                        <div className="text-xs font-mono uppercase tracking-widest text-gold mb-2.5">Suggested Improvements</div>
+                                        <div className="space-y-2">
+                                            {atsResult.suggested_improvements.map((tip, i) => (
+                                                <div key={i} className="flex items-start gap-2.5 p-3 bg-[rgba(201,146,60,0.06)] border border-gold-pale rounded-xl text-sm text-ink-60 leading-relaxed">
+                                                    <span className="text-gold mt-0.5 shrink-0"><LandingIcon name="arrow-right" size={14} /></span>
+                                                    {tip}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Per-section feedback */}
+                                {atsResult.section_feedback.length > 0 && (
+                                    <div>
+                                        <div className="text-xs font-mono uppercase tracking-widest text-ink-30 mb-3">Section-by-Section Feedback</div>
+                                        <div className="space-y-2.5">
+                                            {atsResult.section_feedback.map((sf, i) => {
+                                                const color = sf.score > 70 ? '#22c55e' : sf.score > 45 ? '#eab308' : '#ef4444'
+                                                return (
+                                                    <div key={i} className="p-4 bg-ink-05 rounded-xl">
+                                                        <div className="flex items-center justify-between mb-2">
+                                                            <span className="text-sm font-semibold text-ink">{sf.section}</span>
+                                                            <span className="text-sm font-mono font-bold" style={{ color }}>{sf.score}/100</span>
+                                                        </div>
+                                                        <div className="h-1.5 bg-ink-10 rounded-full overflow-hidden mb-2">
+                                                            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${sf.score}%`, background: color }} />
+                                                        </div>
+                                                        <p className="text-xs text-ink-50 leading-relaxed">{sf.feedback}</p>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* ── Inline Weakness Analysis ── */}
+                        {weaknessResult && (
+                            <div className="mt-8 pt-8 border-t border-ink-10">
+                                <h4 className="text-lg font-semibold mb-1">Resume Weakness Analysis</h4>
+                                <p className="text-xs text-ink-30 mb-4">Automated scan for gaps, weak verbs, and missing metrics.</p>
+                                <div className="flex items-center gap-6 mb-6 flex-wrap">
+                                    <ScoreBadge score={weaknessResult.score} label="Resume Score" />
+                                    <div className="flex-1 grid grid-cols-3 gap-3 min-w-[200px]">
+                                        {[
+                                            { label: 'Critical', value: weaknessResult.issues.filter(i => i.severity === 'high').length, color: '#ef4444' },
+                                            { label: 'Warnings', value: weaknessResult.issues.filter(i => i.severity === 'medium').length, color: '#eab308' },
+                                            { label: 'Suggestions', value: weaknessResult.issues.filter(i => i.severity === 'low').length, color: '#3b82f6' },
+                                        ].map((s, i) => (
+                                            <div key={i} className="text-center p-3 bg-ink-05 rounded-xl">
+                                                <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
+                                                <div className="text-[10px] text-ink-30 font-mono uppercase tracking-wider mt-1">{s.label}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                {weaknessResult.issues.length === 0 ? (
+                                    <div className="text-center py-10 text-ink-30">
+                                        <div className="flex justify-center mb-2 text-green-500"><LandingIcon name="check-circle" size={36} /></div>
+                                        <p className="font-medium">Your resume looks strong! No critical issues found.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2.5">
+                                        {weaknessResult.issues.map((issue, i) => (
+                                            <div key={i} className="p-4 bg-ink-05 rounded-xl" style={{ borderLeftColor: issue.severity === 'high' ? '#ef4444' : issue.severity === 'medium' ? '#eab308' : '#3b82f6', borderLeftWidth: 3, borderLeftStyle: 'solid' }}>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-xs font-mono uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ background: issue.severity === 'high' ? 'rgba(239,68,68,0.1)' : issue.severity === 'medium' ? 'rgba(234,179,8,0.1)' : 'rgba(59,130,246,0.1)', color: issue.severity === 'high' ? '#ef4444' : issue.severity === 'medium' ? '#eab308' : '#3b82f6' }}>
+                                                        {issue.severity}
+                                                    </span>
+                                                    <span className="text-sm font-semibold text-ink">{issue.message}</span>
+                                                </div>
+                                                <p className="text-xs text-ink-40 mt-1">Tip: {issue.fix}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* ── Inline Keyword Match (when JD pasted) ── */}
+                        {keywordResult && (
+                            <div className="mt-8 pt-8 border-t border-ink-10">
+                                <h4 className="text-lg font-semibold mb-1">Keyword Match Analysis</h4>
+                                <p className="text-xs text-ink-30 mb-4">How your resume keywords compare to the job description.</p>
+                                <div className="flex items-center gap-6 mb-6 flex-wrap">
+                                    <ScoreBadge score={keywordResult.matchScore} label="Match Score" />
+                                    <div className="flex-1 grid grid-cols-2 gap-3 min-w-[200px]">
+                                        <div className="text-center p-3 bg-ink-05 rounded-xl">
+                                            <div className="text-2xl font-bold text-green-500">{keywordResult.found.length}</div>
+                                            <div className="text-[10px] text-ink-30 font-mono uppercase tracking-wider mt-1">Keywords Found</div>
+                                        </div>
+                                        <div className="text-center p-3 bg-ink-05 rounded-xl">
+                                            <div className="text-2xl font-bold text-red-500">{keywordResult.missing.length}</div>
+                                            <div className="text-[10px] text-ink-30 font-mono uppercase tracking-wider mt-1">Missing</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {keywordResult.missing.length > 0 && (
+                                    <div className="mb-4">
+                                        <div className="text-xs font-mono uppercase tracking-widest text-red-500 mb-2.5">Missing Keywords — Add These</div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {keywordResult.missing.map((kw, i) => (
+                                                <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-red-50 text-red-600 border border-red-100 font-medium">{kw}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                {keywordResult.found.length > 0 && (
+                                    <div>
+                                        <div className="text-xs font-mono uppercase tracking-widest text-green-600 mb-2.5">Keywords Found</div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {keywordResult.found.map((kw, i) => (
+                                                <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-green-50 text-green-600 border border-green-100 font-medium">{kw}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )
+
             // ── STAR Detection ──
             case 'star':
                 return (
                     <div>
                         <h3 className="text-xl font-semibold mb-1">STAR Answer Detection</h3>
                         <p className="text-sm text-ink-40 mb-5">Paste an interview answer to check if it follows the Situation → Task → Action → Result framework.</p>
-                        <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Paste your interview answer here... e.g. &quot;When I was working at Google, our team faced a challenge with...&quot;" className="w-full h-40 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors" />
+                        <div className="flex gap-2 mb-3">{micButton}</div>
+                        <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder='Paste your interview answer here or click "Speak Answer" to dictate...' className="w-full h-40 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors" />
                         {starResult && (
                             <div className="mt-6 space-y-5 animate-[fadeUp_0.3s_ease]">
                                 <div className="flex items-center gap-6 flex-wrap">
@@ -425,8 +818,9 @@ export default function AIToolsPage() {
                 return (
                     <div>
                         <h3 className="text-xl font-semibold mb-1">Confidence & Clarity Score</h3>
-                        <p className="text-sm text-ink-40 mb-5">Paste your answer to detect filler words, hedging language, and assess overall assertiveness.</p>
-                        <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Paste your interview answer here..." className="w-full h-40 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors" />
+                        <p className="text-sm text-ink-40 mb-5">Paste your answer or speak it aloud to detect filler words, hedging language, and assess overall assertiveness.</p>
+                        <div className="flex gap-2 mb-3">{micButton}</div>
+                        <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder='Paste your interview answer here or click "Speak Answer" to dictate...' className="w-full h-40 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors" />
                         {confResult && (
                             <div className="mt-6 space-y-5 animate-[fadeUp_0.3s_ease]">
                                 <div className="flex items-center gap-6 flex-wrap">
@@ -461,7 +855,8 @@ export default function AIToolsPage() {
                     <div>
                         <h3 className="text-xl font-semibold mb-1">Follow-Up Question Simulation</h3>
                         <p className="text-sm text-ink-40 mb-5">Paste your interview answer and see which follow-up questions an interviewer is likely to ask.</p>
-                        <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder="Paste your interview answer here..." className="w-full h-40 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors" />
+                        <div className="flex gap-2 mb-3">{micButton}</div>
+                        <textarea value={inputText} onChange={e => setInputText(e.target.value)} placeholder='Paste your interview answer here or click "Speak Answer" to dictate...' className="w-full h-40 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors" />
                         {followUps.length > 0 && (
                             <div className="mt-6 animate-[fadeUp_0.3s_ease]">
                                 <div className="text-xs font-mono uppercase tracking-widest text-ink-30 mb-3">Predicted Follow-Up Questions</div>
@@ -483,59 +878,6 @@ export default function AIToolsPage() {
                 )
 
             // ── Resume Weakness ──
-            case 'weakness':
-                if (!isLoggedIn) return signUpPrompt
-                return (
-                    <div>
-                        <h3 className="text-xl font-semibold mb-1">Resume Weakness Analyzer</h3>
-                        <p className="text-sm text-ink-40 mb-5">Scans your resume for gaps, weak verbs, missing metrics, and red flags that make recruiters reject.</p>
-                        {resumes.length > 0 && (
-                            <select value={selectedResume} onChange={e => setSelectedResume(e.target.value)} className="w-full p-3 bg-[var(--white)] border border-ink-10 rounded-xl text-sm mb-5 focus:outline-none focus:border-gold">
-                                {resumes.map(r => <option key={r.id} value={r.id}>{r.title || 'Untitled Resume'}</option>)}
-                            </select>
-                        )}
-                        {weaknessResult && (
-                            <div className="animate-[fadeUp_0.3s_ease]">
-                                <div className="flex items-center gap-6 mb-6 flex-wrap">
-                                    <ScoreBadge score={weaknessResult.score} label="Resume Score" />
-                                    <div className="flex-1 grid grid-cols-3 gap-3 min-w-[200px]">
-                                        {[
-                                            { label: 'Critical', value: weaknessResult.issues.filter(i => i.severity === 'high').length, color: '#ef4444' },
-                                            { label: 'Warnings', value: weaknessResult.issues.filter(i => i.severity === 'medium').length, color: '#eab308' },
-                                            { label: 'Suggestions', value: weaknessResult.issues.filter(i => i.severity === 'low').length, color: '#3b82f6' },
-                                        ].map((s, i) => (
-                                            <div key={i} className="text-center p-3 bg-ink-05 rounded-xl">
-                                                <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
-                                                <div className="text-[10px] text-ink-30 font-mono uppercase tracking-wider mt-1">{s.label}</div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                {weaknessResult.issues.length === 0 ? (
-                                    <div className="text-center py-10 text-ink-30">
-                                        <div className="flex justify-center mb-2 text-green-500"><LandingIcon name="check-circle" size={36} /></div>
-                                        <p className="font-medium">Your resume looks strong! No critical issues found.</p>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-2.5">
-                                        {weaknessResult.issues.map((issue, i) => (
-                                            <div key={i} className="p-4 bg-ink-05 rounded-xl border-l-3" style={{ borderLeftColor: issue.severity === 'high' ? '#ef4444' : issue.severity === 'medium' ? '#eab308' : '#3b82f6', borderLeftWidth: 3 }}>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-xs font-mono uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ background: issue.severity === 'high' ? 'rgba(239,68,68,0.1)' : issue.severity === 'medium' ? 'rgba(234,179,8,0.1)' : 'rgba(59,130,246,0.1)', color: issue.severity === 'high' ? '#ef4444' : issue.severity === 'medium' ? '#eab308' : '#3b82f6' }}>
-                                                        {issue.severity}
-                                                    </span>
-                                                    <span className="text-sm font-semibold text-ink">{issue.message}</span>
-                                                </div>
-                                                <p className="text-xs text-ink-40 mt-1">Tip: {issue.fix}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )
-
             // ── LinkedIn Convert ──
             case 'linkedin':
                 if (!isLoggedIn) return signUpPrompt
@@ -576,61 +918,6 @@ export default function AIToolsPage() {
                                                     <button onClick={() => copyText(exp, `exp-${i}`)} className="absolute top-3 right-3 text-xs text-gold hover:text-gold-dark transition-colors cursor-pointer">{copied === `exp-${i}` ? '✓ Copied' : 'Copy'}</button>
                                                     <div className="p-4 bg-ink-05 rounded-xl text-sm text-ink-60 leading-relaxed whitespace-pre-line pr-16">{exp}</div>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                )
-
-            // ── Missing Keywords ──
-            case 'keywords':
-                if (!isLoggedIn) return signUpPrompt
-                return (
-                    <div>
-                        <h3 className="text-xl font-semibold mb-1">Missing Keyword Detector</h3>
-                        <p className="text-sm text-ink-40 mb-5">Paste a job description to find critical keywords missing from your resume.</p>
-                        {resumes.length > 0 && (
-                            <select value={selectedResume} onChange={e => setSelectedResume(e.target.value)} className="w-full p-3 bg-[var(--white)] border border-ink-10 rounded-xl text-sm mb-3 focus:outline-none focus:border-gold">
-                                {resumes.map(r => <option key={r.id} value={r.id}>{r.title || 'Untitled Resume'}</option>)}
-                            </select>
-                        )}
-                        <textarea value={jdText} onChange={e => setJdText(e.target.value)} placeholder="Paste the full job description here..." className="w-full h-40 p-4 bg-[var(--white)] border border-ink-10 rounded-xl text-sm leading-relaxed resize-none focus:outline-none focus:border-gold transition-colors" />
-                        {keywordResult && (
-                            <div className="mt-6 animate-[fadeUp_0.3s_ease]">
-                                <div className="flex items-center gap-6 mb-6 flex-wrap">
-                                    <ScoreBadge score={keywordResult.matchScore} label="Match Score" />
-                                    <div className="flex-1 grid grid-cols-2 gap-3 min-w-[200px]">
-                                        <div className="text-center p-3 bg-ink-05 rounded-xl">
-                                            <div className="text-2xl font-bold text-green-500">{keywordResult.found.length}</div>
-                                            <div className="text-[10px] text-ink-30 font-mono uppercase tracking-wider mt-1">Keywords Found</div>
-                                        </div>
-                                        <div className="text-center p-3 bg-ink-05 rounded-xl">
-                                            <div className="text-2xl font-bold text-red-500">{keywordResult.missing.length}</div>
-                                            <div className="text-[10px] text-ink-30 font-mono uppercase tracking-wider mt-1">Missing</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* Missing */}
-                                {keywordResult.missing.length > 0 && (
-                                    <div className="mb-4">
-                                        <div className="text-xs font-mono uppercase tracking-widest text-red-500 mb-2.5">Missing Keywords — Add These</div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {keywordResult.missing.map((kw, i) => (
-                                                <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-red-50 text-red-600 border border-red-100 font-medium">{kw}</span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                                {/* Found */}
-                                {keywordResult.found.length > 0 && (
-                                    <div>
-                                        <div className="text-xs font-mono uppercase tracking-widest text-green-600 mb-2.5">Keywords Found</div>
-                                        <div className="flex flex-wrap gap-2">
-                                            {keywordResult.found.map((kw, i) => (
-                                                <span key={i} className="text-xs px-3 py-1.5 rounded-full bg-green-50 text-green-600 border border-green-100 font-medium">{kw}</span>
                                             ))}
                                         </div>
                                     </div>

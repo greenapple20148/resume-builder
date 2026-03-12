@@ -6,6 +6,21 @@ import { getEffectivePlan } from './expressUnlock'
 import { cacheUserPlan } from './aiProvider'
 import { saveVersionSnapshot } from './resumeVersions'
 
+// Module-level flag to suppress onAuthStateChange during signup.
+// Prevents the SIGNED_IN event from racing with router.push('/confirm-email').
+let _suppressAuthEvent = false
+
+// Helper to clear stale Supabase auth tokens from localStorage
+function _clearStaleSession() {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
+    if (ref) {
+      localStorage.removeItem(`sb-${ref}-auth-token`)
+    }
+  } catch { /* ignore in SSR */ }
+}
+
 interface StoreState {
   user: any | null
   profile: Profile | null
@@ -83,11 +98,14 @@ export const useStore = create<StoreState>((set, get) => ({
 
       supabase.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
+          if (_suppressAuthEvent) {
+            return
+          }
           set({ user: session.user })
-          // Fire-and-forget profile fetch in listener — don't block auth
           get().fetchProfile(session.user.id).catch(() => { })
           if (isAuthCallback) set({ authLoading: false })
         } else if (event === 'SIGNED_OUT') {
+          if (_suppressAuthEvent) return
           set({ user: null, profile: null, resumes: [], currentResume: null })
         } else if (event === 'TOKEN_REFRESHED' && session?.user) {
           set({ user: session.user })
@@ -105,15 +123,30 @@ export const useStore = create<StoreState>((set, get) => ({
           new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getSession_timeout')), 5000))
         ])
         session = result.data.session
-      } catch {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-        const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
-        const raw = localStorage.getItem(`sb-${ref}-auth-token`)
-        if (raw) {
-          try {
-            const parsed = JSON.parse(raw)
-            if (parsed?.user) session = parsed
-          } catch { /* ignore */ }
+
+        // If getSession returned an error about refresh tokens, clear the stale session
+        if ((result as any).error?.message?.includes('Refresh Token')) {
+          console.warn('[auth] Stale refresh token detected — clearing session')
+          session = null
+          _clearStaleSession()
+          await supabase.auth.signOut().catch(() => { })
+        }
+      } catch (e: any) {
+        // Also catch refresh token errors thrown as exceptions
+        if (e?.message?.includes('Refresh Token') || e?.message?.includes('Invalid Refresh Token')) {
+          console.warn('[auth] Invalid refresh token — clearing session')
+          _clearStaleSession()
+          await supabase.auth.signOut().catch(() => { })
+        } else {
+          const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+          const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
+          const raw = localStorage.getItem(`sb-${ref}-auth-token`)
+          if (raw) {
+            try {
+              const parsed = JSON.parse(raw)
+              if (parsed?.user) session = parsed
+            } catch { /* ignore */ }
+          }
         }
       }
 
@@ -240,7 +273,12 @@ export const useStore = create<StoreState>((set, get) => ({
       throw new Error('User already registered')
     }
 
-    // 2. Perform the actual signup
+    // 2. Suppress onAuthStateChange to prevent navigation race.
+    // Without this, SIGNED_IN fires immediately and PublicRoute
+    // tries to redirect to /dashboard while we navigate to /confirm-email.
+    _suppressAuthEvent = true
+
+    // 3. Perform the actual signup
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -250,7 +288,14 @@ export const useStore = create<StoreState>((set, get) => ({
       },
     })
 
-    if (error) throw error
+    if (error) {
+      _suppressAuthEvent = false
+      throw error
+    }
+
+    // Safety: clear suppress flag after 5s in case navigation fails
+    setTimeout(() => { _suppressAuthEvent = false }, 5000)
+
     return data
   },
 
@@ -295,10 +340,14 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   resetPassword: async (email) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth?mode=reset-password`,
-    })
-    if (error) throw error
+    // Security: Always show success regardless of whether email exists.
+    // Supabase silently ignores non-existent emails by design,
+    // preventing user enumeration attacks.
+    try {
+      await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?mode=reset-password`,
+      })
+    } catch { /* silently ignore errors */ }
   },
 
   updatePassword: async (newPassword) => {

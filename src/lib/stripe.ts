@@ -434,12 +434,16 @@ export async function verifySubscription(): Promise<{ plan: string; synced: bool
   return invokeEdgeFunction<{ plan: string; synced: boolean }>('verify-subscription')
 }
 
-export async function cancelSubscription(): Promise<{ success: boolean; message: string }> {
-  try {
-    return await invokeEdgeFunction<{ success: boolean; message: string }>('cancel-subscription')
-  } catch {
-    // If the edge function doesn't exist, fall back to customer portal
-    await openCustomerPortal()
-    return { success: true, message: 'Redirecting to billing portal...' }
-  }
+export async function cancelSubscription(): Promise<{
+  success: boolean;
+  message: string;
+  periodEnd?: string;
+  periodEndFormatted?: string;
+}> {
+  return invokeEdgeFunction<{
+    success: boolean;
+    message: string;
+    periodEnd?: string;
+    periodEndFormatted?: string;
+  }>('cancel-subscription')
 }
