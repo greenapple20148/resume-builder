@@ -1,8 +1,13 @@
 'use client'
+import { useEffect } from 'react'
 import Link from 'next/link'
 import Navbar from '../components/Navbar'
 
 export default function ConfirmEmailPage() {
+    // TC-AUTH-001 fix: Clear signup pending flag now that we've reached this page
+    useEffect(() => {
+        sessionStorage.removeItem('rc_signup_pending')
+    }, [])
     return (
         <div className="min-h-screen bg-parchment">
             <Navbar variant="transparent" />

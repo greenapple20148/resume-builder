@@ -9,7 +9,7 @@ export const getStripe = () => {
     // Check both VITE_ prefixed and standard prefix in case of specific Vercel setups
     const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
     if (!key) {
-      console.warn("Stripe publishable key is missing. Set VITE_STRIPE_PUBLISHABLE_KEY in your environment. Billing features will not work.")
+      console.warn("Stripe publishable key is missing. Set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your environment. Billing features will not work.")
       return null
     }
     stripePromise = loadStripe(key).catch((err) => {

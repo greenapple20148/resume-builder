@@ -55,9 +55,23 @@ export function PublicRoute({ children }: { children: React.ReactNode }) {
             const params = new URLSearchParams(window.location.search)
             const mode = params.get('mode')
             const hash = window.location.hash || ''
-            // BUG-006 fix: Also check for recovery tokens in the URL hash
+            // BUG-006 fix: Check for recovery tokens in URL hash AND sessionStorage flag.
+            // The PASSWORD_RECOVERY event handler in store.ts sets this flag before redirecting
+            // to /auth?mode=reset-password. We check it here to prevent the PublicRoute from
+            // racing ahead to /dashboard before the recovery redirect completes.
             const isRecovery = hash.includes('type=recovery')
-            if (mode === 'forgot-password' || mode === 'reset-password' || isRecovery) {
+            const isRecoveryPending = sessionStorage.getItem('rc_password_recovery') === 'true'
+            if (mode === 'forgot-password' || mode === 'reset-password' || isRecovery || isRecoveryPending) {
+                // Clear the flag once we've reached the reset-password page
+                if (mode === 'reset-password') {
+                    sessionStorage.removeItem('rc_password_recovery')
+                }
+                return
+            }
+            // TC-AUTH-001 fix: Don't redirect to /dashboard if a signup just completed.
+            // The signup handler needs time to navigate to /confirm-email.
+            const isSignupPending = sessionStorage.getItem('rc_signup_pending') === 'true'
+            if (isSignupPending) {
                 return
             }
             didRedirect.current = true
@@ -99,7 +113,9 @@ export function PublicRoute({ children }: { children: React.ReactNode }) {
         const hash = typeof window !== 'undefined' ? (window.location.hash || '') : ''
         const mode = params?.get('mode')
         const isRecovery = hash.includes('type=recovery')
-        if (mode !== 'forgot-password' && mode !== 'reset-password' && !isRecovery) {
+        const isRecoveryPending = typeof window !== 'undefined' && sessionStorage.getItem('rc_password_recovery') === 'true'
+        const isSignupPending = typeof window !== 'undefined' && sessionStorage.getItem('rc_signup_pending') === 'true'
+        if (mode !== 'forgot-password' && mode !== 'reset-password' && !isRecovery && !isRecoveryPending && !isSignupPending) {
             return (
                 <div
                     style={{

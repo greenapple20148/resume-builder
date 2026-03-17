@@ -111,7 +111,8 @@ export default function ThemesPage() {
       console.log('[ThemesPage] Creating resume with theme:', theme.id, 'user:', user.id)
       const resume = await createResume(theme.id)
       console.log('[ThemesPage] Resume created:', resume.id)
-      router.push(`/editor/${resume.id}`)
+      // TC-045 fix: Use hard navigation to ensure the editor loads with the new theme
+      window.location.href = `/editor/${resume.id}`
     } catch (err: any) {
       console.error('[ThemesPage] Error creating resume:', err)
       if (err.message === 'LIMIT_REACHED') { toast.error('Resume limit reached.'); router.push('/pricing') }

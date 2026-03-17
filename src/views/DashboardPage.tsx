@@ -199,7 +199,10 @@ export default function DashboardPage() {
     try {
       const dataToPass = initialData?.nativeEvent ? null : initialData
       const resume = await createResume('classic', dataToPass)
-      router.push(`/editor/${resume.id}`)
+      // TC-043 fix: Use hard navigation instead of client-side router.push.
+      // router.push can silently fail when auth state hasn't fully propagated,
+      // leaving the user on the dashboard with no visible result.
+      window.location.href = `/editor/${resume.id}`
     } catch (err: any) {
       if (err.message === 'LIMIT_REACHED') { toast.error('Resume limit reached. Upgrade your plan to create more.'); router.push('/pricing') }
       else toast.error(err.message || 'Could not create resume.')

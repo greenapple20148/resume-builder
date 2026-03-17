@@ -1575,6 +1575,12 @@ export default function EditorPage() {
   }
 
   const handleDocxDownload = async () => {
+    // TC-PDF-005 fix: Gate DOCX export behind paid plan
+    if (!isPro) {
+      toast.info('DOCX export is a Pro feature. Upgrade to unlock.')
+      window.location.href = '/pricing'
+      return
+    }
     toast.info('Generating DOCX...')
     try {
       const { exportToDocx } = await import('../lib/docxExport')
@@ -1672,12 +1678,20 @@ export default function EditorPage() {
           <select
             className="form-select text-xs font-medium py-1 px-2 h-[34px] w-[150px] cursor-pointer truncate"
             value={themeId}
-            onChange={handleThemeChange}
+            onChange={(e) => {
+              // TC-EDITOR-006 fix: Free users restricted to 'classic' theme only
+              if (!isPro && e.target.value !== 'classic') {
+                toast.info('Upgrade to Pro to unlock all themes.')
+                window.location.href = '/pricing'
+                return
+              }
+              handleThemeChange(e)
+            }}
             aria-label="Change Theme"
           >
             {THEMES.map((theme) => (
               <option key={theme.id} value={theme.id}>
-                {theme.name}
+                {theme.name}{!isPro && theme.id !== 'classic' ? ' 🔒' : ''}
               </option>
             ))}
           </select>

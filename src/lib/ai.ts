@@ -190,6 +190,18 @@ export async function getPracticeHistory(): Promise<PracticeHistoryEntry[]> {
 export async function enhanceTextWithAI(text: string): Promise<string> {
     if (!text.trim()) return text
 
+    // TC-AI-003/BUG-015 fix: Gate AI rewrite to Premium+ plans only.
+    // Free and Pro users should not have access to AI-powered rewriting.
+    try {
+        const cachedPlan = localStorage.getItem('rc_user_plan') || 'free'
+        if (cachedPlan === 'free' || cachedPlan === 'pro' || cachedPlan === 'founding') {
+            throw new Error('AI Rewrite is a Premium feature. Upgrade to Premium or Career+ to unlock AI-powered improvements.')
+        }
+    } catch (err: any) {
+        if (err?.message?.includes('Premium feature')) throw err
+        // Ignore localStorage errors in SSR
+    }
+
     try {
         const result = await callAI({
             prompt: `You are a professional resume writer. Rewrite the following resume text to make it more impactful and professional.
@@ -215,6 +227,12 @@ ${text}`,
         return result.text
     } catch (err: any) {
         console.error('AI rewrite failed, falling back to local enhancement:', err)
+        // BUG-016 fix: If the error is due to missing API configuration, don't silently
+        // fall back to the basic local enhancer (which only capitalizes + adds periods).
+        // Instead, re-throw so the user gets a meaningful error message.
+        if (err?.message?.includes('not configured') || err?.message?.includes('No AI provider')) {
+            throw err
+        }
         return enhanceTextLocal(text)
     }
 }

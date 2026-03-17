@@ -107,11 +107,32 @@ export const useStore = create<StoreState>((set, get) => ({
         } else if (event === 'SIGNED_OUT') {
           if (_suppressAuthEvent) return
           set({ user: null, profile: null, resumes: [], currentResume: null })
-        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-          set({ user: session.user })
+          // TC-048 fix: When session expires or user is signed out,
+          // clear stale auth tokens and redirect to login if on a protected page.
+          _clearStaleSession()
+          if (typeof window !== 'undefined') {
+            const path = window.location.pathname
+            const protectedPaths = ['/dashboard', '/editor', '/profile', '/tools']
+            const isProtected = protectedPaths.some(p => path.startsWith(p))
+            if (isProtected) {
+              window.location.href = '/auth'
+            }
+          }
+        } else if (event === 'TOKEN_REFRESHED') {
+          if (session?.user) {
+            set({ user: session.user })
+          } else {
+            // TC-048 fix: Token refresh returned no user — session is invalid
+            console.warn('[auth] TOKEN_REFRESHED with no user — session expired')
+            set({ user: null, profile: null, resumes: [], currentResume: null })
+            _clearStaleSession()
+          }
         } else if (event === 'PASSWORD_RECOVERY' && session?.user) {
           // BUG-006 fix: Supabase fires PASSWORD_RECOVERY when a reset link is clicked.
-          // Redirect to the reset-password form instead of letting PublicRoute send to /dashboard.
+          // Set a sessionStorage flag BEFORE redirecting so PublicRoute doesn't race to /dashboard.
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('rc_password_recovery', 'true')
+          }
           set({ user: session.user, authLoading: false })
           if (typeof window !== 'undefined' && !window.location.search.includes('mode=reset-password')) {
             window.location.href = '/auth?mode=reset-password'
@@ -272,6 +293,13 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   signUp: async (email, password, fullName) => {
+    // 0. Client-side email validation — reject obviously invalid emails before hitting Supabase
+    // (TC-014 fix: prevents accounts being created with emails like "abc@" that fail confirmation)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      throw new Error('Please enter a valid email address')
+    }
+
     // 1. Securely check if email already exists using our RPC
     // (Bypasses Supabase's default email enumeration shielding)
     const { data: emailExists, error: checkError } = await supabase.rpc('check_email_exists', { lookup_email: email })

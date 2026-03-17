@@ -99,7 +99,7 @@ export async function callAI(options: AICallOptions): Promise<AICallResult> {
             provider = fallback
         } else {
             throw new Error(
-                'No AI provider configured. Please add VITE_GEMINI_API_KEY or VITE_CLAUDE_API_KEY to your .env file.'
+                'No AI provider configured. Please add NEXT_PUBLIC_GEMINI_API_KEY or NEXT_PUBLIC_CLAUDE_API_KEY to your .env file.'
             )
         }
     }
@@ -132,7 +132,7 @@ export async function callAI(options: AICallOptions): Promise<AICallResult> {
 
 async function callGemini(options: AICallOptions): Promise<AICallResult> {
     const apiKey = getGeminiApiKey()
-    if (!apiKey) throw new Error('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your .env file.')
+    if (!apiKey) throw new Error('Gemini API key not configured. Please add NEXT_PUBLIC_GEMINI_API_KEY to your .env file.')
 
     const body: any = {
         contents: [{ parts: [{ text: options.prompt }] }],
@@ -175,7 +175,7 @@ async function callGemini(options: AICallOptions): Promise<AICallResult> {
 
 async function callClaude(options: AICallOptions): Promise<AICallResult> {
     const apiKey = getClaudeApiKey()
-    if (!apiKey) throw new Error('Claude API key not configured. Please add VITE_CLAUDE_API_KEY to your .env file.')
+    if (!apiKey) throw new Error('Claude API key not configured. Please add NEXT_PUBLIC_CLAUDE_API_KEY to your .env file.')
 
     const messages: any[] = [
         { role: 'user', content: options.prompt },

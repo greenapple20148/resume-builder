@@ -83,10 +83,14 @@ export default function AuthPage() {
     setLoading(true)
     try {
       if (mode === 'signup') {
+        // TC-AUTH-001 fix: Set flag BEFORE signUp to prevent PublicRoute from
+        // racing to /dashboard when SIGNED_IN event fires
+        sessionStorage.setItem('rc_signup_pending', 'true')
         await signUp(form.email, form.password, form.fullName)
 
         // Founding member: save pending plan and try to skip email verification
         if (isFoundingSignup) {
+          sessionStorage.removeItem('rc_signup_pending')
           localStorage.setItem('resumebuildin_pending_plan', JSON.stringify({ plan: 'founding', billing: 'annual' }))
           try {
             const result = await signIn(form.email, form.password)
@@ -108,7 +112,10 @@ export default function AuthPage() {
           useStore.setState({ user: result.user })
         }
         toast.success('Welcome back!')
-        // Navigation handled by PublicRoute via window.location.href
+        // TC-041 fix: Use explicit hard navigation instead of relying on PublicRoute.
+        // PublicRoute sometimes has race conditions with auth state updates, causing the
+        // user to see the auth page until they manually refresh.
+        window.location.href = '/dashboard'
       } else if (mode === 'forgot-password') {
         await resetPassword(form.email)
         setResetSent(true)
@@ -143,7 +150,17 @@ export default function AuthPage() {
     if (errors[field]) setErrors((p) => ({ ...p, [field]: null }))
   }
 
-  const switchMode = (newMode: AuthMode) => { setMode(newMode); setErrors({}); setResetSent(false) }
+  // TC-020 fix: Update URL when switching modes so PublicRoute correctly detects
+  // forgot-password/reset-password and doesn't redirect logged-in users to /dashboard
+  const switchMode = (newMode: AuthMode) => {
+    setMode(newMode)
+    setErrors({})
+    setResetSent(false)
+    // Update URL without full navigation so PublicRoute can read mode from search params
+    const url = new URL(window.location.href)
+    url.searchParams.set('mode', newMode)
+    window.history.replaceState({}, '', url.toString())
+  }
 
   const headingMap: Record<AuthMode, string> = {
     signup: 'Create your account', signin: 'Welcome back',
