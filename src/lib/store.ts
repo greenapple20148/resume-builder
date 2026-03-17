@@ -6,6 +6,21 @@ import { getEffectivePlan } from './expressUnlock'
 import { cacheUserPlan } from './aiProvider'
 import { saveVersionSnapshot } from './resumeVersions'
 
+// Module-level flag to suppress onAuthStateChange during signup.
+// Prevents the SIGNED_IN event from racing with router.push('/confirm-email').
+let _suppressAuthEvent = false
+
+// Helper to clear stale Supabase auth tokens from localStorage
+function _clearStaleSession() {
+  try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
+    if (ref) {
+      localStorage.removeItem(`sb-${ref}-auth-token`)
+    }
+  } catch { /* ignore in SSR */ }
+}
+
 interface StoreState {
   user: any | null
   profile: Profile | null
@@ -83,14 +98,45 @@ export const useStore = create<StoreState>((set, get) => ({
 
       supabase.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
+          if (_suppressAuthEvent) {
+            return
+          }
           set({ user: session.user })
-          // Fire-and-forget profile fetch in listener — don't block auth
           get().fetchProfile(session.user.id).catch(() => { })
           if (isAuthCallback) set({ authLoading: false })
         } else if (event === 'SIGNED_OUT') {
+          if (_suppressAuthEvent) return
           set({ user: null, profile: null, resumes: [], currentResume: null })
-        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-          set({ user: session.user })
+          // TC-048 fix: When session expires or user is signed out,
+          // clear stale auth tokens and redirect to login if on a protected page.
+          _clearStaleSession()
+          if (typeof window !== 'undefined') {
+            const path = window.location.pathname
+            const protectedPaths = ['/dashboard', '/editor', '/profile', '/tools']
+            const isProtected = protectedPaths.some(p => path.startsWith(p))
+            if (isProtected) {
+              window.location.href = '/auth'
+            }
+          }
+        } else if (event === 'TOKEN_REFRESHED') {
+          if (session?.user) {
+            set({ user: session.user })
+          } else {
+            // TC-048 fix: Token refresh returned no user — session is invalid
+            console.warn('[auth] TOKEN_REFRESHED with no user — session expired')
+            set({ user: null, profile: null, resumes: [], currentResume: null })
+            _clearStaleSession()
+          }
+        } else if (event === 'PASSWORD_RECOVERY' && session?.user) {
+          // BUG-006 fix: Supabase fires PASSWORD_RECOVERY when a reset link is clicked.
+          // Set a sessionStorage flag BEFORE redirecting so PublicRoute doesn't race to /dashboard.
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('rc_password_recovery', 'true')
+          }
+          set({ user: session.user, authLoading: false })
+          if (typeof window !== 'undefined' && !window.location.search.includes('mode=reset-password')) {
+            window.location.href = '/auth?mode=reset-password'
+          }
         } else if (event === 'INITIAL_SESSION') {
           if (isAuthCallback && !session?.user) {
             set({ authLoading: false })
@@ -105,15 +151,30 @@ export const useStore = create<StoreState>((set, get) => ({
           new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getSession_timeout')), 5000))
         ])
         session = result.data.session
-      } catch {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-        const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
-        const raw = localStorage.getItem(`sb-${ref}-auth-token`)
-        if (raw) {
-          try {
-            const parsed = JSON.parse(raw)
-            if (parsed?.user) session = parsed
-          } catch { /* ignore */ }
+
+        // If getSession returned an error about refresh tokens, clear the stale session
+        if ((result as any).error?.message?.includes('Refresh Token')) {
+          console.warn('[auth] Stale refresh token detected — clearing session')
+          session = null
+          _clearStaleSession()
+          await supabase.auth.signOut().catch(() => { })
+        }
+      } catch (e: any) {
+        // Also catch refresh token errors thrown as exceptions
+        if (e?.message?.includes('Refresh Token') || e?.message?.includes('Invalid Refresh Token')) {
+          console.warn('[auth] Invalid refresh token — clearing session')
+          _clearStaleSession()
+          await supabase.auth.signOut().catch(() => { })
+        } else {
+          const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+          const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
+          const raw = localStorage.getItem(`sb-${ref}-auth-token`)
+          if (raw) {
+            try {
+              const parsed = JSON.parse(raw)
+              if (parsed?.user) session = parsed
+            } catch { /* ignore */ }
+          }
         }
       }
 
@@ -232,6 +293,13 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   signUp: async (email, password, fullName) => {
+    // 0. Client-side email validation — reject obviously invalid emails before hitting Supabase
+    // (TC-014 fix: prevents accounts being created with emails like "abc@" that fail confirmation)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      throw new Error('Please enter a valid email address')
+    }
+
     // 1. Securely check if email already exists using our RPC
     // (Bypasses Supabase's default email enumeration shielding)
     const { data: emailExists, error: checkError } = await supabase.rpc('check_email_exists', { lookup_email: email })
@@ -240,7 +308,12 @@ export const useStore = create<StoreState>((set, get) => ({
       throw new Error('User already registered')
     }
 
-    // 2. Perform the actual signup
+    // 2. Suppress onAuthStateChange to prevent navigation race.
+    // Without this, SIGNED_IN fires immediately and PublicRoute
+    // tries to redirect to /dashboard while we navigate to /confirm-email.
+    _suppressAuthEvent = true
+
+    // 3. Perform the actual signup
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -250,7 +323,14 @@ export const useStore = create<StoreState>((set, get) => ({
       },
     })
 
-    if (error) throw error
+    if (error) {
+      _suppressAuthEvent = false
+      throw error
+    }
+
+    // Safety: clear suppress flag after 5s in case navigation fails
+    setTimeout(() => { _suppressAuthEvent = false }, 5000)
+
     return data
   },
 
@@ -295,10 +375,19 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   resetPassword: async (email) => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth?mode=reset-password`,
-    })
-    if (error) throw error
+    // Security: Always show success in the UI regardless of whether email exists,
+    // preventing user enumeration attacks through the response.
+    // However, only actually send the reset email if the email IS registered,
+    // to prevent sending emails to unregistered addresses (BUG-005).
+    try {
+      const { data: emailExists } = await supabase.rpc('check_email_exists', { lookup_email: email })
+      if (emailExists) {
+        await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth?mode=reset-password`,
+        })
+      }
+      // If email doesn't exist, silently do nothing — UI still shows "Check your inbox"
+    } catch { /* silently ignore errors to prevent enumeration */ }
   },
 
   updatePassword: async (newPassword) => {

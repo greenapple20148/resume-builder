@@ -61,7 +61,17 @@ export default function PricingPage() {
   })
 
   const handleUpgrade = async (plan: string) => {
-    if (!user) { router.push('/auth?mode=signup'); return }
+    if (!user) {
+      // Save the intended plan so we can auto-resume checkout after signup/login
+      if (plan !== 'free') {
+        const billing = plan === 'founding' ? 'annual' : (annual ? 'annual' : 'monthly')
+        localStorage.setItem('resumebuildin_pending_plan', JSON.stringify({ plan, billing }))
+      }
+      // BUG-008 fix: Use hard navigation instead of client-side router.push
+      // to ensure the pricing page UI is fully replaced by the auth page
+      window.location.href = plan === 'founding' ? '/auth?mode=signup&offer=founding' : '/auth?mode=signup'
+      return
+    }
     if (plan === 'free') return
     if (profile?.plan === plan) { try { setLoading(plan); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) }; return }
     const billing = plan === 'founding' ? 'annual' : (annual ? 'annual' : 'monthly')
@@ -71,7 +81,7 @@ export default function PricingPage() {
   const handleManageBilling = async () => { try { setLoading('portal'); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) } }
 
   const handleAddonPurchase = async (addonId: string) => {
-    if (!user) { router.push('/auth?mode=signup'); return }
+    if (!user) { window.location.href = '/auth?mode=signup'; return }
     if (addonId === 'express_unlock') {
       if (isExpressUnlockActive(profile)) {
         toast.info('Express Unlock is already active!')
@@ -81,16 +91,20 @@ export default function PricingPage() {
         toast.info('You already have a paid plan — Express Unlock is for free users.')
         return
       }
+      // BUG-010 fix: Route through Stripe Checkout instead of direct activation.
+      // The previous code called purchaseExpressUnlock() which bypassed payment.
       try {
         setLoading('express_unlock')
-        toast.info('Activating Express 24h Unlock…')
-        const result = await purchaseExpressUnlock()
-        if (result.success) {
-          toast.success('Express Unlock activated! Pro features enabled for 24 hours.')
-          if (user) await fetchProfile(user.id)
+        const data = await invokeEdgeFunction<{ url: string }>('create-checkout', {
+          body: { plan: 'express_unlock', billing: 'one_time' },
+        })
+        if (data?.url) {
+          window.location.href = data.url
+        } else {
+          throw new Error('No checkout URL returned')
         }
       } catch (err: any) {
-        toast.error(err.message || 'Could not activate Express Unlock.')
+        toast.error(err.message || 'Could not start checkout for Express Unlock.')
       } finally {
         setLoading(null)
       }
@@ -152,7 +166,46 @@ export default function PricingPage() {
     { q: 'Can I customize the resume themes?', a: 'All 30+ professional templates are fully customizable. Change colors, fonts, spacing, and layout. Pro users unlock all themes. You can even generate custom themes with AI by describing what you want.' },
     { q: 'What is Express 24h Unlock?', a: 'A one-time purchase ($2.99) that gives you full Pro-level access for 24 hours — unlimited downloads, no watermark, DOCX export, and cover letters. Perfect when you need to submit a polished resume fast without committing to a subscription.' },
     { q: 'Do you offer team or enterprise plans?', a: 'Not yet, but we\'re working on it. If you\'re a career center, staffing agency, or company interested in bulk licensing, reach out to hello@resumebuildin.com and we\'ll set something up.' },
+
   ]
+
+  // TC-029 fix: Interactive FAQ accordion with expand/collapse
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const FAQAccordion = () => (
+    <div className="flex flex-col gap-3">
+      {FAQ.map((item, i) => {
+        const isOpen = openFaq === i
+        return (
+          <div key={i} className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden transition-all">
+            <button
+              className="w-full flex items-center justify-between p-5 bg-transparent border-none cursor-pointer text-left transition-colors hover:bg-ink-05 font-[inherit]"
+              onClick={() => setOpenFaq(isOpen ? null : i)}
+              aria-expanded={isOpen}
+            >
+              <h4 className="text-[15px] font-semibold text-ink m-0 pr-4">{item.q}</h4>
+              <svg
+                width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                className="shrink-0 text-ink-20 transition-transform"
+                style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transitionDuration: '200ms' }}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div
+              style={{
+                maxHeight: isOpen ? '500px' : '0',
+                opacity: isOpen ? 1 : 0,
+                overflow: 'hidden',
+                transition: 'max-height 300ms ease, opacity 200ms ease',
+              }}
+            >
+              <p className="text-sm text-ink-40 leading-relaxed px-5 pb-5 pt-0 m-0">{item.a}</p>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
 
   const Toggle = () => (
     <div className="inline-flex items-center gap-3.5 text-sm font-medium text-ink-20">
@@ -304,37 +357,39 @@ export default function PricingPage() {
             <div className="text-center p-7 bg-ink-05 rounded-xl mb-10"><p className="text-sm text-ink-40 mb-4">Want to switch to a lower plan? You can downgrade or cancel through the billing portal.</p><button className="btn btn-outline" onClick={handleManageBilling} disabled={loading === 'portal'}>{loading === 'portal' ? 'Opening…' : 'Open Billing Portal'}</button></div>
           )}
 
-          {/* ── One-Time Add-Ons (visible for logged-in users) ── */}
-          <div className="mb-10">
-            <div className="text-center mb-6"><h2>One-time <em className="italic text-gold">add-ons</em></h2><p className="mt-1.5 text-ink-40 text-sm">Boost your job search without changing your plan.</p></div>
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
-              {ADD_ONS.filter(a => a.id !== 'express_unlock').map(addon => (
-                <div key={addon.id} className="bg-surface border border-border rounded-[14px] p-5 flex flex-col gap-2">
-                  <div className="text-gold"><LandingIcon name={addon.icon} size={26} /></div>
-                  <div className="font-bold text-sm text-ink">{addon.name}</div>
-                  <div className="text-xs text-ink-40 leading-relaxed flex-1">
-                    {addon.description}
-                    {addon.id === 'mock_pack_3' && (profile?.mock_sessions_purchased || 0) > 0 && (
-                      <div className="mt-1 text-gold font-semibold">{profile?.mock_sessions_purchased} bonus session{(profile?.mock_sessions_purchased || 0) !== 1 ? 's' : ''} owned</div>
-                    )}
+          {/* ── One-Time Add-Ons (visible only for free users) ── */}
+          {currentPlanId === 'free' && (
+            <div className="mb-10">
+              <div className="text-center mb-6"><h2>One-time <em className="italic text-gold">add-ons</em></h2><p className="mt-1.5 text-ink-40 text-sm">Boost your job search without changing your plan.</p></div>
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+                {ADD_ONS.filter(a => a.id !== 'express_unlock').map(addon => (
+                  <div key={addon.id} className="bg-surface border border-border rounded-[14px] p-5 flex flex-col gap-2">
+                    <div className="text-gold"><LandingIcon name={addon.icon} size={26} /></div>
+                    <div className="font-bold text-sm text-ink">{addon.name}</div>
+                    <div className="text-xs text-ink-40 leading-relaxed flex-1">
+                      {addon.description}
+                      {addon.id === 'mock_pack_3' && (profile?.mock_sessions_purchased || 0) > 0 && (
+                        <div className="mt-1 text-gold font-semibold">{profile?.mock_sessions_purchased} bonus session{(profile?.mock_sessions_purchased || 0) !== 1 ? 's' : ''} owned</div>
+                      )}
+                    </div>
+                    <div className="text-xl font-extrabold text-gold">${addon.price}</div>
+                    <button
+                      className="btn btn-outline text-xs py-1.5 px-3.5 mt-1"
+                      onClick={() => handleAddonPurchase(addon.id)}
+                      disabled={loading === addon.id}
+                    >
+                      {loading === addon.id ? 'Processing…' : 'Buy Now'}
+                    </button>
                   </div>
-                  <div className="text-xl font-extrabold text-gold">${addon.price}</div>
-                  <button
-                    className="btn btn-outline text-xs py-1.5 px-3.5 mt-1"
-                    onClick={() => handleAddonPurchase(addon.id)}
-                    disabled={loading === addon.id}
-                  >
-                    {loading === addon.id ? 'Processing…' : 'Buy Now'}
-                  </button>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="py-10">
             <div className="text-center mb-12"><h2>Frequently asked<br /><em className="italic text-gold">questions</em></h2></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {FAQ.map((item, i) => (<div key={i} className="p-6 bg-[var(--white)] border border-ink-10 rounded-xl"><h4 className="text-base mb-2.5">{item.q}</h4><p className="text-sm text-ink-40 leading-relaxed">{item.a}</p></div>))}
+            <div className="max-w-[800px] mx-auto">
+              <FAQAccordion />
             </div>
           </div>
         </div>
@@ -350,6 +405,7 @@ export default function PricingPage() {
         <h1 className="mb-4">Simple,<br /><em className="italic text-gold">honest pricing</em></h1>
         <p className="text-[17px] text-ink-40 mb-8">Start free. Upgrade when you're ready to land the job.</p>
         <Toggle />
+
       </div>
 
       <div className="flex flex-col md:flex-row gap-5 max-w-[1000px] mx-auto px-5 md:px-10 pb-20 items-start">
@@ -420,8 +476,8 @@ export default function PricingPage() {
       </div>
       <div className="max-w-[900px] mx-auto px-5 md:px-10 pb-20">
         <div className="text-center mb-12"><h2>Frequently asked<br /><em className="italic text-gold">questions</em></h2></div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {FAQ.map((item, i) => (<div key={i} className="p-6 bg-[var(--white)] border border-ink-10 rounded-xl"><h4 className="text-base mb-2.5">{item.q}</h4><p className="text-sm text-ink-40 leading-relaxed">{item.a}</p></div>))}
+        <div className="max-w-[800px] mx-auto">
+          <FAQAccordion />
         </div>
       </div>
 

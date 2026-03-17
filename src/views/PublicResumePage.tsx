@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
 import { PREVIEW_MAP } from './ThemesPreviews'
 import { ResumeData } from '../types'
 
@@ -34,16 +33,14 @@ export default function PublicResumePage() {
 
         const fetchResume = async () => {
             try {
-                const { data, error: fetchError } = await supabase
-                    .from('resumes')
-                    .select('title, theme_id, data')
-                    .eq('id', id)
-                    .single()
-
-                if (fetchError || !data) {
+                // BUG-018 fix: Use server-side API route instead of direct Supabase client.
+                // The anon key client is blocked by RLS policies for unauthenticated users.
+                const response = await fetch(`/api/public-resume/${id}`)
+                if (!response.ok) {
                     setError('This resume is not available or the link has expired.')
                     return
                 }
+                const data = await response.json()
 
                 setTitle(data.title)
                 setThemeId(data.theme_id || 'classic')

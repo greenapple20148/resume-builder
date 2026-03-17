@@ -13,7 +13,7 @@ export function getSelectedProvider(): AIProvider {
         const stored = localStorage.getItem(STORAGE_KEY)
         if (stored === 'claude' || stored === 'gemini') return stored
     } catch { }
-    return 'gemini' // default
+    return 'claude' // default
 }
 
 export function setSelectedProvider(provider: AIProvider): void {
@@ -99,22 +99,40 @@ export async function callAI(options: AICallOptions): Promise<AICallResult> {
             provider = fallback
         } else {
             throw new Error(
-                'No AI provider configured. Please add VITE_GEMINI_API_KEY or VITE_CLAUDE_API_KEY to your .env file.'
+                'No AI provider configured. Please add NEXT_PUBLIC_GEMINI_API_KEY or NEXT_PUBLIC_CLAUDE_API_KEY to your .env file.'
             )
         }
     }
 
     if (provider === 'claude') {
-        return callClaude(options)
+        try {
+            return await callClaude(options)
+        } catch (err) {
+            // Auto-fallback to Gemini if Claude fails
+            if (isProviderConfigured('gemini')) {
+                console.warn('[AI] Claude failed, falling back to Gemini:', (err as Error).message)
+                return callGemini(options)
+            }
+            throw err
+        }
     }
-    return callGemini(options)
+    try {
+        return await callGemini(options)
+    } catch (err) {
+        // Auto-fallback to Claude if Gemini fails
+        if (isProviderConfigured('claude')) {
+            console.warn('[AI] Gemini failed, falling back to Claude:', (err as Error).message)
+            return callClaude(options)
+        }
+        throw err
+    }
 }
 
 // ── Gemini Implementation ─────────────────────────────────
 
 async function callGemini(options: AICallOptions): Promise<AICallResult> {
     const apiKey = getGeminiApiKey()
-    if (!apiKey) throw new Error('Gemini API key not configured. Please add VITE_GEMINI_API_KEY to your .env file.')
+    if (!apiKey) throw new Error('Gemini API key not configured. Please add NEXT_PUBLIC_GEMINI_API_KEY to your .env file.')
 
     const body: any = {
         contents: [{ parts: [{ text: options.prompt }] }],
@@ -157,7 +175,7 @@ async function callGemini(options: AICallOptions): Promise<AICallResult> {
 
 async function callClaude(options: AICallOptions): Promise<AICallResult> {
     const apiKey = getClaudeApiKey()
-    if (!apiKey) throw new Error('Claude API key not configured. Please add VITE_CLAUDE_API_KEY to your .env file.')
+    if (!apiKey) throw new Error('Claude API key not configured. Please add NEXT_PUBLIC_CLAUDE_API_KEY to your .env file.')
 
     const messages: any[] = [
         { role: 'user', content: options.prompt },
