@@ -14,16 +14,33 @@ import { getEffectivePlan } from '@/lib/expressUnlock'
 import { getVersionHistory, restoreVersion, getVersionTimeLabel, type ResumeVersion } from '@/lib/resumeVersions'
 import ShareResumeModal from '../components/ShareResumeModal'
 
+// ─── SVG Icon helpers ────────────────────────────────────────
+const SvgUser = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+const SvgAlignLeft = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="17" y1="10" x2="3" y2="10" /><line x1="21" y1="6" x2="3" y2="6" /><line x1="21" y1="14" x2="3" y2="14" /><line x1="17" y1="18" x2="3" y2="18" /></svg>
+const SvgBriefcase = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
+const SvgGradCap = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c0 2 6 3 6 3s6-1 6-3v-5" /></svg>
+const SvgZap = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+const SvgGlobe = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
+const SvgAward = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+const SvgFolder = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
+const SvgPlus = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+const SvgX = ({ size = 16 }: { size?: number }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+const SvgCheck = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+const SvgAlert = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+const SvgArrowLeft = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
+const SvgArrowRight = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
+const SvgStar = ({ size = 12 }: { size?: number }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+
 const SECTIONS = [
-  { id: 'personal', label: 'Personal Info', icon: '●' },
-  { id: 'summary', label: 'Summary', icon: '■' },
-  { id: 'experience', label: 'Experience', icon: '✦' },
-  { id: 'education', label: 'Education', icon: '✦' },
-  { id: 'skills', label: 'Skills', icon: '◆' },
-  { id: 'languages', label: 'Languages', icon: '◇' },
-  { id: 'certifications', label: 'Certifications', icon: '●' },
-  { id: 'projects', label: 'Projects', icon: '◑' },
-  { id: 'custom', label: 'Custom', icon: '✚' },
+  { id: 'personal', label: 'Personal Info', icon: <SvgUser /> },
+  { id: 'summary', label: 'Summary', icon: <SvgAlignLeft /> },
+  { id: 'experience', label: 'Experience', icon: <SvgBriefcase /> },
+  { id: 'education', label: 'Education', icon: <SvgGradCap /> },
+  { id: 'skills', label: 'Skills', icon: <SvgZap /> },
+  { id: 'languages', label: 'Languages', icon: <SvgGlobe /> },
+  { id: 'certifications', label: 'Certifications', icon: <SvgAward /> },
+  { id: 'projects', label: 'Projects', icon: <SvgFolder /> },
+  { id: 'custom', label: 'Custom', icon: <SvgPlus /> },
 ] as const
 
 type SectionId = typeof SECTIONS[number]['id']
@@ -79,11 +96,11 @@ function AddButton({ label, onClick }: { label: string; onClick: () => void }) {
 }
 
 // ─── Section Header ──────────────────────────────────────────
-function SectionHeader({ icon, title, subtitle }: { icon: string; title: string; subtitle: string }) {
+function SectionHeader({ icon, title, subtitle }: { icon: React.ReactNode; title: string; subtitle: string }) {
   return (
     <div className="mb-6 pb-5 border-b border-ink-10">
       <div className="flex items-center gap-2.5 mb-1">
-        <span className="text-base">{icon}</span>
+        <span className="text-ink-40 shrink-0">{icon}</span>
         <h3 className="text-lg font-display font-normal tracking-tight" style={{ fontSize: 20, lineHeight: 1.2 }}>{title}</h3>
       </div>
       <p className="text-[12.5px] text-ink-40 leading-relaxed ml-[30px]">{subtitle}</p>
@@ -468,7 +485,7 @@ function PersonalSection({ data, onChange }: SectionProps<PersonalInfo>) {
 
   return (
     <>
-      <SectionHeader icon="●" title="Personal Information" subtitle="Your contact details and basic info. This appears at the top of your resume." />
+      <SectionHeader icon={<SvgUser />} title="Personal Information" subtitle="Your contact details and basic info. This appears at the top of your resume." />
       <div className="flex flex-col gap-4">
         {/* Photo Upload */}
         <div className="form-group">
@@ -487,7 +504,7 @@ function PersonalSection({ data, onChange }: SectionProps<PersonalInfo>) {
                   onClick={() => onChange({ ...data, photo: '' })}
                   title="Remove photo"
                 >
-                  <span className="text-white text-lg">✕</span>
+                  <span className="text-white"><SvgX size={18} /></span>
                 </button>
               </div>
             ) : (
@@ -538,7 +555,7 @@ function PersonalSection({ data, onChange }: SectionProps<PersonalInfo>) {
             <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440, padding: 0, overflow: 'hidden' }}>
               <div className="p-4 border-b border-ink-10 flex items-center justify-between">
                 <h3 className="text-sm font-semibold m-0">Take Photo</h3>
-                <button className="text-ink-30 bg-transparent border-none cursor-pointer text-lg" onClick={stopCamera}>✕</button>
+                <button className="text-ink-30 bg-transparent border-none cursor-pointer flex items-center" onClick={stopCamera}><SvgX size={18} /></button>
               </div>
               <div className="relative bg-black flex items-center justify-center" style={{ aspectRatio: '1/1' }}>
                 <video
@@ -602,7 +619,7 @@ function SummarySection({ data, onChange }: SectionProps<string>) {
 
   return (
     <>
-      <SectionHeader icon="■" title="Professional Summary" subtitle="A brief overview of your experience and career goals. 3-4 impactful sentences work best." />
+      <SectionHeader icon={<SvgAlignLeft />} title="Professional Summary" subtitle="A brief overview of your experience and career goals. 3-4 impactful sentences work best." />
       <div className="flex flex-col gap-3">
         <TextArea
           label="Summary"
@@ -660,7 +677,7 @@ function ExperienceSection({ data = [], onChange }: SectionProps<ExperienceEntry
 
   return (
     <>
-      <SectionHeader icon="✦" title="Work Experience" subtitle="List your work history, starting with the most recent position." />
+      <SectionHeader icon={<SvgBriefcase />} title="Work Experience" subtitle="List your work history, starting with the most recent position." />
       <div className="flex flex-col gap-3">
         {data.map((exp, idx) => (
           <div key={exp.id || idx} className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden transition-all">
@@ -725,7 +742,7 @@ function EducationSection({ data = [], onChange }: SectionProps<EducationEntry[]
 
   return (
     <>
-      <SectionHeader icon="✦" title="Education" subtitle="Your academic background (degrees, certifications, bootcamps)." />
+      <SectionHeader icon={<SvgGradCap />} title="Education" subtitle="Your academic background (degrees, certifications, bootcamps)." />
       <div className="flex flex-col gap-3">
         {data.map((edu, idx) => (
           <div key={edu.id || idx} className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden transition-all">
@@ -782,7 +799,7 @@ function SkillsSection({ data = [], onChange }: SectionProps<string[]>) {
 
   return (
     <>
-      <SectionHeader icon="◆" title="Skills" subtitle="Add your technical and soft skills. Type and press Enter to add." />
+      <SectionHeader icon={<SvgZap />} title="Skills" subtitle="Add your technical and soft skills. Type and press Enter to add." />
       <div className="flex flex-col gap-5">
         <div className="flex gap-2.5">
           <input type="text" className="form-input" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && add()} placeholder="Type a skill and press Enter…" />
@@ -793,7 +810,7 @@ function SkillsSection({ data = [], onChange }: SectionProps<string[]>) {
             {data.map((skill) => (
               <span key={skill} className="inline-flex items-center gap-1.5 bg-ink dark:bg-gold text-parchment dark:text-white px-3 py-[5px] rounded-full text-xs font-medium transition-all hover:shadow-sm">
                 {skill}
-                <button className="bg-transparent border-none cursor-pointer text-[rgba(250,248,243,0.5)] text-[10px] p-0 leading-none transition-colors hover:text-parchment" onClick={() => remove(skill)}>✕</button>
+                <button className="bg-transparent border-none cursor-pointer text-[rgba(250,248,243,0.5)] p-0 leading-none transition-colors hover:text-parchment flex items-center" onClick={() => remove(skill)}><SvgX size={10} /></button>
               </span>
             ))}
           </div>
@@ -817,7 +834,7 @@ function LanguagesSection({ data = [], onChange }: SectionProps<LanguageEntry[]>
 
   return (
     <>
-      <SectionHeader icon="◇" title="Languages" subtitle="Languages you speak and your proficiency level." />
+      <SectionHeader icon={<SvgGlobe />} title="Languages" subtitle="Languages you speak and your proficiency level." />
       <div className="flex flex-col gap-3">
         {data.map((lang, idx) => (
           <div key={lang.id || idx} className="flex gap-2.5 items-end bg-[var(--white)] border border-ink-10 rounded-xl px-4 py-3">
@@ -831,7 +848,7 @@ function LanguagesSection({ data = [], onChange }: SectionProps<LanguageEntry[]>
                 {LEVELS.map((l) => <option key={l}>{l}</option>)}
               </select>
             </div>
-            <button className="btn btn-ghost btn-icon btn-sm shrink-0 mb-0.5" onClick={() => remove(idx)}>✕</button>
+            <button className="btn btn-ghost btn-icon btn-sm shrink-0 mb-0.5 flex items-center" onClick={() => remove(idx)}><SvgX size={14} /></button>
           </div>
         ))}
         <AddButton label="Add Language" onClick={add} />
@@ -850,7 +867,7 @@ function CertificationsSection({ data = [], onChange }: SectionProps<Certificati
 
   return (
     <>
-      <SectionHeader icon="●" title="Certifications" subtitle="Professional certifications and licenses." />
+      <SectionHeader icon={<SvgAward />} title="Certifications" subtitle="Professional certifications and licenses." />
       <div className="flex flex-col gap-3">
         {data.map((cert, idx) => (
           <div key={cert.id || idx} className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden transition-all">
@@ -897,7 +914,7 @@ function ProjectsSection({ data = [], onChange }: SectionProps<ProjectEntry[]>) 
 
   return (
     <>
-      <SectionHeader icon="◑" title="Projects" subtitle="Personal or open-source projects that showcase your skills." />
+      <SectionHeader icon={<SvgFolder />} title="Projects" subtitle="Personal or open-source projects that showcase your skills." />
       <div className="flex flex-col gap-3">
         {data.map((proj, idx) => (
           <div key={proj.id || idx} className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden transition-all">
@@ -972,7 +989,7 @@ function CustomSectionsSection({ data = [], onChange }: SectionProps<CustomSecti
 
   return (
     <>
-      <SectionHeader icon="✚" title="Custom Sections" subtitle="Add any extra sections like Awards, Volunteering, Publications, etc." />
+      <SectionHeader icon={<SvgPlus />} title="Custom Sections" subtitle="Add any extra sections like Awards, Volunteering, Publications, etc." />
       <div className="flex flex-col gap-4">
         {data.map((section, sIdx) => (
           <div key={section.id || sIdx} className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden">
@@ -1404,6 +1421,12 @@ export default function EditorPage() {
   const handleThemeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newThemeId = e.target.value
     setThemeId(newThemeId)
+    // TC-045 fix: Always update the preview immediately so users can see the theme.
+    // Only persist to DB for paid users; free users get a preview + upgrade nudge.
+    if (!isPro && newThemeId !== 'classic') {
+      toast.info('Upgrade to Pro to save this theme permanently.')
+      return
+    }
     if (id) await updateResume(id, { theme_id: newThemeId })
   }
 
@@ -1564,7 +1587,7 @@ export default function EditorPage() {
         // Close the print window after a delay
         setTimeout(() => { try { printWindow.close() } catch { } }, 2000)
 
-        toast.success('Print dialog opened — save as PDF to download.')
+        toast.success('Use \"Save as PDF\" in the print dialog to download your resume.')
       } catch (printErr: any) {
         console.error('Browser print fallback also failed:', printErr)
         toast.error(printErr?.message || 'PDF generation failed. Please try again.')
@@ -1661,7 +1684,7 @@ export default function EditorPage() {
       {/* ── Top Toolbar ─────────────────────────── */}
       <div className="h-[54px] bg-[var(--white)] border-b border-ink-10 flex items-center justify-between px-4 gap-3 shrink-0 z-10">
         <div className="flex items-center gap-2.5 flex-1 min-w-0">
-          <Link href="/dashboard" className="btn btn-ghost btn-sm shrink-0">← Back</Link>
+          <Link href="/dashboard" className="btn btn-ghost btn-sm shrink-0 inline-flex items-center gap-1"><SvgArrowLeft /> Back</Link>
           <div className="w-px h-5 bg-ink-10 shrink-0" />
           {editingTitle ? (
             <input autoFocus className="form-input w-[200px] px-2 py-1 h-8 text-sm font-medium" value={title} onChange={(e) => setTitle(e.target.value)} onBlur={handleTitleSave} onKeyDown={(e) => e.key === 'Enter' && handleTitleSave()} />
@@ -1670,28 +1693,20 @@ export default function EditorPage() {
           )}
           <div className="flex items-center gap-1.5 text-xs font-mono text-ink-40 whitespace-nowrap shrink-0">
             {saveStatus === 'saving' && <><div className="spinner" style={{ width: 12, height: 12 }} /> Saving…</>}
-            {saveStatus === 'saved' && <span className="text-emerald">✓ Saved</span>}
-            {saveStatus === 'error' && <span className="text-rose">⚠ Error</span>}
+            {saveStatus === 'saved' && <span className="text-emerald inline-flex items-center gap-1"><SvgCheck /> Saved</span>}
+            {saveStatus === 'error' && <span className="text-rose inline-flex items-center gap-1"><SvgAlert /> Error</span>}
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <select
             className="form-select text-xs font-medium py-1 px-2 h-[34px] w-[150px] cursor-pointer truncate"
             value={themeId}
-            onChange={(e) => {
-              // TC-EDITOR-006 fix: Free users restricted to 'classic' theme only
-              if (!isPro && e.target.value !== 'classic') {
-                toast.info('Upgrade to Pro to unlock all themes.')
-                window.location.href = '/pricing'
-                return
-              }
-              handleThemeChange(e)
-            }}
+            onChange={handleThemeChange}
             aria-label="Change Theme"
           >
             {THEMES.map((theme) => (
               <option key={theme.id} value={theme.id}>
-                {theme.name}{!isPro && theme.id !== 'classic' ? ' 🔒' : ''}
+                {theme.name}{!isPro && theme.id !== 'classic' ? ' (Pro)' : ''}
               </option>
             ))}
           </select>
@@ -1751,7 +1766,7 @@ export default function EditorPage() {
           ) : (
             <button className="btn btn-outline btn-sm" onClick={() => { toast.info('Share via QR code is a Premium feature.'); router.push('/pricing') }} title="Share via QR code (Premium)" style={{ opacity: 0.6 }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" /></svg>
-              Share <span style={{ fontSize: 9, color: 'var(--gold)', marginLeft: 2 }}>✦</span>
+              Share <span style={{ color: 'var(--gold)', marginLeft: 2, display: 'inline-flex' }}><SvgStar size={9} /></span>
             </button>
           )}
         </div>
@@ -1947,12 +1962,12 @@ export default function EditorPage() {
             <div className="flex items-center justify-between mt-10 pt-6 border-t border-ink-10">
               {currentIdx > 0 ? (
                 <button className="btn btn-outline btn-sm" onClick={goPrev}>
-                  ← {SECTIONS[currentIdx - 1].label}
+                  <span className="inline-flex items-center gap-1"><SvgArrowLeft /> {SECTIONS[currentIdx - 1].label}</span>
                 </button>
               ) : <div />}
               {currentIdx < SECTIONS.length - 1 ? (
                 <button className="btn btn-gold btn-sm" onClick={goNext}>
-                  {SECTIONS[currentIdx + 1].label} →
+                  <span className="inline-flex items-center gap-1">{SECTIONS[currentIdx + 1].label} <SvgArrowRight /></span>
                 </button>
               ) : (
                 <button className="btn btn-gold btn-sm" onClick={handleDownload} disabled={downloading}>

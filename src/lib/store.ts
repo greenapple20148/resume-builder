@@ -126,6 +126,13 @@ export const useStore = create<StoreState>((set, get) => ({
             console.warn('[auth] TOKEN_REFRESHED with no user — session expired')
             set({ user: null, profile: null, resumes: [], currentResume: null })
             _clearStaleSession()
+            if (typeof window !== 'undefined') {
+              const path = window.location.pathname
+              const protectedPaths = ['/dashboard', '/editor', '/profile', '/tools']
+              if (protectedPaths.some(p => path.startsWith(p))) {
+                window.location.href = '/auth'
+              }
+            }
           }
         } else if (event === 'PASSWORD_RECOVERY' && session?.user) {
           // BUG-006 fix: Supabase fires PASSWORD_RECOVERY when a reset link is clicked.
@@ -337,6 +344,18 @@ export const useStore = create<StoreState>((set, get) => ({
   signIn: async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) throw error
+    // TC-041 fix: Set user state immediately and fetch profile before returning.
+    // This ensures auth state is fully propagated before the caller navigates,
+    // preventing the bug where users had to manually refresh after login.
+    if (data?.user) {
+      set({ user: data.user })
+      try {
+        await Promise.race([
+          get().fetchProfile(data.user.id),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('fetchProfile_timeout')), 3000))
+        ])
+      } catch { /* don't block login if profile fetch times out */ }
+    }
     return data
   },
 

@@ -29,31 +29,57 @@ async function getChromiumExecutable() {
                 executablePath = await mod.executablePath()
             } catch (defaultPathErr: any) {
                 // TC-046 fix: If default path fails (bin/ directory not found),
-                // try to explicitly resolve using require.resolve
+                // try multiple fallback strategies to locate the binary
                 console.warn('[generate-pdf] Default chromium path failed:', defaultPathErr?.message)
                 const path = await import('path')
+                const fs = await import('fs')
+
+                // Strategy 1: resolve via package.json location
+                const binCandidates: string[] = []
                 try {
                     const pkgPath = require.resolve('@sparticuz/chromium/package.json')
-                    const binPath = path.join(path.dirname(pkgPath), 'bin')
-                    console.log('[generate-pdf] Trying explicit bin path:', binPath)
-                    executablePath = await mod.executablePath(binPath)
-                } catch (explicitPathErr: any) {
-                    console.error('[generate-pdf] Explicit bin path also failed:', explicitPathErr?.message)
-                    throw defaultPathErr // throw original error
+                    binCandidates.push(path.join(path.dirname(pkgPath), 'bin'))
+                } catch { /* package.json not resolvable */ }
+
+                // Strategy 2: check common serverless paths
+                binCandidates.push(
+                    '/var/task/node_modules/@sparticuz/chromium/bin',
+                    '/opt/nodejs/node_modules/@sparticuz/chromium/bin',
+                    path.join(process.cwd(), 'node_modules/@sparticuz/chromium/bin'),
+                )
+
+                let resolved = false
+                for (const binPath of binCandidates) {
+                    try {
+                        if (fs.existsSync(binPath)) {
+                            console.log('[generate-pdf] Trying bin path:', binPath)
+                            executablePath = await mod.executablePath(binPath)
+                            resolved = true
+                            break
+                        }
+                    } catch { /* continue to next candidate */ }
+                }
+
+                if (!resolved) {
+                    console.error('[generate-pdf] All chromium bin paths failed. Candidates:', binCandidates)
+                    throw new Error(
+                        'Chromium binary not found. The client will fall back to browser Print-to-PDF. ' +
+                        `Searched: ${binCandidates.join(', ')}`
+                    )
                 }
             }
-            console.log('[generate-pdf] Chromium executable path:', executablePath)
+            console.log('[generate-pdf] Chromium executable path:', executablePath!)
 
             return {
-                executablePath,
+                executablePath: executablePath!,
                 args: mod.args || [],
             }
         } catch (chromiumErr: any) {
             console.error('[generate-pdf] Chromium binary error:', chromiumErr?.message)
-            // If chromium binary is not available, throw with a clear message
+            // TC-046 fix: Return a clear error indicating browser fallback is available
             throw new Error(
-                `Chromium binary not available in serverless environment: ${chromiumErr?.message}. ` +
-                'Please ensure @sparticuz/chromium is properly configured.'
+                `Server-side PDF unavailable: ${chromiumErr?.message}. ` +
+                'The client will use browser Print-to-PDF as a fallback.'
             )
         }
     }

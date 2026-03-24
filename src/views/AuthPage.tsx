@@ -128,7 +128,7 @@ export default function AuthPage() {
     } catch (err: any) {
       const msg = err.message || ''
       if (msg.includes('sending confirmation email')) {
-        toast.info('Account created but confirmation email could not be sent.')
+        toast.info('Account created! We had trouble sending a confirmation email — try signing in directly or check your spam folder.')
         window.location.href = '/confirm-email'
       } else if (msg.includes('already registered') || msg.includes('already been registered')) {
         setErrors({ email: 'This email is already registered' })

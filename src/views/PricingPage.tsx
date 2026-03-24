@@ -18,6 +18,11 @@ export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null)
   const { user, profile, fetchProfile } = useStore()
   const router = useRouter()
+  // TC-027/TC-028 fix: Prevent SSR/CSR hydration mismatch by deferring render until mounted.
+  // The pricing page renders completely different content based on `user` state (marketing vs.
+  // plan management view), which causes React DOM removeChild errors during hydration.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
 
   const [spotsLeft, setSpotsLeft] = useState<number | null>(null)
 
@@ -236,6 +241,18 @@ export default function PricingPage() {
   )
 
   // ── LOGGED-IN → Plan Management View ──
+  if (!mounted) {
+    // TC-027/TC-028 fix: Show loading state during SSR/initial hydration
+    // to prevent removeChild errors from content divergence
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center" style={{ minHeight: '60vh' }}>
+          <div className="spinner" style={{ color: 'var(--gold)' }} />
+        </div>
+      </div>
+    )
+  }
   if (user) {
     return (
       <div className="min-h-screen">
