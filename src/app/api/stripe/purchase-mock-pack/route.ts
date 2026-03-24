@@ -1,0 +1,52 @@
+import { NextRequest, NextResponse } from 'next/server'
+import Stripe from 'stripe'
+import { getSupabaseAdmin, getSupabaseUser, extractToken } from '@/lib/server/supabase-admin'
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2023-10-16' as any })
+
+export async function POST(request: NextRequest) {
+    try {
+        const token = extractToken(request.headers.get('authorization'))
+        if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+        const supabaseUser = getSupabaseUser(token)
+        const { data: { user }, error: authError } = await supabaseUser.auth.getUser()
+        if (authError || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+        const supabaseAdmin = getSupabaseAdmin()
+        const { data: profile } = await supabaseAdmin
+            .from('profiles')
+            .select('stripe_customer_id, email, full_name')
+            .eq('id', user.id)
+            .single()
+
+        let customerId = profile?.stripe_customer_id
+        if (!customerId) {
+            const customer = await stripe.customers.create({
+                email: profile?.email || user.email,
+                name: profile?.full_name || undefined,
+                metadata: { supabase_user_id: user.id },
+            })
+            customerId = customer.id
+            await supabaseAdmin.from('profiles').update({ stripe_customer_id: customerId }).eq('id', user.id)
+        }
+
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://resumebuildin.com'
+        const priceId = process.env.MOCK_PACK_PRICE_ID
+        if (!priceId) throw new Error('MOCK_PACK_PRICE_ID is not configured.')
+
+        const session = await stripe.checkout.sessions.create({
+            customer: customerId,
+            mode: 'payment',
+            payment_method_types: ['card'],
+            line_items: [{ price: priceId, quantity: 1 }],
+            success_url: `${appUrl}/tools/mock-interview?purchased=mock_pack`,
+            cancel_url: `${appUrl}/pricing?cancelled=true`,
+            metadata: { supabase_user_id: user.id, addon_type: 'mock_pack', sessions_count: '3' },
+        })
+
+        return NextResponse.json({ url: session.url })
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+}
