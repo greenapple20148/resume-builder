@@ -1421,13 +1421,13 @@ export default function EditorPage() {
   const handleThemeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newThemeId = e.target.value
     setThemeId(newThemeId)
-    // TC-045 fix: Always update the preview immediately so users can see the theme.
-    // Only persist to DB for paid users; free users get a preview + upgrade nudge.
-    if (!isPro && newThemeId !== 'classic') {
-      toast.info('Upgrade to Pro to save this theme permanently.')
-      return
-    }
+    // TC-045 fix: Always persist the theme change immediately so the preview updates
+    // and the selection survives page reloads. Free users see an upgrade nudge for
+    // premium themes but the theme is saved regardless so the experience isn't jarring.
     if (id) await updateResume(id, { theme_id: newThemeId })
+    if (!isPro && newThemeId !== 'classic') {
+      toast.info('🎨 Theme previewed! Upgrade to Pro to download without watermark.')
+    }
   }
 
 
@@ -1557,7 +1557,7 @@ export default function EditorPage() {
 
       toast.success('PDF downloaded!')
     } catch (serverErr: any) {
-      // BUG-013 fix: Fallback to browser print-to-PDF when server API fails
+      // BUG-013 / TC-046 fix: Fallback to browser print-to-PDF when server API fails
       console.warn('Server PDF generation failed, using browser print fallback:', serverErr?.message)
 
       try {
@@ -1571,26 +1571,27 @@ export default function EditorPage() {
         </style>`
         const printHTML = fullHTML.replace('</head>', `${printCSS}</head>`)
 
+        // TC-046 fix: Show instruction BEFORE opening print dialog so users know what to expect
+        toast.info('📄 Opening print dialog — select "Save as PDF" as the destination to download your resume.')
+
         const printWindow = window.open('', '_blank')
         if (!printWindow) {
-          throw new Error('Pop-up blocked. Please allow pop-ups and try again.')
+          throw new Error('Pop-up blocked. Please allow pop-ups for this site and try again.')
         }
         printWindow.document.write(printHTML)
         printWindow.document.close()
 
-        // Wait for fonts and content to load
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        // Wait for fonts and content to load (increased for reliability)
+        await new Promise(resolve => setTimeout(resolve, 2000))
 
         printWindow.focus()
         printWindow.print()
 
         // Close the print window after a delay
-        setTimeout(() => { try { printWindow.close() } catch { } }, 2000)
-
-        toast.success('Use \"Save as PDF\" in the print dialog to download your resume.')
+        setTimeout(() => { try { printWindow.close() } catch { } }, 3000)
       } catch (printErr: any) {
         console.error('Browser print fallback also failed:', printErr)
-        toast.error(printErr?.message || 'PDF generation failed. Please try again.')
+        toast.error(printErr?.message || 'PDF generation failed. Please try again or use Ctrl+P to print this page.')
       }
     } finally {
       setDownloading(false)

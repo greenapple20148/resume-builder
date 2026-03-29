@@ -7,6 +7,28 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { user, authLoading } = useStore()
     const didRedirect = useRef(false)
 
+    // TC-048 fix: Proactively validate session on mount to catch stale/cleared tokens
+    // before any protected content flashes.
+    useEffect(() => {
+        if (!authLoading && user) {
+            // Double-check the session is actually valid by inspecting the stored token
+            try {
+                const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+                const ref = supabaseUrl?.split('//')[1]?.split('.')[0]
+                const raw = localStorage.getItem(`sb-${ref}-auth-token`)
+                if (raw) {
+                    const parsed = JSON.parse(raw)
+                    if (parsed?.expires_at && parsed.expires_at * 1000 < Date.now()) {
+                        // Session expired — redirect immediately
+                        console.warn('[ProtectedRoute] Expired session token detected')
+                        window.location.href = '/auth'
+                        return
+                    }
+                }
+            } catch { /* ignore parse errors */ }
+        }
+    }, [user, authLoading])
+
     useEffect(() => {
         if (!authLoading && !user && !didRedirect.current) {
             didRedirect.current = true

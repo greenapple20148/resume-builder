@@ -162,29 +162,30 @@ export default function PricingPage() {
     { q: "What's the difference between the plans?", a: 'Free gets you started with 1 resume. Pro unlocks unlimited downloads, no watermark, DOCX export, cover letters, and priority support. Premium adds AI mock interviews, interview prep toolkit, and LinkedIn optimization. Career+ gives you 20 mock sessions/month, same-business-day support, JD-based interview prep, and a career intelligence dashboard.' },
     { q: 'What are AI Mock Interviews?', a: 'AI-powered practice sessions where you\'re asked role-specific questions, type your answers, and receive real-time evaluation — including scoring, improvement suggestions, and sample answers. Premium gives 3 sessions/month, Career+ gives 20, and you can buy additional packs anytime.' },
     { q: 'What is Job Description Matching?', a: 'Paste any job description and our AI instantly analyzes how well your resume matches. You\'ll see a match score, missing keywords, and specific suggestions to close the gaps — so you can tailor your resume before you apply.' },
-    { q: 'What are One-Time Add-Ons?', a: 'Boost your job search without changing your plan. Options include a 3-session Mock Interview Pack ($4.99), and the Express 24h Unlock ($2.99) which gives full Pro access for 24 hours — perfect for last-minute applications.' },
+    { q: 'What are One-Time Add-Ons?', a: 'Boost your job search without changing your plan. Options include a 3-session Mock Interview Pack ($12.99), and the Express 24h Unlock ($9.99) which gives full Pro access for 24 hours — perfect for last-minute applications.' },
     { q: 'How does Priority Support work?', a: 'Pro and Premium users get Skip-the-Line Priority Support with a guaranteed 12-hour response time. Career+ users get same-business-day support with front-of-queue priority and direct assistance with resume edits. We guarantee response times Monday–Friday during business hours. No bots. Real help.' },
     { q: 'Can I import my existing resume?', a: 'Yes. Upload a PDF or DOCX file and our AI parser will extract your information — contact details, experience, education, skills — and populate a new ResumeBuildIn resume automatically. You can then edit, enhance, and choose any template.' },
     { q: 'What payment methods do you accept?', a: 'All major credit and debit cards (Visa, Mastercard, Amex), Apple Pay, and Google Pay. All payments are processed securely through Stripe. We never store your card details.' },
     { q: 'Is my data safe and private?', a: 'Your resume data is stored securely with Supabase (built on PostgreSQL with row-level security). We never sell your data, share it with third parties, or use it for training AI models. You can delete your account and all data at any time.' },
     { q: 'How accurate is the AI enhancement?', a: 'Our AI transforms vague bullet points into quantified, metrics-driven achievement statements. You always review and approve every suggestion before it\'s applied — the AI assists, you decide. You can choose between Gemini and Claude as your AI provider.' },
     { q: 'Can I customize the resume themes?', a: 'All 30+ professional templates are fully customizable. Change colors, fonts, spacing, and layout. Pro users unlock all themes. You can even generate custom themes with AI by describing what you want.' },
-    { q: 'What is Express 24h Unlock?', a: 'A one-time purchase ($2.99) that gives you full Pro-level access for 24 hours — unlimited downloads, no watermark, DOCX export, and cover letters. Perfect when you need to submit a polished resume fast without committing to a subscription.' },
+    { q: 'What is Express 24h Unlock?', a: 'A one-time purchase ($9.99) that gives you full Pro-level access for 24 hours — unlimited downloads, no watermark, DOCX export, and cover letters. Perfect when you need to submit a polished resume fast without committing to a subscription.' },
     { q: 'Do you offer team or enterprise plans?', a: 'Not yet, but we\'re working on it. If you\'re a career center, staffing agency, or company interested in bulk licensing, reach out to hello@resumebuildin.com and we\'ll set something up.' },
 
   ]
 
   // TC-029 fix: Interactive FAQ accordion with expand/collapse
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
+  // TC-029 fix: Use Set to allow multiple FAQ items open simultaneously
+  const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set())
   const FAQAccordion = () => (
     <div className="flex flex-col gap-3">
       {FAQ.map((item, i) => {
-        const isOpen = openFaq === i
+        const isOpen = openFaqs.has(i)
         return (
           <div key={i} className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden transition-all">
             <button
               className="w-full flex items-center justify-between p-5 bg-transparent border-none cursor-pointer text-left transition-colors hover:bg-ink-05 font-[inherit]"
-              onClick={() => setOpenFaq(isOpen ? null : i)}
+              onClick={() => setOpenFaqs(prev => { const next = new Set(prev); if (next.has(i)) next.delete(i); else next.add(i); return next })}
               aria-expanded={isOpen}
             >
               <h4 className="text-[15px] font-semibold text-ink m-0 pr-4">{item.q}</h4>
@@ -374,34 +375,32 @@ export default function PricingPage() {
             <div className="text-center p-7 bg-ink-05 rounded-xl mb-10"><p className="text-sm text-ink-40 mb-4">Want to switch to a lower plan? You can downgrade or cancel through the billing portal.</p><button className="btn btn-outline" onClick={handleManageBilling} disabled={loading === 'portal'}>{loading === 'portal' ? 'Opening…' : 'Open Billing Portal'}</button></div>
           )}
 
-          {/* ── One-Time Add-Ons (visible only for free users) ── */}
-          {currentPlanId === 'free' && (
-            <div className="mb-10">
-              <div className="text-center mb-6"><h2>One-time <em className="italic text-gold">add-ons</em></h2><p className="mt-1.5 text-ink-40 text-sm">Boost your job search without changing your plan.</p></div>
-              <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
-                {ADD_ONS.filter(a => a.id !== 'express_unlock').map(addon => (
-                  <div key={addon.id} className="bg-surface border border-border rounded-[14px] p-5 flex flex-col gap-2">
-                    <div className="text-gold"><LandingIcon name={addon.icon} size={26} /></div>
-                    <div className="font-bold text-sm text-ink">{addon.name}</div>
-                    <div className="text-xs text-ink-40 leading-relaxed flex-1">
-                      {addon.description}
-                      {addon.id === 'mock_pack_3' && (profile?.mock_sessions_purchased || 0) > 0 && (
-                        <div className="mt-1 text-gold font-semibold">{profile?.mock_sessions_purchased} bonus session{(profile?.mock_sessions_purchased || 0) !== 1 ? 's' : ''} owned</div>
-                      )}
-                    </div>
-                    <div className="text-xl font-extrabold text-gold">${addon.price}</div>
-                    <button
-                      className="btn btn-outline text-xs py-1.5 px-3.5 mt-1"
-                      onClick={() => handleAddonPurchase(addon.id)}
-                      disabled={loading === addon.id}
-                    >
-                      {loading === addon.id ? 'Processing…' : 'Buy Now'}
-                    </button>
+          {/* ── One-Time Add-Ons (visible for all logged-in users) ── */}
+          <div className="mb-10">
+            <div className="text-center mb-6"><h2>One-time <em className="italic text-gold">add-ons</em></h2><p className="mt-1.5 text-ink-40 text-sm">Boost your job search without changing your plan.</p></div>
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+              {ADD_ONS.filter(a => currentPlanId !== 'free' ? a.id !== 'express_unlock' : a.id !== 'express_unlock').map(addon => (
+                <div key={addon.id} className="bg-surface border border-border rounded-[14px] p-5 flex flex-col gap-2">
+                  <div className="text-gold"><LandingIcon name={addon.icon} size={26} /></div>
+                  <div className="font-bold text-sm text-ink">{addon.name}</div>
+                  <div className="text-xs text-ink-40 leading-relaxed flex-1">
+                    {addon.description}
+                    {addon.id === 'mock_pack_3' && (profile?.mock_sessions_purchased || 0) > 0 && (
+                      <div className="mt-1 text-gold font-semibold">{profile?.mock_sessions_purchased} bonus session{(profile?.mock_sessions_purchased || 0) !== 1 ? 's' : ''} owned</div>
+                    )}
                   </div>
-                ))}
-              </div>
+                  <div className="text-xl font-extrabold text-gold">${addon.price}</div>
+                  <button
+                    className="btn btn-outline text-xs py-1.5 px-3.5 mt-1"
+                    onClick={() => handleAddonPurchase(addon.id)}
+                    disabled={loading === addon.id}
+                  >
+                    {loading === addon.id ? 'Processing…' : 'Buy Now'}
+                  </button>
+                </div>
+              ))}
             </div>
-          )}
+          </div>
 
           <div className="py-10">
             <div className="text-center mb-12"><h2>Frequently asked<br /><em className="italic text-gold">questions</em></h2></div>
