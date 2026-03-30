@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
         const tierOrder: Record<string, number> = { free: 0, pro: 1, premium: 2, career_plus: 3 }
         let bestPlan = 'pro'
-        let bestSub = allSubs[0]
+        let bestSub: any = allSubs[0]
         for (const sub of allSubs) {
             const plan = determinePlan(sub)
             if ((tierOrder[plan] || 0) > (tierOrder[bestPlan] || 0)) {

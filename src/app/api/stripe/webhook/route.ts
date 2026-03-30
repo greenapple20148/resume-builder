@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
             }
 
             const subscriptionId = session.subscription as string
-            const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+            const subscription = await stripe.subscriptions.retrieve(subscriptionId) as any
             const plan = subscription.metadata?.plan || 'pro'
             const supabaseUserId = subscription.metadata?.supabase_user_id
 
@@ -92,12 +92,12 @@ export async function POST(request: NextRequest) {
             const subscription = event.data.object as Stripe.Subscription
             const previousAttributes = (event.data as any).previous_attributes || {}
             let dbStatus = subscription.status
-            if (subscription.cancel_at_period_end && subscription.status === 'active') dbStatus = 'cancelling'
+            if (subscription.cancel_at_period_end && subscription.status === 'active') dbStatus = 'cancelling' as any
             if (previousAttributes.cancel_at_period_end === true && !subscription.cancel_at_period_end) dbStatus = 'active'
 
             const updatePayload: Record<string, unknown> = {
                 subscription_status: dbStatus,
-                subscription_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+                subscription_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
             }
             if (subscription.metadata?.plan) updatePayload.plan = subscription.metadata.plan
 
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
         case 'invoice.payment_failed': {
             const invoice = event.data.object as Stripe.Invoice
             const customerId = invoice.customer as string
-            const subscriptionId = invoice.subscription as string
+            const subscriptionId = (invoice as any).subscription as string
             if (subscriptionId) {
                 await supabaseAdmin.from('profiles').update({ subscription_status: 'past_due' }).eq('stripe_subscription_id', subscriptionId)
                 const profile = await findProfileByCustomerId(customerId)
