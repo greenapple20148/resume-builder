@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
             throw new Error('No active subscription found.')
         }
 
-        const subscription = await stripe.subscriptions.update(profile.stripe_subscription_id, { cancel_at_period_end: true })
+        const subscription = await stripe.subscriptions.update(profile.stripe_subscription_id, { cancel_at_period_end: true }) as any
 
         const periodEnd = new Date(subscription.current_period_end * 1000)
         const periodEndISO = periodEnd.toISOString()
