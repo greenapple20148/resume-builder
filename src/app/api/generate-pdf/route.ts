@@ -37,7 +37,8 @@ async function getChromiumExecutable() {
                 // Strategy 1: resolve via package.json location
                 const binCandidates: string[] = []
                 try {
-                    const pkgPath = require.resolve('@sparticuz/chromium/package.json')
+                    // Use eval to prevent Next.js webpack from statically analyzing this require
+                    const pkgPath = eval('require').resolve('@sparticuz/chromium/package.json')
                     binCandidates.push(path.join(path.dirname(pkgPath), 'bin'))
                 } catch { /* package.json not resolvable */ }
 
