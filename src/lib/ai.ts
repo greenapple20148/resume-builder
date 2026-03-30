@@ -190,6 +190,18 @@ export async function getPracticeHistory(): Promise<PracticeHistoryEntry[]> {
 export async function enhanceTextWithAI(text: string): Promise<string> {
     if (!text.trim()) return text
 
+    // TC-AI-003/BUG-015 fix: Gate AI rewrite to Premium+ plans only.
+    // Free and Pro users should not have access to AI-powered rewriting.
+    try {
+        const cachedPlan = localStorage.getItem('rc_user_plan') || 'free'
+        if (cachedPlan === 'free' || cachedPlan === 'pro' || cachedPlan === 'founding') {
+            throw new Error('AI Rewrite is a Premium feature. Upgrade to Premium or Career+ to unlock AI-powered improvements.')
+        }
+    } catch (err: any) {
+        if (err?.message?.includes('Premium feature')) throw err
+        // Ignore localStorage errors in SSR
+    }
+
     try {
         const result = await callAI({
             prompt: `You are a professional resume writer. Rewrite the following resume text to make it more impactful and professional.
@@ -215,6 +227,12 @@ ${text}`,
         return result.text
     } catch (err: any) {
         console.error('AI rewrite failed, falling back to local enhancement:', err)
+        // BUG-016 fix: If the error is due to missing API configuration, don't silently
+        // fall back to the basic local enhancer (which only capitalizes + adds periods).
+        // Instead, re-throw so the user gets a meaningful error message.
+        if (err?.message?.includes('not configured') || err?.message?.includes('No AI provider')) {
+            throw err
+        }
         return enhanceTextLocal(text)
     }
 }
@@ -235,28 +253,75 @@ function enhanceTextLocal(text: string): string {
 
         content = content.charAt(0).toUpperCase() + content.slice(1)
 
+        // Expanded verb map for more impactful replacements
         const verbMap: Record<string, string> = {
             'helped with': 'Contributed to',
+            'helped to': 'Facilitated',
             'worked on': 'Developed',
             'was responsible for': 'Led',
-            'responsible for': 'Led',
+            'responsible for': 'Managed',
             'was part of': 'Collaborated on',
             'made improvements to': 'Optimized',
             'did work on': 'Executed',
             'assisted in': 'Supported',
-            'dealt with': 'Managed',
+            'assisted with': 'Supported',
+            'dealt with': 'Resolved',
             'took care of': 'Oversaw',
             'put together': 'Assembled',
             'came up with': 'Designed',
             'set up': 'Established',
             'looked into': 'Investigated',
             'got better at': 'Improved',
+            'participated in': 'Contributed to',
+            'was involved in': 'Drove',
+            'involved in': 'Drove',
+            'handled': 'Managed',
+            'did': 'Executed',
+            'used': 'Leveraged',
+            'made': 'Developed',
+            'worked with': 'Partnered with',
+            'talked to': 'Communicated with',
+            'ran': 'Directed',
+            'fixed': 'Resolved',
+            'changed': 'Transformed',
+            'started': 'Initiated',
+            'helped': 'Facilitated',
+            'improved': 'Enhanced',
+            'increased': 'Accelerated',
+            'decreased': 'Reduced',
+            'built': 'Architected',
+            'created': 'Developed',
+            'wrote': 'Authored',
+            'tested': 'Validated',
+            'checked': 'Evaluated',
+            'managed': 'Directed',
+            'organized': 'Orchestrated',
+            'planned': 'Strategized',
+            'trained': 'Mentored',
+            'taught': 'Mentored',
+            'maintained': 'Sustained',
         }
         for (const [weak, strong] of Object.entries(verbMap)) {
             const regex = new RegExp(`\\b${weak}\\b`, 'gi')
             if (regex.test(content)) {
                 content = content.replace(regex, strong)
+                break // only replace the first match to avoid awkward double replacements
             }
+        }
+
+        // Remove filler words
+        const fillers = ['very', 'really', 'just', 'basically', 'actually', 'simply', 'in order to']
+        for (const filler of fillers) {
+            const regex = new RegExp(`\\b${filler}\\b\\s*`, 'gi')
+            content = content.replace(regex, '')
+        }
+
+        // Clean up double spaces
+        content = content.replace(/\s{2,}/g, ' ').trim()
+
+        // Capitalize first letter again after replacements
+        if (content.length > 0) {
+            content = content.charAt(0).toUpperCase() + content.slice(1)
         }
 
         if (content.length > 10 && !/[.!?]$/.test(content)) {
@@ -407,7 +472,7 @@ export async function extractTextFromPDF(file: File): Promise<string> {
     try {
         console.log('[extractTextFromPDF] Triggered on file size:', file.size)
         const pdfjs = await import('pdfjs-dist')
-        pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`
+        pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`
 
         const arrayBuffer = await file.arrayBuffer()
         const pdf = await pdfjs.getDocument({ data: new Uint8Array(arrayBuffer) }).promise

@@ -6,6 +6,7 @@ import { useStore } from '@/lib/store'
 import { toast } from '../components/Toast'
 import { useSEO } from '@/lib/useSEO'
 import { supabase } from '@/lib/supabase'
+import { createCheckoutSession } from '@/lib/stripe'
 
 type AuthMode = 'signup' | 'signin' | 'forgot-password' | 'reset-password'
 
@@ -23,6 +24,7 @@ export default function AuthPage() {
 
   const { signIn, signUp, signInWithGoogle, resetPassword, updatePassword } = useStore()
   const router = useRouter()
+  const isFoundingSignup = mode === 'signup' && searchParams.get('offer') === 'founding'
 
   useEffect(() => { if (mode === 'reset-password') { /* Supabase redirects here */ } }, [mode])
 
@@ -55,14 +57,18 @@ export default function AuthPage() {
   }
   const pwStrength = Object.values(pwChecks).filter(Boolean).length
   const pwValid = pwStrength === 5
+  // BUG-004 fix: "Excellent" requires all 5 checks + 10+ char length
+  const pwLabel = !pwChecks.length ? 'Too Short' : pwStrength <= 2 ? 'Weak' : pwStrength <= 3 ? 'Fair' : pwStrength <= 4 ? 'Good' : form.password.length >= 10 ? 'Excellent' : 'Strong'
 
   const validate = () => {
     const errs: Record<string, string> = {}
     if (mode === 'signup' && !form.fullName.trim()) errs.fullName = 'Name is required'
-    if (mode !== 'reset-password' && !form.email.includes('@')) errs.email = 'Valid email required'
+    // TC-014 fix: Proper email format validation (abc@ no longer passes)
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
+    if (mode !== 'reset-password' && !emailValid) errs.email = 'Please enter a valid email address'
     if (mode === 'signin' && form.password.length < 8) errs.password = 'Password must be 8+ characters'
     if (mode === 'signup') { if (!pwValid) errs.password = 'Password does not meet all requirements' }
-    if (mode === 'forgot-password' && !form.email.includes('@')) errs.email = 'Valid email required'
+    if (mode === 'forgot-password' && !emailValid) errs.email = 'Please enter a valid email address'
     if (mode === 'reset-password') {
       if (!pwValid) errs.password = 'Password does not meet all requirements'
       if (form.password !== form.confirmPassword) errs.confirmPassword = 'Passwords do not match'
@@ -77,12 +83,39 @@ export default function AuthPage() {
     setLoading(true)
     try {
       if (mode === 'signup') {
+        // TC-AUTH-001 fix: Set flag BEFORE signUp to prevent PublicRoute from
+        // racing to /dashboard when SIGNED_IN event fires
+        sessionStorage.setItem('rc_signup_pending', 'true')
         await signUp(form.email, form.password, form.fullName)
-        router.push('/confirm-email')
+
+        // Founding member: save pending plan and try to skip email verification
+        if (isFoundingSignup) {
+          sessionStorage.removeItem('rc_signup_pending')
+          localStorage.setItem('resumebuildin_pending_plan', JSON.stringify({ plan: 'founding', billing: 'annual' }))
+          try {
+            const result = await signIn(form.email, form.password)
+            if (result?.user) {
+              useStore.setState({ user: result.user })
+              toast.info('Creating your Founding Member checkout…')
+              const { url } = await createCheckoutSession('founding', 'annual')
+              if (url) { window.location.href = url; return }
+            }
+          } catch {
+            // Email confirmation required — pending plan saved, will auto-resume after verification
+          }
+        }
+
+        window.location.href = '/confirm-email'
       } else if (mode === 'signin') {
-        await signIn(form.email, form.password)
+        const result = await signIn(form.email, form.password)
+        if (result?.user) {
+          useStore.setState({ user: result.user })
+        }
         toast.success('Welcome back!')
-        router.push('/dashboard')
+        // TC-041 fix: Use explicit hard navigation instead of relying on PublicRoute.
+        // PublicRoute sometimes has race conditions with auth state updates, causing the
+        // user to see the auth page until they manually refresh.
+        window.location.href = '/dashboard'
       } else if (mode === 'forgot-password') {
         await resetPassword(form.email)
         setResetSent(true)
@@ -95,11 +128,14 @@ export default function AuthPage() {
     } catch (err: any) {
       const msg = err.message || ''
       if (msg.includes('sending confirmation email')) {
-        toast.info('Account created but confirmation email could not be sent.')
-        router.push('/confirm-email')
+        toast.info('Account created! We had trouble sending a confirmation email — try signing in directly or check your spam folder.')
+        window.location.href = '/confirm-email'
       } else if (msg.includes('already registered') || msg.includes('already been registered')) {
         setErrors({ email: 'This email is already registered' })
         toast.error('An account with this email already exists. Try signing in.')
+      } else if (msg.includes('No account found')) {
+        // Security: silently show success screen even if email not found
+        setResetSent(true)
       } else { toast.error(msg || 'Something went wrong. Try again.') }
     } finally { setLoading(false) }
   }
@@ -114,7 +150,17 @@ export default function AuthPage() {
     if (errors[field]) setErrors((p) => ({ ...p, [field]: null }))
   }
 
-  const switchMode = (newMode: AuthMode) => { setMode(newMode); setErrors({}); setResetSent(false) }
+  // TC-020 fix: Update URL when switching modes so PublicRoute correctly detects
+  // forgot-password/reset-password and doesn't redirect logged-in users to /dashboard
+  const switchMode = (newMode: AuthMode) => {
+    setMode(newMode)
+    setErrors({})
+    setResetSent(false)
+    // Update URL without full navigation so PublicRoute can read mode from search params
+    const url = new URL(window.location.href)
+    url.searchParams.set('mode', newMode)
+    window.history.replaceState({}, '', url.toString())
+  }
 
   const headingMap: Record<AuthMode, string> = {
     signup: 'Create your account', signin: 'Welcome back',
@@ -203,7 +249,7 @@ export default function AuthPage() {
             <div className="text-center p-8 bg-[var(--white)] border border-ink-10 rounded-xl mt-5">
               <div className="text-5xl mb-4">✉</div>
               <h4 className="font-display text-[22px] mb-3 text-ink">Check your inbox</h4>
-              <p className="text-sm leading-relaxed text-ink-40 mb-1">We've sent a password reset link to <strong className="text-ink">{form.email}</strong>. Click the link in your email to choose a new password.</p>
+              <p className="text-sm leading-relaxed text-ink-40 mb-1">If an account exists for <strong className="text-ink">{form.email}</strong>, we've sent a password reset link. Click the link in your email to choose a new password.</p>
               <p className="text-xs text-ink-20 mt-3">Didn't receive it? Check your spam folder or <button className="bg-transparent border-none text-gold font-body text-sm cursor-pointer font-medium underline p-0" onClick={() => setResetSent(false)}>try again</button></p>
               <button className="btn btn-outline w-full mt-4" onClick={() => switchMode('signin')}>← Back to Sign In</button>
             </div>
@@ -239,7 +285,7 @@ export default function AuthPage() {
                         ))}
                       </div>
                       <span className="text-[11px] font-semibold font-mono uppercase tracking-wide text-ink-40 whitespace-nowrap">
-                        {pwStrength <= 2 ? 'Weak' : pwStrength <= 3 ? 'Fair' : pwStrength <= 4 ? 'Strong' : 'Excellent'}
+                        {pwLabel}
                       </span>
                     </div>
                   )}
@@ -279,7 +325,7 @@ export default function AuthPage() {
               )}
 
               <button type="submit" className="btn btn-primary w-full py-3.5" disabled={loading}>
-                {loading ? <><div className="spinner" /> Processing…</> : mode === 'signup' ? 'Create Account →' : mode === 'signin' ? 'Sign In →' : mode === 'forgot-password' ? 'Send Reset Link →' : 'Update Password →'}
+                {loading ? <><div className="spinner" /> Processing…</> : mode === 'signup' ? (isFoundingSignup ? 'Create Account & Claim Spot →' : 'Create Account →') : mode === 'signin' ? 'Sign In →' : mode === 'forgot-password' ? 'Send Reset Link →' : 'Update Password →'}
               </button>
 
               {(mode === 'forgot-password' || mode === 'reset-password') && (

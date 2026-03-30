@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
 import { PREVIEW_MAP } from './ThemesPreviews'
 import { ResumeData } from '../types'
 
@@ -34,16 +33,14 @@ export default function PublicResumePage() {
 
         const fetchResume = async () => {
             try {
-                const { data, error: fetchError } = await supabase
-                    .from('resumes')
-                    .select('title, theme_id, data')
-                    .eq('id', id)
-                    .single()
-
-                if (fetchError || !data) {
+                // BUG-018 fix: Use server-side API route instead of direct Supabase client.
+                // The anon key client is blocked by RLS policies for unauthenticated users.
+                const response = await fetch(`/api/public-resume/${id}`)
+                if (!response.ok) {
                     setError('This resume is not available or the link has expired.')
                     return
                 }
+                const data = await response.json()
 
                 setTitle(data.title)
                 setThemeId(data.theme_id || 'classic')
@@ -87,10 +84,10 @@ export default function PublicResumePage() {
         return (
             <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--parchment)' }}>
                 <div style={{ textAlign: 'center', maxWidth: 420, padding: '0 20px' }}>
-                    <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.3 }}>🔒</div>
+                    <div style={{ marginBottom: 16, opacity: 0.3, display: 'flex', justifyContent: 'center' }}><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></div>
                     <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 24, marginBottom: 8 }}>Resume Not Found</h1>
                     <p style={{ color: 'var(--ink-40)', fontSize: 15, marginBottom: 24, lineHeight: 1.6 }}>{error}</p>
-                    <Link href="/" className="btn btn-gold">Go to ResumeBuildIn →</Link>
+                    <Link href="/" className="btn btn-gold" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>Go to ResumeBuildIn <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></Link>
                 </div>
             </div>
         )
@@ -108,14 +105,14 @@ export default function PublicResumePage() {
                 background: 'var(--white)',
             }}>
                 <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ color: 'var(--gold)', fontSize: 16 }}>◆</span>
+                    <span style={{ color: 'var(--gold)', display: 'inline-flex' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg></span>
                     <span style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink)' }}>
                         Resume<em style={{ fontStyle: 'italic', color: 'var(--gold)' }}>BuildIn</em>
                     </span>
                 </Link>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <span style={{ fontSize: 13, color: 'var(--ink-40)' }}>{title}</span>
-                    <Link href="/auth?mode=signup" className="btn btn-gold btn-sm">Create Yours Free →</Link>
+                    <Link href="/auth?mode=signup" className="btn btn-gold btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>Create Yours Free <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></Link>
                 </div>
             </header>
 
@@ -147,7 +144,7 @@ export default function PublicResumePage() {
                 <p style={{ color: 'var(--ink-40)', fontSize: 14, marginBottom: 12 }}>
                     Built with <span style={{ color: 'var(--gold)' }}>ResumeBuildIn</span> — Create yours in minutes
                 </p>
-                <Link href="/auth?mode=signup" className="btn btn-gold">Build My Resume — Free →</Link>
+                <Link href="/auth?mode=signup" className="btn btn-gold" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>Build My Resume — Free <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></Link>
             </div>
         </div>
     )

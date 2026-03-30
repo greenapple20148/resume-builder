@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useSEO } from '@/lib/useSEO'
 import { useTheme } from '@/lib/useTheme'
 import { toast } from '../components/Toast'
-import { invokeEdgeFunction } from '@/lib/supabase'
 import { LandingIcon } from '../components/LandingIcons'
 
 export default function ContactPage() {
@@ -21,12 +20,9 @@ export default function ContactPage() {
         e.preventDefault()
         setSending(true)
         try {
-            // Contact form may not require auth — use direct fetch
-            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-            const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-            const res = await fetch(`${supabaseUrl}/functions/v1/contact-form`, {
+            const res = await fetch('/api/contact', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'apikey': anonKey },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...form, _hp: honeypot, _ts: loadedAt.current }),
             })
             const data = await res.json()

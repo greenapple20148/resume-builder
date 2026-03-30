@@ -6,11 +6,12 @@ import Navbar from '../components/Navbar'
 import { toast } from '../components/Toast'
 import { useStore } from '@/lib/store'
 import { useSEO } from '@/lib/useSEO'
-import { PLANS, openCustomerPortal, verifySubscription, cancelSubscription } from '@/lib/stripe'
+import { PLANS, openCustomerPortal, verifySubscription, cancelSubscription, createCheckoutSession } from '@/lib/stripe'
 import { Resume } from '../types'
 import { getResumeScore } from '@/lib/resumeScore'
 import { LandingIcon } from '../components/LandingIcons'
 import { getEffectivePlan, isExpressUnlockActive } from '@/lib/expressUnlock'
+
 import ShareResumeModal from '../components/ShareResumeModal'
 
 interface ResumeCardProps {
@@ -175,11 +176,33 @@ export default function DashboardPage() {
   const { user, fetchProfile } = useStore()
   useEffect(() => { if (user) verifySubscription().then(() => fetchProfile(user.id)).catch(() => { }) }, [user?.id])
 
+  // Auto-resume pending checkout if user was redirected from pricing → signup → dashboard
+  useEffect(() => {
+    const raw = localStorage.getItem('resumebuildin_pending_plan')
+    if (!raw || !user) return
+    try {
+      const { plan, billing } = JSON.parse(raw)
+      localStorage.removeItem('resumebuildin_pending_plan')
+      if (plan && plan !== 'free') {
+        toast.info(`Resuming your ${plan === 'founding' ? 'Founding Member' : plan} checkout…`)
+        createCheckoutSession(plan, billing || 'annual')
+          .then(({ url }) => { if (url) window.location.href = url })
+          .catch((err: any) => {
+            console.error('[pending checkout] error:', err)
+            toast.error('Could not start checkout. Please try again from the pricing page.')
+          })
+      }
+    } catch { localStorage.removeItem('resumebuildin_pending_plan') }
+  }, [user])
+
   const handleCreate = async (initialData: any = null) => {
     try {
       const dataToPass = initialData?.nativeEvent ? null : initialData
       const resume = await createResume('classic', dataToPass)
-      router.push(`/editor/${resume.id}`)
+      // TC-043 fix: Use hard navigation instead of client-side router.push.
+      // router.push can silently fail when auth state hasn't fully propagated,
+      // leaving the user on the dashboard with no visible result.
+      window.location.href = `/editor/${resume.id}`
     } catch (err: any) {
       if (err.message === 'LIMIT_REACHED') { toast.error('Resume limit reached. Upgrade your plan to create more.'); router.push('/pricing') }
       else toast.error(err.message || 'Could not create resume.')
@@ -277,7 +300,7 @@ export default function DashboardPage() {
           <div className="bg-[var(--white)] border border-ink-10 rounded-xl p-4 mt-4">
             <div className="mb-3">
               <span className={`badge ${effectivePlan !== 'free' ? 'badge-gold' : 'badge-dark'}`}>
-                {isExpressUnlockActive(profile) && profile?.plan === 'free' ? 'EXPRESS' : profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
+                {isExpressUnlockActive(profile) && profile?.plan === 'free' ? 'EXPRESS' : profile?.subscription_status === 'cancelling' ? `${profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'} · CANCELLING` : profile?.plan === 'career_plus' ? 'CAREER+' : profile?.plan?.toUpperCase() || 'FREE'}
               </span>
             </div>
             <div className="mb-1">
@@ -359,6 +382,35 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          {/* ── Cancellation Notice Banner ── */}
+          {profile?.subscription_status === 'cancelling' && profile?.subscription_period_end && (
+            <div
+              className="mb-6 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+              style={{
+                background: 'linear-gradient(135deg, rgba(234,179,8,0.06), rgba(234,179,8,0.02))',
+                border: '1.5px solid rgba(234,179,8,0.25)',
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
+                  style={{ background: 'linear-gradient(135deg, rgba(234,179,8,0.12), rgba(234,179,8,0.06))' }}>
+                  ⏰
+                </div>
+                <div>
+                  <div className="text-[14px] font-semibold text-ink">
+                    Your {planInfo.name} plan is set to cancel
+                  </div>
+                  <div className="text-[12px] text-ink-40 mt-0.5">
+                    You'll keep full access until {new Date(profile.subscription_period_end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}. After that, you'll be moved to the Free plan.
+                  </div>
+                </div>
+              </div>
+              <Link href="/pricing" className="btn btn-gold shrink-0 text-[13px] py-2 px-5">
+                Resubscribe →
+              </Link>
+            </div>
+          )}
+
           {resumesLoading && resumes.length === 0 ? (
             <div className="flex items-center justify-center h-[300px]"><div className="spinner" style={{ color: 'var(--gold)' }} /></div>
           ) : resumes.length === 0 ? (
@@ -434,10 +486,24 @@ export default function DashboardPage() {
 
       {cancelConfirm && (
         <div className="modal-overlay" onClick={() => setCancelConfirm(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 420 }}>
+          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
             <h3 className="mb-2">Cancel Subscription?</h3>
-            <p className="text-sm text-ink-40 mb-2">Your subscription will be cancelled at the end of the current billing period. You'll keep access until then.</p>
-            <p className="text-[12px] text-ink-30 mb-6">After cancellation, your plan will revert to Free with limited features.</p>
+            {profile?.subscription_period_end ? (
+              <p className="text-sm text-ink-40 mb-2">
+                Your subscription will remain active until <strong className="text-ink">{new Date(profile.subscription_period_end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>. After that, you'll be moved to the Free plan.
+              </p>
+            ) : (
+              <p className="text-sm text-ink-40 mb-2">Your subscription will be cancelled at the end of the current billing period. You'll keep access until then.</p>
+            )}
+            <div className="p-3 rounded-lg bg-ink-05 border border-ink-10 mb-5">
+              <p className="text-[12px] text-ink-40 m-0 leading-relaxed">
+                <strong className="text-ink-70">What happens next:</strong><br />
+                • You keep full {planInfo.name} access until the period ends<br />
+                • No more charges after cancellation<br />
+                • Your resumes and data are preserved<br />
+                • You can resubscribe anytime
+              </p>
+            </div>
             <div className="flex gap-2.5">
               <button
                 className="btn btn-danger flex-1"
@@ -458,9 +524,9 @@ export default function DashboardPage() {
                   }
                 }}
               >
-                {cancelLoading ? 'Cancelling…' : 'Yes, Cancel'}
+                {cancelLoading ? 'Cancelling…' : 'Yes, Cancel Subscription'}
               </button>
-              <button className="btn btn-outline flex-1" onClick={() => setCancelConfirm(false)}>Keep Plan</button>
+              <button className="btn btn-outline flex-1" onClick={() => setCancelConfirm(false)}>Keep My Plan</button>
             </div>
           </div>
         </div>

@@ -30,7 +30,7 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/')
+    // ProtectedRoute detects null user and redirects to /auth
   }
 
   const isActive = (path: string) => pathname === path
