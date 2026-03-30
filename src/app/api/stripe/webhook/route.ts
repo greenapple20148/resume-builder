@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { getStripe } from '@/lib/server/stripe'
 import { getSupabaseAdmin } from '@/lib/server/supabase-admin'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2023-10-16' as any })
 
 async function sendEmail(payload: Record<string, unknown>) {
     try {
@@ -31,7 +30,7 @@ export async function POST(request: NextRequest) {
     let event: Stripe.Event
 
     try {
-        event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET || '')
+        event = getStripe().webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET || '')
     } catch (err: any) {
         return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 })
     }
@@ -65,7 +64,7 @@ export async function POST(request: NextRequest) {
             }
 
             const subscriptionId = session.subscription as string
-            const subscription = await stripe.subscriptions.retrieve(subscriptionId) as any
+            const subscription = await getStripe().subscriptions.retrieve(subscriptionId) as any
             const plan = subscription.metadata?.plan || 'pro'
             const supabaseUserId = subscription.metadata?.supabase_user_id
 
@@ -109,8 +108,8 @@ export async function POST(request: NextRequest) {
         case 'customer.subscription.deleted': {
             const subscription = event.data.object as Stripe.Subscription
             const customerId = subscription.customer as string
-            const activeSubs = await stripe.subscriptions.list({ customer: customerId, status: 'active', limit: 1 })
-            const trialSubs = await stripe.subscriptions.list({ customer: customerId, status: 'trialing', limit: 1 })
+            const activeSubs = await getStripe().subscriptions.list({ customer: customerId, status: 'active', limit: 1 })
+            const trialSubs = await getStripe().subscriptions.list({ customer: customerId, status: 'trialing', limit: 1 })
 
             if (activeSubs.data.length === 0 && trialSubs.data.length === 0) {
                 await supabaseAdmin.from('profiles').update({ plan: 'free', subscription_status: 'cancelled', stripe_subscription_id: null }).eq('stripe_customer_id', customerId)

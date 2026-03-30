@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
+import { getStripe } from '@/lib/server/stripe'
 import { getSupabaseAdmin, getSupabaseUser, extractToken } from '@/lib/server/supabase-admin'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2023-10-16' as any })
 
 export async function POST(request: NextRequest) {
     try {
@@ -24,7 +23,7 @@ export async function POST(request: NextRequest) {
             throw new Error('No active subscription found.')
         }
 
-        const subscription = await stripe.subscriptions.update(profile.stripe_subscription_id, { cancel_at_period_end: true }) as any
+        const subscription = await getStripe().subscriptions.update(profile.stripe_subscription_id, { cancel_at_period_end: true }) as any
 
         const periodEnd = new Date(subscription.current_period_end * 1000)
         const periodEndISO = periodEnd.toISOString()

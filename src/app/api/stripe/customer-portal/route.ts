@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
+import { getStripe } from '@/lib/server/stripe'
 import { getSupabaseAdmin, getSupabaseUser, extractToken } from '@/lib/server/supabase-admin'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2023-10-16' as any })
 
 export async function POST(request: NextRequest) {
     try {
@@ -24,7 +23,7 @@ export async function POST(request: NextRequest) {
         if (!profile?.stripe_customer_id) return NextResponse.json({ error: 'No Stripe customer found' }, { status: 404 })
 
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://resumebuildin.com'
-        const portalSession = await stripe.billingPortal.sessions.create({
+        const portalSession = await getStripe().billingPortal.sessions.create({
             customer: profile.stripe_customer_id,
             return_url: `${appUrl}/dashboard`,
         })

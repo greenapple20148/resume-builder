@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
+import { getStripe } from '@/lib/server/stripe'
 import { getSupabaseAdmin, getSupabaseUser, extractToken } from '@/lib/server/supabase-admin'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2023-10-16' as any })
 
 export async function POST(request: NextRequest) {
     try {
@@ -24,8 +23,8 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ plan: profile?.plan || 'free', synced: false })
         }
 
-        const subscriptions = await stripe.subscriptions.list({ customer: profile.stripe_customer_id, status: 'active', limit: 10 })
-        const trialSubs = await stripe.subscriptions.list({ customer: profile.stripe_customer_id, status: 'trialing', limit: 10 })
+        const subscriptions = await getStripe().subscriptions.list({ customer: profile.stripe_customer_id, status: 'active', limit: 10 })
+        const trialSubs = await getStripe().subscriptions.list({ customer: profile.stripe_customer_id, status: 'trialing', limit: 10 })
         const allSubs = [...subscriptions.data, ...trialSubs.data]
 
         if (allSubs.length === 0) {

@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
+import { getStripe } from '@/lib/server/stripe'
 import { getSupabaseAdmin, getSupabaseUser, extractToken } from '@/lib/server/supabase-admin'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2023-10-16' as any })
 
 function resolvePriceId(plan: string, billing: string): string | null {
     const map: Record<string, string> = {
@@ -62,7 +61,7 @@ export async function POST(request: NextRequest) {
 
         let customerId = profile?.stripe_customer_id
         if (!customerId) {
-            const customer = await stripe.customers.create({
+            const customer = await getStripe().customers.create({
                 email: profile?.email || user.email,
                 name: profile?.full_name || undefined,
                 metadata: { supabase_user_id: user.id },
@@ -70,17 +69,17 @@ export async function POST(request: NextRequest) {
             customerId = customer.id
             await supabaseAdmin.from('profiles').update({ stripe_customer_id: customerId }).eq('id', user.id)
         } else {
-            const existingSubs = await stripe.subscriptions.list({ customer: customerId, status: 'active' })
-            const trialSubs = await stripe.subscriptions.list({ customer: customerId, status: 'trialing' })
+            const existingSubs = await getStripe().subscriptions.list({ customer: customerId, status: 'active' })
+            const trialSubs = await getStripe().subscriptions.list({ customer: customerId, status: 'trialing' })
             for (const sub of [...existingSubs.data, ...trialSubs.data]) {
-                await stripe.subscriptions.cancel(sub.id)
+                await getStripe().subscriptions.cancel(sub.id)
             }
         }
 
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://resumebuildin.com'
         const trialPeriodDays = clientTrialDays || getTrialDays(plan) || undefined
 
-        const session = await stripe.checkout.sessions.create({
+        const session = await getStripe().checkout.sessions.create({
             customer: customerId,
             mode: 'subscription',
             payment_method_types: ['card'],
