@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useSEO } from '@/lib/useSEO'
 import { useTheme } from '@/lib/useTheme'
 import { toast } from '../components/Toast'
-import { invokeEdgeFunction } from '@/lib/supabase'
 import { LandingIcon } from '../components/LandingIcons'
 
 export default function ContactPage() {
@@ -21,12 +20,9 @@ export default function ContactPage() {
         e.preventDefault()
         setSending(true)
         try {
-            // Contact form may not require auth — use direct fetch
-            const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-            const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-            const res = await fetch(`${supabaseUrl}/functions/v1/contact-form`, {
+            const res = await fetch('/api/contact', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'apikey': anonKey },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...form, _hp: honeypot, _ts: loadedAt.current }),
             })
             const data = await res.json()
@@ -63,7 +59,7 @@ export default function ContactPage() {
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
                         )}
                     </button>
-                    <Link href="/" className="btn btn-ghost btn-sm">← Back</Link>
+                    <a href="/" className="btn btn-ghost btn-sm">← Back</a>
                 </div>
             </header>
 
@@ -78,7 +74,7 @@ export default function ContactPage() {
                 {/* Contact cards */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 24, marginBottom: 48 }}>
                     {[
-                        { icon: 'mail', title: 'Email', detail: 'hello@resumebuildin.com', sub: 'We reply within 24 hours' },
+                        { icon: 'mail', title: 'Email', detail: 'info@solidlabsai.com', sub: 'We reply within 24 hours' },
                         { icon: 'message-circle', title: 'Live Chat', detail: 'Available 9am–6pm EST', sub: 'Mon – Fri' },
                         { icon: 'twitter', title: 'Twitter / X', detail: '@resumebuildin', sub: 'DMs open' },
                     ].map(c => (

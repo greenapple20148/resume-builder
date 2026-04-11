@@ -1,6 +1,7 @@
 'use client'
 // src/lib/expressUnlock.ts — Express 24h Unlock logic
 import { supabase, invokeEdgeFunction, getAccessToken } from './supabase'
+
 import type { Profile } from '../types'
 
 const EXPRESS_DURATION_MS = 24 * 60 * 60 * 1000  // 24 hours
@@ -34,6 +35,7 @@ export function formatExpressCountdown(remainingMs: number): string {
 
 /**
  * Get the effective plan considering the Express Unlock.
+ * Priority: paid plan → Express Unlock (pro) → free.
  * If the user is on ``free`` and Express Unlock is active, they get ``pro`` level access.
  * If the user is already on a paid plan, Express Unlock has no extra effect.
  */

@@ -51,31 +51,44 @@ export async function getAccessToken(): Promise<string> {
 }
 
 /**
- * Call a Supabase Edge Function via direct fetch — bypasses supabase.functions.invoke
- * which internally calls getSession() and can deadlock.
+ * Call a Next.js API route with the user's access token.
+ * Maps old edge function names to new API route paths.
  */
+const ROUTE_MAP: Record<string, string> = {
+  'create-checkout': '/api/stripe/create-checkout',
+  'customer-portal': '/api/stripe/customer-portal',
+  'verify-subscription': '/api/stripe/verify-subscription',
+  'cancel-subscription': '/api/stripe/cancel-subscription',
+  'purchase-express-unlock': '/api/stripe/purchase-express-unlock',
+  'purchase-mock-pack': '/api/stripe/purchase-mock-pack',
+  'ai-mock-interview': '/api/ai/mock-interview',
+  'parse-resume': '/api/ai/parse-resume',
+  'contact-form': '/api/contact',
+  'send-email': '/api/email/send',
+}
+
 export async function invokeEdgeFunction<T = any>(
   functionName: string,
   options?: { body?: any; timeoutMs?: number }
 ): Promise<T> {
   const accessToken = await getAccessToken()
+  const routePath = ROUTE_MAP[functionName] || `/api/${functionName}`
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), options?.timeoutMs ?? 15000)
 
   try {
-    const res = await fetch(`${supabaseUrl}/functions/v1/${functionName}`, {
+    const res = await fetch(routePath, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`,
-        'apikey': supabaseAnonKey,
       },
       body: options?.body ? JSON.stringify(options.body) : undefined,
       signal: controller.signal,
     })
 
     const data = await res.json()
-    if (!res.ok) throw new Error(data.error || `Edge function error (${res.status})`)
+    if (!res.ok) throw new Error(data.error || `API error (${res.status})`)
     return data as T
   } catch (err: any) {
     if (err?.name === 'AbortError') throw new Error('Request timed out. Please try again.')

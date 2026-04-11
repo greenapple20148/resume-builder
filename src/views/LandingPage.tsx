@@ -156,6 +156,10 @@ function FoundingMemberOffer({ spotsLeft, setSpotsLeft }: { spotsLeft: number; s
                 href="/auth?mode=signup&offer=founding"
                 id="founding-offer-cta"
                 className="inline-flex items-center justify-center gap-2.5 px-10 py-4 rounded-xl text-[16px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden group"
+                onClick={() => {
+                  localStorage.setItem('resumebuildin_offer', 'founding')
+                  localStorage.setItem('resumebuildin_pending_plan', JSON.stringify({ plan: 'founding', billing: 'annual' }))
+                }}
                 style={{
                   background: 'linear-gradient(135deg, #c9923c 0%, #e8b76a 50%, #c9923c 100%)',
                   backgroundSize: '200% 200%',
@@ -202,7 +206,7 @@ function FoundingMemberOffer({ spotsLeft, setSpotsLeft }: { spotsLeft: number; s
 export default function LandingPage() {
   useSEO({
     title: 'ResumeBuildIn — Build Resumes That Get You Hired',
-    description: 'Build beautiful, ATS-optimized resumes in minutes. Choose from 30 professional themes, use the live editor, and download perfect PDFs instantly. Free forever.',
+    description: 'Build beautiful, ATS-optimized resumes in minutes. Choose from 50 professional themes, use the live editor, and download perfect PDFs instantly. Free forever.',
     path: '/',
   })
 
@@ -238,7 +242,7 @@ export default function LandingPage() {
           <div className="text-center lg:text-left">
             <div className="inline-flex items-center gap-2.5 text-[13px] text-ink-40 mb-6 font-mono">
               <span className="badge badge-gold">New</span>
-              30 themes just dropped
+              50 themes just dropped
             </div>
             <h1 className="text-[clamp(48px,7vw,88px)] leading-[1.0] mb-5">
               Resumes that<br />
@@ -249,7 +253,7 @@ export default function LandingPage() {
               professionally designed themes, fill in your details, download instantly.
             </p>
             <div className="flex gap-3 flex-wrap justify-center lg:justify-start">
-              <Link href="/auth?mode=signup" className="btn btn-gold btn-lg">Build My Resume — Free</Link>
+              <a href="/auth?mode=signup" className="btn btn-gold btn-lg">Build My Resume — Free</a>
               <Link href="/themes" className="btn btn-outline btn-lg">Browse Themes →</Link>
             </div>
             <p className="text-xs text-ink-20 mt-3.5 font-mono">No credit card required · Free plan forever</p>
@@ -331,20 +335,38 @@ export default function LandingPage() {
 
           <div className="relative">
             <div className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden shadow-xl animate-[float_6s_ease-in-out_infinite]">
-              <div className="h-16 bg-gradient-to-br from-ink to-ink-70" />
+              {/* Header bar with accent */}
+              <div className="h-16 bg-gradient-to-br from-ink to-ink-70 flex items-end px-6 pb-2">
+                <span className="text-[9px] font-mono tracking-widest uppercase text-[rgba(250,248,243,0.35)]">Live Preview</span>
+              </div>
               <div className="p-6">
+                {/* Name bar */}
                 <div className="h-3.5 bg-[#d4d0ca] rounded-sm mb-2 w-[65%]" />
                 <div className="h-[9px] bg-ink-10 rounded-sm w-[40%]" />
-                <div className="h-px bg-[#e8e4de] my-3" />
+                {/* Gold accent divider */}
+                <div className="h-[2px] bg-gold my-3 w-[30%] rounded-full opacity-60" />
+                {/* Summary lines */}
+                <div className="flex items-center gap-2 mb-[6px]">
+                  <span className="text-[8px] font-mono tracking-widest uppercase text-ink-20 w-[46px] shrink-0">Summary</span>
+                  <div className="h-px bg-ink-10 flex-1" />
+                </div>
                 <div className="h-2 bg-ink-10 rounded-sm mb-[5px] w-[80%]" />
                 <div className="h-2 bg-ink-10 rounded-sm mb-[5px] w-[70%]" />
                 <div className="h-2 bg-ink-10 rounded-sm w-[90%]" />
-                <div className="h-px bg-[#e8e4de] my-3" />
+                {/* Experience section */}
+                <div className="flex items-center gap-2 mt-4 mb-[6px]">
+                  <span className="text-[8px] font-mono tracking-widest uppercase text-ink-20 w-[64px] shrink-0">Experience</span>
+                  <div className="h-px bg-ink-10 flex-1" />
+                </div>
                 <div className="h-2.5 bg-[#d4d0ca] rounded-sm mb-2 w-[50%]" />
                 <div className="h-2 bg-ink-10 rounded-sm mb-[5px] w-[80%]" />
                 <div className="h-2 bg-ink-10 rounded-sm mb-[5px] w-[75%]" />
                 <div className="h-2 bg-ink-10 rounded-sm w-[85%]" />
-                <div className="h-px bg-[#e8e4de] my-3" />
+                {/* Skills section */}
+                <div className="flex items-center gap-2 mt-4 mb-[6px]">
+                  <span className="text-[8px] font-mono tracking-widest uppercase text-ink-20 w-[34px] shrink-0">Skills</span>
+                  <div className="h-px bg-ink-10 flex-1" />
+                </div>
                 <div className="flex gap-1.5">
                   <div className="h-5 w-[55px] bg-[#e8e4de] rounded-sm" />
                   <div className="h-5 w-[45px] bg-[#e8e4de] rounded-sm" />
@@ -353,7 +375,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="absolute right-[-20px] top-1/2 -translate-y-1/2 flex-col gap-2.5 hidden lg:flex">
-              {['✓ ATS Friendly', 'Instant PDF', '✦ 30 Themes'].map((text, i) => (
+              {['✓ ATS Friendly', 'Instant PDF', '✦ 50 Themes'].map((text, i) => (
                 <div key={i} className="bg-[var(--white)] border border-ink-10 rounded-full px-3.5 py-2 text-xs font-medium text-ink shadow-md whitespace-nowrap animate-[slideInRight_0.6s_ease_both]" style={{ animationDelay: `${i * 0.3}s` }}>
                   {text}
                 </div>
@@ -362,9 +384,106 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── BEFORE / AFTER HERO ──────────────── */}
+        <section aria-label="Resume transformation" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
+          <div className="text-center max-w-[620px] mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold mb-4 opacity-70">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              The Difference
+            </div>
+            <h2 className="mb-3">From overlooked<br /><em className="italic text-gold">to interview-ready</em></h2>
+            <p className="text-base text-ink-40">See how ResumeBuildIn transforms an everyday resume into something recruiters actually want to read.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 lg:gap-0 items-stretch">
+            {/* Before */}
+            <div className="relative p-6 sm:p-8 rounded-2xl border-2 border-dashed border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.02)]">
+              <div className="absolute -top-3 left-6 px-3 py-1 rounded-full text-[11px] font-mono font-bold tracking-wider uppercase bg-[rgba(239,68,68,0.1)] text-[#ef4444] border border-[rgba(239,68,68,0.2)]">Before</div>
+              <div className="mt-4 space-y-3">
+                <div className="h-4 bg-[rgba(239,68,68,0.08)] rounded w-[55%]" />
+                <div className="h-2.5 bg-[rgba(239,68,68,0.06)] rounded w-[35%]" />
+                <div className="h-px bg-[rgba(239,68,68,0.1)] my-4" />
+                {['Responsible for stuff at company',
+                  'Worked on many projects',
+                  'Helped team with various tasks',
+                  'Did sales and marketing things',
+                ].map((text, i) => (
+                  <div key={i} className="flex items-start gap-2.5">
+                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[rgba(239,68,68,0.3)] flex-shrink-0" />
+                    <span className="text-[13px] text-ink-30 leading-relaxed">{text}</span>
+                  </div>
+                ))}
+                <div className="h-px bg-[rgba(239,68,68,0.1)] my-4" />
+                <div className="flex gap-1.5 flex-wrap">
+                  {['Word', 'Excel', 'Emails'].map((s, i) => (
+                    <span key={i} className="text-[10px] px-2 py-1 rounded bg-[rgba(239,68,68,0.06)] text-ink-30 border border-[rgba(239,68,68,0.1)]">{s}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-6 flex items-center gap-2 text-[12px] font-mono text-[#ef4444]">
+                <LandingIcon name="trend-down" size={14} />
+                <span>ATS Score: 23/100 — Rejected by most systems</span>
+              </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="flex items-center justify-center lg:px-4">
+              <div className="hidden lg:flex flex-col items-center gap-2">
+                <div className="w-px h-12 bg-gradient-to-b from-transparent via-gold to-transparent opacity-40" />
+                <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center shadow-[0_0_20px_rgba(201,146,60,0.3)]">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                </div>
+                <div className="w-px h-12 bg-gradient-to-b from-transparent via-gold to-transparent opacity-40" />
+              </div>
+              <div className="lg:hidden flex items-center justify-center gap-2">
+                <div className="h-px w-12 bg-gradient-to-r from-transparent via-gold to-transparent opacity-40" />
+                <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center shadow-[0_0_20px_rgba(201,146,60,0.3)]">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14" /><path d="m5 12 7 7 7-7" /></svg>
+                </div>
+                <div className="h-px w-12 bg-gradient-to-r from-transparent via-gold to-transparent opacity-40" />
+              </div>
+            </div>
+
+            {/* After */}
+            <div className="relative p-6 sm:p-8 rounded-2xl border-2 border-[rgba(34,197,94,0.2)] bg-[rgba(34,197,94,0.02)] shadow-[0_0_40px_-12px_rgba(34,197,94,0.1)]">
+              <div className="absolute -top-3 left-6 px-3 py-1 rounded-full text-[11px] font-mono font-bold tracking-wider uppercase bg-[rgba(34,197,94,0.1)] text-[#22c55e] border border-[rgba(34,197,94,0.2)]">After</div>
+              <div className="mt-4 space-y-3">
+                <div className="h-4 bg-gold rounded w-[60%]" style={{ opacity: 0.3 }} />
+                <div className="h-2.5 bg-[rgba(34,197,94,0.12)] rounded w-[40%]" />
+                <div className="h-[2px] bg-gold my-4 w-[30%] rounded-full opacity-40" />
+                {['Drove $2.4M revenue increase (↑34%) by redesigning the onboarding funnel',
+                  'Led cross-functional team of 8 engineers to ship product 3 weeks early',
+                  'Reduced customer churn by 18% through data-driven retention strategies',
+                  'Managed $500K annual budget and negotiated 22% vendor cost savings',
+                ].map((text, i) => (
+                  <div key={i} className="flex items-start gap-2.5">
+                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[rgba(34,197,94,0.5)] flex-shrink-0" />
+                    <span className="text-[13px] text-ink leading-relaxed font-medium">{text}</span>
+                  </div>
+                ))}
+                <div className="h-[2px] bg-[rgba(34,197,94,0.1)] my-4" />
+                <div className="flex gap-1.5 flex-wrap">
+                  {['Revenue Growth', 'Cross-Functional Leadership', 'Data Analytics', 'P&L Management', 'Agile'].map((s, i) => (
+                    <span key={i} className="text-[10px] px-2 py-1 rounded bg-[rgba(34,197,94,0.06)] text-ink font-medium border border-[rgba(34,197,94,0.15)]">{s}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-6 flex items-center gap-2 text-[12px] font-mono text-[#22c55e]">
+                <LandingIcon name="trend-up" size={14} />
+                <span>ATS Score: 96/100 — Passes all major systems</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-10">
+            <Link href="/auth?mode=signup" className="btn btn-gold btn-lg">Transform My Resume →</Link>
+            <p className="text-xs text-ink-20 mt-3 font-mono">AI-powered bullet points · Instant optimization</p>
+          </div>
+        </section>
 
 
-        {/* ── FEATURES ─────────────────────────── */}
+
+        {/* ── FEATURES ─────────────────────── */}
         <section aria-label="Features" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
           <div className="text-center max-w-[620px] mx-auto mb-14">
             <h2 className="mb-3">Built for interviews,<br /><em className="italic text-gold">not just downloads</em></h2>
@@ -403,7 +522,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── ADVANCED AI FEATURES ───────────── */}
-        <section aria-label="Advanced AI Features" className="bg-[#0e0d0b] dark:bg-[#0e0d0b] px-5 sm:px-10 py-16 sm:py-24">
+        <section aria-label="Advanced AI Features" className="bg-[#0e0d0b] dark:bg-[#0e0d0b] px-5 sm:px-10 py-16 sm:py-24 mt-16 sm:mt-24">
           <div className="max-w-[1200px] mx-auto">
             <div className="text-center max-w-[620px] mx-auto mb-14">
               <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-4 opacity-70">
@@ -446,7 +565,7 @@ export default function LandingPage() {
         {/* ── THEME SHOWCASE ───────────────────── */}
         <section aria-label="Theme showcase" className="bg-ink-05 px-5 sm:px-10 py-16 sm:py-24">
           <div className="text-center max-w-[560px] mx-auto mb-14">
-            <h2 className="mb-3">30 themes.<br /><em className="italic text-gold">One perfect fit.</em></h2>
+            <h2 className="mb-3">50 themes.<br /><em className="italic text-gold">One perfect fit.</em></h2>
             <p className="text-base text-ink-40">From minimalist to bold — every style has its place.</p>
           </div>
           <div className="flex gap-3.5 max-w-[1200px] mx-auto overflow-x-auto pb-2">
@@ -467,9 +586,10 @@ export default function LandingPage() {
             ))}
           </div>
           <div className="text-center mt-8">
-            <Link href="/themes" className="btn btn-outline btn-lg">View All 30 Themes →</Link>
+            <Link href="/themes" className="btn btn-outline btn-lg">View All 50 Themes →</Link>
           </div>
         </section>
+
 
         {/* ── HOW IT WORKS ─────────────────────── */}
         <section aria-label="How it works" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
@@ -478,7 +598,7 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
             {[
-              { n: '01', title: 'Pick a theme', desc: 'Browse 30 professional designs and select the one that matches your style and industry.' },
+              { n: '01', title: 'Pick a theme', desc: 'Browse 50 professional designs and select the one that matches your style and industry.' },
               { n: '02', title: 'Fill in your details', desc: 'Our smart editor guides you through each section. Add experience, skills, education and more.' },
               { n: '03', title: 'Download & apply', desc: 'Export a pixel-perfect PDF instantly. Share your public link or send the file directly.' },
             ].map((step, i) => (
@@ -562,7 +682,7 @@ export default function LandingPage() {
               {[
                 { icon: 'zap', title: 'Under 10 Minutes', desc: 'Build a polished, job-ready resume faster than making coffee.' },
                 { icon: 'folders', title: 'Unlimited Versions', desc: 'Tailor a unique resume for every job — no limits, ever.' },
-                { icon: 'layers', title: 'Instant Format Switch', desc: 'Switch between 30 themes without losing a single word.' },
+                { icon: 'layers', title: 'Instant Format Switch', desc: 'Switch between 50 themes without losing a single word.' },
                 { icon: 'file-text', title: 'One-Click Formatting', desc: 'Clean, consistent formatting applied automatically.' },
                 { icon: 'bar-chart', title: 'Live Resume Score', desc: 'See your score update in real-time as you edit.' },
                 { icon: 'target', title: 'ATS Compliance Check', desc: 'Every export is tested for applicant tracking systems.' },
@@ -648,7 +768,7 @@ export default function LandingPage() {
         </div>
         <div className="max-w-[1200px] mx-auto py-6 flex flex-col sm:flex-row justify-between text-xs text-[rgba(250,248,243,0.25)] dark:text-[rgba(250,248,243,0.4)] font-mono gap-2">
           <span>© 2026 ResumeBuildIn. All rights reserved.</span>
-          <span>Resume BuildIn is operated by RZeal Solutions,  United States.</span>
+          <span>Resume BuildIn is operated by SolidLabs LLC,  United States.</span>
         </div>
       </footer>
     </div>

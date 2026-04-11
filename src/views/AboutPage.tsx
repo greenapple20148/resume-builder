@@ -32,7 +32,7 @@ export default function AboutPage() {
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
                         )}
                     </button>
-                    <Link href="/" className="btn btn-ghost btn-sm">← Back</Link>
+                    <a href="/" className="btn btn-ghost btn-sm">← Back</a>
                 </div>
             </header>
 
@@ -72,7 +72,7 @@ export default function AboutPage() {
 
                     <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(22px, 3vw, 28px)', fontWeight: 300, color: 'var(--ink)', paddingTop: 24, lineHeight: 1.1 }}>Get in Touch</h2>
                     <p style={{ margin: 0 }}>
-                        Have questions, feedback, or partnership inquiries? We{"'"}d love to hear from you at <a href="mailto:hello@resumebuildin.com" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>hello@resumebuildin.com</a>.
+                        Have questions, feedback, or partnership inquiries? We{"'"}d love to hear from you at <a href="mailto:info@solidlabsai.com" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>info@solidlabsai.com</a>.
                     </p>
                 </div>
             </main>

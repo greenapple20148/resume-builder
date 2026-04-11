@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Navbar from '../components/Navbar'
 import { useStore } from '@/lib/store'
-import { PLANS, verifySubscription } from '@/lib/stripe'
+import { PLANS, verifySubscription, createCheckoutSession } from '@/lib/stripe'
+import { toast } from '../components/Toast'
 import { LandingIcon } from '../components/LandingIcons'
 
 const CONFETTI_COLORS = ['#c9923c', '#d4b96a', '#e8d5a3', '#4caf7a', '#64b5f6', '#f87171', '#a78bfa']
@@ -39,6 +40,22 @@ export default function WelcomePage() {
     }, [user?.id])
 
     useEffect(() => { const timer = setTimeout(() => setShowContent(true), 300); return () => clearTimeout(timer) }, [])
+
+    // Auto-resume pending checkout if user arrived from pricing → signup → welcome
+    useEffect(() => {
+        const raw = localStorage.getItem('resumebuildin_pending_plan')
+        if (!raw || !user) return
+        try {
+            const { plan, billing } = JSON.parse(raw)
+            localStorage.removeItem('resumebuildin_pending_plan')
+            if (plan && plan !== 'free') {
+                toast.info(`Resuming your ${plan === 'founding' ? 'Founding Member' : plan} checkout…`)
+                createCheckoutSession(plan, billing || 'annual')
+                    .then(({ url }) => { if (url) window.location.href = url })
+                    .catch(() => toast.error('Could not start checkout. Please try from the pricing page.'))
+            }
+        } catch { localStorage.removeItem('resumebuildin_pending_plan') }
+    }, [user])
 
     const planId = verifiedPlan || profile?.plan || 'free'
     const isPaid = planId !== 'free'
@@ -144,7 +161,7 @@ export default function WelcomePage() {
                     <Link href={isPaid ? '/dashboard' : '/editor/new'} className="btn btn-gold btn-lg">
                         {isPaid ? 'Go to Dashboard →' : 'Build My Resume →'}
                     </Link>
-                    <p className="text-[13px] text-ink-20 mt-4">Need help? Reach us at <a href="mailto:support@resumebuildin.io" className="text-gold no-underline hover:underline">support@resumebuildin.io</a></p>
+                    <p className="text-[13px] text-ink-20 mt-4">Need help? Reach us at <a href="mailto:support@solidlabsai.com" className="text-gold no-underline hover:underline">support@solidlabsai.com</a></p>
                 </div>
             </div>
         </div>

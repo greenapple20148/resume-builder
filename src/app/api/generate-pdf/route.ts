@@ -7,10 +7,81 @@ export const maxDuration = 30
 async function getChromiumExecutable() {
     // In production (Vercel), use @sparticuz/chromium
     if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-        const chromium = await import('@sparticuz/chromium')
-        return {
-            executablePath: await chromium.default.executablePath(),
-            args: chromium.default.args,
+        try {
+            const chromium = await import('@sparticuz/chromium')
+            // Cast to any because @sparticuz/chromium has runtime methods not in the types
+            const mod = (chromium.default || chromium) as any
+
+            // TC-046 fix: @sparticuz/chromium v143+ changed binary discovery.
+            // Ensure headless mode is set for serverless environments.
+            if (typeof mod.setHeadlessMode !== 'undefined') {
+                mod.setHeadlessMode = true
+            }
+
+            // Some versions need graphics mode disabled
+            if (typeof mod.setGraphicsMode !== 'undefined') {
+                mod.setGraphicsMode = false
+            }
+
+            let executablePath: string
+            try {
+                // First try default path resolution
+                executablePath = await mod.executablePath()
+            } catch (defaultPathErr: any) {
+                // TC-046 fix: If default path fails (bin/ directory not found),
+                // try multiple fallback strategies to locate the binary
+                console.warn('[generate-pdf] Default chromium path failed:', defaultPathErr?.message)
+                const path = await import('path')
+                const fs = await import('fs')
+
+                // Strategy 1: resolve via package.json location
+                const binCandidates: string[] = []
+                try {
+                    // Use eval to prevent Next.js webpack from statically analyzing this require
+                    const pkgPath = eval('require').resolve('@sparticuz/chromium/package.json')
+                    binCandidates.push(path.join(path.dirname(pkgPath), 'bin'))
+                } catch { /* package.json not resolvable */ }
+
+                // Strategy 2: check common serverless paths
+                binCandidates.push(
+                    '/var/task/node_modules/@sparticuz/chromium/bin',
+                    '/opt/nodejs/node_modules/@sparticuz/chromium/bin',
+                    path.join(process.cwd(), 'node_modules/@sparticuz/chromium/bin'),
+                )
+
+                let resolved = false
+                for (const binPath of binCandidates) {
+                    try {
+                        if (fs.existsSync(binPath)) {
+                            console.log('[generate-pdf] Trying bin path:', binPath)
+                            executablePath = await mod.executablePath(binPath)
+                            resolved = true
+                            break
+                        }
+                    } catch { /* continue to next candidate */ }
+                }
+
+                if (!resolved) {
+                    console.error('[generate-pdf] All chromium bin paths failed. Candidates:', binCandidates)
+                    throw new Error(
+                        'Chromium binary not found. The client will fall back to browser Print-to-PDF. ' +
+                        `Searched: ${binCandidates.join(', ')}`
+                    )
+                }
+            }
+            console.log('[generate-pdf] Chromium executable path:', executablePath!)
+
+            return {
+                executablePath: executablePath!,
+                args: mod.args || [],
+            }
+        } catch (chromiumErr: any) {
+            console.error('[generate-pdf] Chromium binary error:', chromiumErr?.message)
+            // TC-046 fix: Return a clear error indicating browser fallback is available
+            throw new Error(
+                `Server-side PDF unavailable: ${chromiumErr?.message}. ` +
+                'The client will use browser Print-to-PDF as a fallback.'
+            )
         }
     }
 
@@ -78,9 +149,19 @@ export async function POST(request: NextRequest) {
         })
     } catch (err: any) {
         console.error('PDF generation failed:', err)
+        const isChromiumError = err?.message?.includes('Chromium') ||
+            err?.message?.includes('chromium') ||
+            err?.message?.includes('browser') ||
+            err?.message?.includes('executablePath') ||
+            err?.message?.includes('Server-side PDF unavailable')
         return NextResponse.json(
-            { error: 'PDF generation failed', message: err?.message || 'Unknown error' },
-            { status: 500 }
+            {
+                error: 'PDF generation failed',
+                message: err?.message || 'Unknown error',
+                fallbackAvailable: true,
+                isChromiumError,
+            },
+            { status: isChromiumError ? 503 : 500 }
         )
     } finally {
         if (browser) {

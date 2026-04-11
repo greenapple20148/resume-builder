@@ -18,6 +18,11 @@ export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null)
   const { user, profile, fetchProfile } = useStore()
   const router = useRouter()
+  // TC-027/TC-028 fix: Prevent SSR/CSR hydration mismatch by deferring render until mounted.
+  // The pricing page renders completely different content based on `user` state (marketing vs.
+  // plan management view), which causes React DOM removeChild errors during hydration.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
 
   const [spotsLeft, setSpotsLeft] = useState<number | null>(null)
 
@@ -61,7 +66,17 @@ export default function PricingPage() {
   })
 
   const handleUpgrade = async (plan: string) => {
-    if (!user) { router.push('/auth?mode=signup'); return }
+    if (!user) {
+      // Save the intended plan so we can auto-resume checkout after signup/login
+      if (plan !== 'free') {
+        const billing = plan === 'founding' ? 'annual' : (annual ? 'annual' : 'monthly')
+        localStorage.setItem('resumebuildin_pending_plan', JSON.stringify({ plan, billing }))
+      }
+      // BUG-008 fix: Use hard navigation instead of client-side router.push
+      // to ensure the pricing page UI is fully replaced by the auth page
+      window.location.href = plan === 'founding' ? '/auth?mode=signup&offer=founding' : '/auth?mode=signup'
+      return
+    }
     if (plan === 'free') return
     if (profile?.plan === plan) { try { setLoading(plan); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) }; return }
     const billing = plan === 'founding' ? 'annual' : (annual ? 'annual' : 'monthly')
@@ -71,7 +86,7 @@ export default function PricingPage() {
   const handleManageBilling = async () => { try { setLoading('portal'); await openCustomerPortal() } catch { toast.error('Could not open billing portal.') } finally { setLoading(null) } }
 
   const handleAddonPurchase = async (addonId: string) => {
-    if (!user) { router.push('/auth?mode=signup'); return }
+    if (!user) { window.location.href = '/auth?mode=signup'; return }
     if (addonId === 'express_unlock') {
       if (isExpressUnlockActive(profile)) {
         toast.info('Express Unlock is already active!')
@@ -81,29 +96,34 @@ export default function PricingPage() {
         toast.info('You already have a paid plan — Express Unlock is for free users.')
         return
       }
+      // BUG-010 fix: Route through dedicated Express Unlock API route.
+      // The create-checkout route only handles subscriptions and doesn't map express_unlock.
       try {
         setLoading('express_unlock')
-        toast.info('Activating Express 24h Unlock…')
-        const result = await purchaseExpressUnlock()
-        if (result.success) {
-          toast.success('Express Unlock activated! Pro features enabled for 24 hours.')
-          if (user) await fetchProfile(user.id)
+        const data = await invokeEdgeFunction<{ url: string }>('purchase-express-unlock')
+        if (data?.url) {
+          window.location.href = data.url
+        } else {
+          throw new Error('No checkout URL returned')
         }
       } catch (err: any) {
-        toast.error(err.message || 'Could not activate Express Unlock.')
+        toast.error(err.message || 'Could not start checkout for Express Unlock.')
       } finally {
         setLoading(null)
       }
       return
     }
     if (addonId === 'mock_pack_3') {
+      // BUG-011 fix: Route through Stripe Checkout instead of direct activation.
+      // The purchase-mock-pack API route returns a checkout URL, not a direct activation result.
       try {
         setLoading('mock_pack_3')
-        toast.info('Purchasing Mock Interview Pack…')
-        const result = await purchaseMockPack()
-        if (result.success) {
-          toast.success(`🎤 Mock Pack purchased! You now have ${result.newTotal} bonus session${result.newTotal !== 1 ? 's' : ''}.`)
-          if (user) await fetchProfile(user.id)
+        toast.info('Opening checkout for Mock Interview Pack…')
+        const data = await invokeEdgeFunction<{ url: string }>('purchase-mock-pack')
+        if (data?.url) {
+          window.location.href = data.url
+        } else {
+          throw new Error('No checkout URL returned')
         }
       } catch (err: any) {
         toast.error(err.message || 'Could not purchase mock pack.')
@@ -137,22 +157,62 @@ export default function PricingPage() {
 
   const FAQ = [
     { q: 'What is ATS and why does it matter?', a: 'ATS stands for Applicant Tracking System — software that 95% of large companies use to filter resumes before a human ever sees them. If your resume isn\'t ATS-compatible, it gets rejected automatically. Every ResumeBuildIn template is engineered to pass ATS scanners with clean formatting, proper headings, and machine-readable text.' },
-    { q: 'What\'s your refund policy?', a: 'We offer a full, no-questions-asked refund within 7 days of any purchase — subscriptions or add-ons. After 7 days, you can cancel anytime and keep access until the end of your billing period, but refunds are not available. Contact support@resumebuildin.io to request a refund.' },
+    { q: 'What\'s your refund policy?', a: 'We offer a full, no-questions-asked refund within 7 days of any purchase — subscriptions or add-ons. After 7 days, you can cancel anytime and keep access until the end of your billing period, but refunds are not available. Contact support@solidlabsai.com to request a refund.' },
     { q: 'Can I cancel anytime?', a: 'Yes. Cancel anytime from your billing portal. You keep full access to all features until the end of your current billing period. No cancellation fees, no penalties.' },
     { q: 'Is there a free trial?', a: 'The Free plan is forever free — build 1 resume with any template. Pro includes a 7-day free trial so you can try all features (unlimited downloads, no watermark, cover letters) before being charged.' },
     { q: "What's the difference between the plans?", a: 'Free gets you started with 1 resume. Pro unlocks unlimited downloads, no watermark, DOCX export, cover letters, and priority support. Premium adds AI mock interviews, interview prep toolkit, and LinkedIn optimization. Career+ gives you 20 mock sessions/month, same-business-day support, JD-based interview prep, and a career intelligence dashboard.' },
     { q: 'What are AI Mock Interviews?', a: 'AI-powered practice sessions where you\'re asked role-specific questions, type your answers, and receive real-time evaluation — including scoring, improvement suggestions, and sample answers. Premium gives 3 sessions/month, Career+ gives 20, and you can buy additional packs anytime.' },
     { q: 'What is Job Description Matching?', a: 'Paste any job description and our AI instantly analyzes how well your resume matches. You\'ll see a match score, missing keywords, and specific suggestions to close the gaps — so you can tailor your resume before you apply.' },
-    { q: 'What are One-Time Add-Ons?', a: 'Boost your job search without changing your plan. Options include a 3-session Mock Interview Pack ($4.99), and the Express 24h Unlock ($2.99) which gives full Pro access for 24 hours — perfect for last-minute applications.' },
+    { q: 'What are One-Time Add-Ons?', a: 'Boost your job search without changing your plan. Options include a 3-session Mock Interview Pack ($12.99), and the Express 24h Unlock ($9.99) which gives full Pro access for 24 hours — perfect for last-minute applications.' },
     { q: 'How does Priority Support work?', a: 'Pro and Premium users get Skip-the-Line Priority Support with a guaranteed 12-hour response time. Career+ users get same-business-day support with front-of-queue priority and direct assistance with resume edits. We guarantee response times Monday–Friday during business hours. No bots. Real help.' },
     { q: 'Can I import my existing resume?', a: 'Yes. Upload a PDF or DOCX file and our AI parser will extract your information — contact details, experience, education, skills — and populate a new ResumeBuildIn resume automatically. You can then edit, enhance, and choose any template.' },
     { q: 'What payment methods do you accept?', a: 'All major credit and debit cards (Visa, Mastercard, Amex), Apple Pay, and Google Pay. All payments are processed securely through Stripe. We never store your card details.' },
     { q: 'Is my data safe and private?', a: 'Your resume data is stored securely with Supabase (built on PostgreSQL with row-level security). We never sell your data, share it with third parties, or use it for training AI models. You can delete your account and all data at any time.' },
     { q: 'How accurate is the AI enhancement?', a: 'Our AI transforms vague bullet points into quantified, metrics-driven achievement statements. You always review and approve every suggestion before it\'s applied — the AI assists, you decide. You can choose between Gemini and Claude as your AI provider.' },
     { q: 'Can I customize the resume themes?', a: 'All 30+ professional templates are fully customizable. Change colors, fonts, spacing, and layout. Pro users unlock all themes. You can even generate custom themes with AI by describing what you want.' },
-    { q: 'What is Express 24h Unlock?', a: 'A one-time purchase ($2.99) that gives you full Pro-level access for 24 hours — unlimited downloads, no watermark, DOCX export, and cover letters. Perfect when you need to submit a polished resume fast without committing to a subscription.' },
-    { q: 'Do you offer team or enterprise plans?', a: 'Not yet, but we\'re working on it. If you\'re a career center, staffing agency, or company interested in bulk licensing, reach out to hello@resumebuildin.com and we\'ll set something up.' },
+    { q: 'What is Express 24h Unlock?', a: 'A one-time purchase ($9.99) that gives you full Pro-level access for 24 hours — unlimited downloads, no watermark, DOCX export, and cover letters. Perfect when you need to submit a polished resume fast without committing to a subscription.' },
+    { q: 'Do you offer team or enterprise plans?', a: 'Not yet, but we\'re working on it. If you\'re a career center, staffing agency, or company interested in bulk licensing, reach out to info@solidlabsai.com and we\'ll set something up.' },
+
   ]
+
+  // TC-029 fix: Interactive FAQ accordion with expand/collapse
+  // TC-029 fix: Use Set to allow multiple FAQ items open simultaneously
+  const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set())
+  const FAQAccordion = () => (
+    <div className="flex flex-col gap-3">
+      {FAQ.map((item, i) => {
+        const isOpen = openFaqs.has(i)
+        return (
+          <div key={i} className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden transition-all">
+            <button
+              className="w-full flex items-center justify-between p-5 bg-transparent border-none cursor-pointer text-left transition-colors hover:bg-ink-05 font-[inherit]"
+              onClick={() => setOpenFaqs(prev => { const next = new Set(prev); if (next.has(i)) next.delete(i); else next.add(i); return next })}
+              aria-expanded={isOpen}
+            >
+              <h4 className="text-[15px] font-semibold text-ink m-0 pr-4">{item.q}</h4>
+              <svg
+                width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                className="shrink-0 text-ink-20 transition-transform"
+                style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transitionDuration: '200ms' }}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div
+              style={{
+                maxHeight: isOpen ? '500px' : '0',
+                opacity: isOpen ? 1 : 0,
+                overflow: 'hidden',
+                transition: 'max-height 300ms ease, opacity 200ms ease',
+              }}
+            >
+              <p className="text-sm text-ink-40 leading-relaxed px-5 pb-5 pt-0 m-0">{item.a}</p>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
 
   const Toggle = () => (
     <div className="inline-flex items-center gap-3.5 text-sm font-medium text-ink-20">
@@ -183,6 +243,18 @@ export default function PricingPage() {
   )
 
   // ── LOGGED-IN → Plan Management View ──
+  if (!mounted) {
+    // TC-027/TC-028 fix: Show loading state during SSR/initial hydration
+    // to prevent removeChild errors from content divergence
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center" style={{ minHeight: '60vh' }}>
+          <div className="spinner" style={{ color: 'var(--gold)' }} />
+        </div>
+      </div>
+    )
+  }
   if (user) {
     return (
       <div className="min-h-screen">
@@ -304,11 +376,11 @@ export default function PricingPage() {
             <div className="text-center p-7 bg-ink-05 rounded-xl mb-10"><p className="text-sm text-ink-40 mb-4">Want to switch to a lower plan? You can downgrade or cancel through the billing portal.</p><button className="btn btn-outline" onClick={handleManageBilling} disabled={loading === 'portal'}>{loading === 'portal' ? 'Opening…' : 'Open Billing Portal'}</button></div>
           )}
 
-          {/* ── One-Time Add-Ons (visible for logged-in users) ── */}
+          {/* ── One-Time Add-Ons (visible for all logged-in users) ── */}
           <div className="mb-10">
             <div className="text-center mb-6"><h2>One-time <em className="italic text-gold">add-ons</em></h2><p className="mt-1.5 text-ink-40 text-sm">Boost your job search without changing your plan.</p></div>
             <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
-              {ADD_ONS.filter(a => a.id !== 'express_unlock').map(addon => (
+              {ADD_ONS.filter(a => currentPlanId !== 'free' ? a.id !== 'express_unlock' : a.id !== 'express_unlock').map(addon => (
                 <div key={addon.id} className="bg-surface border border-border rounded-[14px] p-5 flex flex-col gap-2">
                   <div className="text-gold"><LandingIcon name={addon.icon} size={26} /></div>
                   <div className="font-bold text-sm text-ink">{addon.name}</div>
@@ -333,8 +405,8 @@ export default function PricingPage() {
 
           <div className="py-10">
             <div className="text-center mb-12"><h2>Frequently asked<br /><em className="italic text-gold">questions</em></h2></div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {FAQ.map((item, i) => (<div key={i} className="p-6 bg-[var(--white)] border border-ink-10 rounded-xl"><h4 className="text-base mb-2.5">{item.q}</h4><p className="text-sm text-ink-40 leading-relaxed">{item.a}</p></div>))}
+            <div className="max-w-[800px] mx-auto">
+              <FAQAccordion />
             </div>
           </div>
         </div>
@@ -350,6 +422,7 @@ export default function PricingPage() {
         <h1 className="mb-4">Simple,<br /><em className="italic text-gold">honest pricing</em></h1>
         <p className="text-[17px] text-ink-40 mb-8">Start free. Upgrade when you're ready to land the job.</p>
         <Toggle />
+
       </div>
 
       <div className="flex flex-col md:flex-row gap-5 max-w-[1000px] mx-auto px-5 md:px-10 pb-20 items-start">
@@ -406,7 +479,7 @@ export default function PricingPage() {
 
       <div className="max-w-[900px] mx-auto mb-20 px-5 md:px-10 rounded-xl bg-ink-05 p-8 flex flex-col sm:flex-row items-center justify-between gap-8">
         <div><h3 className="text-[22px] mb-1.5">Need something bigger?</h3><p className="text-sm text-ink-40">Custom seats, SSO, API access, and white-labeling for large organizations.</p></div>
-        <a href="mailto:enterprise@resumebuildin.io" className="btn btn-outline shrink-0">Talk to Sales →</a>
+        <a href="mailto:info@solidlabsai.com" className="btn btn-outline shrink-0">Talk to Sales →</a>
       </div>
 
       {/* Stripe Protection — Refund Policy Link */}
@@ -420,8 +493,8 @@ export default function PricingPage() {
       </div>
       <div className="max-w-[900px] mx-auto px-5 md:px-10 pb-20">
         <div className="text-center mb-12"><h2>Frequently asked<br /><em className="italic text-gold">questions</em></h2></div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {FAQ.map((item, i) => (<div key={i} className="p-6 bg-[var(--white)] border border-ink-10 rounded-xl"><h4 className="text-base mb-2.5">{item.q}</h4><p className="text-sm text-ink-40 leading-relaxed">{item.a}</p></div>))}
+        <div className="max-w-[800px] mx-auto">
+          <FAQAccordion />
         </div>
       </div>
 

@@ -16,7 +16,7 @@ const LEGAL_CONTENT: Record<string, { title: string; seoTitle: string; seoDesc: 
             { heading: 'Data Storage & Security', body: 'Your data is stored securely using industry-standard encryption (AES-256 at rest, TLS 1.3 in transit). Resume content is stored in your account and is only accessible by you. We use Supabase for our database, which provides SOC 2 Type II compliant infrastructure.' },
             { heading: 'Third-Party Services', body: 'We use Stripe for payment processing, Supabase for authentication and data storage, and Vercel for hosting. Each service has its own privacy policy and complies with applicable data protection regulations.' },
             { heading: 'Data Retention', body: 'Your resume data is retained as long as your account is active. Upon account deletion, all associated data is permanently removed within 30 days. You can export or delete your data at any time from your account settings.' },
-            { heading: 'Your Rights', body: 'You have the right to access, correct, export, or delete your personal data. You may also object to processing or request data portability. To exercise these rights, contact us at privacy@resumebuildin.com.' },
+            { heading: 'Your Rights', body: 'You have the right to access, correct, export, or delete your personal data. You may also object to processing or request data portability. To exercise these rights, contact us at info@solidlabsai.com.' },
             { heading: 'Cookies', body: 'We use essential cookies for authentication and session management. We do not use third-party advertising cookies. See our Cookie Policy for more details.' },
             { heading: 'Updates', body: 'We may update this policy periodically. We will notify you of material changes via email or an in-app notification. Continued use of the service after changes constitutes acceptance.' },
         ],
@@ -61,7 +61,7 @@ const LEGAL_CONTENT: Record<string, { title: string; seoTitle: string; seoDesc: 
             { heading: 'Overview', body: 'We want you to feel confident in your purchase. Because our product is a digital service, we offer a 7-day conditional refund policy.' },
             { heading: 'Eligibility for Refund', body: 'You may request a refund within 7 days of purchase if:\n\n• You are unsatisfied with the service\n• You have not excessively downloaded or exported resume templates\n• No resume review or mock interview session has been fully delivered' },
             { heading: 'Non-Refundable Situations', body: 'Refunds will not be issued if:\n\n• A professional resume review has already been completed\n• A mock interview session has been conducted\n• There is evidence of abuse or excessive use of the platform' },
-            { heading: 'How to Request a Refund', body: 'To request a refund, email support@resumebuildin.io with your account email and reason for the request. Please include your order confirmation or receipt if available.' },
+            { heading: 'How to Request a Refund', body: 'To request a refund, email support@solidlabsai.com with your account email and reason for the request. Please include your order confirmation or receipt if available.' },
             { heading: 'Processing Time', body: 'Approved refunds are processed within 5–10 business days. The refund will be returned to the original payment method used at checkout.' },
             { heading: 'Subscription Cancellations', body: 'You may cancel your subscription at any time from your account settings. Cancellation takes effect at the end of the current billing period. No partial refunds are given for unused time in the current billing cycle.' },
         ],
@@ -125,7 +125,7 @@ export default function LegalPage() {
                             </svg>
                         )}
                     </button>
-                    <Link href="/" className="btn btn-ghost btn-sm">← Back</Link>
+                    <a href="/" className="btn btn-ghost btn-sm">← Back</a>
                 </div>
             </header>
 
@@ -161,10 +161,10 @@ export default function LegalPage() {
                 <div style={{ marginTop: 64, paddingTop: 32, borderTop: '1px solid var(--ink-10)' }}>
                     <p style={{ fontSize: 13, color: 'var(--ink-40)', lineHeight: 1.7 }}>
                         If you have questions about this policy, please contact us at{' '}
-                        <a href="mailto:legal@resumebuildin.com" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>legal@resumebuildin.com</a>.
+                        <a href="mailto:info@solidlabsai.com" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>info@solidlabsai.com</a>.
                     </p>
                     <p style={{ fontSize: 13, color: 'var(--ink-40)', lineHeight: 1.7, marginTop: 12 }}>
-                        Resume BuildIn is operated by RZeal Solutions, United States.
+                        Resume BuildIn is operated by SolidLabs LLC, United States.
                     </p>
                 </div>
             </main>

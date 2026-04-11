@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
     productionBrowserSourceMaps: true,
     // External packages for server components
     serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium'],
+    // Ensure @sparticuz/chromium binary files are included in the serverless bundle
+    outputFileTracingIncludes: {
+        '/api/generate-pdf': ['./node_modules/@sparticuz/chromium/**/*'],
+    },
     // Security headers
     async headers() {
         return [

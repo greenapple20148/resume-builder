@@ -15,6 +15,8 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
     const [qrPng, setQrPng] = useState('')
     const [copied, setCopied] = useState(false)
     const [activeTab, setActiveTab] = useState<'qr' | 'link'>('qr')
+    const [shareReady, setShareReady] = useState(false)
+    const [shareError, setShareError] = useState('')
     const inputRef = useRef<HTMLInputElement>(null)
 
     const shareUrl = `${window.location.origin}/resume/${resumeId}`
@@ -22,7 +24,27 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
     useEffect(() => {
         setQrSvg(generateQRCodeSVG(shareUrl, 220, 'var(--ink, #0e0d0b)', 'transparent'))
         setQrPng(generateQRCodeDataURL(shareUrl, 600))
-    }, [shareUrl])
+
+        // BUG-018 fix: Properly await the share API call and handle errors.
+        // The previous fire-and-forget approach silently failed, leaving the resume
+        // not marked as public and causing "Resume not found" for viewers.
+        const markPublic = async () => {
+            try {
+                const res = await fetch(`/api/resume/${resumeId}/share`, { method: 'POST' })
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}))
+                    throw new Error(data.error || `Share failed (${res.status})`)
+                }
+                setShareReady(true)
+            } catch (err: any) {
+                console.error('[share] Failed to mark resume as public:', err)
+                setShareError(err.message || 'Could not enable public sharing. The link may not work.')
+                // Still show the URL — it might work if the resume was already public
+                setShareReady(true)
+            }
+        }
+        markPublic()
+    }, [shareUrl, resumeId])
 
     const handleCopyLink = async () => {
         try {
@@ -88,7 +110,7 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
                         }}
                         onMouseEnter={e => { e.currentTarget.style.background = 'var(--ink-05)'; e.currentTarget.style.color = 'var(--ink)' }}
                         onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--ink-40)' }}
-                    >✕</button>
+                    ><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg></button>
                 </div>
 
                 {/* ── Tabs ── */}
@@ -108,13 +130,34 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
                                 transition: 'all 0.15s', fontFamily: 'var(--font-body)',
                             }}
                         >
-                            {tab === 'qr' ? '◉ QR Code' : '🔗 Link'}
+                            {tab === 'qr' ? (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /></svg>
+                                    QR Code
+                                </span>
+                            ) : (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg>
+                                    Link
+                                </span>
+                            )}
                         </button>
                     ))}
                 </div>
 
                 {/* ── Content ── */}
                 <div style={{ padding: '24px' }}>
+                    {shareError && (
+                        <div style={{
+                            background: 'rgba(239,68,68,0.06)',
+                            border: '1px solid rgba(239,68,68,0.2)',
+                            borderRadius: 10, padding: '10px 14px',
+                            marginBottom: 16, fontSize: 12, color: '#ef4444',
+                            lineHeight: 1.5,
+                        }}>
+                            ⚠️ {shareError}
+                        </div>
+                    )}
                     {activeTab === 'qr' ? (
                         <div style={{ textAlign: 'center' }}>
                             {/* QR Code Display */}
@@ -141,10 +184,10 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
                             {/* QR Actions */}
                             <div style={{ display: 'flex', gap: 8 }}>
                                 <button className="btn btn-gold" onClick={handleDownloadQR} style={{ flex: 1, fontSize: 13 }}>
-                                    ↓ Download QR
+                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg> Download QR</span>
                                 </button>
                                 <button className="btn btn-outline" onClick={handleCopyLink} style={{ flex: 1, fontSize: 13 }}>
-                                    {copied ? '✓ Copied!' : '⎘ Copy Link'}
+                                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>{copied ? <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Copied!</> : <><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg> Copy Link</>}</span>
                                 </button>
                             </div>
                         </div>
@@ -183,7 +226,7 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
                                             whiteSpace: 'nowrap',
                                         }}
                                     >
-                                        {copied ? '✓ Copied' : 'Copy'}
+                                        {copied ? <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg> Copied</span> : 'Copy'}
                                     </button>
                                 </div>
                             </div>
@@ -196,7 +239,7 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                                     <ShareButton
                                         label="Email"
-                                        icon="✉"
+                                        icon="mail"
                                         color="#4A90D9"
                                         onClick={() => window.open(`mailto:?subject=${encodeURIComponent(resumeTitle + ' — Resume')}&body=${encodeURIComponent('Check out my resume: ' + shareUrl)}`)}
                                     />
@@ -209,7 +252,7 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
                                     {typeof navigator.share === 'function' && (
                                         <ShareButton
                                             label="More"
-                                            icon="⋯"
+                                            icon="more"
                                             color="var(--ink-40)"
                                             onClick={handleNativeShare}
                                         />
@@ -224,7 +267,7 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
                                 borderRadius: 10, padding: '10px 14px',
                                 display: 'flex', alignItems: 'flex-start', gap: 8,
                             }}>
-                                <span style={{ fontSize: 14, lineHeight: 1 }}>💡</span>
+                                <span style={{ lineHeight: 1, color: 'var(--gold)', display: 'inline-flex' }}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6" /><path d="M10 22h4" /><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z" /></svg></span>
                                 <p style={{ margin: 0, fontSize: 12, color: 'var(--ink-40)', lineHeight: 1.5 }}>
                                     Anyone with this link can view your resume. The link stays active as long as your resume exists.
                                 </p>
@@ -238,6 +281,12 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
 }
 
 function ShareButton({ label, icon, color, onClick }: { label: string; icon: string; color: string; onClick: () => void }) {
+    const iconSvg = icon === 'mail'
+        ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+        : icon === 'in'
+            ? <span style={{ fontSize: 14, fontWeight: 800 }}>in</span>
+            : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg>
+
     return (
         <button
             onClick={onClick}
@@ -252,10 +301,10 @@ function ShareButton({ label, icon, color, onClick }: { label: string; icon: str
         >
             <span style={{
                 width: 36, height: 36, borderRadius: 8, display: 'flex',
-                alignItems: 'center', justifyContent: 'center', fontSize: icon === 'in' ? 14 : 18,
-                fontWeight: icon === 'in' ? 800 : 400, color: 'white', background: color,
+                alignItems: 'center', justifyContent: 'center',
+                color: 'white', background: color,
             }}>
-                {icon}
+                {iconSvg}
             </span>
             <span style={{ fontSize: 11, color: 'var(--ink-40)', fontWeight: 500 }}>{label}</span>
         </button>

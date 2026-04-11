@@ -27,6 +27,7 @@
     "puppeteer-core": "^24.37.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "stripe": "^20.4.1",
     "zustand": "^4.4.7"
   },
   "devDependencies": {

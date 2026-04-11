@@ -111,7 +111,8 @@ export default function ThemesPage() {
       console.log('[ThemesPage] Creating resume with theme:', theme.id, 'user:', user.id)
       const resume = await createResume(theme.id)
       console.log('[ThemesPage] Resume created:', resume.id)
-      router.push(`/editor/${resume.id}`)
+      // TC-045 fix: Use hard navigation to ensure the editor loads with the new theme
+      window.location.href = `/editor/${resume.id}`
     } catch (err: any) {
       console.error('[ThemesPage] Error creating resume:', err)
       if (err.message === 'LIMIT_REACHED') { toast.error('Resume limit reached.'); router.push('/pricing') }
@@ -167,7 +168,7 @@ export default function ThemesPage() {
                 <p className="text-xs text-ink-40 m-0">{selectedTheme.desc}</p>
                 <div className="inline-block text-[9px] font-mono uppercase tracking-widest text-gold bg-[rgba(197,165,114,0.1)] border border-[rgba(197,165,114,0.2)] rounded-full px-2.5 py-0.5 mt-1">{selectedTheme.category}</div>
               </div>
-              <button className="btn btn-gold" onClick={() => handleUseTheme(selectedTheme)} disabled={useThemeLoading}>{useThemeLoading ? 'Creating…' : 'Use This Theme →'}</button>
+              <button className="btn btn-gold inline-flex items-center gap-1.5" onClick={() => handleUseTheme(selectedTheme)} disabled={useThemeLoading}>{useThemeLoading ? 'Creating…' : <><span>Use This Theme</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg></>}</button>
             </div>
             <div className="flex-1 min-h-0 flex items-start justify-center px-8 py-7 overflow-auto relative">
               <div className="w-[794px] bg-white shrink-0 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.06),0_12px_36px_rgba(0,0,0,0.08)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.2),0_4px_12px_rgba(0,0,0,0.2),0_12px_36px_rgba(0,0,0,0.3)] preview-fill" style={{ zoom: 0.65, transformOrigin: 'top center' }} key={selectedTheme.id}>

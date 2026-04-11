@@ -30,7 +30,7 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
 
   const handleSignOut = async () => {
     await signOut()
-    router.push('/')
+    // ProtectedRoute detects null user and redirects to /auth
   }
 
   const isActive = (path: string) => pathname === path
@@ -173,12 +173,12 @@ export default function Navbar({ variant = 'default' }: NavbarProps) {
             </>
           ) : (
             <>
-              <Link href="/auth" className="btn btn-ghost btn-sm">
+              <a href="/auth" className="btn btn-ghost btn-sm">
                 Log In
-              </Link>
-              <Link href="/auth?mode=signup" className="btn btn-primary btn-sm">
+              </a>
+              <a href="/auth?mode=signup" className="btn btn-primary btn-sm">
                 Get Started
-              </Link>
+              </a>
             </>
           )}
         </div>
