@@ -164,7 +164,7 @@ export default function LegalPage() {
                         <a href="mailto:legal@resumebuildin.com" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>legal@resumebuildin.com</a>.
                     </p>
                     <p style={{ fontSize: 13, color: 'var(--ink-40)', lineHeight: 1.7, marginTop: 12 }}>
-                        Resume BuildIn is operated by RZeal Solutions, United States.
+                        Resume BuildIn is operated by SolidLabs LLC, United States.
                     </p>
                 </div>
             </main>

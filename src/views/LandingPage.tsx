@@ -670,7 +670,7 @@ export default function LandingPage() {
         </div>
         <div className="max-w-[1200px] mx-auto py-6 flex flex-col sm:flex-row justify-between text-xs text-[rgba(250,248,243,0.25)] dark:text-[rgba(250,248,243,0.4)] font-mono gap-2">
           <span>© 2026 ResumeBuildIn. All rights reserved.</span>
-          <span>Resume BuildIn is operated by RZeal Solutions,  United States.</span>
+          <span>Resume BuildIn is operated by SolidLabs LLC,  United States.</span>
         </div>
       </footer>
     </div>
