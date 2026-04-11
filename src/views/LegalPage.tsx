@@ -125,7 +125,7 @@ export default function LegalPage() {
                             </svg>
                         )}
                     </button>
-                    <Link href="/" className="btn btn-ghost btn-sm">← Back</Link>
+                    <a href="/" className="btn btn-ghost btn-sm">← Back</a>
                 </div>
             </header>
 

@@ -81,14 +81,15 @@ export const useStore = create<StoreState>((set, get) => ({
   setAuthLoading: (authLoading) => set({ authLoading }),
 
   initAuth: async () => {
-    // Global safety net: authLoading MUST resolve within 8 seconds no matter what
+    // Global safety net: authLoading MUST resolve within 4 seconds no matter what
+    // BUG-022 fix: Reduced from 8s to 4s — prevents indefinite loading spinner
     const safetyTimeout = setTimeout(() => {
       const state = get()
       if (state.authLoading) {
-        console.warn('[auth] Safety timeout — forcing authLoading: false after 8s')
+        console.warn('[auth] Safety timeout — forcing authLoading: false after 4s')
         set({ authLoading: false })
       }
-    }, 8000)
+    }, 4000)
 
     try {
       const isAuthCallback = typeof window !== 'undefined' &&
@@ -155,7 +156,7 @@ export const useStore = create<StoreState>((set, get) => ({
       try {
         const result = await Promise.race([
           supabase.auth.getSession(),
-          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getSession_timeout')), 5000))
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('getSession_timeout')), 3000))
         ])
         session = result.data.session
 

@@ -15,6 +15,8 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
     const [qrPng, setQrPng] = useState('')
     const [copied, setCopied] = useState(false)
     const [activeTab, setActiveTab] = useState<'qr' | 'link'>('qr')
+    const [shareReady, setShareReady] = useState(false)
+    const [shareError, setShareError] = useState('')
     const inputRef = useRef<HTMLInputElement>(null)
 
     const shareUrl = `${window.location.origin}/resume/${resumeId}`
@@ -23,9 +25,25 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
         setQrSvg(generateQRCodeSVG(shareUrl, 220, 'var(--ink, #0e0d0b)', 'transparent'))
         setQrPng(generateQRCodeDataURL(shareUrl, 600))
 
-        // Mark the resume as public via server-side API route
-        fetch(`/api/resume/${resumeId}/share`, { method: 'POST' })
-            .catch(err => console.warn('[share] Failed to mark resume as public:', err))
+        // BUG-018 fix: Properly await the share API call and handle errors.
+        // The previous fire-and-forget approach silently failed, leaving the resume
+        // not marked as public and causing "Resume not found" for viewers.
+        const markPublic = async () => {
+            try {
+                const res = await fetch(`/api/resume/${resumeId}/share`, { method: 'POST' })
+                if (!res.ok) {
+                    const data = await res.json().catch(() => ({}))
+                    throw new Error(data.error || `Share failed (${res.status})`)
+                }
+                setShareReady(true)
+            } catch (err: any) {
+                console.error('[share] Failed to mark resume as public:', err)
+                setShareError(err.message || 'Could not enable public sharing. The link may not work.')
+                // Still show the URL — it might work if the resume was already public
+                setShareReady(true)
+            }
+        }
+        markPublic()
     }, [shareUrl, resumeId])
 
     const handleCopyLink = async () => {
@@ -129,6 +147,17 @@ export default function ShareResumeModal({ resumeId, resumeTitle, onClose }: Sha
 
                 {/* ── Content ── */}
                 <div style={{ padding: '24px' }}>
+                    {shareError && (
+                        <div style={{
+                            background: 'rgba(239,68,68,0.06)',
+                            border: '1px solid rgba(239,68,68,0.2)',
+                            borderRadius: 10, padding: '10px 14px',
+                            marginBottom: 16, fontSize: 12, color: '#ef4444',
+                            lineHeight: 1.5,
+                        }}>
+                            ⚠️ {shareError}
+                        </div>
+                    )}
                     {activeTab === 'qr' ? (
                         <div style={{ textAlign: 'center' }}>
                             {/* QR Code Display */}

@@ -96,13 +96,11 @@ export default function PricingPage() {
         toast.info('You already have a paid plan — Express Unlock is for free users.')
         return
       }
-      // BUG-010 fix: Route through Stripe Checkout instead of direct activation.
-      // The previous code called purchaseExpressUnlock() which bypassed payment.
+      // BUG-010 fix: Route through dedicated Express Unlock API route.
+      // The create-checkout route only handles subscriptions and doesn't map express_unlock.
       try {
         setLoading('express_unlock')
-        const data = await invokeEdgeFunction<{ url: string }>('create-checkout', {
-          body: { plan: 'express_unlock', billing: 'one_time' },
-        })
+        const data = await invokeEdgeFunction<{ url: string }>('purchase-express-unlock')
         if (data?.url) {
           window.location.href = data.url
         } else {
@@ -116,13 +114,16 @@ export default function PricingPage() {
       return
     }
     if (addonId === 'mock_pack_3') {
+      // BUG-011 fix: Route through Stripe Checkout instead of direct activation.
+      // The purchase-mock-pack API route returns a checkout URL, not a direct activation result.
       try {
         setLoading('mock_pack_3')
-        toast.info('Purchasing Mock Interview Pack…')
-        const result = await purchaseMockPack()
-        if (result.success) {
-          toast.success(`🎤 Mock Pack purchased! You now have ${result.newTotal} bonus session${result.newTotal !== 1 ? 's' : ''}.`)
-          if (user) await fetchProfile(user.id)
+        toast.info('Opening checkout for Mock Interview Pack…')
+        const data = await invokeEdgeFunction<{ url: string }>('purchase-mock-pack')
+        if (data?.url) {
+          window.location.href = data.url
+        } else {
+          throw new Error('No checkout URL returned')
         }
       } catch (err: any) {
         toast.error(err.message || 'Could not purchase mock pack.')

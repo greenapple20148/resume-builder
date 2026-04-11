@@ -226,14 +226,24 @@ ${text}`,
 
         return result.text
     } catch (err: any) {
-        console.error('AI rewrite failed, falling back to local enhancement:', err)
-        // BUG-016 fix: If the error is due to missing API configuration, don't silently
-        // fall back to the basic local enhancer (which only capitalizes + adds periods).
-        // Instead, re-throw so the user gets a meaningful error message.
-        if (err?.message?.includes('not configured') || err?.message?.includes('No AI provider')) {
+        console.error('AI rewrite failed:', err)
+        // BUG-016 fix: Don't silently fall back to the basic local enhancer for most errors.
+        // The local enhancer only capitalizes + adds periods, which is misleading.
+        // Only use it as a last resort for network/timeout errors.
+        const msg = err?.message || ''
+        if (msg.includes('not configured') || msg.includes('No AI provider') || msg.includes('Premium feature')) {
             throw err
         }
-        return enhanceTextLocal(text)
+        if (msg.includes('rate limit') || msg.includes('Rate limit') || msg.includes('API error')) {
+            throw new Error('AI service is temporarily busy. Please try again in a moment.')
+        }
+        // For network/timeout errors, still use local fallback but warn the user
+        if (msg.includes('timed out') || msg.includes('NetworkError') || msg.includes('Failed to fetch')) {
+            console.warn('AI unavailable, using local text enhancement')
+            return enhanceTextLocal(text)
+        }
+        // For unexpected errors, re-throw so user sees the issue
+        throw new Error('AI rewrite failed. Please try again.')
     }
 }
 

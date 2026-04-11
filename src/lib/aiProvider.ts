@@ -1,8 +1,8 @@
 'use client'
-// src/lib/aiProvider.ts — Unified AI Provider abstraction (Gemini + Claude)
+// src/lib/aiProvider.ts — Unified AI Provider abstraction (OpenAI + Gemini + Claude)
 import { guardAICall } from './aiRateLimit'
 
-export type AIProvider = 'gemini' | 'claude'
+export type AIProvider = 'openai' | 'gemini' | 'claude'
 
 const STORAGE_KEY = 'resumecraft_ai_provider'
 
@@ -11,9 +11,9 @@ const STORAGE_KEY = 'resumecraft_ai_provider'
 export function getSelectedProvider(): AIProvider {
     try {
         const stored = localStorage.getItem(STORAGE_KEY)
-        if (stored === 'claude' || stored === 'gemini') return stored
+        if (stored === 'openai' || stored === 'claude' || stored === 'gemini') return stored
     } catch { }
-    return 'claude' // default
+    return 'openai' // default
 }
 
 export function setSelectedProvider(provider: AIProvider): void {
@@ -21,6 +21,10 @@ export function setSelectedProvider(provider: AIProvider): void {
 }
 
 // ── API Key helpers ───────────────────────────────────────
+
+export function getOpenAIApiKey(): string {
+    return process.env.NEXT_PUBLIC_OPENAI_API_KEY || ''
+}
 
 export function getGeminiApiKey(): string {
     return process.env.NEXT_PUBLIC_GEMINI_API_KEY || ''
@@ -32,11 +36,15 @@ export function getClaudeApiKey(): string {
 
 export function getActiveApiKey(): string {
     const provider = getSelectedProvider()
+    if (provider === 'openai') return getOpenAIApiKey()
     return provider === 'claude' ? getClaudeApiKey() : getGeminiApiKey()
 }
 
 export function isProviderConfigured(provider: AIProvider): boolean {
-    const key = provider === 'claude' ? getClaudeApiKey() : getGeminiApiKey()
+    let key = ''
+    if (provider === 'openai') key = getOpenAIApiKey()
+    else if (provider === 'claude') key = getClaudeApiKey()
+    else key = getGeminiApiKey()
     return !!key && key.length > 5
 }
 
@@ -80,7 +88,7 @@ export interface AICallResult {
 
 /**
  * Make a non-streaming AI call to the selected provider.
- * Falls back to the other provider if the selected one has no API key.
+ * Falls back to other providers if the selected one has no API key.
  */
 export async function callAI(options: AICallOptions): Promise<AICallResult> {
     // ── AI abuse protection ──────────────────────────
@@ -92,40 +100,82 @@ export async function callAI(options: AICallOptions): Promise<AICallResult> {
 
     let provider = getSelectedProvider()
 
-    // Fallback logic: if selected provider isn't configured, try the other
+    // Fallback logic: if selected provider isn't configured, try others
     if (!isProviderConfigured(provider)) {
-        const fallback: AIProvider = provider === 'claude' ? 'gemini' : 'claude'
-        if (isProviderConfigured(fallback)) {
-            provider = fallback
+        const fallbacks: AIProvider[] = ['openai', 'gemini', 'claude'].filter(p => p !== provider) as AIProvider[]
+        const available = fallbacks.find(p => isProviderConfigured(p))
+        if (available) {
+            provider = available
         } else {
             throw new Error(
-                'No AI provider configured. Please add NEXT_PUBLIC_GEMINI_API_KEY or NEXT_PUBLIC_CLAUDE_API_KEY to your .env file.'
+                'No AI provider configured. Please add NEXT_PUBLIC_OPENAI_API_KEY, NEXT_PUBLIC_GEMINI_API_KEY, or NEXT_PUBLIC_CLAUDE_API_KEY to your .env file.'
             )
         }
     }
 
-    if (provider === 'claude') {
-        try {
-            return await callClaude(options)
-        } catch (err) {
-            // Auto-fallback to Gemini if Claude fails
-            if (isProviderConfigured('gemini')) {
-                console.warn('[AI] Claude failed, falling back to Gemini:', (err as Error).message)
-                return callGemini(options)
-            }
-            throw err
-        }
-    }
+    const callFn = provider === 'openai' ? callOpenAI : provider === 'claude' ? callClaude : callGemini
+    const fallbacks: AIProvider[] = ['openai', 'gemini', 'claude'].filter(p => p !== provider) as AIProvider[]
+
     try {
-        return await callGemini(options)
+        return await callFn(options)
     } catch (err) {
-        // Auto-fallback to Claude if Gemini fails
-        if (isProviderConfigured('claude')) {
-            console.warn('[AI] Gemini failed, falling back to Claude:', (err as Error).message)
-            return callClaude(options)
+        // Auto-fallback to next configured provider
+        for (const fb of fallbacks) {
+            if (isProviderConfigured(fb)) {
+                console.warn(`[AI] ${provider} failed, falling back to ${fb}:`, (err as Error).message)
+                const fbFn = fb === 'openai' ? callOpenAI : fb === 'claude' ? callClaude : callGemini
+                return fbFn(options)
+            }
         }
         throw err
     }
+}
+
+// ── OpenAI Implementation ─────────────────────────────────
+
+async function callOpenAI(options: AICallOptions): Promise<AICallResult> {
+    const apiKey = getOpenAIApiKey()
+    if (!apiKey) throw new Error('OpenAI API key not configured. Please add NEXT_PUBLIC_OPENAI_API_KEY to your .env file.')
+
+    const messages: any[] = []
+    if (options.systemPrompt) {
+        messages.push({ role: 'system', content: options.systemPrompt })
+    }
+    messages.push({ role: 'user', content: options.prompt })
+
+    const body: any = {
+        model: 'gpt-4o-mini',
+        messages,
+        max_tokens: options.maxTokens ?? 1024,
+    }
+
+    if (options.temperature !== undefined) {
+        body.temperature = options.temperature
+    }
+
+    if (options.jsonMode) {
+        body.response_format = { type: 'json_object' }
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(body),
+    })
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData?.error?.message || `OpenAI API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    const text = data?.choices?.[0]?.message?.content?.trim()
+    if (!text) throw new Error('No response from OpenAI')
+
+    return { text, provider: 'openai' }
 }
 
 // ── Gemini Implementation ─────────────────────────────────
@@ -247,18 +297,103 @@ export async function callAIStream(options: AIStreamOptions): Promise<string> {
     let provider = getSelectedProvider()
 
     if (!isProviderConfigured(provider)) {
-        const fallback: AIProvider = provider === 'claude' ? 'gemini' : 'claude'
-        if (isProviderConfigured(fallback)) {
-            provider = fallback
+        const fallbacks: AIProvider[] = ['openai', 'gemini', 'claude'].filter(p => p !== provider) as AIProvider[]
+        const available = fallbacks.find(p => isProviderConfigured(p))
+        if (available) {
+            provider = available
         } else {
             throw new Error('No AI provider configured.')
         }
     }
 
-    if (provider === 'claude') {
-        return streamClaude(options)
+    const getStreamFn = (p: AIProvider) =>
+        p === 'openai' ? streamOpenAI : p === 'claude' ? streamClaude : streamGemini
+
+    // BUG-027 fix: Auto-fallback if the primary provider's stream call fails
+    try {
+        return await getStreamFn(provider)(options)
+    } catch (err) {
+        const fallbacks: AIProvider[] = ['openai', 'gemini', 'claude'].filter(p => p !== provider) as AIProvider[]
+        for (const fb of fallbacks) {
+            if (isProviderConfigured(fb)) {
+                console.warn(`[AI Stream] ${provider} failed, falling back to ${fb}:`, (err as Error).message)
+                try {
+                    return await getStreamFn(fb)(options)
+                } catch (fbErr) {
+                    console.warn(`[AI Stream] Fallback ${fb} also failed:`, (fbErr as Error).message)
+                }
+            }
+        }
+        throw err
     }
-    return streamGemini(options)
+}
+
+// ── OpenAI Streaming ──────────────────────────────────────
+
+async function streamOpenAI(options: AIStreamOptions): Promise<string> {
+    const apiKey = getOpenAIApiKey()
+    if (!apiKey) throw new Error('OpenAI API key not configured.')
+
+    const messages: any[] = [
+        { role: 'system', content: options.systemPrompt },
+        ...options.messages.map(msg => ({ role: msg.role, content: msg.content })),
+    ]
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages,
+            max_tokens: options.maxTokens ?? 1024,
+            temperature: options.temperature ?? 0.7,
+            stream: true,
+        }),
+    })
+
+    if (!response.ok) {
+        const errorText = await response.text()
+        console.error('OpenAI streaming API error:', errorText)
+        throw new Error('Failed to get AI response. Please try again.')
+    }
+
+    const reader = response.body?.getReader()
+    if (!reader) throw new Error('No response stream')
+
+    const decoder = new TextDecoder()
+    let fullText = ''
+    let buffer = ''
+
+    while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+            if (!line.startsWith('data: ')) continue
+            const jsonStr = line.slice(6).trim()
+            if (!jsonStr || jsonStr === '[DONE]') continue
+
+            try {
+                const parsed = JSON.parse(jsonStr)
+                const text = parsed?.choices?.[0]?.delta?.content
+                if (text) {
+                    fullText += text
+                    options.onStream?.(fullText)
+                }
+            } catch {
+                // Skip malformed JSON chunks
+            }
+        }
+    }
+
+    return fullText || "I'm sorry, I couldn't generate a response. Please try again."
 }
 
 // ── Gemini Streaming ──────────────────────────────────────
@@ -412,6 +547,13 @@ async function streamClaude(options: AIStreamOptions): Promise<string> {
 // ── Provider info for UI ──────────────────────────────────
 
 export const PROVIDER_INFO = {
+    openai: {
+        name: 'OpenAI',
+        description: 'Cost-effective and fast. Great all-around performance.',
+        icon: '⬡',
+        color: '#10A37F',
+        models: 'GPT-4o Mini',
+    },
     gemini: {
         name: 'Google Gemini',
         description: 'Fast and efficient. Great for resume writing and analysis.',

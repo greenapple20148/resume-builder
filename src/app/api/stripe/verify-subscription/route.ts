@@ -32,8 +32,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ plan: 'free', synced: true })
         }
 
-        const premiumPriceIds = [process.env.VITE_STRIPE_TEAM_MONTHLY_PRICE_ID, process.env.VITE_STRIPE_TEAM_ANNUAL_PRICE_ID].filter(Boolean)
-        const careerPlusPriceIds = [process.env.VITE_STRIPE_CAREER_PLUS_MONTHLY_PRICE_ID, process.env.VITE_STRIPE_CAREER_PLUS_ANNUAL_PRICE_ID].filter(Boolean)
+        const premiumPriceIds = [
+            process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID,
+            process.env.STRIPE_PREMIUM_ANNUAL_PRICE_ID
+        ].filter(Boolean)
+        const careerPlusPriceIds = [
+            process.env.STRIPE_CAREER_PLUS_MONTHLY_PRICE_ID,
+            process.env.STRIPE_CAREER_PLUS_ANNUAL_PRICE_ID
+        ].filter(Boolean)
 
         const determinePlan = (sub: any): string => {
             if (sub.metadata?.plan) return sub.metadata.plan

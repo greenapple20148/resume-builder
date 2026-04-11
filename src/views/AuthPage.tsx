@@ -191,11 +191,11 @@ export default function AuthPage() {
       {/* Left: Brand panel */}
       <div className="w-full md:w-[45%] bg-[#0e0d0b] dark:bg-[#0e0d0b] p-6 md:p-10 flex flex-col relative overflow-hidden">
         <div className="absolute -bottom-[100px] -left-[100px] w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(201,146,60,0.12),transparent_70%)] pointer-events-none" />
-        <Link href="/" className="font-display text-[22px] font-light text-parchment tracking-tight flex items-center gap-1.5 no-underline mb-16">
-          <span className="text-gold">◈</span> Resume<em className="italic text-gold">BuildIn</em>
+        <Link href="/" className="font-display text-[22px] font-light text-[#faf8f3] tracking-tight flex items-center gap-1.5 no-underline mb-16">
+          <span className="text-[#c9923c]">◈</span> Resume<em className="italic text-[#c9923c]">BuildIn</em>
         </Link>
         <div className="flex-1">
-          <h2 className="text-parchment text-[clamp(32px,4vw,52px)] mb-4">Your next job<br /><em className="italic text-gold-light">starts here</em></h2>
+          <h2 className="text-[#faf8f3] text-[clamp(32px,4vw,52px)] mb-4">Your next job<br /><em className="italic text-[#e8b76a]">starts here</em></h2>
           <p className="text-[rgba(250,248,243,0.45)] text-[15px] leading-[1.7] mb-10">Build a stunning, ATS-optimized resume in minutes with ResumeBuildIn.</p>
           <div className="hidden md:flex gap-3">
             {['#f5c800', '#2b9db3', '#c9a84c'].map((c, i) => (

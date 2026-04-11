@@ -253,7 +253,7 @@ export default function LandingPage() {
               professionally designed themes, fill in your details, download instantly.
             </p>
             <div className="flex gap-3 flex-wrap justify-center lg:justify-start">
-              <Link href="/auth?mode=signup" className="btn btn-gold btn-lg">Build My Resume — Free</Link>
+              <a href="/auth?mode=signup" className="btn btn-gold btn-lg">Build My Resume — Free</a>
               <Link href="/themes" className="btn btn-outline btn-lg">Browse Themes →</Link>
             </div>
             <p className="text-xs text-ink-20 mt-3.5 font-mono">No credit card required · Free plan forever</p>
@@ -335,20 +335,38 @@ export default function LandingPage() {
 
           <div className="relative">
             <div className="bg-[var(--white)] border border-ink-10 rounded-xl overflow-hidden shadow-xl animate-[float_6s_ease-in-out_infinite]">
-              <div className="h-16 bg-gradient-to-br from-ink to-ink-70" />
+              {/* Header bar with accent */}
+              <div className="h-16 bg-gradient-to-br from-ink to-ink-70 flex items-end px-6 pb-2">
+                <span className="text-[9px] font-mono tracking-widest uppercase text-[rgba(250,248,243,0.35)]">Live Preview</span>
+              </div>
               <div className="p-6">
+                {/* Name bar */}
                 <div className="h-3.5 bg-[#d4d0ca] rounded-sm mb-2 w-[65%]" />
                 <div className="h-[9px] bg-ink-10 rounded-sm w-[40%]" />
-                <div className="h-px bg-[#e8e4de] my-3" />
+                {/* Gold accent divider */}
+                <div className="h-[2px] bg-gold my-3 w-[30%] rounded-full opacity-60" />
+                {/* Summary lines */}
+                <div className="flex items-center gap-2 mb-[6px]">
+                  <span className="text-[8px] font-mono tracking-widest uppercase text-ink-20 w-[46px] shrink-0">Summary</span>
+                  <div className="h-px bg-ink-10 flex-1" />
+                </div>
                 <div className="h-2 bg-ink-10 rounded-sm mb-[5px] w-[80%]" />
                 <div className="h-2 bg-ink-10 rounded-sm mb-[5px] w-[70%]" />
                 <div className="h-2 bg-ink-10 rounded-sm w-[90%]" />
-                <div className="h-px bg-[#e8e4de] my-3" />
+                {/* Experience section */}
+                <div className="flex items-center gap-2 mt-4 mb-[6px]">
+                  <span className="text-[8px] font-mono tracking-widest uppercase text-ink-20 w-[64px] shrink-0">Experience</span>
+                  <div className="h-px bg-ink-10 flex-1" />
+                </div>
                 <div className="h-2.5 bg-[#d4d0ca] rounded-sm mb-2 w-[50%]" />
                 <div className="h-2 bg-ink-10 rounded-sm mb-[5px] w-[80%]" />
                 <div className="h-2 bg-ink-10 rounded-sm mb-[5px] w-[75%]" />
                 <div className="h-2 bg-ink-10 rounded-sm w-[85%]" />
-                <div className="h-px bg-[#e8e4de] my-3" />
+                {/* Skills section */}
+                <div className="flex items-center gap-2 mt-4 mb-[6px]">
+                  <span className="text-[8px] font-mono tracking-widest uppercase text-ink-20 w-[34px] shrink-0">Skills</span>
+                  <div className="h-px bg-ink-10 flex-1" />
+                </div>
                 <div className="flex gap-1.5">
                   <div className="h-5 w-[55px] bg-[#e8e4de] rounded-sm" />
                   <div className="h-5 w-[45px] bg-[#e8e4de] rounded-sm" />

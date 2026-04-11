@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSupabaseAdmin, getSupabaseUser, extractToken } from '@/lib/server/supabase-admin'
 
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY || ''
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || ''
 const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY || process.env.NEXT_PUBLIC_CLAUDE_API_KEY || ''
 
@@ -27,6 +28,17 @@ const SYSTEM_PROMPTS: Record<string, (role: string, difficulty: string) => strin
     technical: (role, difficulty) => `You are a senior engineer conducting a ${difficulty}-level technical interview for a ${role}.\nWhen ACTION is "generate_question": Present a coding/algorithm question. Return ONLY the question text.\nWhen ACTION is "evaluate_answer": Return ONLY valid JSON:\n${EVAL_SCHEMA}\nAdditionally: "technical_accuracy":<1-10>,"depth":<1-10>\nWhen ACTION is "generate_summary": Return ONLY valid JSON.`,
 }
 
+async function callOpenAI(systemPrompt: string, userMessage: string): Promise<string> {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_API_KEY}` },
+        body: JSON.stringify({ model: 'gpt-4o-mini', max_tokens: 1500, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userMessage }] }),
+    })
+    if (!response.ok) throw new Error(`OpenAI API error: ${response.status}`)
+    const data = await response.json()
+    return data.choices?.[0]?.message?.content || ''
+}
+
 async function callClaude(systemPrompt: string, userMessage: string): Promise<string> {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -51,6 +63,8 @@ async function callGemini(systemPrompt: string, userMessage: string): Promise<st
 }
 
 async function callAI(systemPrompt: string, userMessage: string): Promise<string> {
+    // Prefer OpenAI (gpt-4o-mini) first for cost efficiency
+    if (OPENAI_API_KEY) { try { return await callOpenAI(systemPrompt, userMessage) } catch (err) { console.warn('OpenAI failed, trying Claude:', (err as Error).message) } }
     if (CLAUDE_API_KEY) { try { return await callClaude(systemPrompt, userMessage) } catch (err) { console.warn('Claude failed, trying Gemini:', (err as Error).message) } }
     if (GEMINI_API_KEY) return await callGemini(systemPrompt, userMessage)
     throw new Error('No AI provider configured.')

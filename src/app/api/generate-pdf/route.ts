@@ -149,9 +149,19 @@ export async function POST(request: NextRequest) {
         })
     } catch (err: any) {
         console.error('PDF generation failed:', err)
+        const isChromiumError = err?.message?.includes('Chromium') ||
+            err?.message?.includes('chromium') ||
+            err?.message?.includes('browser') ||
+            err?.message?.includes('executablePath') ||
+            err?.message?.includes('Server-side PDF unavailable')
         return NextResponse.json(
-            { error: 'PDF generation failed', message: err?.message || 'Unknown error' },
-            { status: 500 }
+            {
+                error: 'PDF generation failed',
+                message: err?.message || 'Unknown error',
+                fallbackAvailable: true,
+                isChromiumError,
+            },
+            { status: isChromiumError ? 503 : 500 }
         )
     } finally {
         if (browser) {
