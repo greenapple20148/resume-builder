@@ -403,6 +403,50 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ── SOCIAL PROOF STATS HERO ─────────── */}
+        <section aria-label="Platform statistics" className="relative overflow-hidden px-5 sm:px-10 py-20 sm:py-28" style={{ background: 'linear-gradient(135deg, #0c0a06 0%, #1a1408 50%, #0e0d0b 100%)' }}>
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(201,146,60,0.1),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_20%,rgba(201,146,60,0.06),transparent_50%)]" />
+          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(201,146,60,0.4) 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+
+          <div className="max-w-[1100px] mx-auto relative">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-4 opacity-70">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold-light" />
+                Trusted by Job Seekers
+              </div>
+              <h2 className="text-parchment dark:text-[#e8e6e0] text-[clamp(28px,4vw,44px)] leading-[1.15] mb-4 font-display">
+                Numbers that speak<br /><em className="italic" style={{ color: '#e8b76a' }}>louder than words</em>
+              </h2>
+              <p className="text-[rgba(250,248,243,0.4)] text-base max-w-[480px] mx-auto">Every metric here reflects real impact — real resumes, real interviews, real offers.</p>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+              {[
+                { value: '50K+', label: 'Resumes Created', icon: 'file-text', sub: 'and counting' },
+                { value: '30+', label: 'Professional Themes', icon: 'layers', sub: 'ATS-optimized' },
+                { value: '93%', label: 'ATS Pass Rate', icon: 'target', sub: 'across top systems' },
+                { value: '<10min', label: 'Average Build Time', icon: 'zap', sub: 'from blank to done' },
+              ].map((stat, i) => (
+                <div
+                  key={i}
+                  className="relative p-6 sm:p-8 rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] text-center group transition-all duration-500 hover:border-[rgba(201,146,60,0.25)] hover:bg-[rgba(255,255,255,0.04)] hover:-translate-y-1"
+                >
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,146,60,0.3)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="mb-3 text-gold-light flex justify-center opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all"><LandingIcon name={stat.icon} size={24} /></div>
+                  <div className="font-display text-[clamp(36px,5vw,52px)] font-light leading-none mb-2" style={{ color: '#e8b76a' }}>{stat.value}</div>
+                  <div className="text-[13px] font-semibold text-parchment dark:text-[#e8e6e0] mb-1">{stat.label}</div>
+                  <div className="text-[11px] text-[rgba(250,248,243,0.3)] font-mono">{stat.sub}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-center mt-12">
+              <Link href="/auth?mode=signup" className="btn btn-gold btn-lg">Join 50,000+ Professionals →</Link>
+            </div>
+          </div>
+        </section>
+
         {/* ── AI INTERVIEW COACH BANNER ──────── */}
         <section aria-label="AI Interview Coach" className="mx-5 sm:mx-10 my-0">
           <div className="max-w-[1200px] mx-auto bg-gradient-to-br from-[#0e0d0b] to-[#2a2520] rounded-2xl px-8 sm:px-14 py-12 sm:py-14 flex flex-col lg:flex-row items-center gap-8 lg:gap-16 overflow-hidden relative">
@@ -490,6 +534,103 @@ export default function LandingPage() {
           </div>
           <div className="text-center mt-8">
             <Link href="/themes" className="btn btn-outline btn-lg">View All 30 Themes →</Link>
+          </div>
+        </section>
+
+        {/* ── BEFORE / AFTER HERO ──────────────── */}
+        <section aria-label="Resume transformation" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
+          <div className="text-center max-w-[620px] mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold mb-4 opacity-70">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              The Difference
+            </div>
+            <h2 className="mb-3">From overlooked<br /><em className="italic text-gold">to interview-ready</em></h2>
+            <p className="text-base text-ink-40">See how ResumeBuildIn transforms an everyday resume into something recruiters actually want to read.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 lg:gap-0 items-stretch">
+            {/* Before */}
+            <div className="relative p-6 sm:p-8 rounded-2xl border-2 border-dashed border-[rgba(239,68,68,0.2)] bg-[rgba(239,68,68,0.02)]">
+              <div className="absolute -top-3 left-6 px-3 py-1 rounded-full text-[11px] font-mono font-bold tracking-wider uppercase bg-[rgba(239,68,68,0.1)] text-[#ef4444] border border-[rgba(239,68,68,0.2)]">Before</div>
+              <div className="mt-4 space-y-3">
+                <div className="h-4 bg-[rgba(239,68,68,0.08)] rounded w-[55%]" />
+                <div className="h-2.5 bg-[rgba(239,68,68,0.06)] rounded w-[35%]" />
+                <div className="h-px bg-[rgba(239,68,68,0.1)] my-4" />
+                {['Responsible for stuff at company',
+                  'Worked on many projects',
+                  'Helped team with various tasks',
+                  'Did sales and marketing things',
+                ].map((text, i) => (
+                  <div key={i} className="flex items-start gap-2.5">
+                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[rgba(239,68,68,0.3)] flex-shrink-0" />
+                    <span className="text-[13px] text-ink-30 leading-relaxed">{text}</span>
+                  </div>
+                ))}
+                <div className="h-px bg-[rgba(239,68,68,0.1)] my-4" />
+                <div className="flex gap-1.5 flex-wrap">
+                  {['Word', 'Excel', 'Emails'].map((s, i) => (
+                    <span key={i} className="text-[10px] px-2 py-1 rounded bg-[rgba(239,68,68,0.06)] text-ink-30 border border-[rgba(239,68,68,0.1)]">{s}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-6 flex items-center gap-2 text-[12px] font-mono text-[#ef4444]">
+                <LandingIcon name="trend-down" size={14} />
+                <span>ATS Score: 23/100 — Rejected by most systems</span>
+              </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="flex items-center justify-center lg:px-4">
+              <div className="hidden lg:flex flex-col items-center gap-2">
+                <div className="w-px h-12 bg-gradient-to-b from-transparent via-gold to-transparent opacity-40" />
+                <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center shadow-[0_0_20px_rgba(201,146,60,0.3)]">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                </div>
+                <div className="w-px h-12 bg-gradient-to-b from-transparent via-gold to-transparent opacity-40" />
+              </div>
+              <div className="lg:hidden flex items-center justify-center gap-2">
+                <div className="h-px w-12 bg-gradient-to-r from-transparent via-gold to-transparent opacity-40" />
+                <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center shadow-[0_0_20px_rgba(201,146,60,0.3)]">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14" /><path d="m5 12 7 7 7-7" /></svg>
+                </div>
+                <div className="h-px w-12 bg-gradient-to-r from-transparent via-gold to-transparent opacity-40" />
+              </div>
+            </div>
+
+            {/* After */}
+            <div className="relative p-6 sm:p-8 rounded-2xl border-2 border-[rgba(34,197,94,0.2)] bg-[rgba(34,197,94,0.02)] shadow-[0_0_40px_-12px_rgba(34,197,94,0.1)]">
+              <div className="absolute -top-3 left-6 px-3 py-1 rounded-full text-[11px] font-mono font-bold tracking-wider uppercase bg-[rgba(34,197,94,0.1)] text-[#22c55e] border border-[rgba(34,197,94,0.2)]">After</div>
+              <div className="mt-4 space-y-3">
+                <div className="h-4 bg-gold rounded w-[60%]" style={{ opacity: 0.3 }} />
+                <div className="h-2.5 bg-[rgba(34,197,94,0.12)] rounded w-[40%]" />
+                <div className="h-[2px] bg-gold my-4 w-[30%] rounded-full opacity-40" />
+                {['Drove $2.4M revenue increase (↑34%) by redesigning the onboarding funnel',
+                  'Led cross-functional team of 8 engineers to ship product 3 weeks early',
+                  'Reduced customer churn by 18% through data-driven retention strategies',
+                  'Managed $500K annual budget and negotiated 22% vendor cost savings',
+                ].map((text, i) => (
+                  <div key={i} className="flex items-start gap-2.5">
+                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[rgba(34,197,94,0.5)] flex-shrink-0" />
+                    <span className="text-[13px] text-ink leading-relaxed font-medium">{text}</span>
+                  </div>
+                ))}
+                <div className="h-[2px] bg-[rgba(34,197,94,0.1)] my-4" />
+                <div className="flex gap-1.5 flex-wrap">
+                  {['Revenue Growth', 'Cross-Functional Leadership', 'Data Analytics', 'P&L Management', 'Agile'].map((s, i) => (
+                    <span key={i} className="text-[10px] px-2 py-1 rounded bg-[rgba(34,197,94,0.06)] text-ink font-medium border border-[rgba(34,197,94,0.15)]">{s}</span>
+                  ))}
+                </div>
+              </div>
+              <div className="mt-6 flex items-center gap-2 text-[12px] font-mono text-[#22c55e]">
+                <LandingIcon name="trend-up" size={14} />
+                <span>ATS Score: 96/100 — Passes all major systems</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-10">
+            <Link href="/auth?mode=signup" className="btn btn-gold btn-lg">Transform My Resume →</Link>
+            <p className="text-xs text-ink-20 mt-3 font-mono">AI-powered bullet points · Instant optimization</p>
           </div>
         </section>
 
