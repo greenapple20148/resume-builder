@@ -10,19 +10,19 @@ export const metadata: Metadata = {
         'resume builder, resume maker, free resume builder, ATS resume, professional resume templates, resume PDF, resume themes, CV builder, job application, career tools',
     authors: [{ name: 'ResumeBuildIn' }],
     robots: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
-    metadataBase: new URL('https://resumebuildin.io'),
+    metadataBase: new URL('https://resumebuildin.com'),
     alternates: {
         canonical: '/',
     },
     openGraph: {
         type: 'website',
-        url: 'https://resumebuildin.io/',
+        url: 'https://resumebuildin.com/',
         title: 'ResumeBuildIn — Build Resumes That Get You Hired',
         description:
             'Build beautiful, ATS-optimized resumes in minutes. 25 professional themes, live editor, instant PDF download. Free forever.',
         images: [
             {
-                url: 'https://resumebuildin.io/og-image.png',
+                url: 'https://resumebuildin.com/og-image.png',
                 width: 1200,
                 height: 630,
             },
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
         title: 'ResumeBuildIn — Build Resumes That Get You Hired',
         description:
             'Build beautiful, ATS-optimized resumes in minutes. 25 professional themes, live editor, instant PDF download.',
-        images: ['https://resumebuildin.io/og-image.png'],
+        images: ['https://resumebuildin.com/og-image.png'],
     },
     icons: {
         icon: '/favicon.svg',
@@ -52,8 +52,8 @@ const organizationJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'ResumeBuildIn',
-    url: 'https://resumebuildin.io',
-    logo: 'https://resumebuildin.io/favicon.svg',
+    url: 'https://resumebuildin.com',
+    logo: 'https://resumebuildin.com/favicon.svg',
     description: 'Build beautiful, ATS-optimized resumes in minutes with 25 professional themes.',
     sameAs: [],
 }
@@ -62,7 +62,7 @@ const webAppJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: 'ResumeBuildIn',
-    url: 'https://resumebuildin.io',
+    url: 'https://resumebuildin.com',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
     description:
@@ -73,12 +73,7 @@ const webAppJsonLd = {
         priceCurrency: 'USD',
         description: 'Free plan — build resumes at no cost, forever.',
     },
-    aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.9',
-        ratingCount: '4700',
-        bestRating: '5',
-    },
+
     featureList: [
         '25 professional resume themes',
         'ATS-optimized templates',
