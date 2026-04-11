@@ -529,151 +529,30 @@ export async function extractTextFromDocx(file: File): Promise<string> {
 
 /**
  * Parse raw resume text into structured ResumeData.
- * Uses AI for unmatched extraction accuracy.
+ * Calls the server-side /api/ai/parse-resume route so the API key stays secure.
+ * Falls back to local heuristic parsing if the server call fails.
  */
 export async function parseResumeWithAI(text: string): Promise<any> {
     try {
-        console.log('[parseResumeWithAI] Requesting JSON extraction from AI, text length:', text.length)
+        console.log('[parseResumeWithAI] Sending text to server for AI parsing, length:', text.length)
 
-        // Truncate if extremely long to avoid token limits
-        const truncated = text.length > 15000 ? text.slice(0, 15000) + '\n[...truncated]' : text
-
-        const result = await callAI({
-            prompt: `You are an expert ATS (Applicant Tracking System) parser. Parse the following raw resume text into a highly structured JSON object. Extract every detail accurately. Do NOT miss bullet points, skills, languages, certifications, or projects!
-
-Return ONLY a valid JSON object matching exactly this structure (omit empty arrays/fields):
-{
-  "personal": { "fullName": "", "email": "", "phone": "", "location": "", "jobTitle": "", "website": "" },
-  "summary": "Professional summary paragraph or objective...",
-  "experience": [
-    { "company": "", "position": "", "startDate": "YYYY-MM or Mon YYYY", "endDate": "YYYY-MM or Mon YYYY or Present", "location": "", "description": "All bullet points for this role joined with newlines" }
-  ],
-  "education": [
-    { "institution": "", "degree": "", "field": "", "startDate": "", "endDate": "", "gpa": "" }
-  ],
-  "skills": ["Skill 1", "Skill 2", "..."],
-  "languages": [
-    { "language": "", "proficiency": "Native|Fluent|Professional|Intermediate|Basic" }
-  ],
-  "certifications": [
-    { "name": "", "issuer": "", "date": "" }
-  ],
-  "projects": [
-    { "name": "", "description": "", "url": "", "technologies": "" }
-  ]
-}
-
-IMPORTANT RULES:
-1. Extract ALL bullet points under each job as a single "description" string separated by newlines
-2. If no summary/objective section exists, write a brief one based on the resume content
-3. Extract skills from any "Skills", "Technical Skills", or "Tools" sections
-4. Extract ALL languages found
-5. Extract certifications, awards, and licenses
-6. Do NOT invent data — only extract what's present
-
-Raw resume text:
-"""
-${truncated}
-"""`,
-            temperature: 0.1,
-            maxTokens: 4096,
-            jsonMode: true,
-            feature: 'parse',
+        const result = await invokeEdgeFunction<{ data: any }>('parse-resume', {
+            body: { text },
+            timeoutMs: 30000,  // AI parsing can take a while
         })
 
-        const resultText = result.text
-        if (!resultText) throw new Error('Empty response from AI')
+        if (!result?.data) throw new Error('Empty response from server')
 
-        // Strip markdown fences if present
-        const cleaned = resultText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-        console.log('[parseResumeWithAI] AI returned', cleaned.length, 'chars, parsing JSON...')
-        const parsed = JSON.parse(cleaned)
-
-        // ── Normalize AI output to match ResumeData types ──────────
-        // The AI returns flexible field names — we map them to the exact
-        // shape the editor, templates, and preview panel expect.
-
-        const personal = parsed.personal || {}
-        const normalizedPersonal = {
-            fullName: personal.fullName || personal.name || personal.full_name || '',
-            jobTitle: personal.jobTitle || personal.job_title || personal.title || '',
-            email: personal.email || '',
-            phone: personal.phone || personal.telephone || '',
-            location: personal.location || personal.address || personal.city || '',
-            website: personal.website || personal.url || personal.linkedin || '',
-            summary: '',   // summary lives at top level, not inside personal
-            photo: '',
-        }
-
-        const normalizedExperience = (parsed.experience || []).map((exp: any, i: number) => ({
-            id: exp.id || i + 1,
-            title: exp.title || exp.position || exp.role || '',
-            company: exp.company || exp.employer || exp.organization || '',
-            location: exp.location || '',
-            startDate: exp.startDate || exp.start_date || exp.start || '',
-            endDate: exp.endDate || exp.end_date || exp.end || '',
-            current: !!(exp.current || (exp.endDate || exp.end_date || '').toLowerCase() === 'present'),
-            description: exp.description || exp.details || exp.responsibilities || '',
-        }))
-
-        const normalizedEducation = (parsed.education || []).map((edu: any, i: number) => {
-            const degree = edu.degree || ''
-            const field = edu.field || edu.major || edu.concentration || ''
-            return {
-                id: edu.id || i + 1,
-                degree: field ? `${degree}${degree && field ? ' in ' : ''}${field}` : degree,
-                school: edu.school || edu.institution || edu.university || edu.college || '',
-                location: edu.location || '',
-                startDate: edu.startDate || edu.start_date || edu.start || '',
-                endDate: edu.endDate || edu.end_date || edu.end || edu.year || edu.graduation || '',
-                gpa: edu.gpa || '',
-                notes: edu.notes || edu.honors || edu.activities || '',
-            }
+        console.log('[parseResumeWithAI] Server returned parsed data:', {
+            personalName: result.data.personal?.fullName,
+            experienceCount: result.data.experience?.length,
+            educationCount: result.data.education?.length,
+            skillsCount: result.data.skills?.length,
         })
 
-        const normalizedLanguages = (parsed.languages || []).map((lang: any, i: number) => ({
-            id: lang.id || i + 1,
-            language: lang.language || lang.name || '',
-            level: lang.level || lang.proficiency || lang.fluency || '',
-        }))
-
-        const normalizedCertifications = (parsed.certifications || []).map((cert: any, i: number) => ({
-            id: cert.id || i + 1,
-            name: cert.name || cert.title || cert.certification || '',
-            issuer: cert.issuer || cert.organization || cert.provider || '',
-            date: cert.date || cert.year || cert.issued || '',
-            url: cert.url || cert.link || '',
-        }))
-
-        const normalizedProjects = (parsed.projects || []).map((proj: any, i: number) => ({
-            id: proj.id || i + 1,
-            name: proj.name || proj.title || '',
-            description: proj.description || proj.details || '',
-            url: proj.url || proj.link || '',
-            tech: proj.tech || proj.technologies || proj.stack || '',
-        }))
-
-        const normalizedSummary = parsed.summary || personal.summary || ''
-
-        console.log('[parseResumeWithAI] Normalized data:', {
-            personalName: normalizedPersonal.fullName,
-            experienceCount: normalizedExperience.length,
-            educationCount: normalizedEducation.length,
-            skillsCount: (parsed.skills || []).length,
-        })
-
-        return {
-            personal: normalizedPersonal,
-            summary: normalizedSummary,
-            experience: normalizedExperience,
-            education: normalizedEducation,
-            skills: parsed.skills || [],
-            languages: normalizedLanguages,
-            certifications: normalizedCertifications,
-            projects: normalizedProjects,
-        }
+        return result.data
     } catch (err) {
-        console.error('[parseResumeWithAI] AI extraction failed:', err)
+        console.error('[parseResumeWithAI] Server-side AI parsing failed:', err)
         return fallbackHeuristicParsing(text)
     }
 }

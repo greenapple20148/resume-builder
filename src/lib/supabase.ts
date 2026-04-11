@@ -62,6 +62,7 @@ const ROUTE_MAP: Record<string, string> = {
   'purchase-express-unlock': '/api/stripe/purchase-express-unlock',
   'purchase-mock-pack': '/api/stripe/purchase-mock-pack',
   'ai-mock-interview': '/api/ai/mock-interview',
+  'parse-resume': '/api/ai/parse-resume',
   'contact-form': '/api/contact',
   'send-email': '/api/email/send',
 }
