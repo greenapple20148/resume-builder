@@ -206,7 +206,7 @@ function FoundingMemberOffer({ spotsLeft, setSpotsLeft }: { spotsLeft: number; s
 export default function LandingPage() {
   useSEO({
     title: 'ResumeBuildIn — Build Resumes That Get You Hired',
-    description: 'Build beautiful, ATS-optimized resumes in minutes. Choose from 30 professional themes, use the live editor, and download perfect PDFs instantly. Free forever.',
+    description: 'Build beautiful, ATS-optimized resumes in minutes. Choose from 50 professional themes, use the live editor, and download perfect PDFs instantly. Free forever.',
     path: '/',
   })
 
@@ -242,7 +242,7 @@ export default function LandingPage() {
           <div className="text-center lg:text-left">
             <div className="inline-flex items-center gap-2.5 text-[13px] text-ink-40 mb-6 font-mono">
               <span className="badge badge-gold">New</span>
-              30 themes just dropped
+              50 themes just dropped
             </div>
             <h1 className="text-[clamp(48px,7vw,88px)] leading-[1.0] mb-5">
               Resumes that<br />
@@ -375,165 +375,12 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="absolute right-[-20px] top-1/2 -translate-y-1/2 flex-col gap-2.5 hidden lg:flex">
-              {['✓ ATS Friendly', 'Instant PDF', '✦ 30 Themes'].map((text, i) => (
+              {['✓ ATS Friendly', 'Instant PDF', '✦ 50 Themes'].map((text, i) => (
                 <div key={i} className="bg-[var(--white)] border border-ink-10 rounded-full px-3.5 py-2 text-xs font-medium text-ink shadow-md whitespace-nowrap animate-[slideInRight_0.6s_ease_both]" style={{ animationDelay: `${i * 0.3}s` }}>
                   {text}
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-
-
-        {/* ── FEATURES ─────────────────────────── */}
-        <section aria-label="Features" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
-          <div className="text-center max-w-[620px] mx-auto mb-14">
-            <h2 className="mb-3">Built for interviews,<br /><em className="italic text-gold">not just downloads</em></h2>
-            <p className="text-base text-ink-40">Every feature is designed to get you past the ATS, impress recruiters, and land the interview.</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-            {FEATURES.map((f, i) => (
-              <div key={i} className="p-8 sm:p-7 bg-[var(--white)] border border-ink-10 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-gold-pale animate-[fadeUp_0.6s_ease_both]" style={{ animationDelay: `${i * 0.08}s` }}>
-                <div className="mb-4 text-gold"><LandingIcon name={f.icon} size={28} /></div>
-                <h4 className="text-lg mb-2.5">{f.title}</h4>
-                <p className="text-sm leading-[1.7] text-ink-40">{f.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ── SOCIAL PROOF STATS HERO ─────────── */}
-        <section aria-label="Platform statistics" className="relative overflow-hidden px-5 sm:px-10 py-20 sm:py-28" style={{ background: 'linear-gradient(135deg, #0c0a06 0%, #1a1408 50%, #0e0d0b 100%)' }}>
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(201,146,60,0.1),transparent_60%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_20%,rgba(201,146,60,0.06),transparent_50%)]" />
-          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(201,146,60,0.4) 1px, transparent 0)', backgroundSize: '32px 32px' }} />
-
-          <div className="max-w-[1100px] mx-auto relative">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-4 opacity-70">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold-light" />
-                Trusted by Job Seekers
-              </div>
-              <h2 className="text-parchment dark:text-[#e8e6e0] text-[clamp(28px,4vw,44px)] leading-[1.15] mb-4 font-display">
-                Numbers that speak<br /><em className="italic" style={{ color: '#e8b76a' }}>louder than words</em>
-              </h2>
-              <p className="text-[rgba(250,248,243,0.4)] text-base max-w-[480px] mx-auto">Every metric here reflects real impact — real resumes, real interviews, real offers.</p>
-            </div>
-
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {[
-                { value: '50K+', label: 'Resumes Created', icon: 'file-text', sub: 'and counting' },
-                { value: '30+', label: 'Professional Themes', icon: 'layers', sub: 'ATS-optimized' },
-                { value: '93%', label: 'ATS Pass Rate', icon: 'target', sub: 'across top systems' },
-                { value: '<10min', label: 'Average Build Time', icon: 'zap', sub: 'from blank to done' },
-              ].map((stat, i) => (
-                <div
-                  key={i}
-                  className="relative p-6 sm:p-8 rounded-2xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] text-center group transition-all duration-500 hover:border-[rgba(201,146,60,0.25)] hover:bg-[rgba(255,255,255,0.04)] hover:-translate-y-1"
-                >
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,146,60,0.3)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="mb-3 text-gold-light flex justify-center opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all"><LandingIcon name={stat.icon} size={24} /></div>
-                  <div className="font-display text-[clamp(36px,5vw,52px)] font-light leading-none mb-2" style={{ color: '#e8b76a' }}>{stat.value}</div>
-                  <div className="text-[13px] font-semibold text-parchment dark:text-[#e8e6e0] mb-1">{stat.label}</div>
-                  <div className="text-[11px] text-[rgba(250,248,243,0.3)] font-mono">{stat.sub}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="flex justify-center mt-12">
-              <Link href="/auth?mode=signup" className="btn btn-gold btn-lg">Join 50,000+ Professionals →</Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ── AI INTERVIEW COACH BANNER ──────── */}
-        <section aria-label="AI Interview Coach" className="mx-5 sm:mx-10 my-0">
-          <div className="max-w-[1200px] mx-auto bg-gradient-to-br from-[#0e0d0b] to-[#2a2520] rounded-2xl px-8 sm:px-14 py-12 sm:py-14 flex flex-col lg:flex-row items-center gap-8 lg:gap-16 overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(201,146,60,0.12),transparent_70%)]" />
-            <div className="flex-shrink-0 relative text-gold-light"><LandingIcon name="mic" size={56} /></div>
-            <div className="text-center lg:text-left relative flex-1">
-              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-3 opacity-80">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold-light animate-pulse" />
-                Coming Soon
-              </div>
-              <h2 className="text-parchment dark:text-[#e8e6e0] text-[clamp(24px,3.5vw,36px)] leading-[1.2] mb-3 font-display">
-                AI Interview Coach That Analyzes Your Answers<span className="text-gold italic"> — Not Just Asks Questions.</span>
-              </h2>
-              <p className="text-[rgba(250,248,243,0.45)] text-sm leading-[1.7] max-w-[520px] mx-auto lg:mx-0">
-                Practice with an AI that gives real-time feedback on your tone, structure, and content. Get personalized tips to ace every interview.
-              </p>
-            </div>
-            <Link href="/auth?mode=signup" className="btn btn-gold relative whitespace-nowrap flex-shrink-0">Get Notified →</Link>
-          </div>
-        </section>
-
-        {/* ── ADVANCED AI FEATURES ───────────── */}
-        <section aria-label="Advanced AI Features" className="bg-[#0e0d0b] dark:bg-[#0e0d0b] px-5 sm:px-10 py-16 sm:py-24 mt-16 sm:mt-24">
-          <div className="max-w-[1200px] mx-auto">
-            <div className="text-center max-w-[620px] mx-auto mb-14">
-              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-4 opacity-70">
-                <span className="w-1.5 h-1.5 rounded-full bg-gold-light" />
-                Advanced AI
-              </div>
-              <h2 className="text-parchment dark:text-[#e8e6e0] mb-3">AI that gives you<br /><em className="italic text-gold-light">an unfair advantage</em></h2>
-              <p className="text-[rgba(250,248,243,0.4)] text-base">Powered by intelligence that goes far beyond spell-check. These tools analyze, optimize, and transform your entire job search.</p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { icon: 'brain', title: 'STAR Answer Detection', desc: 'AI detects if your interview answers follow the Situation-Task-Action-Result framework and coaches you to strengthen weak areas.' },
-                { icon: 'trend-down', title: 'Confidence & Clarity Score', desc: 'Get scored on filler words, hedging language, and answer structure. See exactly where you sound uncertain.' },
-                { icon: 'mic', title: 'Follow-Up Question Simulation', desc: 'AI predicts the follow-up questions interviewers will ask based on your answers — so nothing catches you off guard.' },
-                { icon: 'clipboard', title: 'Resume Weakness Analyzer', desc: 'Scans your resume for gaps, weak verbs, missing metrics, and inconsistencies that make recruiters hit "reject."' },
-                { icon: 'linkedin', title: 'Resume → LinkedIn Auto-Convert', desc: 'One click transforms your resume into an optimized LinkedIn profile — headline, summary, and experience sections.' },
-                { icon: 'search', title: 'Missing Keyword Detector', desc: "Compares your resume against the job description and highlights every critical keyword you're missing." },
-              ].map((f, i) => (
-                <div key={i} className="relative p-7 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] backdrop-blur-sm transition-all duration-300 hover:border-[rgba(201,146,60,0.25)] hover:bg-[rgba(255,255,255,0.04)] group overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,146,60,0.3)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <div className="flex items-start gap-4">
-                    <div className="mt-0.5 flex-shrink-0 text-gold"><LandingIcon name={f.icon} size={22} /></div>
-                    <div>
-                      <div className="flex items-center gap-2.5 mb-2">
-                        <h4 className="text-parchment dark:text-[#e8e6e0] text-[15px] font-semibold">{f.title}</h4>
-                        <span className="text-[9px] font-mono tracking-[0.15em] uppercase px-2 py-0.5 rounded-full bg-[rgba(201,146,60,0.12)] text-gold-light border border-[rgba(201,146,60,0.15)]">Pro</span>
-                      </div>
-                      <p className="text-[13px] leading-[1.7] text-[rgba(250,248,243,0.4)]">{f.desc}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="text-center mt-10">
-              <Link href="/tools/ai" className="btn btn-gold btn-lg">Unlock AI Features →</Link>
-            </div>
-          </div>
-        </section>
-
-        {/* ── THEME SHOWCASE ───────────────────── */}
-        <section aria-label="Theme showcase" className="bg-ink-05 px-5 sm:px-10 py-16 sm:py-24">
-          <div className="text-center max-w-[560px] mx-auto mb-14">
-            <h2 className="mb-3">30 themes.<br /><em className="italic text-gold">One perfect fit.</em></h2>
-            <p className="text-base text-ink-40">From minimalist to bold — every style has its place.</p>
-          </div>
-          <div className="flex gap-3.5 max-w-[1200px] mx-auto overflow-x-auto pb-2">
-            {THEME_PREVIEWS.map((t) => (
-              <div key={t.id} className="shrink-0 w-40 rounded-xl overflow-hidden border border-[rgba(0,0,0,0.08)] transition-transform duration-300 cursor-pointer hover:-translate-y-1.5 hover:scale-[1.02]" style={{ background: t.bg }}>
-                <div className="p-3.5 flex flex-col gap-[5px] h-[120px]">
-                  <div className="h-1.5 rounded-[1px] w-[60%]" style={{ background: t.accent, opacity: 0.8 }} />
-                  <div className="h-1.5 rounded-[1px] w-[40%] bg-[rgba(255,255,255,0.15)]" />
-                  <div className="h-px my-1.5" style={{ background: t.accent, opacity: 0.15 }} />
-                  <div className="h-1.5 rounded-[1px] w-full bg-[rgba(255,255,255,0.15)]" />
-                  <div className="h-1.5 rounded-[1px] w-[80%] bg-[rgba(255,255,255,0.15)]" />
-                  <div className="h-1.5 rounded-[1px] w-[70%] bg-[rgba(255,255,255,0.15)]" />
-                </div>
-                <div className="px-3.5 py-2 text-[10px] font-mono tracking-wide uppercase bg-[rgba(0,0,0,0.15)]" style={{ color: t.bg === '#ffffff' || t.bg === '#f2f2f0' ? '#666' : 'rgba(255,255,255,0.6)' }}>
-                  {t.label}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Link href="/themes" className="btn btn-outline btn-lg">View All 30 Themes →</Link>
           </div>
         </section>
 
@@ -634,6 +481,116 @@ export default function LandingPage() {
           </div>
         </section>
 
+
+
+        {/* ── FEATURES ─────────────────────── */}
+        <section aria-label="Features" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
+          <div className="text-center max-w-[620px] mx-auto mb-14">
+            <h2 className="mb-3">Built for interviews,<br /><em className="italic text-gold">not just downloads</em></h2>
+            <p className="text-base text-ink-40">Every feature is designed to get you past the ATS, impress recruiters, and land the interview.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+            {FEATURES.map((f, i) => (
+              <div key={i} className="p-8 sm:p-7 bg-[var(--white)] border border-ink-10 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-gold-pale animate-[fadeUp_0.6s_ease_both]" style={{ animationDelay: `${i * 0.08}s` }}>
+                <div className="mb-4 text-gold"><LandingIcon name={f.icon} size={28} /></div>
+                <h4 className="text-lg mb-2.5">{f.title}</h4>
+                <p className="text-sm leading-[1.7] text-ink-40">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── AI INTERVIEW COACH BANNER ──────── */}
+        <section aria-label="AI Interview Coach" className="mx-5 sm:mx-10 my-0">
+          <div className="max-w-[1200px] mx-auto bg-gradient-to-br from-[#0e0d0b] to-[#2a2520] rounded-2xl px-8 sm:px-14 py-12 sm:py-14 flex flex-col lg:flex-row items-center gap-8 lg:gap-16 overflow-hidden relative">
+            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[radial-gradient(circle,rgba(201,146,60,0.12),transparent_70%)]" />
+            <div className="flex-shrink-0 relative text-gold-light"><LandingIcon name="mic" size={56} /></div>
+            <div className="text-center lg:text-left relative flex-1">
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-3 opacity-80">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold-light animate-pulse" />
+                Coming Soon
+              </div>
+              <h2 className="text-parchment dark:text-[#e8e6e0] text-[clamp(24px,3.5vw,36px)] leading-[1.2] mb-3 font-display">
+                AI Interview Coach That Analyzes Your Answers<span className="text-gold italic"> — Not Just Asks Questions.</span>
+              </h2>
+              <p className="text-[rgba(250,248,243,0.45)] text-sm leading-[1.7] max-w-[520px] mx-auto lg:mx-0">
+                Practice with an AI that gives real-time feedback on your tone, structure, and content. Get personalized tips to ace every interview.
+              </p>
+            </div>
+            <Link href="/auth?mode=signup" className="btn btn-gold relative whitespace-nowrap flex-shrink-0">Get Notified →</Link>
+          </div>
+        </section>
+
+        {/* ── ADVANCED AI FEATURES ───────────── */}
+        <section aria-label="Advanced AI Features" className="bg-[#0e0d0b] dark:bg-[#0e0d0b] px-5 sm:px-10 py-16 sm:py-24 mt-16 sm:mt-24">
+          <div className="max-w-[1200px] mx-auto">
+            <div className="text-center max-w-[620px] mx-auto mb-14">
+              <div className="inline-flex items-center gap-2 text-[11px] font-mono tracking-[0.15em] uppercase text-gold-light mb-4 opacity-70">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold-light" />
+                Advanced AI
+              </div>
+              <h2 className="text-parchment dark:text-[#e8e6e0] mb-3">AI that gives you<br /><em className="italic text-gold-light">an unfair advantage</em></h2>
+              <p className="text-[rgba(250,248,243,0.4)] text-base">Powered by intelligence that goes far beyond spell-check. These tools analyze, optimize, and transform your entire job search.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { icon: 'brain', title: 'STAR Answer Detection', desc: 'AI detects if your interview answers follow the Situation-Task-Action-Result framework and coaches you to strengthen weak areas.' },
+                { icon: 'trend-down', title: 'Confidence & Clarity Score', desc: 'Get scored on filler words, hedging language, and answer structure. See exactly where you sound uncertain.' },
+                { icon: 'mic', title: 'Follow-Up Question Simulation', desc: 'AI predicts the follow-up questions interviewers will ask based on your answers — so nothing catches you off guard.' },
+                { icon: 'clipboard', title: 'Resume Weakness Analyzer', desc: 'Scans your resume for gaps, weak verbs, missing metrics, and inconsistencies that make recruiters hit "reject."' },
+                { icon: 'linkedin', title: 'Resume → LinkedIn Auto-Convert', desc: 'One click transforms your resume into an optimized LinkedIn profile — headline, summary, and experience sections.' },
+                { icon: 'search', title: 'Missing Keyword Detector', desc: "Compares your resume against the job description and highlights every critical keyword you're missing." },
+              ].map((f, i) => (
+                <div key={i} className="relative p-7 rounded-xl border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] backdrop-blur-sm transition-all duration-300 hover:border-[rgba(201,146,60,0.25)] hover:bg-[rgba(255,255,255,0.04)] group overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[rgba(201,146,60,0.3)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="flex items-start gap-4">
+                    <div className="mt-0.5 flex-shrink-0 text-gold"><LandingIcon name={f.icon} size={22} /></div>
+                    <div>
+                      <div className="flex items-center gap-2.5 mb-2">
+                        <h4 className="text-parchment dark:text-[#e8e6e0] text-[15px] font-semibold">{f.title}</h4>
+                        <span className="text-[9px] font-mono tracking-[0.15em] uppercase px-2 py-0.5 rounded-full bg-[rgba(201,146,60,0.12)] text-gold-light border border-[rgba(201,146,60,0.15)]">Pro</span>
+                      </div>
+                      <p className="text-[13px] leading-[1.7] text-[rgba(250,248,243,0.4)]">{f.desc}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-10">
+              <Link href="/tools/ai" className="btn btn-gold btn-lg">Unlock AI Features →</Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ── THEME SHOWCASE ───────────────────── */}
+        <section aria-label="Theme showcase" className="bg-ink-05 px-5 sm:px-10 py-16 sm:py-24">
+          <div className="text-center max-w-[560px] mx-auto mb-14">
+            <h2 className="mb-3">50 themes.<br /><em className="italic text-gold">One perfect fit.</em></h2>
+            <p className="text-base text-ink-40">From minimalist to bold — every style has its place.</p>
+          </div>
+          <div className="flex gap-3.5 max-w-[1200px] mx-auto overflow-x-auto pb-2">
+            {THEME_PREVIEWS.map((t) => (
+              <div key={t.id} className="shrink-0 w-40 rounded-xl overflow-hidden border border-[rgba(0,0,0,0.08)] transition-transform duration-300 cursor-pointer hover:-translate-y-1.5 hover:scale-[1.02]" style={{ background: t.bg }}>
+                <div className="p-3.5 flex flex-col gap-[5px] h-[120px]">
+                  <div className="h-1.5 rounded-[1px] w-[60%]" style={{ background: t.accent, opacity: 0.8 }} />
+                  <div className="h-1.5 rounded-[1px] w-[40%] bg-[rgba(255,255,255,0.15)]" />
+                  <div className="h-px my-1.5" style={{ background: t.accent, opacity: 0.15 }} />
+                  <div className="h-1.5 rounded-[1px] w-full bg-[rgba(255,255,255,0.15)]" />
+                  <div className="h-1.5 rounded-[1px] w-[80%] bg-[rgba(255,255,255,0.15)]" />
+                  <div className="h-1.5 rounded-[1px] w-[70%] bg-[rgba(255,255,255,0.15)]" />
+                </div>
+                <div className="px-3.5 py-2 text-[10px] font-mono tracking-wide uppercase bg-[rgba(0,0,0,0.15)]" style={{ color: t.bg === '#ffffff' || t.bg === '#f2f2f0' ? '#666' : 'rgba(255,255,255,0.6)' }}>
+                  {t.label}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link href="/themes" className="btn btn-outline btn-lg">View All 50 Themes →</Link>
+          </div>
+        </section>
+
+
         {/* ── HOW IT WORKS ─────────────────────── */}
         <section aria-label="How it works" className="max-w-[1200px] mx-auto px-5 sm:px-10 py-16 sm:py-24">
           <div className="text-center max-w-[560px] mx-auto mb-14">
@@ -641,7 +598,7 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
             {[
-              { n: '01', title: 'Pick a theme', desc: 'Browse 30 professional designs and select the one that matches your style and industry.' },
+              { n: '01', title: 'Pick a theme', desc: 'Browse 50 professional designs and select the one that matches your style and industry.' },
               { n: '02', title: 'Fill in your details', desc: 'Our smart editor guides you through each section. Add experience, skills, education and more.' },
               { n: '03', title: 'Download & apply', desc: 'Export a pixel-perfect PDF instantly. Share your public link or send the file directly.' },
             ].map((step, i) => (
@@ -725,7 +682,7 @@ export default function LandingPage() {
               {[
                 { icon: 'zap', title: 'Under 10 Minutes', desc: 'Build a polished, job-ready resume faster than making coffee.' },
                 { icon: 'folders', title: 'Unlimited Versions', desc: 'Tailor a unique resume for every job — no limits, ever.' },
-                { icon: 'layers', title: 'Instant Format Switch', desc: 'Switch between 30 themes without losing a single word.' },
+                { icon: 'layers', title: 'Instant Format Switch', desc: 'Switch between 50 themes without losing a single word.' },
                 { icon: 'file-text', title: 'One-Click Formatting', desc: 'Clean, consistent formatting applied automatically.' },
                 { icon: 'bar-chart', title: 'Live Resume Score', desc: 'See your score update in real-time as you edit.' },
                 { icon: 'target', title: 'ATS Compliance Check', desc: 'Every export is tested for applicant tracking systems.' },
