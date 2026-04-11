@@ -157,7 +157,7 @@ export default function PricingPage() {
 
   const FAQ = [
     { q: 'What is ATS and why does it matter?', a: 'ATS stands for Applicant Tracking System — software that 95% of large companies use to filter resumes before a human ever sees them. If your resume isn\'t ATS-compatible, it gets rejected automatically. Every ResumeBuildIn template is engineered to pass ATS scanners with clean formatting, proper headings, and machine-readable text.' },
-    { q: 'What\'s your refund policy?', a: 'We offer a full, no-questions-asked refund within 7 days of any purchase — subscriptions or add-ons. After 7 days, you can cancel anytime and keep access until the end of your billing period, but refunds are not available. Contact support@resumebuildin.io to request a refund.' },
+    { q: 'What\'s your refund policy?', a: 'We offer a full, no-questions-asked refund within 7 days of any purchase — subscriptions or add-ons. After 7 days, you can cancel anytime and keep access until the end of your billing period, but refunds are not available. Contact support@solidlabsai.com to request a refund.' },
     { q: 'Can I cancel anytime?', a: 'Yes. Cancel anytime from your billing portal. You keep full access to all features until the end of your current billing period. No cancellation fees, no penalties.' },
     { q: 'Is there a free trial?', a: 'The Free plan is forever free — build 1 resume with any template. Pro includes a 7-day free trial so you can try all features (unlimited downloads, no watermark, cover letters) before being charged.' },
     { q: "What's the difference between the plans?", a: 'Free gets you started with 1 resume. Pro unlocks unlimited downloads, no watermark, DOCX export, cover letters, and priority support. Premium adds AI mock interviews, interview prep toolkit, and LinkedIn optimization. Career+ gives you 20 mock sessions/month, same-business-day support, JD-based interview prep, and a career intelligence dashboard.' },
@@ -171,7 +171,7 @@ export default function PricingPage() {
     { q: 'How accurate is the AI enhancement?', a: 'Our AI transforms vague bullet points into quantified, metrics-driven achievement statements. You always review and approve every suggestion before it\'s applied — the AI assists, you decide. You can choose between Gemini and Claude as your AI provider.' },
     { q: 'Can I customize the resume themes?', a: 'All 30+ professional templates are fully customizable. Change colors, fonts, spacing, and layout. Pro users unlock all themes. You can even generate custom themes with AI by describing what you want.' },
     { q: 'What is Express 24h Unlock?', a: 'A one-time purchase ($9.99) that gives you full Pro-level access for 24 hours — unlimited downloads, no watermark, DOCX export, and cover letters. Perfect when you need to submit a polished resume fast without committing to a subscription.' },
-    { q: 'Do you offer team or enterprise plans?', a: 'Not yet, but we\'re working on it. If you\'re a career center, staffing agency, or company interested in bulk licensing, reach out to hello@resumebuildin.com and we\'ll set something up.' },
+    { q: 'Do you offer team or enterprise plans?', a: 'Not yet, but we\'re working on it. If you\'re a career center, staffing agency, or company interested in bulk licensing, reach out to info@solidlabsai.com and we\'ll set something up.' },
 
   ]
 
@@ -479,7 +479,7 @@ export default function PricingPage() {
 
       <div className="max-w-[900px] mx-auto mb-20 px-5 md:px-10 rounded-xl bg-ink-05 p-8 flex flex-col sm:flex-row items-center justify-between gap-8">
         <div><h3 className="text-[22px] mb-1.5">Need something bigger?</h3><p className="text-sm text-ink-40">Custom seats, SSO, API access, and white-labeling for large organizations.</p></div>
-        <a href="mailto:enterprise@resumebuildin.io" className="btn btn-outline shrink-0">Talk to Sales →</a>
+        <a href="mailto:info@solidlabsai.com" className="btn btn-outline shrink-0">Talk to Sales →</a>
       </div>
 
       {/* Stripe Protection — Refund Policy Link */}

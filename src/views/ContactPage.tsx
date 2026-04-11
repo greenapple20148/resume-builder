@@ -74,7 +74,7 @@ export default function ContactPage() {
                 {/* Contact cards */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 24, marginBottom: 48 }}>
                     {[
-                        { icon: 'mail', title: 'Email', detail: 'hello@resumebuildin.com', sub: 'We reply within 24 hours' },
+                        { icon: 'mail', title: 'Email', detail: 'info@solidlabsai.com', sub: 'We reply within 24 hours' },
                         { icon: 'message-circle', title: 'Live Chat', detail: 'Available 9am–6pm EST', sub: 'Mon – Fri' },
                         { icon: 'twitter', title: 'Twitter / X', detail: '@resumebuildin', sub: 'DMs open' },
                     ].map(c => (

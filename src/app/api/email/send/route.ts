@@ -8,7 +8,7 @@ const B = {
     name: 'ResumeBuildIn', logo: '◈', color: '#c9923c', colorLight: 'rgba(212,163,88,0.08)',
     ink: '#1a1714', inkLight: '#8a857d', bg: '#faf8f3', white: '#ffffff',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://resumebuildin.com',
-    supportEmail: 'support@resumebuildin.io',
+    supportEmail: 'support@solidlabsai.com',
 }
 
 function layout(content: string) { return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>${B.name}</title></head><body style="margin:0;padding:0;background:${B.bg};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${B.bg};"><tr><td align="center" style="padding:40px 20px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:${B.white};border-radius:16px;border:1px solid rgba(0,0,0,0.06);overflow:hidden;"><tr><td style="padding:28px 36px 20px;border-bottom:1px solid rgba(0,0,0,0.05);"><a href="${B.url}" style="text-decoration:none;font-size:20px;font-weight:300;color:${B.ink};"><span style="color:${B.color};margin-right:4px;">${B.logo}</span>Resume<em style="font-style:italic;color:${B.color};">BuildIn</em></a></td></tr><tr><td style="padding:32px 36px 36px;">${content}</td></tr><tr><td style="padding:20px 36px 28px;border-top:1px solid rgba(0,0,0,0.05);background:${B.bg};"><p style="margin:0 0 6px;font-size:11px;color:${B.inkLight};">${B.name} · <a href="${B.url}" style="color:${B.color};text-decoration:none;">resumebuildin.com</a></p><p style="margin:0;font-size:11px;color:${B.inkLight};">Questions? <a href="mailto:${B.supportEmail}" style="color:${B.color};text-decoration:none;">${B.supportEmail}</a></p></td></tr></table></td></tr></table></body></html>` }
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
         const RESEND_API_KEY = process.env.RESEND_API_KEY
         if (!RESEND_API_KEY) throw new Error('RESEND_API_KEY not configured.')
 
-        const FROM_ADDRESS = process.env.FROM_EMAIL || `${B.name} <hello@resumebuildin.com>`
+        const FROM_ADDRESS = process.env.FROM_EMAIL || `${B.name} <noreply@solidlabsai.com>`
         const REPLY_TO = process.env.REPLY_TO_EMAIL || B.supportEmail
 
         const resendResponse = await fetch('https://api.resend.com/emails', {

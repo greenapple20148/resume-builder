@@ -78,8 +78,8 @@ export async function POST(request: NextRequest) {
     const RESEND_API_KEY = process.env.RESEND_API_KEY
     if (!RESEND_API_KEY) throw new Error('Email service not configured.')
 
-    const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'hello@resumebuildin.com'
-    const FROM_ADDRESS = process.env.FROM_EMAIL || 'Resume BuildIn <noreply@resumebuildin.com>'
+    const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL || 'info@solidlabsai.com'
+    const FROM_ADDRESS = process.env.FROM_EMAIL || 'Resume BuildIn <noreply@solidlabsai.com>'
 
     const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
     const safeName = esc(name), safeEmail = esc(email), safeSubject = esc(subject), safeMessage = esc(message)

@@ -22,7 +22,7 @@ const BRAND = {
   bg: '#faf8f3',
   white: '#ffffff',
   url: 'https://resumebuildin.com',
-  supportEmail: 'support@resumebuildin.io',
+  supportEmail: 'support@solidlabsai.com',
 }
 
 // ── Shared layout wrapper ────────────────────────────────

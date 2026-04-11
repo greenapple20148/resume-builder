@@ -72,7 +72,7 @@ export default function AboutPage() {
 
                     <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(22px, 3vw, 28px)', fontWeight: 300, color: 'var(--ink)', paddingTop: 24, lineHeight: 1.1 }}>Get in Touch</h2>
                     <p style={{ margin: 0 }}>
-                        Have questions, feedback, or partnership inquiries? We{"'"}d love to hear from you at <a href="mailto:hello@resumebuildin.com" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>hello@resumebuildin.com</a>.
+                        Have questions, feedback, or partnership inquiries? We{"'"}d love to hear from you at <a href="mailto:info@solidlabsai.com" style={{ color: 'var(--gold)', textDecoration: 'underline' }}>info@solidlabsai.com</a>.
                     </p>
                 </div>
             </main>

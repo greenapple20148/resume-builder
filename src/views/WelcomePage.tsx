@@ -161,7 +161,7 @@ export default function WelcomePage() {
                     <Link href={isPaid ? '/dashboard' : '/editor/new'} className="btn btn-gold btn-lg">
                         {isPaid ? 'Go to Dashboard →' : 'Build My Resume →'}
                     </Link>
-                    <p className="text-[13px] text-ink-20 mt-4">Need help? Reach us at <a href="mailto:support@resumebuildin.io" className="text-gold no-underline hover:underline">support@resumebuildin.io</a></p>
+                    <p className="text-[13px] text-ink-20 mt-4">Need help? Reach us at <a href="mailto:support@solidlabsai.com" className="text-gold no-underline hover:underline">support@solidlabsai.com</a></p>
                 </div>
             </div>
         </div>

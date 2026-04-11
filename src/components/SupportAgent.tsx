@@ -178,7 +178,7 @@ export default function SupportAgent() {
                     m.id === assistantMsg.id
                         ? {
                             ...m,
-                            content: "I'm sorry, I ran into an issue. Please try again, or reach out to our support team at **support@resumebuildin.com** for help.",
+                            content: "I'm sorry, I ran into an issue. Please try again, or reach out to our support team at **support@solidlabsai.com** for help.",
                             status: 'error' as const,
                         }
                         : m
